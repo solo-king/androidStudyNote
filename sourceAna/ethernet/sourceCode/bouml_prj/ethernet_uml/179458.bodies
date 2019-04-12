@@ -1,0 +1,21 @@
+class Status
+!!!530946.java!!!	Status(in status : int)
+            this(status, null);
+!!!531074.java!!!	Status(in status : int, in msg : String)
+            this.status = status;
+            this.msg = msg;
+!!!531202.java!!!	asIOException() : IOException
+            switch (status) {
+                case DEAD:
+                    return new IOException("Remote side is dead");
+                case OK:
+                    return null;
+                case ERROR:
+                    return new IOException("Remote error: " + msg);
+                case DETACHED:
+                    return new FileDescriptorDetachedException();
+                case LEAKED:
+                    return new IOException("Remote side was leaked");
+                default:
+                    return new IOException("Unknown status: " + status);
+            }

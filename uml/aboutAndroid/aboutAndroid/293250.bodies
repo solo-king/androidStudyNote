@@ -1,0 +1,104 @@
+class WifiSetupActivity
+!!!1023490.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        final Intent intent = getIntent();
+        mFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+
+        mAutoFinishOnConnection = intent.getBooleanExtra(EXTRA_AUTO_FINISH_ON_CONNECT, false);
+        mIsNetworkRequired = intent.getBooleanExtra(EXTRA_IS_NETWORK_REQUIRED, false);
+        mIsWifiRequired = intent.getBooleanExtra(EXTRA_IS_WIFI_REQUIRED, false);
+        // Behave like the user already selected a network if we do not require selection
+        mUserSelectedNetwork = !intent.getBooleanExtra(EXTRA_REQUIRE_USER_NETWORK_SELECTION, false);
+!!!1023618.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(PARAM_USER_SELECTED_NETWORK, mUserSelectedNetwork);
+!!!1023746.java!!!	onRestoreInstanceState(inout savedInstanceState : Bundle) : void
+        super.onRestoreInstanceState(savedInstanceState);
+        mUserSelectedNetwork = savedInstanceState.getBoolean(PARAM_USER_SELECTED_NETWORK, true);
+!!!1023874.java!!!	isWifiConnected() : boolean
+        final ConnectivityManager connectivity = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean wifiConnected = connectivity != null &&
+                connectivity.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected();
+        mWifiConnected = wifiConnected;
+        return wifiConnected;
+!!!1024002.java!!!	refreshConnectionState() : void
+        if (isWifiConnected()) {
+            if (mAutoFinishOnConnection && mUserSelectedNetwork) {
+                Log.d(TAG, "Auto-finishing with connection");
+                finish(Activity.RESULT_OK);
+                // Require a user selection before auto-finishing next time we are here. The user
+                // can either connect to a different network or press "next" to proceed.
+                mUserSelectedNetwork = false;
+            }
+            setNextButtonText(R.string.suw_next_button_label);
+            setNextButtonEnabled(true);
+        } else if (mIsWifiRequired || (mIsNetworkRequired && !isNetworkConnected())) {
+            // We do not want the user to skip wifi setting if
+            // - wifi is required, but wifi connection hasn't been established yet;
+            // - or network is required, but no valid connection has been established.
+            setNextButtonText(R.string.skip_label);
+            setNextButtonEnabled(false);
+        } else {
+            // In other cases, user can choose to skip. Specifically these cases are
+            // - wifi is not required;
+            // - and network is not required;
+            // -     or network is required and a valid connection has been established.
+            setNextButtonText(R.string.skip_label);
+            setNextButtonEnabled(true);
+        }
+!!!1024130.java!!!	setNextButtonEnabled(inout enabled : boolean) : void
+        if (mNavigationBar != null) {
+            mNavigationBar.getNextButton().setEnabled(enabled);
+        }
+!!!1024258.java!!!	setNextButtonText(in resId : int) : void
+        if (mNavigationBar != null) {
+            mNavigationBar.getNextButton().setText(resId);
+        }
+!!!1024386.java!!!	networkSelected() : void
+        Log.d(TAG, "Network selected by user");
+        mUserSelectedNetwork = true;
+!!!1024514.java!!!	onResume() : void
+        super.onResume();
+        registerReceiver(mReceiver, mFilter);
+        refreshConnectionState();
+!!!1024642.java!!!	onPause() : void
+        unregisterReceiver(mReceiver);
+        super.onPause();
+!!!1024770.java!!!	onApplyThemeResource(inout theme : Resources.Theme, in resid : int, inout first : boolean) : void
+        resid = SetupWizardUtils.getTheme(getIntent());
+        super.onApplyThemeResource(theme, resid, first);
+!!!1024898.java!!!	isValidFragment(in fragmentName : String) : boolean
+        return WifiSettingsForSetupWizard.class.getName().equals(fragmentName);
+!!!1025026.java!!!	getWifiSettingsClass() : Class<? extends PreferenceFragment>
+        return WifiSettingsForSetupWizard.class;
+!!!1025154.java!!!	finish(in resultCode : int) : void
+        Log.d(TAG, "finishing, resultCode=" + resultCode);
+        setResult(resultCode);
+        finish();
+!!!1025282.java!!!	onNavigationBarCreated(in bar : NavigationBar) : void
+        mNavigationBar = bar;
+        bar.setNavigationBarListener(this);
+        SetupWizardUtils.setImmersiveMode(this);
+!!!1025410.java!!!	onNavigateBack() : void
+        onBackPressed();
+!!!1025538.java!!!	onNavigateNext() : void
+        if (mWifiConnected) {
+            finish(RESULT_OK);
+        } else {
+            // Warn of possible data charges if there is a network connection, or lack of updates
+            // if there is none.
+            final int message = isNetworkConnected() ? R.string.wifi_skipped_message :
+                    R.string.wifi_and_mobile_skipped_message;
+            WifiSkipDialog.newInstance(message).show(getFragmentManager(), "dialog");
+        }
+!!!1025666.java!!!	isNetworkConnected() : boolean
+        final ConnectivityManager connectivity = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivity == null) {
+            return false;
+        }
+        final NetworkInfo info = connectivity.getActiveNetworkInfo();
+        return info != null && info.isConnected();

@@ -1,0 +1,85 @@
+class ZenServiceListing
+!!!920834.java!!!	ZenServiceListing(inout context : Context, inout config : ManagedServiceSettings::Config)
+        mContext = context;
+        mConfig = config;
+        mContentResolver = context.getContentResolver();
+!!!920962.java!!!	findService(in cn : ComponentName) : ServiceInfo
+        for (ServiceInfo service : mApprovedServices) {
+            final ComponentName serviceCN = new ComponentName(service.packageName, service.name);
+            if (serviceCN.equals(cn)) {
+                return service;
+            }
+        }
+        return null;
+!!!921090.java!!!	addZenCallback(inout callback : ZenServiceListing::Callback) : void
+        mZenCallbacks.add(callback);
+!!!921218.java!!!	removeZenCallback(inout callback : ZenServiceListing::Callback) : void
+        mZenCallbacks.remove(callback);
+!!!921346.java!!!	reloadApprovedServices() : void
+        mApprovedServices.clear();
+        String[] settings = {mConfig.setting, mConfig.secondarySetting};
+
+        for (String setting : settings) {
+            if (!TextUtils.isEmpty(setting)) {
+                final String flat = Settings.Secure.getString(mContentResolver, setting);
+                if (!TextUtils.isEmpty(flat)) {
+                    final List<String> names = Arrays.asList(flat.split(":"));
+                    List<ServiceInfo> services = new ArrayList<>();
+                    getServices(mConfig, services, mContext.getPackageManager());
+                    for (ServiceInfo service : services) {
+                        if (matchesApprovedPackage(names, service.getComponentName())) {
+                            mApprovedServices.add(service);
+                        }
+                    }
+                }
+            }
+        }
+        if (!mApprovedServices.isEmpty()) {
+            for (Callback callback : mZenCallbacks) {
+                callback.onServicesReloaded(mApprovedServices);
+            }
+        }
+!!!921474.java!!!	matchesApprovedPackage(inout approved : List<String>, inout serviceOwner : ComponentName) : boolean
+        String flatCn = serviceOwner.flattenToString();
+        if (approved.contains(flatCn) || approved.contains(serviceOwner.getPackageName())) {
+            return true;
+        }
+        for (String entry : approved) {
+            if (!TextUtils.isEmpty(entry)) {
+                ComponentName approvedComponent = ComponentName.unflattenFromString(entry);
+                if (approvedComponent != null && approvedComponent.getPackageName().equals(
+                        serviceOwner.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+!!!921602.java!!!	getServices(inout c : ManagedServiceSettings::Config, inout list : List<ServiceInfo>, inout pm : PackageManager) : int
+        int services = 0;
+        if (list != null) {
+            list.clear();
+        }
+        final int user = ActivityManager.getCurrentUser();
+
+        List<ResolveInfo> installedServices = pm.queryIntentServicesAsUser(
+                new Intent(c.intentAction),
+                PackageManager.GET_SERVICES | PackageManager.GET_META_DATA,
+                user);
+
+        for (int i = 0, count = installedServices.size(); i < count; i++) {
+            ResolveInfo resolveInfo = installedServices.get(i);
+            ServiceInfo info = resolveInfo.serviceInfo;
+
+            if (!c.permission.equals(info.permission)) {
+                Slog.w(c.tag, "Skipping " + c.noun + " service "
+                        + info.packageName + "/" + info.name
+                        + ": it does not require the permission "
+                        + c.permission);
+                continue;
+            }
+            if (list != null) {
+                list.add(info);
+            }
+            services++;
+        }
+        return services;

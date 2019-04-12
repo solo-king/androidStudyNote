@@ -1,0 +1,85 @@
+class StatusLoadingHandler
+!!!792194.java!!!	handleMessage(inout msg : Message) : void
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "handleMessage start: " + msg + ", " + this);
+            }
+
+            // Update state in response to message
+            switch (msg.what) {
+                case WHAT_RELOAD:
+                    mReloadRequested = true;
+                    break;
+                case WHAT_RECEIVED_STATUS:
+                    final Setting receivedSetting = (Setting) msg.obj;
+                    receivedSetting.maybeLogElapsedTime();
+                    mSettingsBeingLoaded.remove(receivedSetting);
+                    mTimedOutSettings.remove(receivedSetting);
+                    removeMessages(WHAT_TIMEOUT, receivedSetting);
+                    break;
+                case WHAT_TIMEOUT:
+                    final Setting timedOutSetting = (Setting) msg.obj;
+                    mSettingsBeingLoaded.remove(timedOutSetting);
+                    mTimedOutSettings.add(timedOutSetting);
+                    if (Log.isLoggable(TAG, Log.WARN)) {
+                        Log.w(TAG, "Timed out after " + timedOutSetting.getElapsedTime()
+                                + " millis trying to get status for: " + timedOutSetting);
+                    }
+                    break;
+                default:
+                    Log.wtf(TAG, "Unexpected what: " + msg);
+            }
+
+            // Decide whether to load additional settings based on the new state. Start by seeing
+            // if we have headroom to load another setting.
+            if (mSettingsBeingLoaded.size() > 0 || mTimedOutSettings.size() > 1) {
+                // Don't load any more settings until one of the pending settings has completed.
+                // To reduce memory pressure, we want to be loading at most one setting (plus at
+                // most one timed-out setting) at a time. This means we'll be responsible for
+                // bringing in at most two services.
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "too many services already live for " + msg + ", " + this);
+                }
+                return;
+            }
+
+            if (mReloadRequested && mSettingsToLoad.isEmpty() && mSettingsBeingLoaded.isEmpty()
+                    && mTimedOutSettings.isEmpty()) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "reloading because idle and reload requesteed " + msg + ", " + this);
+                }
+                // Reload requested, so must reload all settings
+                mSettingsToLoad.addAll(mSettings);
+                mReloadRequested = false;
+            }
+
+            // Remove the next setting to load from the queue, if any
+            Iterator<Setting> iter = mSettingsToLoad.iterator();
+            if (!iter.hasNext()) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "nothing left to do for " + msg + ", " + this);
+                }
+                return;
+            }
+            Setting setting = iter.next();
+            iter.remove();
+
+            // Request the status value
+            setting.startService();
+            mSettingsBeingLoaded.add(setting);
+
+            // Ensure that if receiving the status value takes too long, we start loading the
+            // next value anyway
+            Message timeoutMsg = obtainMessage(WHAT_TIMEOUT, setting);
+            sendMessageDelayed(timeoutMsg, INJECTED_STATUS_UPDATE_TIMEOUT_MILLIS);
+
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "handleMessage end " + msg + ", " + this
+                        + ", started loading " + setting);
+            }
+!!!792322.java!!!	toString() : String
+            return "StatusLoadingHandler{" +
+                    "mSettingsToLoad=" + mSettingsToLoad +
+                    ", mSettingsBeingLoaded=" + mSettingsBeingLoaded +
+                    ", mTimedOutSettings=" + mTimedOutSettings +
+                    ", mReloadRequested=" + mReloadRequested +
+                    '}';

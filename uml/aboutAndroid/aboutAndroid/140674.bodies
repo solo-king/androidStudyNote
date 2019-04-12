@@ -1,0 +1,50 @@
+class ChooseLockPassword
+!!!184450.java!!!	getIntent() : Intent
+        Intent modIntent = new Intent(super.getIntent());
+        modIntent.putExtra(EXTRA_SHOW_FRAGMENT, getFragmentClass().getName());
+        return modIntent;
+!!!184578.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, inout confirmCredentials : boolean) : Intent
+        Intent intent = new Intent().setClass(context, ChooseLockPassword.class);
+        intent.putExtra(LockPatternUtils.PASSWORD_TYPE_KEY, quality);
+        intent.putExtra(PASSWORD_MIN_KEY, minLength);
+        intent.putExtra(PASSWORD_MAX_KEY, maxLength);
+        intent.putExtra(ChooseLockGeneric.CONFIRM_CREDENTIALS, confirmCredentials);
+        intent.putExtra(EncryptionInterstitial.EXTRA_REQUIRE_PASSWORD, requirePasswordToDecrypt);
+        return intent;
+!!!184706.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, inout confirmCredentials : boolean, in userId : int) : Intent
+        Intent intent = createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, confirmCredentials);
+        intent.putExtra(Intent.EXTRA_USER_ID, userId);
+        return intent;
+!!!184834.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in password : String) : Intent
+        Intent intent = createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, false);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_PASSWORD, password);
+        return intent;
+!!!184962.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in password : String, in userId : int) : Intent
+        Intent intent = createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, password);
+        intent.putExtra(Intent.EXTRA_USER_ID, userId);
+        return intent;
+!!!185090.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in challenge : long) : Intent
+        Intent intent = createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, false);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, true);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, challenge);
+        return intent;
+!!!185218.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in challenge : long, in userId : int) : Intent
+        Intent intent = createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, challenge);
+        intent.putExtra(Intent.EXTRA_USER_ID, userId);
+        return intent;
+!!!185346.java!!!	isValidFragment(in fragmentName : String) : boolean
+        if (ChooseLockPasswordFragment.class.getName().equals(fragmentName)) return true;
+        return false;
+!!!185474.java!!!	getFragmentClass() : Class<? extends Fragment>
+        return ChooseLockPasswordFragment.class;
+!!!185602.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        CharSequence msg = getText(R.string.lockpassword_choose_your_password_header);
+        setTitle(msg);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.content_parent);
+        layout.setFitsSystemWindows(false);

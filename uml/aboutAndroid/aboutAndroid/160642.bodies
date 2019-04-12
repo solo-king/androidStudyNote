@@ -1,0 +1,10 @@
+class PreviewFrameAnimatorListener
+!!!297346.java!!!	onAnimationStart(inout animation : Animator) : void
+            mAnimationCounter++;
+!!!297474.java!!!	onAnimationEnd(inout animation : Animator) : void
+            mAnimationCounter--;
+            runAnimationEndAction();
+!!!297602.java!!!	onAnimationCancel(inout animation : Animator) : void
+            // Empty method.
+!!!297730.java!!!	onAnimationRepeat(inout animation : Animator) : void
+            // Empty method.

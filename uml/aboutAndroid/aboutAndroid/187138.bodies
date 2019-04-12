@@ -1,0 +1,95 @@
+class DataSaverBackend
+!!!356866.java!!!	DataSaverBackend(inout context : Context)
+        mContext = context;
+        mIPolicyManager = INetworkPolicyManager.Stub.asInterface(
+                        ServiceManager.getService(Context.NETWORK_POLICY_SERVICE));
+        mPolicyManager = NetworkPolicyManager.from(context);
+!!!356994.java!!!	addListener(inout listener : DataSaverBackend::Listener) : void
+        mListeners.add(listener);
+        if (mListeners.size() == 1) {
+            mPolicyManager.registerListener(mPolicyListener);
+        }
+        listener.onDataSaverChanged(isDataSaverEnabled());
+!!!357122.java!!!	remListener(inout listener : DataSaverBackend::Listener) : void
+        mListeners.remove(listener);
+        if (mListeners.size() == 0) {
+            mPolicyManager.unregisterListener(mPolicyListener);
+        }
+!!!357250.java!!!	isDataSaverEnabled() : boolean
+        return mPolicyManager.getRestrictBackground();
+!!!357378.java!!!	setDataSaverEnabled(inout enabled : boolean) : void
+        mPolicyManager.setRestrictBackground(enabled);
+        MetricsLogger.action(mContext, MetricsEvent.ACTION_DATA_SAVER_MODE, enabled ? 1 : 0);
+!!!357506.java!!!	refreshWhitelist() : void
+        loadWhitelist();
+!!!357634.java!!!	setIsWhitelisted(in uid : int, in packageName : String, inout whitelisted : boolean) : void
+        mWhitelist.put(uid, whitelisted);
+        try {
+            if (whitelisted) {
+                mIPolicyManager.addRestrictBackgroundWhitelistedUid(uid);
+            } else {
+                mIPolicyManager.removeRestrictBackgroundWhitelistedUid(uid);
+            }
+        } catch (RemoteException e) {
+            Log.w(TAG, "Can't reach policy manager", e);
+        }
+        if (whitelisted) {
+            MetricsLogger.action(mContext, MetricsEvent.ACTION_DATA_SAVER_WHITELIST, packageName);
+        }
+!!!357762.java!!!	isWhitelisted(in uid : int) : boolean
+        if (mWhitelist == null) {
+            loadWhitelist();
+        }
+        return mWhitelist.get(uid);
+!!!357890.java!!!	getWhitelistedCount() : int
+        int count = 0;
+        if (mWhitelist == null) {
+            loadWhitelist();
+        }
+        for (int i = 0; i < mWhitelist.size(); i++) {
+            if (mWhitelist.valueAt(i)) {
+                count++;
+            }
+        }
+        return count;
+!!!358018.java!!!	loadWhitelist() : void
+        mWhitelist = new SparseBooleanArray();
+        try {
+            for (int uid : mIPolicyManager.getRestrictBackgroundWhitelistedUids()) {
+                mWhitelist.put(uid, true);
+            }
+        } catch (RemoteException e) {
+        }
+!!!358146.java!!!	refreshBlacklist() : void
+        loadBlacklist();
+!!!358274.java!!!	setIsBlacklisted(in uid : int, in packageName : String, inout blacklisted : boolean) : void
+        mPolicyManager.setUidPolicy(
+                uid, blacklisted ? POLICY_REJECT_METERED_BACKGROUND : POLICY_NONE);
+        if (blacklisted) {
+            MetricsLogger.action(mContext, MetricsEvent.ACTION_DATA_SAVER_BLACKLIST, packageName);
+        }
+!!!358402.java!!!	isBlacklisted(in uid : int) : boolean
+        if (mBlacklist == null) {
+            loadBlacklist();
+        }
+        return mBlacklist.get(uid);
+!!!358530.java!!!	loadBlacklist() : void
+        mBlacklist = new SparseBooleanArray();
+        try {
+            for (int uid : mIPolicyManager.getUidsWithPolicy(POLICY_REJECT_METERED_BACKGROUND)) {
+                mBlacklist.put(uid, true);
+            }
+        } catch (RemoteException e) {
+        }
+!!!358658.java!!!	handleRestrictBackgroundChanged(inout isDataSaving : boolean) : void
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onDataSaverChanged(isDataSaving);
+        }
+!!!358786.java!!!	handleWhitelistChanged(in uid : int, inout isWhitelisted : boolean) : void
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onWhitelistStatusChanged(uid, isWhitelisted);
+        }
+!!!358914.java!!!	handleBlacklistChanged(in uid : int, inout isBlacklisted : boolean) : void
+        for (int i = 0; i < mListeners.size(); i++) {
+            mListeners.get(i).onBlacklistStatusChanged(uid, isBlacklisted);
+        }

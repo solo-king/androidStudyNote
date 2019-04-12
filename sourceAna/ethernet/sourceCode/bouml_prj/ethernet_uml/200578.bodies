@@ -1,0 +1,9 @@
+class ParcelFileDescriptorInner
+!!!684290.java!!!	ParcelFileDescriptorInner(inout pfd : ParcelFileDescriptor, inout icp : IContentProvider)
+            super(pfd);
+            mContentProvider = icp;
+!!!684418.java!!!	releaseResources() : void
+            if (!mProviderReleased) {
+                ContentResolver.this.releaseProvider(mContentProvider);
+                mProviderReleased = true;
+            }

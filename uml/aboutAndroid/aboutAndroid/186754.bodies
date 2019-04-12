@@ -1,0 +1,217 @@
+class TetherService
+!!!354306.java!!!	onBind(inout intent : Intent) : IBinder
+        return null;
+!!!354434.java!!!	onCreate() : void
+        super.onCreate();
+        if (DEBUG) Log.d(TAG, "Creating TetherService");
+        String provisionResponse = getResources().getString(
+                com.android.internal.R.string.config_mobile_hotspot_provision_response);
+        registerReceiver(mReceiver, new IntentFilter(provisionResponse),
+                android.Manifest.permission.CONNECTIVITY_INTERNAL, null);
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        mCurrentTethers = stringToTethers(prefs.getString(KEY_TETHERS, ""));
+        mCurrentTypeIndex = 0;
+        mPendingCallbacks = new ArrayMap<>(3);
+        mPendingCallbacks.put(ConnectivityManager.TETHERING_WIFI, new ArrayList<ResultReceiver>());
+        mPendingCallbacks.put(ConnectivityManager.TETHERING_USB, new ArrayList<ResultReceiver>());
+        mPendingCallbacks.put(
+                ConnectivityManager.TETHERING_BLUETOOTH, new ArrayList<ResultReceiver>());
+        if (mUsageManagerWrapper == null) {
+            mUsageManagerWrapper = new UsageStatsManagerWrapper(this);
+        }
+!!!354562.java!!!	onStartCommand(inout intent : Intent, in flags : int, in startId : int) : int
+        if (intent.hasExtra(ConnectivityManager.EXTRA_ADD_TETHER_TYPE)) {
+            int type = intent.getIntExtra(ConnectivityManager.EXTRA_ADD_TETHER_TYPE,
+                    ConnectivityManager.TETHERING_INVALID);
+            ResultReceiver callback =
+                    intent.getParcelableExtra(ConnectivityManager.EXTRA_PROVISION_CALLBACK);
+            if (callback != null) {
+                List<ResultReceiver> callbacksForType = mPendingCallbacks.get(type);
+                if (callbacksForType != null) {
+                    callbacksForType.add(callback);
+                } else {
+                    // Invalid tether type. Just ignore this request and report failure.
+                    callback.send(ConnectivityManager.TETHER_ERROR_UNKNOWN_IFACE, null);
+                    stopSelf();
+                    return START_NOT_STICKY;
+                }
+            }
+
+            if (!mCurrentTethers.contains(type)) {
+                if (DEBUG) Log.d(TAG, "Adding tether " + type);
+                mCurrentTethers.add(type);
+            }
+        }
+
+        if (intent.hasExtra(ConnectivityManager.EXTRA_REM_TETHER_TYPE)) {
+            if (!mInProvisionCheck) {
+                int type = intent.getIntExtra(ConnectivityManager.EXTRA_REM_TETHER_TYPE,
+                        ConnectivityManager.TETHERING_INVALID);
+                int index = mCurrentTethers.indexOf(type);
+                if (DEBUG) Log.d(TAG, "Removing tether " + type + ", index " + index);
+                if (index >= 0) {
+                    removeTypeAtIndex(index);
+                }
+                cancelAlarmIfNecessary();
+            } else {
+                if (DEBUG) Log.d(TAG, "Don't cancel alarm during provisioning");
+            }
+        }
+
+        // Only set the alarm if we have one tether, meaning the one just added,
+        // to avoid setting it when it was already set previously for another
+        // type.
+        if (intent.getBooleanExtra(ConnectivityManager.EXTRA_SET_ALARM, false)
+                && mCurrentTethers.size() == 1) {
+            scheduleAlarm();
+        }
+
+        if (intent.getBooleanExtra(ConnectivityManager.EXTRA_RUN_PROVISION, false)) {
+            startProvisioning(mCurrentTypeIndex);
+        } else if (!mInProvisionCheck) {
+            // If we aren't running any provisioning, no reason to stay alive.
+            if (DEBUG) Log.d(TAG, "Stopping self.  startid: " + startId);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        // We want to be started if we are killed accidently, so that we can be sure we finish
+        // the check.
+        return START_REDELIVER_INTENT;
+!!!354690.java!!!	onDestroy() : void
+        if (mInProvisionCheck) {
+            Log.e(TAG, "TetherService getting destroyed while mid-provisioning"
+                    + mCurrentTethers.get(mCurrentTypeIndex));
+        }
+        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
+        prefs.edit().putString(KEY_TETHERS, tethersToString(mCurrentTethers)).commit();
+
+        if (DEBUG) Log.d(TAG, "Destroying TetherService");
+        unregisterReceiver(mReceiver);
+        super.onDestroy();
+!!!354818.java!!!	removeTypeAtIndex(in index : int) : void
+        mCurrentTethers.remove(index);
+        // If we are currently in the middle of a check, we may need to adjust the
+        // index accordingly.
+        if (DEBUG) Log.d(TAG, "mCurrentTypeIndex: " + mCurrentTypeIndex);
+        if (index <= mCurrentTypeIndex && mCurrentTypeIndex > 0) {
+            mCurrentTypeIndex--;
+        }
+!!!354946.java!!!	stringToTethers(in tethersStr : String) : ArrayList<Integer>
+        ArrayList<Integer> ret = new ArrayList<Integer>();
+        if (TextUtils.isEmpty(tethersStr)) return ret;
+
+        String[] tethersSplit = tethersStr.split(",");
+        for (int i = 0; i < tethersSplit.length; i++) {
+            ret.add(Integer.parseInt(tethersSplit[i]));
+        }
+        return ret;
+!!!355074.java!!!	tethersToString(inout tethers : ArrayList<Integer>) : String
+        final StringBuffer buffer = new StringBuffer();
+        final int N = tethers.size();
+        for (int i = 0; i < N; i++) {
+            if (i != 0) {
+                buffer.append(',');
+            }
+            buffer.append(tethers.get(i));
+        }
+
+        return buffer.toString();
+!!!355202.java!!!	disableWifiTethering() : void
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        cm.stopTethering(ConnectivityManager.TETHERING_WIFI);
+!!!355330.java!!!	disableUsbTethering() : void
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        cm.setUsbTethering(false);
+!!!355458.java!!!	disableBtTethering() : void
+        final BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        if (adapter != null) {
+            adapter.getProfileProxy(this, new ServiceListener() {
+                @Override
+                public void onServiceDisconnected(int profile) { }
+
+                @Override
+                public void onServiceConnected(int profile, BluetoothProfile proxy) {
+                    ((BluetoothPan) proxy).setBluetoothTethering(false);
+                    adapter.closeProfileProxy(BluetoothProfile.PAN, proxy);
+                }
+            }, BluetoothProfile.PAN);
+        }
+!!!355586.java!!!	startProvisioning(in index : int) : void
+        if (index < mCurrentTethers.size()) {
+            Intent intent = getProvisionBroadcastIntent(index);
+            setEntitlementAppActive(index);
+
+            if (DEBUG) Log.d(TAG, "Sending provisioning broadcast: " + intent.getAction()
+                    + " type: " + mCurrentTethers.get(index));
+
+            sendBroadcast(intent);
+            mInProvisionCheck = true;
+        }
+!!!355714.java!!!	getProvisionBroadcastIntent(in index : int) : Intent
+        String provisionAction = getResources().getString(
+                com.android.internal.R.string.config_mobile_hotspot_provision_app_no_ui);
+        Intent intent = new Intent(provisionAction);
+        int type = mCurrentTethers.get(index);
+        intent.putExtra(TETHER_CHOICE, type);
+        intent.setFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+
+        return intent;
+!!!355842.java!!!	setEntitlementAppActive(in index : int) : void
+        final PackageManager packageManager = getPackageManager();
+        Intent intent = getProvisionBroadcastIntent(index);
+        List<ResolveInfo> resolvers =
+                packageManager.queryBroadcastReceivers(intent, PackageManager.MATCH_ALL);
+        if (resolvers.isEmpty()) {
+            Log.e(TAG, "No found BroadcastReceivers for provision intent.");
+            return;
+        }
+
+        for (ResolveInfo resolver : resolvers) {
+            if (resolver.activityInfo.applicationInfo.isSystemApp()) {
+                String packageName = resolver.activityInfo.packageName;
+                mUsageManagerWrapper.setAppInactive(packageName, false);
+            }
+        }
+!!!355970.java!!!	scheduleAlarm() : void
+        Intent intent = new Intent(this, TetherService.class);
+        intent.putExtra(ConnectivityManager.EXTRA_RUN_PROVISION, true);
+
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        int period = getResources().getInteger(
+                com.android.internal.R.integer.config_mobile_hotspot_provision_check_period);
+        long periodMs = period * MS_PER_HOUR;
+        long firstTime = SystemClock.elapsedRealtime() + periodMs;
+        if (DEBUG) Log.d(TAG, "Scheduling alarm at interval " + periodMs);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, firstTime, periodMs,
+                pendingIntent);
+!!!356098.java!!!	cancelRecheckAlarmIfNecessary(in context : Context, in type : int) : void
+        Intent intent = new Intent(context, TetherService.class);
+        intent.putExtra(ConnectivityManager.EXTRA_REM_TETHER_TYPE, type);
+        context.startService(intent);
+!!!356226.java!!!	cancelAlarmIfNecessary() : void
+        if (mCurrentTethers.size() != 0) {
+            if (DEBUG) Log.d(TAG, "Tethering still active, not cancelling alarm");
+            return;
+        }
+        Intent intent = new Intent(this, TetherService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent);
+        if (DEBUG) Log.d(TAG, "Tethering no longer active, canceling recheck");
+!!!356354.java!!!	fireCallbacksForType(in type : int, in result : int) : void
+        List<ResultReceiver> callbacksForType = mPendingCallbacks.get(type);
+        if (callbacksForType == null) {
+            return;
+        }
+        int errorCode = result == RESULT_OK ? ConnectivityManager.TETHER_ERROR_NO_ERROR :
+                ConnectivityManager.TETHER_ERROR_PROVISION_FAILED;
+        for (ResultReceiver callback : callbacksForType) {
+          if (DEBUG) Log.d(TAG, "Firing result: " + errorCode + " to callback");
+          callback.send(errorCode, null);
+        }
+        callbacksForType.clear();
+!!!356482.java!!!	setUsageStatsManagerWrapper(inout wrapper : TetherService::UsageStatsManagerWrapper) : void
+        mUsageManagerWrapper = wrapper;

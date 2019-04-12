@@ -1,0 +1,25 @@
+class RemoveCredentialsTask
+!!!381698.java!!!	RemoveCredentialsTask(inout context : Context, inout targetFragment : Fragment)
+                this.context = context;
+                this.targetFragment = targetFragment;
+!!!381826.java!!!	doInBackground(inout  : String...aliases) : Void
+                try {
+                    final KeyChainConnection conn = KeyChain.bind(getContext());
+                    try {
+                        IKeyChainService keyChain = conn.getService();
+                        for (String alias : aliases) {
+                            keyChain.removeKeyPair(alias);
+                        }
+                    } catch (RemoteException e) {
+                        Log.w(TAG, "Removing credentials", e);
+                    } finally {
+                        conn.close();
+                    }
+                } catch (InterruptedException e) {
+                    Log.w(TAG, "Connecting to keychain", e);
+                }
+                return null;
+!!!381954.java!!!	onPostExecute(inout result : Void) : void
+                if (targetFragment instanceof UserCredentialsSettings) {
+                    ((UserCredentialsSettings) targetFragment).refreshItems();
+                }

@@ -1,0 +1,260 @@
+class VpnTests
+!!!1042178.java!!!	setUp() : void
+        super.setUp();
+        InputStream in = null;
+        InstrumentationTestRunner mRunner = (InstrumentationTestRunner)getInstrumentation();
+        mContext = mRunner.getContext();
+        Bundle arguments = mRunner.getArguments();
+        String PROFILE_NAME = arguments.getString("profile");
+        Assert.assertNotNull("Push profile to external storage and load with"
+                + "'-e profile <filename>'", PROFILE_NAME);
+        File profileFile = new File(Environment.getExternalStorageDirectory(), PROFILE_NAME);
+        in = new FileInputStream(profileFile);
+        mVpnInfoPool = VpnProfileParser.parse(in);
+        Assert.assertNotNull("no VPN profiles are parsed", mVpnInfoPool);
+        if (DEBUG) {
+            Log.v(TAG, "print out the vpn profiles");
+            for (Map.Entry<Integer, VpnInfo> profileEntrySet: mVpnInfoPool.entrySet()) {
+                VpnInfo vpnInfo = profileEntrySet.getValue();
+                printVpnProfile(vpnInfo.getVpnProfile());
+                if (vpnInfo.getCertificateFile() != null) {
+                    Log.d(TAG, "certificate file for this vpn is " + vpnInfo.getCertificateFile());
+                }
+                if (vpnInfo.getPassword() != null) {
+                    Log.d(TAG, "password for the certificate file is: " + vpnInfo.getPassword());
+                }
+            }
+        }
+        // disconnect existing vpn if there is any
+        LegacyVpnInfo oldVpn = mService.getLegacyVpnInfo(UserHandle.myUserId());
+        if (oldVpn != null) {
+            Log.v(TAG, "disconnect legacy VPN");
+            disconnect();
+            // wait till the legacy VPN is disconnected.
+            int tries = 0;
+            while (tries < MAX_DISCONNECTION_TRIES &&
+                    mService.getLegacyVpnInfo(UserHandle.myUserId()) != null) {
+                tries++;
+                Thread.sleep(10 * 1000);
+                Log.v(TAG, "Wait for legacy VPN to be disconnected.");
+            }
+            Assert.assertNull("Failed to disconect VPN",
+                    mService.getLegacyVpnInfo(UserHandle.myUserId()));
+            // wait for 30 seconds after the previous VPN is disconnected.
+            sleep(30 * 1000);
+        }
+        // Create CertInstallerHelper to initialize the keystore
+        mCertHelper = new CertInstallerHelper();
+!!!1042306.java!!!	tearDown() : void
+        sleep(VPN_STAY_TIME);
+        super.tearDown();
+!!!1042434.java!!!	printVpnProfile(inout profile : VpnProfile) : void
+        Log.v(TAG, "profile: ");
+        Log.v(TAG, "key: " + profile.key);
+        Log.v(TAG, "name: " + profile.name);
+        Log.v(TAG, "type: " + profile.type);
+        Log.v(TAG, "server: " + profile.server);
+        Log.v(TAG, "username: " + profile.username);
+        Log.v(TAG, "password: " + profile.password);
+        Log.v(TAG, "dnsServers: " + profile.dnsServers);
+        Log.v(TAG, "searchDomains: " + profile.searchDomains);
+        Log.v(TAG, "routes: " + profile.routes);
+        Log.v(TAG, "mppe: " + profile.mppe);
+        Log.v(TAG, "l2tpSecret: " + profile.l2tpSecret);
+        Log.v(TAG, "ipsecIdentifier: " + profile.ipsecIdentifier);
+        Log.v(TAG, "ipsecSecret: " + profile.ipsecSecret);
+        Log.v(TAG, "ipsecUserCert: " + profile.ipsecUserCert);
+        Log.v(TAG, "ipsecCaCert: " + profile.ipsecCaCert);
+        Log.v(TAG, "ipsecServerCert: " + profile.ipsecServerCert);
+!!!1042562.java!!!	printKeyStore(inout profile : VpnProfile) : void
+        // print out the information from keystore
+        String privateKey = "";
+        String userCert = "";
+        String caCert = "";
+        String serverCert = "";
+        if (!profile.ipsecUserCert.isEmpty()) {
+            privateKey = Credentials.USER_PRIVATE_KEY + profile.ipsecUserCert;
+            byte[] value = mKeyStore.get(Credentials.USER_CERTIFICATE + profile.ipsecUserCert);
+            userCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+        }
+        if (!profile.ipsecCaCert.isEmpty()) {
+            byte[] value = mKeyStore.get(Credentials.CA_CERTIFICATE + profile.ipsecCaCert);
+            caCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+        }
+        if (!profile.ipsecServerCert.isEmpty()) {
+            byte[] value = mKeyStore.get(Credentials.USER_CERTIFICATE + profile.ipsecServerCert);
+            serverCert = (value == null) ? null : new String(value, StandardCharsets.UTF_8);
+        }
+        Log.v(TAG, "privateKey: \n" + ((privateKey == null) ? "" : privateKey));
+        Log.v(TAG, "userCert: \n" + ((userCert == null) ? "" : userCert));
+        Log.v(TAG, "caCert: \n" + ((caCert == null) ? "" : caCert));
+        Log.v(TAG, "serverCert: \n" + ((serverCert == null) ? "" : serverCert));
+!!!1042690.java!!!	connect(inout profile : VpnProfile) : void
+        try {
+            mService.startLegacyVpn(profile);
+        } catch (IllegalStateException e) {
+            fail(String.format("start legacy vpn: %s failed: %s", profile.name, e.toString()));
+        }
+!!!1042818.java!!!	disconnect() : void
+        try {
+            mService.prepareVpn(VpnConfig.LEGACY_VPN, VpnConfig.LEGACY_VPN, UserHandle.myUserId());
+        } catch (RemoteException e) {
+            Log.e(TAG, String.format("disconnect VPN exception: %s", e.toString()));
+        }
+!!!1042946.java!!!	getIpAddress() : String
+        String ip = null;
+        HttpURLConnection urlConnection = null;
+        // TODO: Rewrite this test to use an HTTPS URL.
+        // Because this test uses cleartext HTTP, the network security policy of this app needs to
+        // be temporarily relaxed to permit such traffic.
+        NetworkSecurityPolicy networkSecurityPolicy = NetworkSecurityPolicy.getInstance();
+        boolean cleartextTrafficPermittedBeforeTest =
+                networkSecurityPolicy.isCleartextTrafficPermitted();
+        networkSecurityPolicy.setCleartextTrafficPermitted(true);
+        try {
+            URL url = new URL(EXTERNAL_SERVER);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            Log.i(TAG, "Response from httpget: " + urlConnection.getResponseCode());
+
+            InputStream is = urlConnection.getInputStream();
+            String response;
+            try {
+                response = new String(Streams.readFully(is), StandardCharsets.UTF_8);
+            } finally {
+                is.close();
+            }
+
+            JSONObject json_data = new JSONObject(response);
+            ip = json_data.getString("ip");
+            Log.v(TAG, "json_data: " + ip);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "exception while getting external IP: " + e.toString());
+        } catch (IOException e) {
+            Log.e(TAG, "IOException while getting IP: " + e.toString());
+        } catch (JSONException e) {
+            Log.e(TAG, "exception while creating JSONObject: " + e.toString());
+        } finally {
+            networkSecurityPolicy.setCleartextTrafficPermitted(cleartextTrafficPermittedBeforeTest);
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+        }
+        return ip;
+!!!1043074.java!!!	validateVpnConnection(inout profile : VpnProfile) : void
+        validateVpnConnection(profile, false);
+!!!1043202.java!!!	validateVpnConnection(inout profile : VpnProfile, inout pingTestFlag : boolean) : void
+        LegacyVpnInfo legacyVpnInfo = mService.getLegacyVpnInfo(UserHandle.myUserId());
+        Assert.assertTrue(legacyVpnInfo != null);
+
+        long start = System.currentTimeMillis();
+        while (((System.currentTimeMillis() - start)  < MAX_CONNECTION_TIME) &&
+                (legacyVpnInfo.state != LegacyVpnInfo.STATE_CONNECTED)) {
+            Log.v(TAG, "vpn state: " + legacyVpnInfo.state);
+            sleep(10 * 1000);
+            legacyVpnInfo = mService.getLegacyVpnInfo(UserHandle.myUserId());
+        }
+
+        // the vpn state should be CONNECTED
+        Assert.assertTrue(legacyVpnInfo.state == LegacyVpnInfo.STATE_CONNECTED);
+        if (pingTestFlag) {
+            Assert.assertTrue(pingTest(profile.server));
+        } else {
+            String curIpAddress = getIpAddress();
+            // the outgoing IP address should be the same as the VPN server address
+            Assert.assertEquals(profile.server, curIpAddress);
+        }
+!!!1043330.java!!!	pingTest(in server : String) : boolean
+        final long PING_TIMER = 3 * 60 * 1000; // 3 minutes
+        if (server == null || server.isEmpty()) {
+            return false;
+        }
+        long startTime = System.currentTimeMillis();
+        while ((System.currentTimeMillis() - startTime) < PING_TIMER) {
+            try {
+                Log.v(TAG, "Start ping test, ping " + server);
+                Process p = Runtime.getRuntime().exec("ping -c 10 -w 100 " + server);
+                int status = p.waitFor();
+                if (status == 0) {
+                    // if any of the ping test is successful, return true
+                    return true;
+                }
+            } catch (UnknownHostException e) {
+                Log.e(TAG, "Ping test Fail: Unknown Host");
+            } catch (IOException e) {
+                Log.e(TAG, "Ping test Fail:  IOException");
+            } catch (InterruptedException e) {
+                Log.e(TAG, "Ping test Fail: InterruptedException");
+            }
+        }
+        // ping test timeout
+        return false;
+!!!1043458.java!!!	installCertificatesFromFile(inout profile : VpnProfile, in fileName : String, in password : String) : void
+        if (profile == null || fileName == null || password == null) {
+            throw new Exception ("vpn profile, certificate file name and password can not be null");
+        }
+
+        int curUid = mContext.getUserId();
+        mCertHelper.installCertificate(profile, fileName, password);
+
+        if (DEBUG) {
+            printKeyStore(profile);
+        }
+!!!1043586.java!!!	sleep(in time : long) : void
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "interrupted: " + e.toString());
+        }
+!!!1043714.java!!!	testPPTPConnection() : void
+        mPreviousIpAddress = getIpAddress();
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_PPTP);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile);
+!!!1043842.java!!!	testL2tpIpsecPskConnection() : void
+        mPreviousIpAddress = getIpAddress();
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_L2TP_IPSEC_PSK);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile);
+!!!1043970.java!!!	testL2tpIpsecRsaConnection() : void
+        mPreviousIpAddress = getIpAddress();
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_L2TP_IPSEC_RSA);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        if (DEBUG) {
+            printVpnProfile(vpnProfile);
+        }
+        String certFile = curVpnInfo.getCertificateFile();
+        String password = curVpnInfo.getPassword();
+        installCertificatesFromFile(vpnProfile, certFile, password);
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile);
+!!!1044098.java!!!	testIpsecXauthRsaConnection() : void
+        mPreviousIpAddress = getIpAddress();
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_IPSEC_XAUTH_RSA);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        if (DEBUG) {
+            printVpnProfile(vpnProfile);
+        }
+        String certFile = curVpnInfo.getCertificateFile();
+        String password = curVpnInfo.getPassword();
+        installCertificatesFromFile(vpnProfile, certFile, password);
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile);
+!!!1044226.java!!!	testIpsecXauthPskConnection() : void
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_IPSEC_XAUTH_PSK);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        if (DEBUG) {
+            printVpnProfile(vpnProfile);
+        }
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile, true);
+!!!1044354.java!!!	testIpsecHybridRsaConnection() : void
+        mPreviousIpAddress = getIpAddress();
+        VpnInfo curVpnInfo = mVpnInfoPool.get(VpnProfile.TYPE_IPSEC_HYBRID_RSA);
+        VpnProfile vpnProfile = curVpnInfo.getVpnProfile();
+        if (DEBUG) {
+            printVpnProfile(vpnProfile);
+        }
+        connect(vpnProfile);
+        validateVpnConnection(vpnProfile);

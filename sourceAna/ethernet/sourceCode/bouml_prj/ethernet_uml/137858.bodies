@@ -1,0 +1,64 @@
+class LinkQualityInfo
+!!!208514.java!!!	LinkQualityInfo()
+
+!!!208642.java!!!	describeContents() : int
+        return 0;
+!!!208770.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        writeToParcel(dest, flags, OBJECT_TYPE_LINK_QUALITY_INFO);
+!!!208898.java!!!	writeToParcel(inout dest : Parcel, in flags : int, in objectType : int) : void
+        dest.writeInt(objectType);
+        dest.writeInt(mNetworkType);
+        dest.writeInt(mNormalizedSignalStrength);
+        dest.writeLong(mPacketCount);
+        dest.writeLong(mPacketErrorCount);
+        dest.writeInt(mTheoreticalTxBandwidth);
+        dest.writeInt(mTheoreticalRxBandwidth);
+        dest.writeInt(mTheoreticalLatency);
+        dest.writeLong(mLastDataSampleTime);
+        dest.writeInt(mDataSampleDuration);
+!!!209026.java!!!	initializeFromParcel(inout in : Parcel) : void
+        mNetworkType = in.readInt();
+        mNormalizedSignalStrength = in.readInt();
+        mPacketCount = in.readLong();
+        mPacketErrorCount = in.readLong();
+        mTheoreticalTxBandwidth = in.readInt();
+        mTheoreticalRxBandwidth = in.readInt();
+        mTheoreticalLatency = in.readInt();
+        mLastDataSampleTime = in.readLong();
+        mDataSampleDuration = in.readInt();
+!!!209154.java!!!	getNetworkType() : int
+        return mNetworkType;
+!!!209282.java!!!	setNetworkType(in networkType : int) : void
+        mNetworkType = networkType;
+!!!209410.java!!!	getNormalizedSignalStrength() : int
+        return mNormalizedSignalStrength;
+!!!209538.java!!!	setNormalizedSignalStrength(in normalizedSignalStrength : int) : void
+        mNormalizedSignalStrength = normalizedSignalStrength;
+!!!209666.java!!!	getPacketCount() : long
+        return mPacketCount;
+!!!209794.java!!!	setPacketCount(in packetCount : long) : void
+        mPacketCount = packetCount;
+!!!209922.java!!!	getPacketErrorCount() : long
+        return mPacketErrorCount;
+!!!210050.java!!!	setPacketErrorCount(in packetErrorCount : long) : void
+        mPacketErrorCount = packetErrorCount;
+!!!210178.java!!!	getTheoreticalTxBandwidth() : int
+        return mTheoreticalTxBandwidth;
+!!!210306.java!!!	setTheoreticalTxBandwidth(in theoreticalTxBandwidth : int) : void
+        mTheoreticalTxBandwidth = theoreticalTxBandwidth;
+!!!210434.java!!!	getTheoreticalRxBandwidth() : int
+        return mTheoreticalRxBandwidth;
+!!!210562.java!!!	setTheoreticalRxBandwidth(in theoreticalRxBandwidth : int) : void
+        mTheoreticalRxBandwidth = theoreticalRxBandwidth;
+!!!210690.java!!!	getTheoreticalLatency() : int
+        return mTheoreticalLatency;
+!!!210818.java!!!	setTheoreticalLatency(in theoreticalLatency : int) : void
+        mTheoreticalLatency = theoreticalLatency;
+!!!210946.java!!!	getLastDataSampleTime() : long
+        return mLastDataSampleTime;
+!!!211074.java!!!	setLastDataSampleTime(in lastDataSampleTime : long) : void
+        mLastDataSampleTime = lastDataSampleTime;
+!!!211202.java!!!	getDataSampleDuration() : int
+        return mDataSampleDuration;
+!!!211330.java!!!	setDataSampleDuration(in dataSampleDuration : int) : void
+        mDataSampleDuration = dataSampleDuration;

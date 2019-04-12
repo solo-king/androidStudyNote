@@ -1,0 +1,3 @@
+class FactoryNotFoundException
+!!!849538.java!!!	FactoryNotFoundException(inout throwable : Throwable)
+            super("Unable to create factory. Did you misconfigure Proguard?", throwable);

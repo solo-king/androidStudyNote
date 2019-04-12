@@ -1,0 +1,10 @@
+class PendingStartAnimator
+!!!965378.java!!!	PendingStartAnimator(inout predicate : DotsPageIndicator::StartPredicate)
+            super();
+            this.predicate = predicate;
+            hasStarted = false;
+!!!965506.java!!!	startIfNecessary(in currentValue : float) : void
+            if (!hasStarted && predicate.shouldStart(currentValue)) {
+                start();
+                hasStarted = true;
+            }

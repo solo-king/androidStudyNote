@@ -1,0 +1,62 @@
+class BinderProxy
+!!!142564.java!!!	queryLocalInterface(in descriptor : String) : IInterface
+        return null;
+!!!142692.java!!!	transact(in code : int, inout data : Parcel, inout reply : Parcel, in flags : int) : boolean
+        Binder.checkParcel(this, code, data, "Unreasonably large binder buffer");
+        if (Binder.isTracingEnabled()) { Binder.getTransactionTracker().addTrace(); }
+        return transactNative(code, data, reply, flags);
+!!!143332.java!!!	dump(inout fd : FileDescriptor, inout args : String [[]]) : void
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeFileDescriptor(fd);
+        data.writeStringArray(args);
+        try {
+            transact(DUMP_TRANSACTION, data, reply, 0);
+            reply.readException();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+!!!143460.java!!!	dumpAsync(inout fd : FileDescriptor, inout args : String [[]]) : void
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeFileDescriptor(fd);
+        data.writeStringArray(args);
+        try {
+            transact(DUMP_TRANSACTION, data, reply, FLAG_ONEWAY);
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+!!!143588.java!!!	shellCommand(inout in : FileDescriptor, inout out : FileDescriptor, inout err : FileDescriptor, inout args : String [[]], inout resultReceiver : ResultReceiver) : void
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeFileDescriptor(in);
+        data.writeFileDescriptor(out);
+        data.writeFileDescriptor(err);
+        data.writeStringArray(args);
+        resultReceiver.writeToParcel(data, 0);
+        try {
+            transact(SHELL_COMMAND_TRANSACTION, data, reply, 0);
+            reply.readException();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+!!!143716.java!!!	BinderProxy()
+        mSelf = new WeakReference(this);
+!!!143844.java!!!	finalize() : void
+        try {
+            destroy();
+        } finally {
+            super.finalize();
+        }
+!!!144100.java!!!	sendDeathNotice(inout recipient : IBinder::DeathRecipient) : void
+        if (false) Log.v("JavaBinder", "sendDeathNotice to " + recipient);
+        try {
+            recipient.binderDied();
+        }
+        catch (RuntimeException exc) {
+            Log.w("BinderNative", "Uncaught exception from death notification",
+                    exc);
+        }

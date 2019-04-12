@@ -1,0 +1,26 @@
+class SoundSettingsIntegrationTest
+!!!1038082.java!!!	soundPreferenceShowsCorrectSummaryOnSilentMode() : void
+        mAudioManager = (AudioManager) mActivityRule.getActivity().getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+        onView(withId(R.id.dashboard_container))
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText(R.string.sound_settings))));
+        onView(withText(R.string.sound_settings_summary_silent)).check(matches(isDisplayed()));
+!!!1038210.java!!!	soundPreferenceShowsCorrectSummaryOnVibrateMode() : void
+        mAudioManager = (AudioManager) mActivityRule.getActivity().getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+        onView(withId(R.id.dashboard_container)).perform(RecyclerViewActions
+                .scrollTo(hasDescendant(withText(R.string.sound_settings))));
+        onView(withText(R.string.sound_settings_summary_vibrate)).check(matches(isDisplayed()));
+!!!1038338.java!!!	soundPreferenceShowsCorrectSummaryOnMaxVolume() : void
+        mAudioManager = (AudioManager) mActivityRule.getActivity().getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+        mAudioManager.setStreamVolume(AudioManager.STREAM_RING,
+                mAudioManager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+        onView(withId(R.id.dashboard_container))
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText(R.string.sound_settings))));
+        onView(withText(containsString(TRUNCATED_SUMMARY))).check(matches(isDisplayed()));

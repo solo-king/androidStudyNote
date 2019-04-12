@@ -1,0 +1,15 @@
+class VpnUtils
+!!!938114.java!!!	getLockdownVpn() : String
+        final byte[] value = KeyStore.getInstance().get(Credentials.LOCKDOWN_VPN);
+        return value == null ? null : new String(value);
+!!!938242.java!!!	clearLockdownVpn(inout context : Context) : void
+        KeyStore.getInstance().delete(Credentials.LOCKDOWN_VPN);
+        // Always notify ConnectivityManager after keystore update
+        context.getSystemService(ConnectivityManager.class).updateLockdownVpn();
+!!!938370.java!!!	setLockdownVpn(inout context : Context, in lockdownKey : String) : void
+        KeyStore.getInstance().put(Credentials.LOCKDOWN_VPN, lockdownKey.getBytes(),
+                KeyStore.UID_SELF, /* flags */ 0);
+        // Always notify ConnectivityManager after keystore update
+        context.getSystemService(ConnectivityManager.class).updateLockdownVpn();
+!!!938498.java!!!	isVpnLockdown(in key : String) : boolean
+        return key.equals(getLockdownVpn());

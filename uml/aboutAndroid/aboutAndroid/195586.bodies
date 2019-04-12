@@ -1,0 +1,45 @@
+class AccessibilitySettingsForSetupWizardActivity
+!!!405890.java!!!	onCreate(inout savedState : Bundle) : void
+        super.onCreate(savedState);
+
+        // Finish configuring the content view.
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        setIsDrawerPresent(false);
+!!!406018.java!!!	onSaveInstanceState(inout savedState : Bundle) : void
+        savedState.putCharSequence(SAVE_KEY_TITLE, getTitle());
+        super.onSaveInstanceState(savedState);
+!!!406146.java!!!	onRestoreInstanceState(inout savedState : Bundle) : void
+        super.onRestoreInstanceState(savedState);
+        setTitle(savedState.getCharSequence(SAVE_KEY_TITLE));
+!!!406274.java!!!	onResume() : void
+        super.onResume();
+        mSendExtraWindowStateChanged = false;
+!!!406402.java!!!	onCreateOptionsMenu(inout menu : Menu) : boolean
+        // Return true, so we get notified when items in the menu are clicked.
+        return true;
+!!!406530.java!!!	onNavigateUp() : boolean
+        onBackPressed();
+
+        // Clear accessibility focus and let the screen reader announce the new title.
+        getWindow().getDecorView()
+                .sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+
+        return true;
+!!!406658.java!!!	startPreferencePanel(in fragmentClass : String, inout args : Bundle, in titleRes : int, inout titleText : CharSequence, inout resultTo : Fragment, in resultRequestCode : int) : void
+        // Set the title.
+        if (!TextUtils.isEmpty(titleText)) {
+            setTitle(titleText);
+        } else if (titleRes > 0) {
+            setTitle(getString(titleRes));
+        }
+
+        // Start the new Fragment.
+        args.putInt(SettingsPreferenceFragment.HELP_URI_RESOURCE_KEY, 0);
+        startPreferenceFragment(Fragment.instantiate(this, fragmentClass, args), true);
+        mSendExtraWindowStateChanged = true;
+!!!406786.java!!!	onAttachFragment(inout fragment : Fragment) : void
+        if (mSendExtraWindowStateChanged) {
+            // Clear accessibility focus and let the screen reader announce the new title.
+            getWindow().getDecorView()
+                    .sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
+        }

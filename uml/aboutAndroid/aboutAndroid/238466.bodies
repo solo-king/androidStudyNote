@@ -1,0 +1,22 @@
+class UnmountTask
+!!!662274.java!!!	UnmountTask(inout context : Context, inout volume : VolumeInfo)
+            mContext = context.getApplicationContext();
+            mStorageManager = mContext.getSystemService(StorageManager.class);
+            mVolumeId = volume.getId();
+            mDescription = mStorageManager.getBestVolumeDescription(volume);
+!!!662402.java!!!	doInBackground(inout  : Void...params) : Exception
+            try {
+                mStorageManager.unmount(mVolumeId);
+                return null;
+            } catch (Exception e) {
+                return e;
+            }
+!!!662530.java!!!	onPostExecute(inout e : Exception) : void
+            if (e == null) {
+                Toast.makeText(mContext, mContext.getString(R.string.storage_unmount_success,
+                        mDescription), Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e(TAG, "Failed to unmount " + mVolumeId, e);
+                Toast.makeText(mContext, mContext.getString(R.string.storage_unmount_failure,
+                        mDescription), Toast.LENGTH_SHORT).show();
+            }

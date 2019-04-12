@@ -1,0 +1,95 @@
+class AutomaticStorageManagerSettings
+!!!644482.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.automatic_storage_management_settings);
+!!!644610.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        mDaysToRetain = (DropDownPreference) findPreference(KEY_DAYS);
+        mDaysToRetain.setOnPreferenceChangeListener(this);
+
+        mFreedBytes = findPreference(KEY_FREED);
+
+        mDeletionHelper = findPreference(KEY_DELETION_HELPER);
+        mDeletionHelper.setOnPreferenceClickListener(this);
+
+        mStorageManagerSwitch = (SwitchPreference) findPreference(KEY_STORAGE_MANAGER_SWITCH);
+        mStorageManagerSwitch.setOnPreferenceChangeListener(this);
+
+        ContentResolver cr = getContentResolver();
+        int value = Settings.Secure.getInt(cr,
+                Settings.Secure.AUTOMATIC_STORAGE_MANAGER_DAYS_TO_RETAIN,
+                Settings.Secure.AUTOMATIC_STORAGE_MANAGER_DAYS_TO_RETAIN_DEFAULT);
+        String[] stringValues =
+                getResources().getStringArray(R.array.automatic_storage_management_days_values);
+        mDaysToRetain.setValue(stringValues[daysValueToIndex(value, stringValues)]);
+
+        long freedBytes = Settings.Secure.getLong(cr,
+                Settings.Secure.AUTOMATIC_STORAGE_MANAGER_BYTES_CLEARED,
+                0);
+        long lastRunMillis = Settings.Secure.getLong(cr,
+                Settings.Secure.AUTOMATIC_STORAGE_MANAGER_LAST_RUN,
+                0);
+        if (freedBytes == 0 || lastRunMillis == 0) {
+            mFreedBytes.setVisible(false);
+        } else {
+            Activity activity = getActivity();
+            mFreedBytes.setSummary(activity.getString(
+                    R.string.automatic_storage_manager_freed_bytes,
+                    Formatter.formatFileSize(activity, freedBytes),
+                    DateUtils.formatDateTime(activity, lastRunMillis, DateUtils.FORMAT_SHOW_DATE)));
+        }
+!!!644738.java!!!	onResume() : void
+        super.onResume();
+        boolean isChecked =
+                Settings.Secure.getInt(getContentResolver(),
+                        Settings.Secure.AUTOMATIC_STORAGE_MANAGER_ENABLED, 0) != 0;
+        mStorageManagerSwitch.setChecked(isChecked);
+        mDaysToRetain.setEnabled(isChecked);
+!!!644866.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        switch (preference.getKey()) {
+            case KEY_STORAGE_MANAGER_SWITCH:
+                boolean checked = (boolean) newValue;
+                MetricsLogger.action(getContext(), MetricsEvent.ACTION_TOGGLE_STORAGE_MANAGER,
+                        checked);
+                mDaysToRetain.setEnabled(checked);
+                Settings.Secure.putInt(getContentResolver(),
+                        Settings.Secure.AUTOMATIC_STORAGE_MANAGER_ENABLED, checked ? 1 : 0);
+                // Only show a warning if enabling.
+                if (checked) {
+                    maybeShowWarning();
+                }
+                break;
+            case KEY_DAYS:
+                Settings.Secure.putInt(getContentResolver(),
+                        Settings.Secure.AUTOMATIC_STORAGE_MANAGER_DAYS_TO_RETAIN,
+                        Integer.parseInt((String) newValue));
+                break;
+        }
+        return true;
+!!!644994.java!!!	getMetricsCategory() : int
+        return MetricsEvent.STORAGE_MANAGER_SETTINGS;
+!!!645122.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        if (KEY_DELETION_HELPER.equals(preference.getKey())) {
+            Intent intent = new Intent(StorageManager.ACTION_MANAGE_STORAGE);
+            getContext().startActivity(intent);
+        }
+        return true;
+!!!645250.java!!!	getHelpResource() : int
+        return R.string.help_uri_storage;
+!!!645378.java!!!	daysValueToIndex(in value : int, inout indices : String) : int
+        for (int i = 0; i < indices.length; i++) {
+            int thisValue = Integer.parseInt(indices[i]);
+            if (value == thisValue) {
+                return i;
+            }
+        }
+        return indices.length - 1;
+!!!645506.java!!!	maybeShowWarning() : void
+        // If the storage manager is on by default, we can use the normal message.
+        boolean warningUnneeded = SystemProperties.getBoolean(
+                STORAGE_MANAGER_ENABLED_BY_DEFAULT_PROPERTY, false);
+        if (warningUnneeded) {
+            return;
+        }
+        ActivationWarningFragment fragment = ActivationWarningFragment.newInstance();
+        fragment.show(getFragmentManager(), ActivationWarningFragment.TAG);

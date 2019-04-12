@@ -1,0 +1,316 @@
+class DataUsageList
+!!!631426.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DATA_USAGE_LIST;
+!!!631554.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        final Context context = getActivity();
+
+        if (!isBandwidthControlEnabled()) {
+            Log.w(TAG, "No bandwidth control; leaving");
+            getActivity().finish();
+        }
+
+        try {
+            mStatsSession = services.mStatsService.openSession();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+        mUidDetailProvider = new UidDetailProvider(context);
+
+        addPreferencesFromResource(R.xml.data_usage_list);
+        mUsageAmount = findPreference(KEY_USAGE_AMOUNT);
+        mChart = (ChartDataUsagePreference) findPreference(KEY_CHART_DATA);
+        mApps = (PreferenceGroup) findPreference(KEY_APPS_GROUP);
+
+        final Bundle args = getArguments();
+        mSubId = args.getInt(EXTRA_SUB_ID, SubscriptionManager.INVALID_SUBSCRIPTION_ID);
+        mTemplate = args.getParcelable(EXTRA_NETWORK_TEMPLATE);
+!!!631682.java!!!	onViewCreated(inout v : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(v, savedInstanceState);
+
+        mHeader = setPinnedHeaderView(R.layout.apps_filter_spinner);
+        mCycleSpinner = (Spinner) mHeader.findViewById(R.id.filter_spinner);
+        mCycleAdapter = new CycleAdapter(getContext(), new CycleAdapter.SpinnerInterface() {
+            @Override
+            public void setAdapter(CycleAdapter cycleAdapter) {
+                mCycleSpinner.setAdapter(cycleAdapter);
+            }
+
+            @Override
+            public void setOnItemSelectedListener(OnItemSelectedListener listener) {
+                mCycleSpinner.setOnItemSelectedListener(listener);
+            }
+
+            @Override
+            public Object getSelectedItem() {
+                return mCycleSpinner.getSelectedItem();
+            }
+
+            @Override
+            public void setSelection(int position) {
+                mCycleSpinner.setSelection(position);
+            }
+        }, mCycleListener, true);
+        setLoading(true, false);
+!!!631810.java!!!	onResume() : void
+        super.onResume();
+
+        updateBody();
+
+        // kick off background task to update stats
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    // wait a few seconds before kicking off
+                    Thread.sleep(2 * DateUtils.SECOND_IN_MILLIS);
+                    services.mStatsService.forceUpdate();
+                } catch (InterruptedException e) {
+                } catch (RemoteException e) {
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if (isAdded()) {
+                    updateBody();
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+!!!631938.java!!!	onDestroy() : void
+        mUidDetailProvider.clearCache();
+        mUidDetailProvider = null;
+
+        TrafficStats.closeQuietly(mStatsSession);
+
+        super.onDestroy();
+!!!632066.java!!!	updateBody() : void
+        mBinding = true;
+        if (!isAdded()) return;
+
+        final Context context = getActivity();
+
+        // kick off loader for network history
+        // TODO: consider chaining two loaders together instead of reloading
+        // network history when showing app detail.
+        getLoaderManager().restartLoader(LOADER_CHART_DATA,
+                ChartDataLoader.buildArgs(mTemplate, null), mChartDataCallbacks);
+
+        // detail mode can change visible menus, invalidate
+        getActivity().invalidateOptionsMenu();
+
+        mBinding = false;
+
+        int seriesColor = context.getColor(R.color.sim_noitification);
+        if (mSubId != SubscriptionManager.INVALID_SUBSCRIPTION_ID){
+            final SubscriptionInfo sir = services.mSubscriptionManager
+                    .getActiveSubscriptionInfo(mSubId);
+
+            if (sir != null) {
+                seriesColor = sir.getIconTint();
+            }
+        }
+
+        final int secondaryColor = Color.argb(127, Color.red(seriesColor), Color.green(seriesColor),
+                Color.blue(seriesColor));
+        mChart.setColors(seriesColor, secondaryColor);
+!!!632194.java!!!	updatePolicy(inout refreshCycle : boolean) : void
+        final NetworkPolicy policy = services.mPolicyEditor.getPolicy(mTemplate);
+        //SUB SELECT
+        if (isNetworkPolicyModifiable(policy, mSubId) && isMobileDataAvailable(mSubId)) {
+            mChart.setNetworkPolicy(policy);
+            mHeader.findViewById(R.id.filter_settings).setVisibility(View.VISIBLE);
+            mHeader.findViewById(R.id.filter_settings).setOnClickListener(
+                    new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle args = new Bundle();
+                    args.putParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE, mTemplate);
+                    startFragment(DataUsageList.this, BillingCycleSettings.class.getName(),
+                            R.string.billing_cycle, 0, args);
+                }
+            });
+        } else {
+            // controls are disabled; don't bind warning/limit sweeps
+            mChart.setNetworkPolicy(null);
+            mHeader.findViewById(R.id.filter_settings).setVisibility(View.GONE);
+        }
+
+        if (refreshCycle) {
+            // generate cycle list based on policy and available history
+            if (mCycleAdapter.updateCycleList(policy, mChartData)) {
+                updateDetailData();
+            }
+        }
+!!!632322.java!!!	updateDetailData() : void
+        if (LOGD) Log.d(TAG, "updateDetailData()");
+
+        final long start = mChart.getInspectStart();
+        final long end = mChart.getInspectEnd();
+        final long now = System.currentTimeMillis();
+
+        final Context context = getActivity();
+
+        NetworkStatsHistory.Entry entry = null;
+        if (mChartData != null) {
+            entry = mChartData.network.getValues(start, end, now, null);
+        }
+
+        // kick off loader for detailed stats
+        getLoaderManager().restartLoader(LOADER_SUMMARY,
+                SummaryForAllUidLoader.buildArgs(mTemplate, start, end), mSummaryCallbacks);
+
+        final long totalBytes = entry != null ? entry.rxBytes + entry.txBytes : 0;
+        final String totalPhrase = Formatter.formatFileSize(context, totalBytes);
+        mUsageAmount.setTitle(getString(R.string.data_used_template, totalPhrase));
+!!!632450.java!!!	bindStats(inout stats : NetworkStats, inout restrictedUids : int) : void
+        ArrayList<AppItem> items = new ArrayList<>();
+        long largest = 0;
+
+        final int currentUserId = ActivityManager.getCurrentUser();
+        UserManager userManager = UserManager.get(getContext());
+        final List<UserHandle> profiles = userManager.getUserProfiles();
+        final SparseArray<AppItem> knownItems = new SparseArray<AppItem>();
+
+        NetworkStats.Entry entry = null;
+        final int size = stats != null ? stats.size() : 0;
+        for (int i = 0; i < size; i++) {
+            entry = stats.getValues(i, entry);
+
+            // Decide how to collapse items together
+            final int uid = entry.uid;
+
+            final int collapseKey;
+            final int category;
+            final int userId = UserHandle.getUserId(uid);
+            if (UserHandle.isApp(uid)) {
+                if (profiles.contains(new UserHandle(userId))) {
+                    if (userId != currentUserId) {
+                        // Add to a managed user item.
+                        final int managedKey = UidDetailProvider.buildKeyForUser(userId);
+                        largest = accumulate(managedKey, knownItems, entry, AppItem.CATEGORY_USER,
+                                items, largest);
+                    }
+                    // Add to app item.
+                    collapseKey = uid;
+                    category = AppItem.CATEGORY_APP;
+                } else {
+                    // If it is a removed user add it to the removed users' key
+                    final UserInfo info = userManager.getUserInfo(userId);
+                    if (info == null) {
+                        collapseKey = UID_REMOVED;
+                        category = AppItem.CATEGORY_APP;
+                    } else {
+                        // Add to other user item.
+                        collapseKey = UidDetailProvider.buildKeyForUser(userId);
+                        category = AppItem.CATEGORY_USER;
+                    }
+                }
+            } else if (uid == UID_REMOVED || uid == UID_TETHERING) {
+                collapseKey = uid;
+                category = AppItem.CATEGORY_APP;
+            } else {
+                collapseKey = android.os.Process.SYSTEM_UID;
+                category = AppItem.CATEGORY_APP;
+            }
+            largest = accumulate(collapseKey, knownItems, entry, category, items, largest);
+        }
+
+        final int restrictedUidsMax = restrictedUids.length;
+        for (int i = 0; i < restrictedUidsMax; ++i) {
+            final int uid = restrictedUids[i];
+            // Only splice in restricted state for current user or managed users
+            if (!profiles.contains(new UserHandle(UserHandle.getUserId(uid)))) {
+                continue;
+            }
+
+            AppItem item = knownItems.get(uid);
+            if (item == null) {
+                item = new AppItem(uid);
+                item.total = -1;
+                items.add(item);
+                knownItems.put(item.key, item);
+            }
+            item.restricted = true;
+        }
+
+        Collections.sort(items);
+        mApps.removeAll();
+        for (int i = 0; i < items.size(); i++) {
+            final int percentTotal = largest != 0 ? (int) (items.get(i).total * 100 / largest) : 0;
+            AppDataUsagePreference preference = new AppDataUsagePreference(getContext(),
+                    items.get(i), percentTotal, mUidDetailProvider);
+            preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    AppDataUsagePreference pref = (AppDataUsagePreference) preference;
+                    AppItem item = pref.getItem();
+                    startAppDataUsage(item);
+                    return true;
+                }
+            });
+            mApps.addPreference(preference);
+        }
+!!!632578.java!!!	startAppDataUsage(inout item : AppItem) : void
+        Bundle args = new Bundle();
+        args.putParcelable(AppDataUsage.ARG_APP_ITEM, item);
+        args.putParcelable(AppDataUsage.ARG_NETWORK_TEMPLATE, mTemplate);
+        startFragment(this, AppDataUsage.class.getName(), R.string.app_data_usage, 0, args);
+!!!632706.java!!!	accumulate(in collapseKey : int, in knownItems : SparseArray<AppItem>, inout entry : NetworkStats.Entry, in itemCategory : int, inout items : ArrayList<AppItem>, in largest : long) : long
+        final int uid = entry.uid;
+        AppItem item = knownItems.get(collapseKey);
+        if (item == null) {
+            item = new AppItem(collapseKey);
+            item.category = itemCategory;
+            items.add(item);
+            knownItems.put(item.key, item);
+        }
+        item.addUid(uid);
+        item.total += entry.rxBytes + entry.txBytes;
+        return Math.max(largest, item.total);
+!!!632834.java!!!	hasReadyMobileRadio(inout context : Context) : boolean
+        if (TEST_RADIOS) {
+            return SystemProperties.get(TEST_RADIOS_PROP).contains("mobile");
+        }
+
+        final ConnectivityManager conn = ConnectivityManager.from(context);
+        final TelephonyManager tele = TelephonyManager.from(context);
+
+        final List<SubscriptionInfo> subInfoList =
+                SubscriptionManager.from(context).getActiveSubscriptionInfoList();
+        // No activated Subscriptions
+        if (subInfoList == null) {
+            if (LOGD) Log.d(TAG, "hasReadyMobileRadio: subInfoList=null");
+            return false;
+        }
+        // require both supported network and ready SIM
+        boolean isReady = true;
+        for (SubscriptionInfo subInfo : subInfoList) {
+            isReady = isReady & tele.getSimState(subInfo.getSimSlotIndex()) == SIM_STATE_READY;
+            if (LOGD) Log.d(TAG, "hasReadyMobileRadio: subInfo=" + subInfo);
+        }
+        boolean retVal = conn.isNetworkSupported(TYPE_MOBILE) && isReady;
+        if (LOGD) {
+            Log.d(TAG, "hasReadyMobileRadio:"
+                    + " conn.isNetworkSupported(TYPE_MOBILE)="
+                                            + conn.isNetworkSupported(TYPE_MOBILE)
+                    + " isReady=" + isReady);
+        }
+        return retVal;
+!!!632962.java!!!	hasReadyMobileRadio(inout context : Context, in subId : int) : boolean
+        if (TEST_RADIOS) {
+            return SystemProperties.get(TEST_RADIOS_PROP).contains("mobile");
+        }
+
+        final ConnectivityManager conn = ConnectivityManager.from(context);
+        final TelephonyManager tele = TelephonyManager.from(context);
+        final int slotId = SubscriptionManager.getSlotId(subId);
+        final boolean isReady = tele.getSimState(slotId) == SIM_STATE_READY;
+
+        boolean retVal =  conn.isNetworkSupported(TYPE_MOBILE) && isReady;
+        if (LOGD) Log.d(TAG, "hasReadyMobileRadio: subId=" + subId
+                + " conn.isNetworkSupported(TYPE_MOBILE)=" + conn.isNetworkSupported(TYPE_MOBILE)
+                + " isReady=" + isReady);
+        return retVal;

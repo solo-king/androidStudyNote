@@ -1,0 +1,6 @@
+class InsetBoundsDrawable
+!!!692482.java!!!	InsetBoundsDrawable(inout drawable : Drawable, in insetBoundsSides : int)
+        super(drawable);
+        mInsetBoundsSides = insetBoundsSides;
+!!!692610.java!!!	setBounds(in left : int, in top : int, in right : int, in bottom : int) : void
+        super.setBounds(left + mInsetBoundsSides, top, right - mInsetBoundsSides, bottom);

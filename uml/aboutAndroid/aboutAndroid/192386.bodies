@@ -1,0 +1,24 @@
+class AliasLoader
+!!!382082.java!!!	doInBackground(inout  : Void...params) : UserCredentialsSettings::Credential
+            // Create a list of names for credential sets, ordered by name.
+            SortedMap<String, Credential> credentials = new TreeMap<>();
+            KeyStore keyStore = KeyStore.getInstance();
+            for (final Credential.Type type : Credential.Type.values()) {
+                for (final String alias : keyStore.list(type.prefix)) {
+                    // Do not show work profile keys in user credentials
+                    if (alias.startsWith(LockPatternUtils.PROFILE_KEY_NAME_ENCRYPT) ||
+                            alias.startsWith(LockPatternUtils.PROFILE_KEY_NAME_DECRYPT)) {
+                        continue;
+                    }
+                    Credential c = credentials.get(alias);
+                    if (c == null) {
+                        credentials.put(alias, (c = new Credential(alias)));
+                    }
+                    c.storedTypes.add(type);
+                }
+            }
+            return credentials;
+!!!382210.java!!!	onPostExecute(inout credentials : SortedMap<String, Credential>) : void
+            // Convert the results to an array and present them using an ArrayAdapter.
+            mListView.setAdapter(new CredentialAdapter(getContext(), R.layout.user_credential,
+                    credentials.values().toArray(new Credential[0])));

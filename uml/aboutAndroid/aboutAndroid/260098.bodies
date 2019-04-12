@@ -1,0 +1,61 @@
+class Setting
+!!!792450.java!!!	Setting(inout setting : InjectedSetting, inout preference : Preference)
+            this.setting = setting;
+            this.preference = preference;
+!!!792578.java!!!	toString() : String
+            return "Setting{" +
+                    "setting=" + setting +
+                    ", preference=" + preference +
+                    '}';
+!!!792706.java!!!	equals(inout o : Object) : boolean
+            return this == o || o instanceof Setting && setting.equals(((Setting) o).setting);
+!!!792834.java!!!	hashCode() : int
+            return setting.hashCode();
+!!!792962.java!!!	startService() : void
+            final ActivityManager am = (ActivityManager)
+                    mContext.getSystemService(Context.ACTIVITY_SERVICE);
+            if (!am.isUserRunning(setting.mUserHandle.getIdentifier())) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Cannot start service as user "
+                            + setting.mUserHandle.getIdentifier() + " is not running");
+                }
+                return;
+            }
+            Handler handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    Bundle bundle = msg.getData();
+                    boolean enabled = bundle.getBoolean(SettingInjectorService.ENABLED_KEY, true);
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, setting + ": received " + msg + ", bundle: " + bundle);
+                    }
+                    preference.setSummary(null);
+                    preference.setEnabled(enabled);
+                    mHandler.sendMessage(
+                            mHandler.obtainMessage(WHAT_RECEIVED_STATUS, Setting.this));
+                }
+            };
+            Messenger messenger = new Messenger(handler);
+
+            Intent intent = setting.getServiceIntent();
+            intent.putExtra(SettingInjectorService.MESSENGER_KEY, messenger);
+
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, setting + ": sending update intent: " + intent
+                        + ", handler: " + handler);
+                startMillis = SystemClock.elapsedRealtime();
+            } else {
+                startMillis = 0;
+            }
+
+            // Start the service, making sure that this is attributed to the user associated with
+            // the setting rather than the system user.
+            mContext.startServiceAsUser(intent, setting.mUserHandle);
+!!!793090.java!!!	getElapsedTime() : long
+            long end = SystemClock.elapsedRealtime();
+            return end - startMillis;
+!!!793218.java!!!	maybeLogElapsedTime() : void
+            if (Log.isLoggable(TAG, Log.DEBUG) && startMillis != 0) {
+                long elapsed = getElapsedTime();
+                Log.d(TAG, this + " update took " + elapsed + " millis");
+            }

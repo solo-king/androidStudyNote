@@ -1,0 +1,14 @@
+class FilterComparison
+!!!742274.java!!!	FilterComparison(inout intent : Intent)
+            mIntent = intent;
+            mHashCode = intent.filterHashCode();
+!!!742402.java!!!	getIntent() : Intent
+            return mIntent;
+!!!742530.java!!!	equals(inout obj : Object) : boolean
+            if (obj instanceof FilterComparison) {
+                Intent other = ((FilterComparison)obj).mIntent;
+                return mIntent.filterEquals(other);
+            }
+            return false;
+!!!742658.java!!!	hashCode() : int
+            return mHashCode;

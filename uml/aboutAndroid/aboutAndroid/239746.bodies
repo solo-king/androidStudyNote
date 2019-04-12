@@ -1,0 +1,23 @@
+class SlowWarningFragment
+!!!667266.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final Context context = getActivity();
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            final StorageWizardFormatProgress target =
+                    (StorageWizardFormatProgress) getActivity();
+            final String descrip = target.getDiskDescription();
+            final String genericDescip = target.getGenericDiskDescription();
+            builder.setMessage(TextUtils.expandTemplate(getText(R.string.storage_wizard_slow_body),
+                    descrip, genericDescip));
+
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    final StorageWizardFormatProgress target =
+                            (StorageWizardFormatProgress) getActivity();
+                    target.onFormatFinished();
+                }
+            });
+
+            return builder.create();

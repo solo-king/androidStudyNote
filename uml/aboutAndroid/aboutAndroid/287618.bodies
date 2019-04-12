@@ -1,0 +1,67 @@
+class LabeledSeekBarExploreByTouchHelper
+!!!972674.java!!!	LabeledSeekBarExploreByTouchHelper(inout forView : LabeledSeekBar)
+            super(forView);
+            mIsLayoutRtl = forView.getResources().getConfiguration()
+                    .getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+!!!972802.java!!!	getVirtualViewAt(in x : float, in y : float) : int
+            return getVirtualViewIdIndexFromX(x);
+!!!972930.java!!!	getVisibleVirtualViews(inout list : List<Integer>) : void
+            for (int i = 0, c = LabeledSeekBar.this.getMax(); i <= c; ++i) {
+                list.add(i);
+            }
+!!!973058.java!!!	onPerformActionForVirtualView(in virtualViewId : int, in action : int, inout arguments : Bundle) : boolean
+            if (virtualViewId == ExploreByTouchHelper.HOST_ID) {
+                // Do nothing
+                return false;
+            }
+
+            switch (action) {
+                case AccessibilityNodeInfoCompat.ACTION_CLICK:
+                    LabeledSeekBar.this.setProgress(virtualViewId);
+                    sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_CLICKED);
+                    return true;
+                default:
+                    return false;
+            }
+!!!973186.java!!!	onPopulateNodeForVirtualView(in virtualViewId : int, inout node : AccessibilityNodeInfoCompat) : void
+            node.setClassName(RadioButton.class.getName());
+            node.setBoundsInParent(getBoundsInParentFromVirtualViewId(virtualViewId));
+            node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
+            node.setContentDescription(mLabels[virtualViewId]);
+            node.setClickable(true);
+            node.setCheckable(true);
+            node.setChecked(virtualViewId == LabeledSeekBar.this.getProgress());
+!!!973314.java!!!	onPopulateEventForVirtualView(in virtualViewId : int, inout event : AccessibilityEvent) : void
+            event.setClassName(RadioButton.class.getName());
+            event.setContentDescription(mLabels[virtualViewId]);
+            event.setChecked(virtualViewId == LabeledSeekBar.this.getProgress());
+!!!973442.java!!!	onPopulateNodeForHost(inout node : AccessibilityNodeInfoCompat) : void
+            node.setClassName(RadioGroup.class.getName());
+!!!973570.java!!!	onPopulateEventForHost(inout event : AccessibilityEvent) : void
+            event.setClassName(RadioGroup.class.getName());
+!!!973698.java!!!	getHalfVirtualViewWidth() : int
+            final int width = LabeledSeekBar.this.getWidth();
+            final int barWidth = width - LabeledSeekBar.this.getPaddingStart()
+                    - LabeledSeekBar.this.getPaddingEnd();
+            return Math.max(0, barWidth / (LabeledSeekBar.this.getMax() * 2));
+!!!973826.java!!!	getVirtualViewIdIndexFromX(in x : float) : int
+            int posBase = Math.max(0,
+                    ((int) x - LabeledSeekBar.this.getPaddingStart()) / getHalfVirtualViewWidth());
+            posBase = (posBase + 1) / 2;
+            return mIsLayoutRtl ? LabeledSeekBar.this.getMax() - posBase : posBase;
+!!!973954.java!!!	getBoundsInParentFromVirtualViewId(in virtualViewId : int) : Rect
+            final int updatedVirtualViewId = mIsLayoutRtl
+                    ? LabeledSeekBar.this.getMax() - virtualViewId : virtualViewId;
+            int left = (updatedVirtualViewId * 2 - 1) * getHalfVirtualViewWidth()
+                    + LabeledSeekBar.this.getPaddingStart();
+            int right = (updatedVirtualViewId * 2 + 1) * getHalfVirtualViewWidth()
+                    + LabeledSeekBar.this.getPaddingStart();
+
+            // Edge case
+            left = updatedVirtualViewId == 0 ? 0 : left;
+            right = updatedVirtualViewId == LabeledSeekBar.this.getMax()
+                    ? LabeledSeekBar.this.getWidth() : right;
+
+            final Rect r = new Rect();
+            r.set(left, 0, right, LabeledSeekBar.this.getHeight());
+            return r;

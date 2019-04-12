@@ -1,0 +1,35 @@
+class DashboardContainerFragment
+!!!578562.java!!!	getMetricsCategory() : int
+        return MetricsProto.MetricsEvent.DASHBOARD_CONTAINER;
+!!!578690.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+!!!578818.java!!!	onCreateView(inout inflater : LayoutInflater, inout parent : ViewGroup, inout savedInstanceState : Bundle) : View
+        final View content = inflater.inflate(R.layout.dashboard_container, parent, false);
+        mViewPager = (RtlCompatibleViewPager) content.findViewById(R.id.pager);
+        mPagerAdapter = new DashboardViewPagerAdapter(getContext(),
+                getChildFragmentManager(), mViewPager);
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(
+                new TabChangeListener((SettingsActivity) getActivity()));
+
+        // check if support tab needs to be selected
+        final String selectedTab = getArguments().
+            getString(EXTRA_SELECT_SETTINGS_TAB, ARG_SUMMARY_TAB);
+        if (TextUtils.equals(selectedTab, ARG_SUPPORT_TAB)) {
+            mViewPager.setCurrentItem(INDEX_SUPPORT_FRAGMENT);
+        } else {
+            mViewPager.setCurrentItem(INDEX_SUMMARY_FRAGMENT);
+        }
+
+        mHeaderView = inflater.inflate(R.layout.dashboard_container_header, parent, false);
+        ((SlidingTabLayout) mHeaderView).setViewPager(mViewPager);
+        return content;
+!!!578946.java!!!	onResume() : void
+        super.onResume();
+        if (mPagerAdapter.getCount() > 1) {
+            final Activity activity = getActivity();
+            if (activity instanceof SettingsDrawerActivity) {
+                ((SettingsDrawerActivity) getActivity()).setContentHeaderView(mHeaderView);
+            }
+        }

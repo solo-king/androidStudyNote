@@ -1,0 +1,112 @@
+class ChooseLockSettingsHelperTest
+!!!1045378.java!!!	setUp() : void
+        super.setUp();
+        System.setProperty(SYSTEM_PROPERTY_DEXMAKER_DEXCACHE, getContext().getCacheDir().getPath());
+!!!1045506.java!!!	tearDown() : void
+        super.tearDown();
+        System.clearProperty(SYSTEM_PROPERTY_DEXMAKER_DEXCACHE);
+!!!1045634.java!!!	testlaunchConfirmationActivityWithExternalAndChallenge() : void
+
+        final int userId = UserHandle.myUserId();
+        final int request = 100;
+        final long challenge = 10000L;
+        {
+            // Test external == true
+            final boolean external = true;
+
+            final Activity mockActivity = getMockActivity();
+            ChooseLockSettingsHelper helper = getChooseLockSettingsHelper(mockActivity);
+            helper.launchConfirmationActivityWithExternalAndChallenge(
+                    request, // request
+                    "title",
+                    "header",
+                    "description",
+                    external,
+                    challenge,
+                    userId
+            );
+            final ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+            verify(mockActivity, times(1)).startActivity(intentCaptor.capture());
+            Intent capturedIntent = getResultIntent(intentCaptor);
+
+            assertEquals(new ComponentName("com.android.settings",
+                            ConfirmLockPattern.InternalActivity.class.getName()),
+                    capturedIntent.getComponent());
+            assertFalse(capturedIntent.getBooleanExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_RETURN_CREDENTIALS, false));
+            assertTrue(capturedIntent.getBooleanExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, false));
+            assertEquals(challenge, capturedIntent.getLongExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, 0L));
+            assertEquals(external,
+                    (capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_FORWARD_RESULT) != 0);
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.ALLOW_FP_AUTHENTICATION, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.DARK_THEME, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.SHOW_CANCEL_BUTTON, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.SHOW_WHEN_LOCKED, false));
+        }
+
+        {
+            // Test external == false
+            final boolean external = false;
+
+            final Activity mockActivity = getMockActivity();
+            ChooseLockSettingsHelper helper = getChooseLockSettingsHelper(mockActivity);
+            helper.launchConfirmationActivityWithExternalAndChallenge(
+                    request, // request
+                    "title",
+                    "header",
+                    "description",
+                    external,
+                    challenge,
+                    userId
+            );
+            final ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+            verify(mockActivity, times(1)).startActivityForResult(intentCaptor.capture(),
+                    eq(request));
+            Intent capturedIntent = getResultIntent(intentCaptor);
+
+
+            assertEquals(new ComponentName("com.android.settings",
+                            ConfirmLockPattern.InternalActivity.class.getName()),
+                    capturedIntent.getComponent());
+            assertFalse(capturedIntent.getBooleanExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_RETURN_CREDENTIALS, false));
+            assertTrue(capturedIntent.getBooleanExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, false));
+            assertEquals(challenge, capturedIntent.getLongExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, 0L));
+            assertEquals(external,
+                    (capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_FORWARD_RESULT) != 0);
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.ALLOW_FP_AUTHENTICATION, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.DARK_THEME, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.SHOW_CANCEL_BUTTON, false));
+            assertEquals(external, capturedIntent.getBooleanExtra(
+                    ConfirmDeviceCredentialBaseFragment.SHOW_WHEN_LOCKED, false));
+        }
+!!!1045762.java!!!	getChooseLockSettingsHelper(inout mockActivity : Activity) : ChooseLockSettingsHelper
+        LockPatternUtils mockLockPatternUtils = mock(LockPatternUtils.class);
+        when(mockLockPatternUtils.getKeyguardStoredPasswordQuality(anyInt()))
+                .thenReturn(DevicePolicyManager.PASSWORD_QUALITY_SOMETHING);
+
+        ChooseLockSettingsHelper helper = new ChooseLockSettingsHelper(mockActivity);
+        helper.mLockPatternUtils = mockLockPatternUtils;
+        return helper;
+!!!1045890.java!!!	getMockActivity() : Activity
+        Activity mockActivity = mock(Activity.class);
+        when(mockActivity.getSystemService(Context.USER_SERVICE))
+                .thenReturn(getContext().getSystemService(UserManager.class));
+        when(mockActivity.getContentResolver()).thenReturn(getContext().getContentResolver());
+        when(mockActivity.getIntent()).thenReturn(new Intent());
+        return mockActivity;
+!!!1046018.java!!!	getResultIntent(inout intentCaptor : ArgumentCaptor<Intent>) : Intent
+        List<Intent> capturedIntents = intentCaptor.getAllValues();
+        assertEquals(1, capturedIntents.size());
+        return capturedIntents.get(0);

@@ -1,0 +1,10 @@
+class DividerAllowedBelowPreference
+!!!413442.java!!!	DividerAllowedBelowPreference(inout context : Context)
+        super(context);
+!!!413570.java!!!	DividerAllowedBelowPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!413698.java!!!	DividerAllowedBelowPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttrs : int)
+        super(context, attrs, defStyleAttrs);
+!!!413826.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        holder.setDividerAllowedBelow(true);

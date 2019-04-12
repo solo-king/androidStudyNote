@@ -1,0 +1,127 @@
+class StorageVolume
+!!!619138.java!!!	StorageVolume(inout path : File, in descriptionId : int, inout primary : boolean, inout removable : boolean, inout emulated : boolean, in mtpReserveSpace : int, inout allowMassStorage : boolean, in maxFileSize : long, inout owner : UserHandle)
+        mPath = path;
+        mDescriptionId = descriptionId;
+        mPrimary = primary;
+        mRemovable = removable;
+        mEmulated = emulated;
+        mMtpReserveSpace = mtpReserveSpace;
+        mAllowMassStorage = allowMassStorage;
+        mMaxFileSize = maxFileSize;
+        mOwner = owner;
+!!!619266.java!!!	StorageVolume(inout in : Parcel)
+        mStorageId = in.readInt();
+        mPath = new File(in.readString());
+        mDescriptionId = in.readInt();
+        mPrimary = in.readInt() != 0;
+        mRemovable = in.readInt() != 0;
+        mEmulated = in.readInt() != 0;
+        mMtpReserveSpace = in.readInt();
+        mAllowMassStorage = in.readInt() != 0;
+        mMaxFileSize = in.readLong();
+        mOwner = in.readParcelable(null);
+        mUuid = in.readString();
+        mUserLabel = in.readString();
+        mState = in.readString();
+!!!619394.java!!!	fromTemplate(inout template : StorageVolume, inout path : File, inout owner : UserHandle) : StorageVolume
+        return new StorageVolume(path, template.mDescriptionId, template.mPrimary,
+                template.mRemovable, template.mEmulated, template.mMtpReserveSpace,
+                template.mAllowMassStorage, template.mMaxFileSize, owner);
+!!!619522.java!!!	getPath() : String
+        return mPath.toString();
+!!!619650.java!!!	getPathFile() : File
+        return mPath;
+!!!619778.java!!!	getDescription(inout context : Context) : String
+        return context.getResources().getString(mDescriptionId);
+!!!619906.java!!!	getDescriptionId() : int
+        return mDescriptionId;
+!!!620034.java!!!	isPrimary() : boolean
+        return mPrimary;
+!!!620162.java!!!	isRemovable() : boolean
+        return mRemovable;
+!!!620290.java!!!	isEmulated() : boolean
+        return mEmulated;
+!!!620418.java!!!	getStorageId() : int
+        return mStorageId;
+!!!620546.java!!!	setStorageId(in index : int) : void
+        // storage ID is 0x00010001 for primary storage,
+        // then 0x00020001, 0x00030001, etc. for secondary storages
+        mStorageId = ((index + 1) << 16) + 1;
+!!!620674.java!!!	getMtpReserveSpace() : int
+        return mMtpReserveSpace;
+!!!620802.java!!!	allowMassStorage() : boolean
+        return mAllowMassStorage;
+!!!620930.java!!!	getMaxFileSize() : long
+        return mMaxFileSize;
+!!!621058.java!!!	getOwner() : UserHandle
+        return mOwner;
+!!!621186.java!!!	setUuid(in uuid : String) : void
+        mUuid = uuid;
+!!!621314.java!!!	getUuid() : String
+        return mUuid;
+!!!621442.java!!!	getFatVolumeId() : int
+        if (mUuid == null || mUuid.length() != 9) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(mUuid.replace("-", ""), 16);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+!!!621570.java!!!	setUserLabel(in userLabel : String) : void
+        mUserLabel = userLabel;
+!!!621698.java!!!	getUserLabel() : String
+        return mUserLabel;
+!!!621826.java!!!	setState(in state : String) : void
+        mState = state;
+!!!621954.java!!!	getState() : String
+        return mState;
+!!!622082.java!!!	setIsFormatting(inout isFormatting : boolean) : void
+        mIsFormatting = isFormatting;
+!!!622210.java!!!	getIsFormatting() : boolean
+        return mIsFormatting;
+!!!622338.java!!!	equals(inout obj : Object) : boolean
+        if (obj instanceof StorageVolume && mPath != null) {
+            StorageVolume volume = (StorageVolume)obj;
+            return (mPath.equals(volume.mPath));
+        }
+        return false;
+!!!622466.java!!!	hashCode() : int
+        return mPath.hashCode();
+!!!622594.java!!!	toString() : String
+        final CharArrayWriter writer = new CharArrayWriter();
+        dump(new IndentingPrintWriter(writer, "    ", 80));
+        return writer.toString();
+!!!622722.java!!!	dump(inout pw : IndentingPrintWriter) : void
+        pw.println("StorageVolume:");
+        pw.increaseIndent();
+        pw.printPair("mStorageId", mStorageId);
+        pw.printPair("mPath", mPath);
+        pw.printPair("mDescriptionId", mDescriptionId);
+        pw.printPair("mPrimary", mPrimary);
+        pw.printPair("mRemovable", mRemovable);
+        pw.printPair("mEmulated", mEmulated);
+        pw.printPair("mMtpReserveSpace", mMtpReserveSpace);
+        pw.printPair("mAllowMassStorage", mAllowMassStorage);
+        pw.printPair("mMaxFileSize", mMaxFileSize);
+        pw.printPair("mOwner", mOwner);
+        pw.printPair("mUuid", mUuid);
+        pw.printPair("mUserLabel", mUserLabel);
+        pw.printPair("mState", mState);
+        pw.decreaseIndent();
+!!!622850.java!!!	describeContents() : int
+        return 0;
+!!!622978.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+        parcel.writeInt(mStorageId);
+        parcel.writeString(mPath.toString());
+        parcel.writeInt(mDescriptionId);
+        parcel.writeInt(mPrimary ? 1 : 0);
+        parcel.writeInt(mRemovable ? 1 : 0);
+        parcel.writeInt(mEmulated ? 1 : 0);
+        parcel.writeInt(mMtpReserveSpace);
+        parcel.writeInt(mAllowMassStorage ? 1 : 0);
+        parcel.writeLong(mMaxFileSize);
+        parcel.writeParcelable(mOwner, flags);
+        parcel.writeString(mUuid);
+        parcel.writeString(mUserLabel);
+        parcel.writeString(mState);

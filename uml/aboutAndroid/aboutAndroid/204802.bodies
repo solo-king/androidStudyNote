@@ -1,0 +1,4 @@
+class Permission
+!!!461954.java!!!	Permission(inout runtime : boolean, inout granted : boolean)
+            this.runtime = runtime;
+            this.granted = granted;

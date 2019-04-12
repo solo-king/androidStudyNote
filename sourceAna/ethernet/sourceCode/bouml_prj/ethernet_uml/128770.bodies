@@ -1,0 +1,52 @@
+class EthernetEnabler
+!!!129282.java!!!	setConfigDialog(inout Dialog : EthernetConfigDialog) : void
+        mEthConfigDialog = Dialog;
+!!!129410.java!!!	EthernetEnabler(inout ethernetManager : EthernetManager, inout _switch : Switch)
+        mEthManager = ethernetManager;
+        mSwitch = _switch;
+
+        if (mEthManager.getEthState() == ETH_STATE_ENABLED) {
+            setSwitchChecked(true);
+        }
+!!!129538.java!!!	getManager() : EthernetManager
+        return mEthManager;
+!!!129666.java!!!	resume() : void
+        mSwitch.setOnCheckedChangeListener(this);
+!!!129794.java!!!	pause() : void
+        mSwitch.setOnCheckedChangeListener(null);
+!!!129922.java!!!	setSwitch(inout switch_ : Switch) : void
+        if (mSwitch == switch_) return;
+        mSwitch.setOnCheckedChangeListener(null);
+        mSwitch = switch_;
+        mSwitch.setOnCheckedChangeListener(this);
+
+        final int state = mEthManager.getEthState();
+        boolean isEnabled = state == ETH_STATE_ENABLED;
+        boolean isDisabled = state == ETH_STATE_DISABLED;
+        mSwitch.setChecked(isEnabled);
+        mSwitch.setEnabled(isEnabled || isDisabled);
+!!!130050.java!!!	onCheckedChanged(inout buttonView : CompoundButton, inout isChecked : boolean) : void
+        //Do nothing if called as a result of a state machine event
+        if (mStateMachineEvent) {
+            return;
+        }
+        // Show toast message if no Ethernet interfaces
+        if (isChecked && false) {
+            //Toast.makeText(mContext, R.string.wifi_in_airplane_mode, Toast.LENGTH_SHORT).show();
+            // Reset switch to off. No infinite check/listener loop.
+            buttonView.setChecked(false);
+        }
+		setSwitchChecked(isChecked);
+        setEthEnabled(isChecked);
+!!!130178.java!!!	setSwitchChecked(inout checked : boolean) : void
+        if (checked != mSwitch.isChecked()) {
+            mStateMachineEvent = true;
+            mSwitch.setChecked(checked);
+            mStateMachineEvent = false;
+        }
+!!!130306.java!!!	setEthEnabled(in enable : boolean) : void
+        int state = mEthManager.getEthState();
+
+        if (LOCAL_LOGD) Slog.d(TAG, "setEthEnabled " + enable);
+
+        mEthManager.setEthEnabled(enable);

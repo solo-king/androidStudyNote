@@ -1,0 +1,32 @@
+class DashboardViewPagerAdapter
+!!!579074.java!!!	DashboardViewPagerAdapter(inout context : Context, inout fragmentManager : FragmentManager, inout viewPager : RtlCompatibleViewPager)
+            super(fragmentManager);
+            mContext = context;
+            mSupportFeatureProvider =
+                    FeatureFactory.getFactory(context).getSupportFeatureProvider(context);
+            mViewPager = viewPager;
+!!!579202.java!!!	getPageTitle(in position : int) : CharSequence
+            switch (position) {
+                case INDEX_SUMMARY_FRAGMENT:
+                    return mContext.getString(R.string.page_tab_title_summary);
+                case INDEX_SUPPORT_FRAGMENT:
+                    return mContext.getString(R.string.page_tab_title_support);
+            }
+            return super.getPageTitle(position);
+!!!579330.java!!!	getItem(in position : int) : Fragment
+            switch (position) {
+                case INDEX_SUMMARY_FRAGMENT:
+                    return new DashboardSummary();
+                case INDEX_SUPPORT_FRAGMENT:
+                    return new SupportFragment();
+                default:
+                    throw new IllegalArgumentException(
+                            String.format(
+                                    "Position %d does not map to a valid dashboard fragment",
+                                    position));
+            }
+!!!579458.java!!!	instantiateItem(inout container : ViewGroup, in position : int) : Object
+            return super.instantiateItem(container,
+                    mViewPager.getRtlAwareIndex(position));
+!!!579586.java!!!	getCount() : int
+            return mSupportFeatureProvider == null ? 1 : 2;

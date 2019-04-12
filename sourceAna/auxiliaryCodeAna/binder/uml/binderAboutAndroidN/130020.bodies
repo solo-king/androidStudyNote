@@ -1,0 +1,8 @@
+class NetworkChanagerReceiver
+!!!134500.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+            String action = intent.getAction();
+            if(DEBUG)Log.d(TAG, "onReceive:[action]"+action);
+            if(isNetworkChanged(action)){
+                //更新NET指示灯状态
+                updateNetLed();
+            }

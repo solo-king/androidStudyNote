@@ -1,0 +1,7 @@
+class ForceLoadContentObserver
+!!!626946.java!!!	ForceLoadContentObserver()
+            super(new Handler());
+!!!627074.java!!!	deliverSelfNotifications() : boolean
+            return true;
+!!!627202.java!!!	onChange(inout selfChange : boolean) : void
+            onContentChanged();

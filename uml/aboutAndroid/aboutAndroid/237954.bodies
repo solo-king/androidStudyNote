@@ -1,0 +1,148 @@
+class Status
+!!!658178.java!!!	hasBluetooth() : boolean
+        return BluetoothAdapter.getDefaultAdapter() != null;
+!!!658306.java!!!	hasWimax() : boolean
+        return  mCM.getNetworkInfo(ConnectivityManager.TYPE_WIMAX) != null;
+!!!658434.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        mHandler = new MyHandler(this);
+
+        mCM = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+
+        addPreferencesFromResource(R.xml.device_info_status);
+        mBatteryLevel = findPreference(KEY_BATTERY_LEVEL);
+        mBatteryStatus = findPreference(KEY_BATTERY_STATUS);
+        mBtAddress = findPreference(KEY_BT_ADDRESS);
+        mWifiMacAddress = findPreference(KEY_WIFI_MAC_ADDRESS);
+        mWimaxMacAddress = findPreference(KEY_WIMAX_MAC_ADDRESS);
+        mIpAddress = findPreference(KEY_IP_ADDRESS);
+
+        mRes = getResources();
+        mUnknown = mRes.getString(R.string.device_info_default);
+        mUnavailable = mRes.getString(R.string.status_unavailable);
+
+        // Note - missing in zaku build, be careful later...
+        mUptime = findPreference("up_time");
+
+        if (!hasBluetooth()) {
+            getPreferenceScreen().removePreference(mBtAddress);
+            mBtAddress = null;
+        }
+
+        if (!hasWimax()) {
+            getPreferenceScreen().removePreference(mWimaxMacAddress);
+            mWimaxMacAddress = null;
+        }
+
+        mConnectivityIntentFilter = new IntentFilter();
+        for (String intent: CONNECTIVITY_INTENTS) {
+             mConnectivityIntentFilter.addAction(intent);
+        }
+
+        updateConnectivity();
+
+        String serial = Build.SERIAL;
+        if (serial != null && !serial.equals("")) {
+            setSummaryText(KEY_SERIAL_NUMBER, serial);
+        } else {
+            removePreferenceFromScreen(KEY_SERIAL_NUMBER);
+        }
+
+        // Remove SimStatus and Imei for Secondary user as it access Phone b/19165700
+        // Also remove on Wi-Fi only devices.
+        //TODO: the bug above will surface in split system user mode.
+        if (!UserManager.get(getContext()).isAdminUser()
+                || Utils.isWifiOnly(getContext())) {
+            removePreferenceFromScreen(KEY_SIM_STATUS);
+            removePreferenceFromScreen(KEY_IMEI_INFO);
+        }
+!!!658562.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DEVICEINFO_STATUS;
+!!!658690.java!!!	onResume() : void
+        super.onResume();
+        getContext().registerReceiver(mConnectivityReceiver, mConnectivityIntentFilter,
+                         android.Manifest.permission.CHANGE_NETWORK_STATE, null);
+        getContext().registerReceiver(mBatteryInfoReceiver,
+                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        mHandler.sendEmptyMessage(EVENT_UPDATE_STATS);
+!!!658818.java!!!	onPause() : void
+        super.onPause();
+
+        getContext().unregisterReceiver(mBatteryInfoReceiver);
+        getContext().unregisterReceiver(mConnectivityReceiver);
+        mHandler.removeMessages(EVENT_UPDATE_STATS);
+!!!658946.java!!!	removePreferenceFromScreen(in key : String) : void
+        Preference pref = findPreference(key);
+        if (pref != null) {
+            getPreferenceScreen().removePreference(pref);
+        }
+!!!659074.java!!!	setSummary(in preference : String, in property : String, in alt : String) : void
+        try {
+            findPreference(preference).setSummary(
+                    SystemProperties.get(property, alt));
+        } catch (RuntimeException e) {
+
+        }
+!!!659202.java!!!	setSummaryText(in preference : String, in text : String) : void
+            if (TextUtils.isEmpty(text)) {
+               text = mUnknown;
+             }
+             // some preferences may be missing
+             if (findPreference(preference) != null) {
+                 findPreference(preference).setSummary(text);
+             }
+!!!659330.java!!!	setWimaxStatus() : void
+        if (mWimaxMacAddress != null) {
+            String macAddress = SystemProperties.get("net.wimax.mac.address", mUnavailable);
+            mWimaxMacAddress.setSummary(macAddress);
+        }
+!!!659458.java!!!	setWifiStatus() : void
+        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
+        String macAddress = wifiInfo == null ? null : wifiInfo.getMacAddress();
+        mWifiMacAddress.setSummary(!TextUtils.isEmpty(macAddress) ? macAddress : mUnavailable);
+!!!659586.java!!!	setIpAddressStatus() : void
+        String ipAddress = Utils.getDefaultIpAddresses(this.mCM);
+        if (ipAddress != null) {
+            mIpAddress.setSummary(ipAddress);
+        } else {
+            mIpAddress.setSummary(mUnavailable);
+        }
+!!!659714.java!!!	setBtStatus() : void
+        BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
+        if (bluetooth != null && mBtAddress != null) {
+            String address = bluetooth.isEnabled() ? bluetooth.getAddress() : null;
+            if (!TextUtils.isEmpty(address)) {
+               // Convert the address to lowercase for consistency with the wifi MAC address.
+                mBtAddress.setSummary(address.toLowerCase());
+            } else {
+                mBtAddress.setSummary(mUnavailable);
+            }
+        }
+!!!659842.java!!!	updateConnectivity() : void
+        setWimaxStatus();
+        setWifiStatus();
+        setBtStatus();
+        setIpAddressStatus();
+!!!659970.java!!!	updateTimes() : void
+        long at = SystemClock.uptimeMillis() / 1000;
+        long ut = SystemClock.elapsedRealtime() / 1000;
+
+        if (ut == 0) {
+            ut = 1;
+        }
+
+        mUptime.setSummary(convert(ut));
+!!!660098.java!!!	pad(in n : int) : String
+        if (n >= 10) {
+            return String.valueOf(n);
+        } else {
+            return "0" + String.valueOf(n);
+        }
+!!!660226.java!!!	convert(in t : long) : String
+        int s = (int)(t % 60);
+        int m = (int)((t / 60) % 60);
+        int h = (int)((t / 3600));
+
+        return h + ":" + pad(m) + ":" + pad(s);

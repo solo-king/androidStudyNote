@@ -1,0 +1,16 @@
+class Death
+!!!580354.java!!!	Death(inout token : IBinder, in tag : String)
+            this.token = token;
+            this.tag = tag;
+!!!580482.java!!!	binderDied() : void
+            cleanup(token, false);
+!!!580610.java!!!	finalize() : void
+            try {
+                if (token != null) {
+                    Log.w(mTag, "cleaning up leaked reference: " + tag);
+                    release(token);
+                }
+            }
+            finally {
+                super.finalize();
+            }

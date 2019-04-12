@@ -1,0 +1,14 @@
+class PermissionGroup
+!!!830338.java!!!	PermissionGroup(inout _owner : PackageParser::Package)
+            super(_owner);
+            info = new PermissionGroupInfo();
+!!!830466.java!!!	PermissionGroup(inout _owner : PackageParser::Package, inout _info : PermissionGroupInfo)
+            super(_owner);
+            info = _info;
+!!!830594.java!!!	setPackageName(in packageName : String) : void
+            super.setPackageName(packageName);
+            info.packageName = packageName;
+!!!830722.java!!!	toString() : String
+            return "PermissionGroup{"
+                + Integer.toHexString(System.identityHashCode(this))
+                + " " + info.name + "}";

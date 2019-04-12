@@ -1,0 +1,29 @@
+class BatteryProperties
+!!!409730.java!!!	BatteryProperties(inout p : Parcel)
+        chargerAcOnline = p.readInt() == 1 ? true : false;
+        chargerUsbOnline = p.readInt() == 1 ? true : false;
+        chargerWirelessOnline = p.readInt() == 1 ? true : false;
+        batteryStatus = p.readInt();
+        batteryHealth = p.readInt();
+        batteryPresent = p.readInt() == 1 ? true : false;
+        batteryLevel = p.readInt();
+        batteryVoltage = p.readInt();
+        batteryCurrentNow = p.readInt();
+        batteryChargeCounter = p.readInt();
+        batteryTemperature = p.readInt();
+        batteryTechnology = p.readString();
+!!!409858.java!!!	writeToParcel(inout p : Parcel, in flags : int) : void
+        p.writeInt(chargerAcOnline ? 1 : 0);
+        p.writeInt(chargerUsbOnline ? 1 : 0);
+        p.writeInt(chargerWirelessOnline ? 1 : 0);
+        p.writeInt(batteryStatus);
+        p.writeInt(batteryHealth);
+        p.writeInt(batteryPresent ? 1 : 0);
+        p.writeInt(batteryLevel);
+        p.writeInt(batteryVoltage);
+        p.writeInt(batteryCurrentNow);
+        p.writeInt(batteryChargeCounter);
+        p.writeInt(batteryTemperature);
+        p.writeString(batteryTechnology);
+!!!409986.java!!!	describeContents() : int
+        return 0;

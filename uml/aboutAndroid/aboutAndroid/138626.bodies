@@ -1,0 +1,690 @@
+class SettingsActivity
+!!!172930.java!!!	getSwitchBar() : SwitchBar
+        return mSwitchBar;
+!!!173058.java!!!	onPreferenceStartFragment(inout caller : PreferenceFragment, inout pref : Preference) : boolean
+        startPreferencePanel(pref.getFragment(), pref.getExtras(), -1, pref.getTitle(),
+                null, 0);
+        return true;
+!!!173186.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        return false;
+!!!173314.java!!!	onConfigurationChanged(inout newConfig : Configuration) : void
+        super.onConfigurationChanged(newConfig);
+        Index.getInstance(this).update();
+!!!173442.java!!!	onCreateOptionsMenu(inout menu : Menu) : boolean
+        if (!mDisplaySearch) {
+            return false;
+        }
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        // Cache the search query (can be overriden by the OnQueryTextListener)
+        final String query = mSearchQuery;
+
+        mSearchMenuItem = menu.findItem(R.id.search);
+        mSearchView = (SearchView) mSearchMenuItem.getActionView();
+
+        if (mSearchMenuItem == null || mSearchView == null) {
+            return false;
+        }
+
+        if (mSearchResultsFragment != null) {
+            mSearchResultsFragment.setSearchView(mSearchView);
+        }
+
+        mSearchMenuItem.setOnActionExpandListener(this);
+        mSearchView.setOnQueryTextListener(this);
+        mSearchView.setOnCloseListener(this);
+
+        if (mSearchMenuItemExpanded) {
+            mSearchMenuItem.expandActionView();
+        }
+        mSearchView.setQuery(query, true /* submit */);
+
+        return true;
+!!!173570.java!!!	getSharedPreferences(in name : String, in mode : int) : SharedPreferences
+        if (name.equals(getPackageName() + "_preferences")) {
+            return new SharedPreferencesLogger(this, getMetricsTag());
+        }
+        return super.getSharedPreferences(name, mode);
+!!!173698.java!!!	getMetricsTag() : String
+        String tag = getClass().getName();
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_SHOW_FRAGMENT)) {
+            tag = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
+        }
+        if (tag.startsWith("com.android.settings.")) {
+            tag = tag.replace("com.android.settings.", "");
+        }
+        return tag;
+!!!173826.java!!!	isShortCutIntent(in intent : Intent) : boolean
+        Set<String> categories = intent.getCategories();
+        return (categories != null) && categories.contains("com.android.settings.SHORTCUT");
+!!!173954.java!!!	isLikeShortCutIntent(in intent : Intent) : boolean
+        String action = intent.getAction();
+        if (action == null) {
+            return false;
+        }
+        for (int i = 0; i < LIKE_SHORTCUT_INTENT_ACTION_ARRAY.length; i++) {
+            if (LIKE_SHORTCUT_INTENT_ACTION_ARRAY[i].equals(action)) return true;
+        }
+        return false;
+!!!174082.java!!!	onCreate(inout savedState : Bundle) : void
+        super.onCreate(savedState);
+        long startTime = System.currentTimeMillis();
+
+        // Should happen before any call to getIntent()
+        getMetaData();
+
+        final Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_UI_OPTIONS)) {
+            getWindow().setUiOptions(intent.getIntExtra(EXTRA_UI_OPTIONS, 0));
+        }
+        if (intent.getBooleanExtra(EXTRA_HIDE_DRAWER, false)) {
+            setIsDrawerPresent(false);
+        }
+
+        mDevelopmentPreferences = getSharedPreferences(DevelopmentSettings.PREF_FILE,
+                Context.MODE_PRIVATE);
+
+        // Getting Intent properties can only be done after the super.onCreate(...)
+        final String initialFragmentName = intent.getStringExtra(EXTRA_SHOW_FRAGMENT);
+
+        mIsShortcut = isShortCutIntent(intent) || isLikeShortCutIntent(intent) ||
+                intent.getBooleanExtra(EXTRA_SHOW_FRAGMENT_AS_SHORTCUT, false);
+
+        final ComponentName cn = intent.getComponent();
+        final String className = cn.getClassName();
+
+        mIsShowingDashboard = className.equals(Settings.class.getName())
+                || className.equals(Settings.WirelessSettings.class.getName())
+                || className.equals(Settings.DeviceSettings.class.getName())
+                || className.equals(Settings.PersonalSettings.class.getName())
+                || className.equals(Settings.WirelessSettings.class.getName());
+
+        // This is a "Sub Settings" when:
+        // - this is a real SubSettings
+        // - or :settings:show_fragment_as_subsetting is passed to the Intent
+        final boolean isSubSettings = this instanceof SubSettings ||
+                intent.getBooleanExtra(EXTRA_SHOW_FRAGMENT_AS_SUBSETTING, false);
+
+        // If this is a sub settings, then apply the SubSettings Theme for the ActionBar content insets
+        if (isSubSettings) {
+            // Check also that we are not a Theme Dialog as we don't want to override them
+            final int themeResId = getThemeResId();
+            if (themeResId != R.style.Theme_DialogWhenLarge &&
+                    themeResId != R.style.Theme_SubSettingsDialogWhenLarge) {
+                setTheme(R.style.Theme_SubSettings);
+            }
+        }
+
+        setContentView(mIsShowingDashboard ?
+                R.layout.settings_main_dashboard : R.layout.settings_main_prefs);
+
+        mContent = (ViewGroup) findViewById(R.id.main_content);
+
+        getFragmentManager().addOnBackStackChangedListener(this);
+
+        if (mIsShowingDashboard) {
+            // Run the Index update only if we have some space
+            if (!Utils.isLowStorage(this)) {
+                long indexStartTime = System.currentTimeMillis();
+                Index.getInstance(getApplicationContext()).update();
+                if (DEBUG_TIMING) Log.d(LOG_TAG, "Index.update() took "
+                        + (System.currentTimeMillis() - indexStartTime) + " ms");
+            } else {
+                Log.w(LOG_TAG, "Cannot update the Indexer as we are running low on storage space!");
+            }
+        }
+
+        if (savedState != null) {
+            // We are restarting from a previous saved state; used that to initialize, instead
+            // of starting fresh.
+            mSearchMenuItemExpanded = savedState.getBoolean(SAVE_KEY_SEARCH_MENU_EXPANDED);
+            mSearchQuery = savedState.getString(SAVE_KEY_SEARCH_QUERY);
+            setTitleFromIntent(intent);
+
+            ArrayList<DashboardCategory> categories =
+                    savedState.getParcelableArrayList(SAVE_KEY_CATEGORIES);
+            if (categories != null) {
+                mCategories.clear();
+                mCategories.addAll(categories);
+                setTitleFromBackStack();
+            }
+
+            mDisplayHomeAsUpEnabled = savedState.getBoolean(SAVE_KEY_SHOW_HOME_AS_UP);
+            mDisplaySearch = savedState.getBoolean(SAVE_KEY_SHOW_SEARCH);
+
+        } else {
+            if (!mIsShowingDashboard) {
+                mDisplaySearch = false;
+                // UP will be shown only if it is a sub settings
+                if (mIsShortcut) {
+                    mDisplayHomeAsUpEnabled = isSubSettings;
+                } else if (isSubSettings) {
+                    mDisplayHomeAsUpEnabled = true;
+                } else {
+                    mDisplayHomeAsUpEnabled = false;
+                }
+                setTitleFromIntent(intent);
+
+                Bundle initialArguments = intent.getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+                switchToFragment(initialFragmentName, initialArguments, true, false,
+                        mInitialTitleResId, mInitialTitle, false);
+            } else {
+                // No UP affordance if we are displaying the main Dashboard
+                mDisplayHomeAsUpEnabled = false;
+                // Show Search affordance
+                mDisplaySearch = true;
+                mInitialTitleResId = R.string.dashboard_title;
+
+                // add argument to indicate which settings tab should be initially selected
+                final Bundle args = new Bundle();
+                final String extraName = DashboardContainerFragment.EXTRA_SELECT_SETTINGS_TAB;
+                args.putString(extraName, intent.getStringExtra(extraName));
+
+                switchToFragment(DashboardContainerFragment.class.getName(), args, false, false,
+                        mInitialTitleResId, mInitialTitle, false);
+            }
+        }
+
+        mActionBar = getActionBar();
+        if (mActionBar != null) {
+            mActionBar.setDisplayHomeAsUpEnabled(mDisplayHomeAsUpEnabled);
+            mActionBar.setHomeButtonEnabled(mDisplayHomeAsUpEnabled);
+        }
+        mSwitchBar = (SwitchBar) findViewById(R.id.switch_bar);
+        if (mSwitchBar != null) {
+            mSwitchBar.setMetricsTag(getMetricsTag());
+        }
+
+        // see if we should show Back/Next buttons
+        if (intent.getBooleanExtra(EXTRA_PREFS_SHOW_BUTTON_BAR, false)) {
+
+            View buttonBar = findViewById(R.id.button_bar);
+            if (buttonBar != null) {
+                buttonBar.setVisibility(View.VISIBLE);
+
+                Button backButton = (Button)findViewById(R.id.back_button);
+                backButton.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        setResult(RESULT_CANCELED, getResultIntentData());
+                        finish();
+                    }
+                });
+                Button skipButton = (Button)findViewById(R.id.skip_button);
+                skipButton.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        setResult(RESULT_OK, getResultIntentData());
+                        finish();
+                    }
+                });
+                mNextButton = (Button)findViewById(R.id.next_button);
+                mNextButton.setOnClickListener(new OnClickListener() {
+                    public void onClick(View v) {
+                        setResult(RESULT_OK, getResultIntentData());
+                        finish();
+                    }
+                });
+
+                // set our various button parameters
+                if (intent.hasExtra(EXTRA_PREFS_SET_NEXT_TEXT)) {
+                    String buttonText = intent.getStringExtra(EXTRA_PREFS_SET_NEXT_TEXT);
+                    if (TextUtils.isEmpty(buttonText)) {
+                        mNextButton.setVisibility(View.GONE);
+                    }
+                    else {
+                        mNextButton.setText(buttonText);
+                    }
+                }
+                if (intent.hasExtra(EXTRA_PREFS_SET_BACK_TEXT)) {
+                    String buttonText = intent.getStringExtra(EXTRA_PREFS_SET_BACK_TEXT);
+                    if (TextUtils.isEmpty(buttonText)) {
+                        backButton.setVisibility(View.GONE);
+                    }
+                    else {
+                        backButton.setText(buttonText);
+                    }
+                }
+                if (intent.getBooleanExtra(EXTRA_PREFS_SHOW_SKIP, false)) {
+                    skipButton.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+        if (DEBUG_TIMING) Log.d(LOG_TAG, "onCreate took " + (System.currentTimeMillis() - startTime)
+                + " ms");
+!!!174210.java!!!	setDisplaySearchMenu(inout displaySearch : boolean) : void
+        if (displaySearch != mDisplaySearch) {
+            mDisplaySearch = displaySearch;
+            invalidateOptionsMenu();
+        }
+!!!174338.java!!!	setTitleFromIntent(inout intent : Intent) : void
+        final int initialTitleResId = intent.getIntExtra(EXTRA_SHOW_FRAGMENT_TITLE_RESID, -1);
+        if (initialTitleResId > 0) {
+            mInitialTitle = null;
+            mInitialTitleResId = initialTitleResId;
+
+            final String initialTitleResPackageName = intent.getStringExtra(
+                    EXTRA_SHOW_FRAGMENT_TITLE_RES_PACKAGE_NAME);
+            if (initialTitleResPackageName != null) {
+                try {
+                    Context authContext = createPackageContextAsUser(initialTitleResPackageName,
+                            0 /* flags */, new UserHandle(UserHandle.myUserId()));
+                    mInitialTitle = authContext.getResources().getText(mInitialTitleResId);
+                    setTitle(mInitialTitle);
+                    mInitialTitleResId = -1;
+                    return;
+                } catch (NameNotFoundException e) {
+                    Log.w(LOG_TAG, "Could not find package" + initialTitleResPackageName);
+                }
+            } else {
+                setTitle(mInitialTitleResId);
+            }
+        } else {
+            mInitialTitleResId = -1;
+            final String initialTitle = intent.getStringExtra(EXTRA_SHOW_FRAGMENT_TITLE);
+            mInitialTitle = (initialTitle != null) ? initialTitle : getTitle();
+            setTitle(mInitialTitle);
+        }
+!!!174466.java!!!	onBackStackChanged() : void
+        setTitleFromBackStack();
+!!!174594.java!!!	setTitleFromBackStack() : void
+        final int count = getFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            if (mInitialTitleResId > 0) {
+                setTitle(mInitialTitleResId);
+            } else {
+                setTitle(mInitialTitle);
+            }
+            return;
+        }
+
+        FragmentManager.BackStackEntry bse = getFragmentManager().getBackStackEntryAt(count - 1);
+        setTitleFromBackStackEntry(bse);
+!!!174722.java!!!	setTitleFromBackStackEntry(inout bse : FragmentManager.BackStackEntry) : void
+        final CharSequence title;
+        final int titleRes = bse.getBreadCrumbTitleRes();
+        if (titleRes > 0) {
+            title = getText(titleRes);
+        } else {
+            title = bse.getBreadCrumbTitle();
+        }
+        if (title != null) {
+            setTitle(title);
+        }
+!!!174850.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+
+        if (mCategories.size() > 0) {
+            outState.putParcelableArrayList(SAVE_KEY_CATEGORIES, mCategories);
+        }
+
+        outState.putBoolean(SAVE_KEY_SHOW_HOME_AS_UP, mDisplayHomeAsUpEnabled);
+        outState.putBoolean(SAVE_KEY_SHOW_SEARCH, mDisplaySearch);
+
+        if (mDisplaySearch) {
+            // The option menus are created if the ActionBar is visible and they are also created
+            // asynchronously. If you launch Settings with an Intent action like
+            // android.intent.action.POWER_USAGE_SUMMARY and at the same time your device is locked
+            // thru a LockScreen, onCreateOptionsMenu() is not yet called and references to the search
+            // menu item and search view are null.
+            boolean isExpanded = (mSearchMenuItem != null) && mSearchMenuItem.isActionViewExpanded();
+            outState.putBoolean(SAVE_KEY_SEARCH_MENU_EXPANDED, isExpanded);
+
+            String query = (mSearchView != null) ? mSearchView.getQuery().toString() : EMPTY_QUERY;
+            outState.putString(SAVE_KEY_SEARCH_QUERY, query);
+        }
+!!!174978.java!!!	onStart() : void
+        super.onStart();
+
+        if (mNeedToRevertToInitialFragment) {
+            revertToInitialFragment();
+        }
+
+        mDevelopmentPreferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                updateTilesList();
+            }
+        };
+        mDevelopmentPreferences.registerOnSharedPreferenceChangeListener(
+                mDevelopmentPreferencesListener);
+
+        registerReceiver(mBatteryInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        registerReceiver(mUserAddRemoveReceiver, new IntentFilter(Intent.ACTION_USER_ADDED));
+        registerReceiver(mUserAddRemoveReceiver, new IntentFilter(Intent.ACTION_USER_REMOVED));
+
+        mDynamicIndexableContentMonitor.register(this, LOADER_ID_INDEXABLE_CONTENT_MONITOR);
+
+        if(mDisplaySearch && !TextUtils.isEmpty(mSearchQuery)) {
+            onQueryTextSubmit(mSearchQuery);
+        }
+        updateTilesList();
+!!!175106.java!!!	onStop() : void
+        super.onStop();
+        unregisterReceiver(mBatteryInfoReceiver);
+        unregisterReceiver(mUserAddRemoveReceiver);
+        mDynamicIndexableContentMonitor.unregister();
+!!!175234.java!!!	onDestroy() : void
+        super.onDestroy();
+
+        mDevelopmentPreferences.unregisterOnSharedPreferenceChangeListener(
+                mDevelopmentPreferencesListener);
+        mDevelopmentPreferencesListener = null;
+!!!175362.java!!!	isValidFragment(in fragmentName : String) : boolean
+        // Almost all fragments are wrapped in this,
+        // except for a few that have their own activities.
+        for (int i = 0; i < ENTRY_FRAGMENTS.length; i++) {
+            if (ENTRY_FRAGMENTS[i].equals(fragmentName)) return true;
+        }
+        return false;
+!!!175490.java!!!	getIntent() : Intent
+        Intent superIntent = super.getIntent();
+        String startingFragment = getStartingFragmentClass(superIntent);
+        // This is called from super.onCreate, isMultiPane() is not yet reliable
+        // Do not use onIsHidingHeaders either, which relies itself on this method
+        if (startingFragment != null) {
+            Intent modIntent = new Intent(superIntent);
+            modIntent.putExtra(EXTRA_SHOW_FRAGMENT, startingFragment);
+            Bundle args = superIntent.getExtras();
+            if (args != null) {
+                args = new Bundle(args);
+            } else {
+                args = new Bundle();
+            }
+            args.putParcelable("intent", superIntent);
+            modIntent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+            return modIntent;
+        }
+        return superIntent;
+!!!175618.java!!!	getStartingFragmentClass(inout intent : Intent) : String
+        if (mFragmentClass != null) return mFragmentClass;
+
+        String intentClass = intent.getComponent().getClassName();
+        if (intentClass.equals(getClass().getName())) return null;
+
+        if ("com.android.settings.ManageApplications".equals(intentClass)
+                || "com.android.settings.RunningServices".equals(intentClass)
+                || "com.android.settings.applications.StorageUse".equals(intentClass)) {
+            // Old names of manage apps.
+            intentClass = com.android.settings.applications.ManageApplications.class.getName();
+        }
+
+        return intentClass;
+!!!175746.java!!!	startPreferencePanel(in fragmentClass : String, inout args : Bundle, in titleRes : int, inout titleText : CharSequence, inout resultTo : Fragment, in resultRequestCode : int) : void
+        String title = null;
+        if (titleRes < 0) {
+            if (titleText != null) {
+                title = titleText.toString();
+            } else {
+                // There not much we can do in that case
+                title = "";
+            }
+        }
+        Utils.startWithFragment(this, fragmentClass, args, resultTo, resultRequestCode,
+                titleRes, title, mIsShortcut);
+!!!175874.java!!!	startPreferencePanelAsUser(in fragmentClass : String, inout args : Bundle, in titleRes : int, inout titleText : CharSequence, inout userHandle : UserHandle) : void
+        // This is a workaround.
+        //
+        // Calling startWithFragmentAsUser() without specifying FLAG_ACTIVITY_NEW_TASK to the intent
+        // starting the fragment could cause a native stack corruption. See b/17523189. However,
+        // adding that flag and start the preference panel with the same UserHandler will make it
+        // impossible to use back button to return to the previous screen. See b/20042570.
+        //
+        // We work around this issue by adding FLAG_ACTIVITY_NEW_TASK to the intent, while doing
+        // another check here to call startPreferencePanel() instead of startWithFragmentAsUser()
+        // when we're calling it as the same user.
+        if (userHandle.getIdentifier() == UserHandle.myUserId()) {
+            startPreferencePanel(fragmentClass, args, titleRes, titleText, null, 0);
+        } else {
+            String title = null;
+            if (titleRes < 0) {
+                if (titleText != null) {
+                    title = titleText.toString();
+                } else {
+                    // There not much we can do in that case
+                    title = "";
+                }
+            }
+            Utils.startWithFragmentAsUser(this, fragmentClass, args,
+                    titleRes, title, mIsShortcut, userHandle);
+        }
+!!!176002.java!!!	finishPreferencePanel(inout caller : Fragment, in resultCode : int, inout resultData : Intent) : void
+        setResult(resultCode, resultData);
+        finish();
+!!!176130.java!!!	startPreferenceFragment(inout fragment : Fragment, inout push : boolean) : void
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_content, fragment);
+        if (push) {
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.addToBackStack(BACK_STACK_PREFS);
+        } else {
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        }
+        transaction.commitAllowingStateLoss();
+!!!176258.java!!!	switchToFragment(in fragmentName : String, inout args : Bundle, inout validate : boolean, inout addToBackStack : boolean, in titleResId : int, inout title : CharSequence, inout withTransition : boolean) : Fragment
+        if (validate && !isValidFragment(fragmentName)) {
+            throw new IllegalArgumentException("Invalid fragment for this activity: "
+                    + fragmentName);
+        }
+        Fragment f = Fragment.instantiate(this, fragmentName, args);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.main_content, f);
+        if (withTransition) {
+            TransitionManager.beginDelayedTransition(mContent);
+        }
+        if (addToBackStack) {
+            transaction.addToBackStack(SettingsActivity.BACK_STACK_PREFS);
+        }
+        if (titleResId > 0) {
+            transaction.setBreadCrumbTitle(titleResId);
+        } else if (title != null) {
+            transaction.setBreadCrumbTitle(title);
+        }
+        transaction.commitAllowingStateLoss();
+        getFragmentManager().executePendingTransactions();
+        return f;
+!!!176386.java!!!	updateTilesList() : void
+        // Generally the items that are will be changing from these updates will
+        // not be in the top list of tiles, so run it in the background and the
+        // SettingsDrawerActivity will pick up on the updates automatically.
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                doUpdateTilesList();
+            }
+        });
+!!!176514.java!!!	doUpdateTilesList() : void
+        PackageManager pm = getPackageManager();
+        final UserManager um = UserManager.get(this);
+        final boolean isAdmin = um.isAdminUser();
+
+        String packageName = getPackageName();
+        setTileEnabled(new ComponentName(packageName, WifiSettingsActivity.class.getName()),
+                pm.hasSystemFeature(PackageManager.FEATURE_WIFI), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.BluetoothSettingsActivity.class.getName()),
+                pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.DataUsageSummaryActivity.class.getName()),
+                Utils.isBandwidthControlEnabled(), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.SimSettingsActivity.class.getName()),
+                Utils.showSimCardTile(this), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.PowerUsageSummaryActivity.class.getName()),
+                mBatteryPresent, isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.UserSettingsActivity.class.getName()),
+                UserHandle.MU_ENABLED && UserManager.supportsMultipleUsers()
+                && !Utils.isMonkeyRunning(), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                        Settings.WirelessSettingsActivity.class.getName()),
+                !UserManager.isDeviceInDemoMode(this), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                        Settings.DateTimeSettingsActivity.class.getName()),
+                !UserManager.isDeviceInDemoMode(this), isAdmin, pm);
+        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
+        setTileEnabled(new ComponentName(packageName,
+                        Settings.PaymentSettingsActivity.class.getName()),
+                pm.hasSystemFeature(PackageManager.FEATURE_NFC)
+                        && pm.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
+                        && adapter != null && adapter.isEnabled(), isAdmin, pm);
+
+        setTileEnabled(new ComponentName(packageName,
+                Settings.PrintSettingsActivity.class.getName()),
+                pm.hasSystemFeature(PackageManager.FEATURE_PRINTING), isAdmin, pm);
+
+        final boolean showDev = mDevelopmentPreferences.getBoolean(
+                    DevelopmentSettings.PREF_SHOW, android.os.Build.TYPE.equals("eng"))
+                && !um.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES);
+        setTileEnabled(new ComponentName(packageName,
+                        Settings.DevelopmentSettingsActivity.class.getName()),
+                showDev, isAdmin, pm);
+       if(!SystemProperties.get("ro.build.characteristics","null").equals("tablet")) {
+           setTileEnabled(new ComponentName(packageName,
+                           Settings.ScreenshotSettingsActivity.class.getName()),
+                   false, isAdmin, pm);
+       }
+        // Reveal development-only quick settings tiles
+        DevelopmentTiles.setTilesEnabled(this, showDev);
+
+        if (UserHandle.MU_ENABLED && !isAdmin) {
+            // When on restricted users, disable all extra categories (but only the settings ones).
+            List<DashboardCategory> categories = getDashboardCategories();
+            for (DashboardCategory category : categories) {
+                for (Tile tile : category.tiles) {
+                    ComponentName component = tile.intent.getComponent();
+                    if (packageName.equals(component.getPackageName()) && !ArrayUtils.contains(
+                            SETTINGS_FOR_RESTRICTED, component.getClassName())) {
+                        setTileEnabled(component, false, isAdmin, pm);
+                    }
+                }
+            }
+        }
+
+        String backupIntent = getResources().getString(R.string.config_backup_settings_intent);
+        boolean useDefaultBackup = TextUtils.isEmpty(backupIntent);
+        setTileEnabled(new ComponentName(packageName,
+                Settings.PrivacySettingsActivity.class.getName()), useDefaultBackup, isAdmin, pm);
+        boolean hasBackupActivity = false;
+        if (!useDefaultBackup) {
+            try {
+                Intent intent = Intent.parseUri(backupIntent, 0);
+                hasBackupActivity = !getPackageManager().queryIntentActivities(intent, 0).isEmpty();
+            } catch (URISyntaxException e) {
+                Log.e(LOG_TAG, "Invalid backup intent URI!", e);
+            }
+        }
+        setTileEnabled(new ComponentName(packageName,
+                BackupSettingsActivity.class.getName()), hasBackupActivity,
+                isAdmin || Utils.isCarrierDemoUser(this), pm);
+
+!!!176642.java!!!	setTileEnabled(inout component : ComponentName, inout enabled : boolean, inout isAdmin : boolean, inout pm : PackageManager) : void
+        if (UserHandle.MU_ENABLED && !isAdmin && getPackageName().equals(component.getPackageName())
+                && !ArrayUtils.contains(SETTINGS_FOR_RESTRICTED, component.getClassName())) {
+            enabled = false;
+        }
+        setTileEnabled(component, enabled);
+!!!176770.java!!!	getMetaData() : void
+        try {
+            ActivityInfo ai = getPackageManager().getActivityInfo(getComponentName(),
+                    PackageManager.GET_META_DATA);
+            if (ai == null || ai.metaData == null) return;
+            mFragmentClass = ai.metaData.getString(META_DATA_KEY_FRAGMENT_CLASS);
+        } catch (NameNotFoundException nnfe) {
+            // No recovery
+            Log.d(LOG_TAG, "Cannot get Metadata for: " + getComponentName().toString());
+        }
+!!!176898.java!!!	hasNextButton() : boolean
+        return mNextButton != null;
+!!!177026.java!!!	getNextButton() : Button
+        return mNextButton;
+!!!177154.java!!!	shouldUpRecreateTask(inout targetIntent : Intent) : boolean
+        return super.shouldUpRecreateTask(new Intent(this, SettingsActivity.class));
+!!!177282.java!!!	onQueryTextSubmit(in query : String) : boolean
+        switchToSearchResultsFragmentIfNeeded();
+        mSearchQuery = query;
+        return mSearchResultsFragment.onQueryTextSubmit(query);
+!!!177410.java!!!	onQueryTextChange(in newText : String) : boolean
+        mSearchQuery = newText;
+        if (mSearchResultsFragment == null) {
+            return false;
+        }
+        return mSearchResultsFragment.onQueryTextChange(newText);
+!!!177538.java!!!	onClose() : boolean
+        return false;
+!!!177666.java!!!	onMenuItemActionExpand(inout item : MenuItem) : boolean
+        if (item.getItemId() == mSearchMenuItem.getItemId()) {
+            switchToSearchResultsFragmentIfNeeded();
+        }
+        return true;
+!!!177794.java!!!	onMenuItemActionCollapse(inout item : MenuItem) : boolean
+        if (item.getItemId() == mSearchMenuItem.getItemId()) {
+            if (mSearchMenuItemExpanded) {
+                revertToInitialFragment();
+            }
+        }
+        return true;
+!!!177922.java!!!	onTileClicked(inout tile : Tile) : void
+        if (mIsShowingDashboard) {
+            // If on dashboard, don't finish so the back comes back to here.
+            openTile(tile);
+        } else {
+            super.onTileClicked(tile);
+        }
+!!!178050.java!!!	onProfileTileOpen() : void
+        if (!mIsShowingDashboard) {
+            finish();
+        }
+!!!178178.java!!!	switchToSearchResultsFragmentIfNeeded() : void
+        if (mSearchResultsFragment != null) {
+            return;
+        }
+        Fragment current = getFragmentManager().findFragmentById(R.id.main_content);
+        if (current != null && current instanceof SearchResultsSummary) {
+            mSearchResultsFragment = (SearchResultsSummary) current;
+        } else {
+            setContentHeaderView(null);
+            mSearchResultsFragment = (SearchResultsSummary) switchToFragment(
+                    SearchResultsSummary.class.getName(), null, false, true,
+                    R.string.search_results_title, null, true);
+        }
+        mSearchResultsFragment.setSearchView(mSearchView);
+        mSearchMenuItemExpanded = true;
+!!!178306.java!!!	needToRevertToInitialFragment() : void
+        mNeedToRevertToInitialFragment = true;
+!!!178434.java!!!	revertToInitialFragment() : void
+        mNeedToRevertToInitialFragment = false;
+        mSearchResultsFragment = null;
+        mSearchMenuItemExpanded = false;
+        getFragmentManager().popBackStackImmediate(SettingsActivity.BACK_STACK_PREFS,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        if (mSearchMenuItem != null) {
+            mSearchMenuItem.collapseActionView();
+        }
+!!!178562.java!!!	getResultIntentData() : Intent
+        return mResultIntentData;
+!!!178690.java!!!	setResultIntentData(inout resultIntentData : Intent) : void
+        mResultIntentData = resultIntentData;
+!!!178818.java!!!	startSuggestion(inout intent : Intent) : void
+        if (intent == null || ActivityManager.isUserAMonkey()) {
+            return;
+        }
+        mCurrentSuggestion = intent.getComponent();
+        startActivityForResult(intent, REQUEST_SUGGESTION);
+!!!178946.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+        if (requestCode == REQUEST_SUGGESTION && mCurrentSuggestion != null
+                && resultCode != RESULT_CANCELED) {
+            getPackageManager().setComponentEnabledSetting(mCurrentSuggestion,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        }
+        super.onActivityResult(requestCode, resultCode, data);

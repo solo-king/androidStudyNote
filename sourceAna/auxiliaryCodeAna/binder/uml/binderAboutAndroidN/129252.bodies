@@ -1,0 +1,59 @@
+class UsrGpioService
+!!!131556.java!!!	UsrGpioService(inout context : Context)
+
+        mContext = context;
+        open_gpio_devices();
+!!!131684.java!!!	setGpioMode(in gpioName : int, in gpioMode : int, in defaultStatus : int) : int
+
+		return 	set_gpio_mode(gpioName, gpioMode, defaultStatus);
+!!!131812.java!!!	getGpioMode(in gpioName : int) : int
+	
+		return 	get_gpio_mode(gpioName);
+		
+!!!131940.java!!!	setGpioOutputStatus(in gpioName : int, in gpioStatus : int) : int
+		
+		return  set_gpio_output_status(gpioName, gpioStatus);
+		
+!!!132068.java!!!	getGpioOutputStatus(in gpioName : int) : int
+	
+		return 	get_gpio_output_status(gpioName);
+		
+!!!132196.java!!!	getGpioInputStatus(in gpioName : int) : int
+	
+		return get_gpio_input_status(gpioName);
+		
+!!!132324.java!!!	ctrlAdcxStatus(in adcName : int, inout status : boolean) : int
+	
+		return ctrl_adcx_status(adcName, status);
+		
+!!!132452.java!!!	getAdcxStatus(in adcName : int) : boolean
+
+		return 	get_adcx_status(adcName);
+!!!132580.java!!!	getAdcxVaules(in adcName : int) : int
+
+		return get_adcx_vaules(adcName);
+		
+!!!132708.java!!!	watchdogCtrl(inout open : boolean) : int
+	
+		Log.e(TAG, "watchdogCtrl,[open]"+open);
+		return watchdog_ctrl(open);
+		
+!!!132836.java!!!	feetDog(in time : int) : int
+	
+		Log.e(TAG, "feetDog,[time]"+time);
+		return 	feet_dog(time);
+		
+!!!132964.java!!!	unsafeReboot() : int
+	
+		return	unsafe_reboot();
+			
+!!!133092.java!!!	getWatchdogStatus() : int
+	
+		Log.e(TAG, "getWatchdogStatus");
+		return get_watchdog_status();
+		
+!!!133220.java!!!	getVersion() : java.lang.String
+	
+		Log.e(TAG, "getVersion");
+		return get_version();
+		

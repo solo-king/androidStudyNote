@@ -1,0 +1,11 @@
+class AdapterData
+!!!375554.java!!!	AdapterData(inout tab : TrustedCredentialsSettings::Tab, inout adapter : TrustedCredentialsSettings::GroupAdapter)
+            mAdapter = adapter;
+            mTab = tab;
+!!!376706.java!!!	remove(inout certHolder : TrustedCredentialsSettings::CertHolder) : void
+            if (mCertHoldersByUserId != null) {
+                final List<CertHolder> certs = mCertHoldersByUserId.get(certHolder.mProfileId);
+                if (certs != null) {
+                    certs.remove(certHolder);
+                }
+            }

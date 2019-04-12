@@ -1,0 +1,18 @@
+class ListPreferenceAdapter
+!!!409090.java!!!	getCount() : int
+            return mEntryValues.length;
+!!!409218.java!!!	getItem(in position : int) : Integer
+            return mEntryValues[position];
+!!!409346.java!!!	getItemId(in position : int) : long
+            return mEntryValues[position];
+!!!409474.java!!!	hasStableIds() : boolean
+            return true;
+!!!409602.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            if (convertView == null) {
+                if (mInflater == null) {
+                    mInflater = LayoutInflater.from(parent.getContext());
+                }
+                convertView = mInflater.inflate(mListItemLayout, parent, false);
+            }
+            onBindListItem(convertView, position);
+            return convertView;

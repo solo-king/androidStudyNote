@@ -1,0 +1,30 @@
+class AlertDialogFragment
+!!!1015298.java!!!	newInstance(in app : String) : WifiScanModeActivity::AlertDialogFragment
+            AlertDialogFragment frag = new AlertDialogFragment(app);
+            return frag;
+!!!1015426.java!!!	AlertDialogFragment(in app : String)
+            super();
+            mApp = app;
+!!!1015554.java!!!	AlertDialogFragment()
+            super();
+            mApp = null;
+!!!1015682.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            return new AlertDialog.Builder(getActivity())
+                    .setMessage(getString(R.string.wifi_scan_always_turnon_message, mApp))
+                    .setPositiveButton(R.string.wifi_scan_always_confirm_allow,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    ((WifiScanModeActivity) getActivity()).doPositiveClick();
+                                }
+                            }
+                    )
+                    .setNegativeButton(R.string.wifi_scan_always_confirm_deny,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    ((WifiScanModeActivity) getActivity()).doNegativeClick();
+                                }
+                            }
+                    )
+                    .create();
+!!!1015810.java!!!	onCancel(inout dialog : DialogInterface) : void
+            ((WifiScanModeActivity) getActivity()).doNegativeClick();

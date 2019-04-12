@@ -1,0 +1,18 @@
+class CustomEditTextPreference
+!!!224642.java!!!	CustomEditTextPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+!!!224770.java!!!	CustomEditTextPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        super(context, attrs, defStyleAttr);
+!!!224898.java!!!	CustomEditTextPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!225026.java!!!	CustomEditTextPreference(inout context : Context)
+        super(context);
+!!!225154.java!!!	getEditText() : EditText
+        return mFragment != null ? (EditText) mFragment.getDialog().findViewById(android.R.id.edit)
+                : null;
+!!!225282.java!!!	isDialogOpen() : boolean
+        return getDialog() != null && getDialog().isShowing();
+!!!225410.java!!!	getDialog() : Dialog
+        return mFragment != null ? mFragment.getDialog() : null;
+!!!226050.java!!!	setFragment(inout fragment : CustomEditTextPreference::CustomPreferenceDialogFragment) : void
+        mFragment = fragment;

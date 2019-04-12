@@ -1,0 +1,35 @@
+class FriendlyWarningDialogFragment
+!!!830082.java!!!	setPkgInfo(in pkg : String, inout label : CharSequence) : ZenAccessSettings::FriendlyWarningDialogFragment
+            Bundle args = new Bundle();
+            args.putString(KEY_PKG, pkg);
+            args.putString(KEY_LABEL, TextUtils.isEmpty(label) ? pkg : label.toString());
+            setArguments(args);
+            return this;
+!!!830210.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            super.onCreate(savedInstanceState);
+            final Bundle args = getArguments();
+            final String pkg = args.getString(KEY_PKG);
+            final String label = args.getString(KEY_LABEL);
+
+            final String title = getResources().getString(
+                    R.string.zen_access_revoke_warning_dialog_title, label);
+            final String summary = getResources()
+                    .getString(R.string.zen_access_revoke_warning_dialog_summary);
+            return new AlertDialog.Builder(getContext())
+                    .setMessage(summary)
+                    .setTitle(title)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.okay,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    deleteRules(getContext(), pkg);
+                                    setAccess(getContext(), pkg, false);
+                                }
+                            })
+                    .setNegativeButton(R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // pass
+                                }
+                            })
+                    .create();

@@ -1,0 +1,15 @@
+class SettingsObserver
+!!!827010.java!!!	SettingsObserver()
+            super(mHandler);
+!!!827138.java!!!	register(inout register : boolean) : void
+            final ContentResolver cr = getContentResolver();
+            if (register) {
+                cr.registerContentObserver(VIBRATE_WHEN_RINGING_URI, false, this);
+            } else {
+                cr.unregisterContentObserver(this);
+            }
+!!!827266.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            super.onChange(selfChange, uri);
+            if (VIBRATE_WHEN_RINGING_URI.equals(uri)) {
+                updateVibrateWhenRinging();
+            }

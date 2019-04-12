@@ -1,0 +1,334 @@
+class ConfirmLockPasswordFragment
+!!!206338.java!!!	ConfirmLockPasswordFragment()
+
+!!!206466.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+            super.onCreate(savedInstanceState);
+!!!206594.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+            final int storedQuality = mLockPatternUtils.getKeyguardStoredPasswordQuality(
+                    mEffectiveUserId);
+            View view = inflater.inflate(R.layout.confirm_lock_password, null);
+
+            mPasswordEntry = (TextView) view.findViewById(R.id.password_entry);
+            mPasswordEntry.setOnEditorActionListener(this);
+            mPasswordEntryInputDisabler = new TextViewInputDisabler(mPasswordEntry);
+
+            mHeaderTextView = (TextView) view.findViewById(R.id.headerText);
+            mDetailsTextView = (TextView) view.findViewById(R.id.detailsText);
+            mErrorTextView = (TextView) view.findViewById(R.id.errorText);
+            mIsAlpha = DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC == storedQuality
+                    || DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC == storedQuality
+                    || DevicePolicyManager.PASSWORD_QUALITY_COMPLEX == storedQuality
+                    || DevicePolicyManager.PASSWORD_QUALITY_MANAGED == storedQuality;
+
+            mImm = (InputMethodManager) getActivity().getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+
+            Intent intent = getActivity().getIntent();
+            if (intent != null) {
+                CharSequence headerMessage = intent.getCharSequenceExtra(
+                        ConfirmDeviceCredentialBaseFragment.HEADER_TEXT);
+                CharSequence detailsMessage = intent.getCharSequenceExtra(
+                        ConfirmDeviceCredentialBaseFragment.DETAILS_TEXT);
+                if (TextUtils.isEmpty(headerMessage)) {
+                    headerMessage = getString(getDefaultHeader());
+                }
+                if (TextUtils.isEmpty(detailsMessage)) {
+                    detailsMessage = getString(getDefaultDetails());
+                }
+                mHeaderTextView.setText(headerMessage);
+                mDetailsTextView.setText(detailsMessage);
+            }
+            int currentType = mPasswordEntry.getInputType();
+            mPasswordEntry.setInputType(mIsAlpha ? currentType
+                    : (InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_PASSWORD));
+            mAppearAnimationUtils = new AppearAnimationUtils(getContext(),
+                    220, 2f /* translationScale */, 1f /* delayScale*/,
+                    AnimationUtils.loadInterpolator(getContext(),
+                            android.R.interpolator.linear_out_slow_in));
+            mDisappearAnimationUtils = new DisappearAnimationUtils(getContext(),
+                    110, 1f /* translationScale */,
+                    0.5f /* delayScale */, AnimationUtils.loadInterpolator(
+                            getContext(), android.R.interpolator.fast_out_linear_in));
+            setAccessibilityTitle(mHeaderTextView.getText());
+
+            mCredentialCheckResultTracker = (CredentialCheckResultTracker) getFragmentManager()
+                    .findFragmentByTag(FRAGMENT_TAG_CHECK_LOCK_RESULT);
+            if (mCredentialCheckResultTracker == null) {
+                mCredentialCheckResultTracker = new CredentialCheckResultTracker();
+                getFragmentManager().beginTransaction().add(mCredentialCheckResultTracker,
+                        FRAGMENT_TAG_CHECK_LOCK_RESULT).commit();
+            }
+
+            return view;
+!!!206722.java!!!	getDefaultHeader() : int
+            return mIsAlpha ? R.string.lockpassword_confirm_your_password_header
+                    : R.string.lockpassword_confirm_your_pin_header;
+!!!206850.java!!!	getDefaultDetails() : int
+            boolean isProfile = Utils.isManagedProfile(
+                    UserManager.get(getActivity()), mEffectiveUserId);
+            // Map boolean flags to an index by isStrongAuth << 2 + isProfile << 1 + isAlpha.
+            int index = ((mIsStrongAuthRequired ? 1 : 0) << 2) + ((isProfile ? 1 : 0) << 1)
+                    + (mIsAlpha ? 1 : 0);
+            return DETAIL_TEXTS[index];
+!!!206978.java!!!	getErrorMessage() : int
+            return mIsAlpha ? R.string.lockpassword_invalid_password
+                    : R.string.lockpassword_invalid_pin;
+!!!207106.java!!!	getLastTryErrorMessage() : int
+            return mIsAlpha ? R.string.lock_profile_wipe_warning_content_password
+                    : R.string.lock_profile_wipe_warning_content_pin;
+!!!207234.java!!!	prepareEnterAnimation() : void
+            super.prepareEnterAnimation();
+            mHeaderTextView.setAlpha(0f);
+            mDetailsTextView.setAlpha(0f);
+            mCancelButton.setAlpha(0f);
+            mPasswordEntry.setAlpha(0f);
+            mFingerprintIcon.setAlpha(0f);
+            mBlockImm = true;
+!!!207362.java!!!	getActiveViews() : View
+            ArrayList<View> result = new ArrayList<>();
+            result.add(mHeaderTextView);
+            result.add(mDetailsTextView);
+            if (mCancelButton.getVisibility() == View.VISIBLE) {
+                result.add(mCancelButton);
+            }
+            result.add(mPasswordEntry);
+            if (mFingerprintIcon.getVisibility() == View.VISIBLE) {
+                result.add(mFingerprintIcon);
+            }
+            return result.toArray(new View[] {});
+!!!207490.java!!!	startEnterAnimation() : void
+            super.startEnterAnimation();
+            mAppearAnimationUtils.startAnimation(getActiveViews(), new Runnable() {
+                @Override
+                public void run() {
+                    mBlockImm = false;
+                    resetState();
+                }
+            });
+!!!207618.java!!!	onPause() : void
+            super.onPause();
+            if (mCountdownTimer != null) {
+                mCountdownTimer.cancel();
+                mCountdownTimer = null;
+            }
+            mCredentialCheckResultTracker.setListener(null);
+!!!207746.java!!!	getMetricsCategory() : int
+            return MetricsEvent.CONFIRM_LOCK_PASSWORD;
+!!!207874.java!!!	onResume() : void
+            super.onResume();
+            long deadline = mLockPatternUtils.getLockoutAttemptDeadline(mEffectiveUserId);
+            if (deadline != 0) {
+                mCredentialCheckResultTracker.clearResult();
+                handleAttemptLockout(deadline);
+            } else {
+                resetState();
+                mErrorTextView.setText("");
+                if (isProfileChallenge()) {
+                    updateErrorMessage(mLockPatternUtils.getCurrentFailedPasswordAttempts(
+                            mEffectiveUserId));
+                }
+            }
+            mCredentialCheckResultTracker.setListener(this);
+!!!208002.java!!!	authenticationSucceeded() : void
+            mCredentialCheckResultTracker.setResult(true, new Intent(), 0, mEffectiveUserId);
+!!!208130.java!!!	onFingerprintIconVisibilityChanged(inout visible : boolean) : void
+            mUsingFingerprint = visible;
+!!!208258.java!!!	resetState() : void
+            if (mBlockImm) return;
+            mPasswordEntry.setEnabled(true);
+            mPasswordEntryInputDisabler.setInputEnabled(true);
+            if (shouldAutoShowSoftKeyboard()) {
+                mImm.showSoftInput(mPasswordEntry, InputMethodManager.SHOW_IMPLICIT);
+            }
+!!!208386.java!!!	shouldAutoShowSoftKeyboard() : boolean
+            return mPasswordEntry.isEnabled() && !mUsingFingerprint;
+!!!208514.java!!!	onWindowFocusChanged(inout hasFocus : boolean) : void
+            if (!hasFocus || mBlockImm) {
+                return;
+            }
+            // Post to let window focus logic to finish to allow soft input show/hide properly.
+            mPasswordEntry.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (shouldAutoShowSoftKeyboard()) {
+                        resetState();
+                        return;
+                    }
+
+                    mImm.hideSoftInputFromWindow(mPasswordEntry.getWindowToken(),
+                            InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+            });
+!!!208642.java!!!	handleNext() : void
+            if (mPendingLockCheck != null || mDisappearing) {
+                return;
+            }
+
+            final String pin = mPasswordEntry.getText().toString();
+            if (TextUtils.isEmpty(pin)) {
+                return;
+            }
+
+            mPasswordEntryInputDisabler.setInputEnabled(false);
+            final boolean verifyChallenge = getActivity().getIntent().getBooleanExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, false);
+
+            Intent intent = new Intent();
+            if (verifyChallenge)  {
+                if (isInternalActivity()) {
+                    startVerifyPassword(pin, intent);
+                    return;
+                }
+            } else {
+                startCheckPassword(pin, intent);
+                return;
+            }
+
+            mCredentialCheckResultTracker.setResult(false, intent, 0, mEffectiveUserId);
+!!!208770.java!!!	isInternalActivity() : boolean
+            return getActivity() instanceof ConfirmLockPassword.InternalActivity;
+!!!208898.java!!!	startVerifyPassword(in pin : String, in intent : Intent) : void
+            long challenge = getActivity().getIntent().getLongExtra(
+                    ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, 0);
+            final int localEffectiveUserId = mEffectiveUserId;
+            final int localUserId = mUserId;
+            final LockPatternChecker.OnVerifyCallback onVerifyCallback =
+                    new LockPatternChecker.OnVerifyCallback() {
+                        @Override
+                        public void onVerified(byte[] token, int timeoutMs) {
+                            mPendingLockCheck = null;
+                            boolean matched = false;
+                            if (token != null) {
+                                matched = true;
+                                if (mReturnCredentials) {
+                                    intent.putExtra(
+                                            ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN,
+                                            token);
+                                }
+                            }
+                            mCredentialCheckResultTracker.setResult(matched, intent, timeoutMs,
+                                    localUserId);
+                        }
+            };
+            mPendingLockCheck = (localEffectiveUserId == localUserId)
+                    ? LockPatternChecker.verifyPassword(
+                            mLockPatternUtils, pin, challenge, localUserId, onVerifyCallback)
+                    : LockPatternChecker.verifyTiedProfileChallenge(
+                            mLockPatternUtils, pin, false, challenge, localUserId,
+                            onVerifyCallback);
+!!!209026.java!!!	startCheckPassword(in pin : String, in intent : Intent) : void
+            final int localEffectiveUserId = mEffectiveUserId;
+            mPendingLockCheck = LockPatternChecker.checkPassword(
+                    mLockPatternUtils,
+                    pin,
+                    localEffectiveUserId,
+                    new LockPatternChecker.OnCheckCallback() {
+                        @Override
+                        public void onChecked(boolean matched, int timeoutMs) {
+                            mPendingLockCheck = null;
+                            if (matched && isInternalActivity() && mReturnCredentials) {
+                                intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_TYPE,
+                                                mIsAlpha ? StorageManager.CRYPT_TYPE_PASSWORD
+                                                         : StorageManager.CRYPT_TYPE_PIN);
+                                intent.putExtra(
+                                        ChooseLockSettingsHelper.EXTRA_KEY_PASSWORD, pin);
+                            }
+                            mCredentialCheckResultTracker.setResult(matched, intent, timeoutMs,
+                                    localEffectiveUserId);
+                        }
+                    });
+!!!209154.java!!!	startDisappearAnimation(in intent : Intent) : void
+            if (mDisappearing) {
+                return;
+            }
+            mDisappearing = true;
+
+            if (getActivity().getThemeResId() == R.style.Theme_ConfirmDeviceCredentialsDark) {
+                mDisappearAnimationUtils.startAnimation(getActiveViews(), new Runnable() {
+                    @Override
+                    public void run() {
+                        // Bail if there is no active activity.
+                        if (getActivity() == null || getActivity().isFinishing()) {
+                            return;
+                        }
+
+                        getActivity().setResult(RESULT_OK, intent);
+                        getActivity().finish();
+                        getActivity().overridePendingTransition(
+                                R.anim.confirm_credential_close_enter,
+                                R.anim.confirm_credential_close_exit);
+                    }
+                });
+            } else {
+                getActivity().setResult(RESULT_OK, intent);
+                getActivity().finish();
+            }
+!!!209282.java!!!	onPasswordChecked(inout matched : boolean, inout intent : Intent, in timeoutMs : int, in effectiveUserId : int, inout newResult : boolean) : void
+            mPasswordEntryInputDisabler.setInputEnabled(true);
+            if (matched) {
+                if (newResult) {
+                    reportSuccessfullAttempt();
+                }
+                startDisappearAnimation(intent);
+                checkForPendingIntent();
+            } else {
+                if (timeoutMs > 0) {
+                    long deadline = mLockPatternUtils.setLockoutAttemptDeadline(
+                            effectiveUserId, timeoutMs);
+                    handleAttemptLockout(deadline);
+                } else {
+                    showError(getErrorMessage(), ERROR_MESSAGE_TIMEOUT);
+                }
+                if (newResult) {
+                    reportFailedAttempt();
+                }
+            }
+!!!209410.java!!!	onCredentialChecked(inout matched : boolean, inout intent : Intent, in timeoutMs : int, in effectiveUserId : int, inout newResult : boolean) : void
+            onPasswordChecked(matched, intent, timeoutMs, effectiveUserId, newResult);
+!!!209538.java!!!	onShowError() : void
+            mPasswordEntry.setText(null);
+!!!209666.java!!!	handleAttemptLockout(in elapsedRealtimeDeadline : long) : void
+            long elapsedRealtime = SystemClock.elapsedRealtime();
+            mPasswordEntry.setEnabled(false);
+            mCountdownTimer = new CountDownTimer(
+                    elapsedRealtimeDeadline - elapsedRealtime,
+                    LockPatternUtils.FAILED_ATTEMPT_COUNTDOWN_INTERVAL_MS) {
+
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    final int secondsCountdown = (int) (millisUntilFinished / 1000);
+                    showError(getString(
+                            R.string.lockpattern_too_many_failed_confirmation_attempts,
+                            secondsCountdown), 0);
+                }
+
+                @Override
+                public void onFinish() {
+                    resetState();
+                    mErrorTextView.setText("");
+                    if (isProfileChallenge()) {
+                        updateErrorMessage(mLockPatternUtils.getCurrentFailedPasswordAttempts(
+                                mEffectiveUserId));
+                    }
+                }
+            }.start();
+!!!209794.java!!!	onClick(inout v : View) : void
+            switch (v.getId()) {
+                case R.id.next_button:
+                    handleNext();
+                    break;
+
+                case R.id.cancel_button:
+                    getActivity().setResult(RESULT_CANCELED);
+                    getActivity().finish();
+                    break;
+            }
+!!!209922.java!!!	onEditorAction(inout v : TextView, in actionId : int, inout event : KeyEvent) : boolean
+            // Check if this was the result of hitting the enter or "done" key
+            if (actionId == EditorInfo.IME_NULL
+                    || actionId == EditorInfo.IME_ACTION_DONE
+                    || actionId == EditorInfo.IME_ACTION_NEXT) {
+                handleNext();
+                return true;
+            }
+            return false;

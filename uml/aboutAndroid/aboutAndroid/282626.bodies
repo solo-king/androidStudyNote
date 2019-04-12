@@ -1,0 +1,21 @@
+class ReplaceExistingVpnFragment
+!!!929026.java!!!	show(inout parent : AppManagementFragment) : void
+            if (parent.getFragmentManager().findFragmentByTag(TAG) == null) {
+                final ReplaceExistingVpnFragment frag = new ReplaceExistingVpnFragment();
+                frag.setTargetFragment(parent, 0);
+                frag.show(parent.getFragmentManager(), TAG);
+            }
+!!!929154.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.vpn_replace_always_on_vpn_title)
+                    .setMessage(getActivity().getString(R.string.vpn_replace_always_on_vpn_message))
+                    .setNegativeButton(getActivity().getString(R.string.vpn_cancel), null)
+                    .setPositiveButton(getActivity().getString(R.string.vpn_replace), this)
+                    .create();
+!!!929282.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+            if (getTargetFragment() instanceof AppManagementFragment) {
+                final AppManagementFragment target = (AppManagementFragment) getTargetFragment();
+                if (target.setAlwaysOnVpnByUI(true)) {
+                    target.updateUI();
+                }
+            }

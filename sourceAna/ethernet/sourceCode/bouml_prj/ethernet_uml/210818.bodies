@@ -1,0 +1,23 @@
+class ServiceInfo
+!!!841986.java!!!	ServiceInfo(inout orig : ServiceInfo)
+        super(orig);
+        permission = orig.permission;
+        flags = orig.flags;
+!!!842114.java!!!	dump(inout pw : Printer, in prefix : String) : void
+        super.dumpFront(pw, prefix);
+        pw.println(prefix + "permission=" + permission);
+        pw.println(prefix + "flags=0x" + Integer.toHexString(flags));
+!!!842242.java!!!	toString() : String
+        return "ServiceInfo{"
+            + Integer.toHexString(System.identityHashCode(this))
+            + " " + name + "}";
+!!!842370.java!!!	describeContents() : int
+        return 0;
+!!!842498.java!!!	writeToParcel(inout dest : Parcel, in parcelableFlags : int) : void
+        super.writeToParcel(dest, parcelableFlags);
+        dest.writeString(permission);
+        dest.writeInt(flags);
+!!!842626.java!!!	ServiceInfo(inout source : Parcel)
+        super(source);
+        permission = source.readString();
+        flags = source.readInt();

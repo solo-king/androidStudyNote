@@ -1,0 +1,5 @@
+class ZygoteStartFailedEx
+!!!540674.java!!!	ZygoteStartFailedEx(in s : String)
+super(s);
+!!!540802.java!!!	ZygoteStartFailedEx(inout cause : Throwable)
+super(cause);

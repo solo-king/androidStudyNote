@@ -1,0 +1,26 @@
+class SignalStrengthReceiver
+!!!134244.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+            String action = intent.getAction();
+            if(DEBUG)Log.d(TAG, "onReceive:[action]"+action);
+            if(action.equals("cn.usr.www.LED_SIGNAL_NOT_SHOW")){//需要对信号指示灯状态更新
+                //更新信号指示灯
+                boolean isHold = (boolean)intent.getBooleanExtra("isHold", false);
+                if(DEBUG)Log.d(TAG, "SignalStrengthReceiver:onReceive[isHold]"+isHold+"[holdSignalAndCloseAll]"
+                            +holdSignalAndCloseAll+"[currentlySignalLevel]"+currentlySignalLevel);
+                /**1.只有变量状态发生变化才更新 */
+                if((holdSignalAndCloseAll!= isHold)){
+                    synchronized(this){
+                        holdSignalAndCloseAll = isHold;    
+                        if(holdSignalAndCloseAll){//只有LED信号灯需要全部关闭才执行，若为false则不执行
+                            closeAllSignalLed();
+                        }else{//不关闭并占有信号灯，那么则更新其值
+                            signalCtrl(currentlySignalLevel);
+                        }
+                    }
+                }
+                
+            }else if(action.equals("cn.usr.www.LED_SIGNAL_SHOW_LEVEL")){//需要对信号指示灯的数量进行更新
+                if(holdSignalAndCloseAll){//如果信号塔图标现在为空或者不显示，那么更新level没有意义
+                    return ;
+                }
+            }

@@ -1,0 +1,6 @@
+class NetworkDataEntry
+!!!236418.java!!!	NetworkDataEntry(in i1 : int, in i2 : int, in i3 : int, in i4 : int)
+            networkType = i1;
+            downloadBandwidth = i2;
+            uploadBandwidth = i3;
+            latency = i4;

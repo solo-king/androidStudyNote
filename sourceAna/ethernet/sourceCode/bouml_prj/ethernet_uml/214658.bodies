@@ -1,0 +1,49 @@
+class UserInfo
+!!!844546.java!!!	UserInfo(in id : int, in name : String, in flags : int)
+        this(id, name, null, flags);
+!!!844674.java!!!	UserInfo(in id : int, in name : String, in iconPath : String, in flags : int)
+        this.id = id;
+        this.name = name;
+        this.flags = flags;
+        this.iconPath = iconPath;
+!!!844802.java!!!	isPrimary() : boolean
+        return (flags & FLAG_PRIMARY) == FLAG_PRIMARY;
+!!!844930.java!!!	isAdmin() : boolean
+        return (flags & FLAG_ADMIN) == FLAG_ADMIN;
+!!!845058.java!!!	isGuest() : boolean
+        return (flags & FLAG_GUEST) == FLAG_GUEST;
+!!!845186.java!!!	isRestricted() : boolean
+        return (flags & FLAG_RESTRICTED) == FLAG_RESTRICTED;
+!!!845442.java!!!	UserInfo(inout orig : UserInfo)
+        name = orig.name;
+        iconPath = orig.iconPath;
+        id = orig.id;
+        flags = orig.flags;
+        serialNumber = orig.serialNumber;
+        creationTime = orig.creationTime;
+        lastLoggedInTime = orig.lastLoggedInTime;
+        partial = orig.partial;
+!!!845570.java!!!	getUserHandle() : UserHandle
+        return new UserHandle(id);
+!!!845698.java!!!	toString() : String
+        return "UserInfo{" + id + ":" + name + ":" + Integer.toHexString(flags) + "}";
+!!!845826.java!!!	describeContents() : int
+        return 0;
+!!!845954.java!!!	writeToParcel(inout dest : Parcel, in parcelableFlags : int) : void
+        dest.writeInt(id);
+        dest.writeString(name);
+        dest.writeString(iconPath);
+        dest.writeInt(flags);
+        dest.writeInt(serialNumber);
+        dest.writeLong(creationTime);
+        dest.writeLong(lastLoggedInTime);
+        dest.writeInt(partial ? 1 : 0);
+!!!846082.java!!!	UserInfo(inout source : Parcel)
+        id = source.readInt();
+        name = source.readString();
+        iconPath = source.readString();
+        flags = source.readInt();
+        serialNumber = source.readInt();
+        creationTime = source.readLong();
+        lastLoggedInTime = source.readLong();
+        partial = source.readInt() != 0;

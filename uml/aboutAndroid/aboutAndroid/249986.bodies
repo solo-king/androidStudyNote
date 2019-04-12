@@ -1,0 +1,83 @@
+class FakeUid
+!!!724482.java!!!	FakeUid(in uid : int)
+        mUid = uid;
+!!!724610.java!!!	getUid() : int
+        return mUid;
+!!!724738.java!!!	getWakelockStats() : ArrayMap<String, ? extends Wakelock>
+        return null;
+!!!724866.java!!!	getSyncStats() : ArrayMap<String, ? extends Timer>
+        return null;
+!!!724994.java!!!	getJobStats() : ArrayMap<String, ? extends Timer>
+        return null;
+!!!725122.java!!!	getSensorStats() : SparseArray<? extends Sensor>
+        return null;
+!!!725250.java!!!	getPidStats() : SparseArray<? extends Pid>
+        return null;
+!!!725378.java!!!	getProcessStats() : ArrayMap<String, ? extends Proc>
+        return null;
+!!!725506.java!!!	getPackageStats() : ArrayMap<String, ? extends Pkg>
+        return null;
+!!!727170.java!!!	getWifiRunningTime(in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!727298.java!!!	getFullWifiLockTime(in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!727426.java!!!	getWifiScanTime(in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!727554.java!!!	getWifiScanCount(in which : int) : int
+        return 0;
+!!!727682.java!!!	getWifiBatchedScanTime(in csphBin : int, in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!727810.java!!!	getWifiBatchedScanCount(in csphBin : int, in which : int) : int
+        return 0;
+!!!727938.java!!!	getWifiMulticastTime(in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!728066.java!!!	getAudioTurnedOnTimer() : Timer
+        return null;
+!!!728194.java!!!	getVideoTurnedOnTimer() : Timer
+        return null;
+!!!728322.java!!!	getFlashlightTurnedOnTimer() : Timer
+        return null;
+!!!728450.java!!!	getCameraTurnedOnTimer() : Timer
+        return null;
+!!!728578.java!!!	getForegroundActivityTimer() : Timer
+        return null;
+!!!728706.java!!!	getProcessStateTime(in state : int, in elapsedRealtimeUs : long, in which : int) : long
+        return 0;
+!!!728834.java!!!	getProcessStateTimer(in state : int) : Timer
+        return null;
+!!!728962.java!!!	getVibratorOnTimer() : Timer
+        return null;
+!!!729218.java!!!	hasUserActivity() : boolean
+        return false;
+!!!729346.java!!!	getUserActivityCount(in type : int, in which : int) : int
+        return 0;
+!!!729474.java!!!	hasNetworkActivity() : boolean
+        return false;
+!!!729602.java!!!	getNetworkActivityBytes(in type : int, in which : int) : long
+        return 0;
+!!!729730.java!!!	getNetworkActivityPackets(in type : int, in which : int) : long
+        return 0;
+!!!729858.java!!!	getMobileRadioActiveTime(in which : int) : long
+        return 0;
+!!!729986.java!!!	getMobileRadioActiveCount(in which : int) : int
+        return 0;
+!!!730114.java!!!	getUserCpuTimeUs(in which : int) : long
+        return 0;
+!!!730242.java!!!	getSystemCpuTimeUs(in which : int) : long
+        return 0;
+!!!730370.java!!!	getTimeAtCpuSpeed(in cluster : int, in step : int, in which : int) : long
+        return 0;
+!!!730498.java!!!	getCpuPowerMaUs(in which : int) : long
+        return 0;
+!!!730626.java!!!	getWifiControllerActivity() : BatteryStats.ControllerActivityCounter
+        return null;
+!!!730754.java!!!	getBluetoothControllerActivity() : BatteryStats.ControllerActivityCounter
+        return null;
+!!!730882.java!!!	getModemControllerActivity() : BatteryStats.ControllerActivityCounter
+        return null;
+!!!731010.java!!!	getBluetoothScanTimer() : Timer
+        return null;
+!!!731138.java!!!	getWifiRadioApWakeupCount(in which : int) : long
+        return 0;
+!!!731266.java!!!	getMobileRadioApWakeupCount(in which : int) : long
+        return 0;

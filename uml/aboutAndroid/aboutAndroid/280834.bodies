@@ -1,0 +1,13 @@
+class SettingsDividerItemDecoration
+!!!920450.java!!!	SettingsDividerItemDecoration(inout context : Context)
+        super(context);
+!!!920578.java!!!	isDividerAllowedAbove(inout viewHolder : RecyclerView.ViewHolder) : boolean
+        if (viewHolder instanceof PreferenceViewHolder) {
+            return ((PreferenceViewHolder) viewHolder).isDividerAllowedAbove();
+        }
+        return super.isDividerAllowedAbove(viewHolder);
+!!!920706.java!!!	isDividerAllowedBelow(inout viewHolder : RecyclerView.ViewHolder) : boolean
+        if (viewHolder instanceof PreferenceViewHolder) {
+            return ((PreferenceViewHolder) viewHolder).isDividerAllowedBelow();
+        }
+        return super.isDividerAllowedBelow(viewHolder);

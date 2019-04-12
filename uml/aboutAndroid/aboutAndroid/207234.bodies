@@ -1,0 +1,7 @@
+class WriteSettingsState
+!!!469890.java!!!	WriteSettingsState(inout permissionState : AppStateAppOpsBridge::PermissionState)
+            super(permissionState.packageName, permissionState.userHandle);
+            this.packageInfo = permissionState.packageInfo;
+            this.appOpMode = permissionState.appOpMode;
+            this.permissionDeclared = permissionState.permissionDeclared;
+            this.staticPermissionGranted = permissionState.staticPermissionGranted;

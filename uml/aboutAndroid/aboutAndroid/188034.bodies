@@ -1,0 +1,5 @@
+class TouchBlockingFrameLayout
+!!!363394.java!!!	TouchBlockingFrameLayout(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!363522.java!!!	dispatchTouchEvent(inout ev : MotionEvent) : boolean
+        return false;

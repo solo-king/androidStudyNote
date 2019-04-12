@@ -1,0 +1,18 @@
+class AppPrefLoader
+!!!615426.java!!!	doInBackground(inout  : String...params) : Preference
+            PackageManager pm = getPackageManager();
+            String pkg = params[0];
+            try {
+                ApplicationInfo info = pm.getApplicationInfo(pkg, 0);
+                Preference preference = new Preference(getPrefContext());
+                preference.setIcon(info.loadIcon(pm));
+                preference.setTitle(info.loadLabel(pm));
+                preference.setSelectable(false);
+                return preference;
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+            return null;
+!!!615554.java!!!	onPostExecute(inout pref : Preference) : void
+            if (pref != null && mAppList != null) {
+                mAppList.addPreference(pref);
+            }

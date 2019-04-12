@@ -1,0 +1,130 @@
+class ToggleBackupSettingFragment
+!!!542210.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mBackupManager = IBackupManager.Stub.asInterface(
+                ServiceManager.getService(Context.BACKUP_SERVICE));
+
+        PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(
+                getActivity());
+        setPreferenceScreen(preferenceScreen);
+        mSummaryPreference = new Preference(getPrefContext()) {
+            @Override
+            public void onBindViewHolder(PreferenceViewHolder view) {
+                super.onBindViewHolder(view);
+                final TextView summaryView = (TextView) view.findViewById(android.R.id.summary);
+                summaryView.setText(getSummary());
+            }
+        };
+        mSummaryPreference.setPersistent(false);
+        mSummaryPreference.setLayoutResource(R.layout.text_description_preference);
+        preferenceScreen.addPreference(mSummaryPreference);
+!!!542338.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+
+        SettingsActivity activity = (SettingsActivity) getActivity();
+        mSwitchBar = activity.getSwitchBar();
+        mToggleSwitch = mSwitchBar.getSwitch();
+
+        // Set up UI.
+        // If the user has not seen legal text for full data backup (if they OTA from L to M) then
+        // full data backup will be off and here we want to show the old summary here that does
+        // not mention full data backup
+        if (Settings.Secure.getInt(getContentResolver(), USER_FULL_DATA_BACKUP_AWARE, 0) != 0) {
+            mSummaryPreference.setSummary(R.string.fullbackup_data_summary);
+        } else {
+            mSummaryPreference.setSummary(R.string.backup_data_summary);
+        }
+        try {
+            boolean backupEnabled = mBackupManager == null ?
+                    false : mBackupManager.isBackupEnabled();
+            mSwitchBar.setCheckedInternal(backupEnabled);
+        } catch (RemoteException e) {
+            // The world is aflame, turn it off.
+            mSwitchBar.setEnabled(false);
+        }
+        getActivity().setTitle(R.string.backup_data_title);
+!!!542466.java!!!	onDestroyView() : void
+        super.onDestroyView();
+
+        mToggleSwitch.setOnBeforeCheckedChangeListener(null);
+        mSwitchBar.hide();
+!!!542594.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+
+        // Set up toggle listener. We need this b/c we have to intercept the toggle event in order
+        // to pop up the dialogue.
+        mToggleSwitch.setOnBeforeCheckedChangeListener(
+                new ToggleSwitch.OnBeforeCheckedChangeListener() {
+                    @Override
+                    public boolean onBeforeCheckedChanged(
+                            ToggleSwitch toggleSwitch, boolean checked) {
+                        if (!checked) {
+                            // Don't change Switch status until user makes choice in dialog
+                            // so return true here.
+                            showEraseBackupDialog();
+                            return true;
+                        } else {
+                            setBackupEnabled(true);
+                            mSwitchBar.setCheckedInternal(true);
+                            return true;
+                        }
+                    }
+                });
+        mSwitchBar.show();
+!!!542722.java!!!	onStop() : void
+        if (mConfirmDialog != null && mConfirmDialog.isShowing()) {
+            mConfirmDialog.dismiss();
+        }
+        mConfirmDialog = null;
+        super.onStop();
+!!!542850.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        // Accept turning off backup
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            mWaitingForConfirmationDialog = false;
+            setBackupEnabled(false);
+            mSwitchBar.setCheckedInternal(false);
+        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+            // Reject turning off backup
+            mWaitingForConfirmationDialog = false;
+            setBackupEnabled(true);
+            mSwitchBar.setCheckedInternal(true);
+        }
+!!!542978.java!!!	onDismiss(inout dialog : DialogInterface) : void
+        if (mWaitingForConfirmationDialog) {
+            // dismiss turning off backup
+            setBackupEnabled(true);
+            mSwitchBar.setCheckedInternal(true);
+        }
+!!!543106.java!!!	showEraseBackupDialog() : void
+        CharSequence msg;
+
+        // If the user has not seen legal text for full data backup (if they OTA from L to M) then
+        // full data backup will be off and here we want to show the old erase_dialog_message here
+        // that does not mention full data backup
+        if (Settings.Secure.getInt(getContentResolver(), USER_FULL_DATA_BACKUP_AWARE, 0) != 0) {
+            msg = getResources().getText(R.string.fullbackup_erase_dialog_message);
+        } else {
+            msg = getResources().getText(R.string.backup_erase_dialog_message);
+        }
+
+        mWaitingForConfirmationDialog = true;
+
+        // TODO: DialogFragment?
+        mConfirmDialog = new AlertDialog.Builder(getActivity()).setMessage(msg)
+                .setTitle(R.string.backup_erase_dialog_title)
+                .setPositiveButton(android.R.string.ok, this)
+                .setNegativeButton(android.R.string.cancel, this)
+                .setOnDismissListener(this)
+                .show();
+!!!543234.java!!!	getMetricsCategory() : int
+        return MetricsEvent.PRIVACY;
+!!!543362.java!!!	setBackupEnabled(inout enable : boolean) : void
+        if (mBackupManager != null) {
+            try {
+                mBackupManager.setBackupEnabled(enable);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Error communicating with BackupManager", e);
+                return;
+            }
+        }

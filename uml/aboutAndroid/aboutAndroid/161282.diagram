@@ -1,0 +1,82 @@
+format 76
+
+classinstance 128002 class_ref 318978 // CrimeListFragment
+  name ""   xyz 207 6 2005 life_line_z 2000
+classinstance 130178 class_ref 319106 // CrimeAdapter
+  name ""   xyz 653 4 2005 life_line_z 2000
+note 131202 "it's get show data from crimeLab.
+ "
+  xyzwh 440 264 2000 209 35
+durationcanvas 128770 classinstance_ref 128002 // :CrimeListFragment
+  xyzwh 262 74 2010 11 390
+  overlappingdurationcanvas 129154
+    xyzwh 268 103 2020 11 34
+  end
+  overlappingdurationcanvas 129410
+    xyzwh 268 158 2020 11 25
+  end
+  overlappingdurationcanvas 129666
+    xyzwh 268 239 2020 11 183
+    overlappingdurationcanvas 129922
+      xyzwh 274 288 2030 11 25
+    end
+    overlappingdurationcanvas 130818
+      xyzwh 274 380 2030 11 25
+    end
+  end
+end
+durationcanvas 130306 classinstance_ref 130178 // :CrimeAdapter
+  xyzwh 693 338 2010 11 134
+  overlappingdurationcanvas 130562
+    xyzwh 699 373 2020 11 25
+  end
+end
+lostfoundmsgsupport 128898 xyz 121 76 2015
+msg 129026 found_synchronous
+  from lostfoundmsgsupport_ref 128898
+  to durationcanvas_ref 128770
+  yz 74 2015 explicitmsg "A1.onCreateView"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 158 59
+reflexivemsg 129282 synchronous
+  to durationcanvas_ref 129154
+  yz 103 2025 explicitmsg "B1.View view = inflater.inflate(R.layout.fragment_crime_list, container, false);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 90 88
+reflexivemsg 129538 synchronous
+  to durationcanvas_ref 129410
+  yz 158 2025 explicitmsg "B2.mCrimeRecyclerView = (RecyclerView) view.findViewById(R.id.crime_recycler_view);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 59 143
+reflexivemsg 129794 synchronous
+  to durationcanvas_ref 129666
+  yz 239 2025 explicitmsg "B3.updateUI();"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 258 224
+reflexivemsg 130050 synchronous
+  to durationcanvas_ref 129922
+  yz 288 2035 explicitmsg "C1.List<Crime> crimes = crimeLab.getCrimes();"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 171 273
+msg 130434 synchronous
+  from durationcanvas_ref 129666
+  to durationcanvas_ref 130306
+  yz 339 2025 explicitmsg "C2.mAdapter = new CrimeAdapter(crimes);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 290 328
+reflexivemsg 130690 synchronous
+  to durationcanvas_ref 130562
+  yz 373 2025 explicitmsg "mCrimes = crimes;"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 666 358
+reflexivemsg 130946 synchronous
+  to durationcanvas_ref 130818
+  yz 380 2035 explicitmsg "C.3mCrimeRecyclerView.setAdapter(mAdapter);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 172 365
+selfreflexivemsg 131074
+  to durationcanvas_ref 128770
+  yz 456 2015 explicitmsg "B4.return view"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 270 441
+end

@@ -1,0 +1,42 @@
+class PowerWhitelistBackend
+!!!740866.java!!!	PowerWhitelistBackend()
+        mDeviceIdleService = IDeviceIdleController.Stub.asInterface(
+                ServiceManager.getService(DEVICE_IDLE_SERVICE));
+        refreshList();
+!!!740994.java!!!	getWhitelistSize() : int
+        return mWhitelistedApps.size();
+!!!741122.java!!!	isSysWhitelisted(in pkg : String) : boolean
+        return mSysWhitelistedApps.contains(pkg);
+!!!741250.java!!!	isWhitelisted(in pkg : String) : boolean
+        return mWhitelistedApps.contains(pkg);
+!!!741378.java!!!	addApp(in pkg : String) : void
+        try {
+            mDeviceIdleService.addPowerSaveWhitelistApp(pkg);
+            mWhitelistedApps.add(pkg);
+        } catch (RemoteException e) {
+            Log.w(TAG, "Unable to reach IDeviceIdleController", e);
+        }
+!!!741506.java!!!	removeApp(in pkg : String) : void
+        try {
+            mDeviceIdleService.removePowerSaveWhitelistApp(pkg);
+            mWhitelistedApps.remove(pkg);
+        } catch (RemoteException e) {
+            Log.w(TAG, "Unable to reach IDeviceIdleController", e);
+        }
+!!!741634.java!!!	refreshList() : void
+        mSysWhitelistedApps.clear();
+        mWhitelistedApps.clear();
+        try {
+            String[] whitelistedApps = mDeviceIdleService.getFullPowerWhitelist();
+            for (String app : whitelistedApps) {
+                mWhitelistedApps.add(app);
+            }
+            String[] sysWhitelistedApps = mDeviceIdleService.getSystemPowerWhitelist();
+            for (String app : sysWhitelistedApps) {
+                mSysWhitelistedApps.add(app);
+            }
+        } catch (RemoteException e) {
+            Log.w(TAG, "Unable to reach IDeviceIdleController", e);
+        }
+!!!741762.java!!!	getInstance() : PowerWhitelistBackend
+        return INSTANCE;

@@ -1,0 +1,25 @@
+class RemoteCallback
+!!!550786.java!!!	RemoteCallback(inout handler : Handler)
+        mHandler = handler;
+        mTarget = new LocalCallback();
+!!!550914.java!!!	RemoteCallback(inout target : IRemoteCallback)
+        mHandler = null;
+        mTarget = target;
+!!!551042.java!!!	sendResult(inout bundle : Bundle) : void
+        mTarget.sendResult(bundle);
+!!!551298.java!!!	equals(inout otherObj : Object) : boolean
+        if (otherObj == null) {
+            return false;
+        }
+        try {
+            return mTarget.asBinder().equals(((RemoteCallback)otherObj)
+                    .mTarget.asBinder());
+        } catch (ClassCastException e) {
+        }
+        return false;
+!!!551426.java!!!	hashCode() : int
+        return mTarget.asBinder().hashCode();
+!!!551554.java!!!	describeContents() : int
+        return 0;
+!!!551682.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        out.writeStrongBinder(mTarget.asBinder());

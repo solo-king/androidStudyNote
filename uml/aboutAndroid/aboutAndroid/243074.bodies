@@ -1,0 +1,111 @@
+class NightDisplaySettings
+!!!684930.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        final Context context = getContext();
+        mController = new NightDisplayController(context);
+
+        mTimeFormatter = android.text.format.DateFormat.getTimeFormat(context);
+        mTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+!!!685058.java!!!	onCreatePreferences(inout savedInstanceState : Bundle, in rootKey : String) : void
+        super.onCreatePreferences(savedInstanceState, rootKey);
+
+        // Load the preferences from xml.
+        addPreferencesFromResource(R.xml.night_display_settings);
+
+        mAutoModePreference = (DropDownPreference) findPreference(KEY_NIGHT_DISPLAY_AUTO_MODE);
+        mStartTimePreference = findPreference(KEY_NIGHT_DISPLAY_START_TIME);
+        mEndTimePreference = findPreference(KEY_NIGHT_DISPLAY_END_TIME);
+        mActivatedPreference = (TwoStatePreference) findPreference(KEY_NIGHT_DISPLAY_ACTIVATED);
+
+        mAutoModePreference.setEntries(new CharSequence[] {
+                getString(R.string.night_display_auto_mode_never),
+                getString(R.string.night_display_auto_mode_custom),
+                getString(R.string.night_display_auto_mode_twilight)
+        });
+        mAutoModePreference.setEntryValues(new CharSequence[] {
+                String.valueOf(NightDisplayController.AUTO_MODE_DISABLED),
+                String.valueOf(NightDisplayController.AUTO_MODE_CUSTOM),
+                String.valueOf(NightDisplayController.AUTO_MODE_TWILIGHT)
+        });
+        mAutoModePreference.setOnPreferenceChangeListener(this);
+        mActivatedPreference.setOnPreferenceChangeListener(this);
+!!!685186.java!!!	onStart() : void
+        super.onStart();
+
+        // Listen for changes only while visible.
+        mController.setListener(this);
+
+        // Update the current state since it have changed while not visible.
+        onActivated(mController.isActivated());
+        onAutoModeChanged(mController.getAutoMode());
+        onCustomStartTimeChanged(mController.getCustomStartTime());
+        onCustomEndTimeChanged(mController.getCustomEndTime());
+!!!685314.java!!!	onStop() : void
+        super.onStop();
+
+        // Stop listening for state changes.
+        mController.setListener(null);
+!!!685442.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        if (preference == mStartTimePreference) {
+            showDialog(DIALOG_START_TIME);
+            return true;
+        } else if (preference == mEndTimePreference) {
+            showDialog(DIALOG_END_TIME);
+            return true;
+        }
+        return super.onPreferenceTreeClick(preference);
+!!!685570.java!!!	onCreateDialog(in dialogId : int) : Dialog
+        if (dialogId == DIALOG_START_TIME || dialogId == DIALOG_END_TIME) {
+            final NightDisplayController.LocalTime initialTime;
+            if (dialogId == DIALOG_START_TIME) {
+                initialTime = mController.getCustomStartTime();
+            } else {
+                initialTime = mController.getCustomEndTime();
+            }
+
+            final Context context = getContext();
+            final boolean use24HourFormat = android.text.format.DateFormat.is24HourFormat(context);
+            return new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    final NightDisplayController.LocalTime time =
+                            new NightDisplayController.LocalTime(hourOfDay, minute);
+                    if (dialogId == DIALOG_START_TIME) {
+                        mController.setCustomStartTime(time);
+                    } else {
+                        mController.setCustomEndTime(time);
+                    }
+                }
+            }, initialTime.hourOfDay, initialTime.minute, use24HourFormat);
+        }
+        return super.onCreateDialog(dialogId);
+!!!685698.java!!!	onActivated(inout activated : boolean) : void
+        mActivatedPreference.setChecked(activated);
+!!!685826.java!!!	onAutoModeChanged(in autoMode : int) : void
+        mAutoModePreference.setValue(String.valueOf(autoMode));
+
+        final boolean showCustomSchedule = autoMode == NightDisplayController.AUTO_MODE_CUSTOM;
+        mStartTimePreference.setVisible(showCustomSchedule);
+        mEndTimePreference.setVisible(showCustomSchedule);
+!!!685954.java!!!	getFormattedTimeString(inout localTime : NightDisplayController.LocalTime) : String
+        final Calendar c = Calendar.getInstance();
+        c.setTimeZone(mTimeFormatter.getTimeZone());
+        c.set(Calendar.HOUR_OF_DAY, localTime.hourOfDay);
+        c.set(Calendar.MINUTE, localTime.minute);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return mTimeFormatter.format(c.getTime());
+!!!686082.java!!!	onCustomStartTimeChanged(inout startTime : NightDisplayController.LocalTime) : void
+        mStartTimePreference.setSummary(getFormattedTimeString(startTime));
+!!!686210.java!!!	onCustomEndTimeChanged(inout endTime : NightDisplayController.LocalTime) : void
+        mEndTimePreference.setSummary(getFormattedTimeString(endTime));
+!!!686338.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference == mAutoModePreference) {
+            return mController.setAutoMode(Integer.parseInt((String) newValue));
+        } else if (preference == mActivatedPreference) {
+            return mController.setActivated((Boolean) newValue);
+        }
+        return false;
+!!!686466.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NIGHT_DISPLAY_SETTINGS;

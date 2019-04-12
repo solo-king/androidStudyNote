@@ -1,0 +1,397 @@
+class EthernetStateTracker
+!!!138754.java!!!	EthernetStateTracker(in netType : int, in networkName : String)
+        Slog.i(TAG,"Starts...");
+
+        mNetworkInfo = new NetworkInfo(netType, 0, networkName, "");
+        mLinkProperties = new LinkProperties();
+        mLinkCapabilities = new LinkCapabilities();
+
+        mNetworkInfo.setIsAvailable(false);
+        setTeardownRequested(false);
+
+        if (EthernetNative.initEthernetNative() != 0 ) {
+            Slog.e(TAG,"Can not init ethernet device layers");
+            return;
+        }
+        Slog.i(TAG,"Success");
+        mServiceStarted = true;
+        HandlerThread dhcpThread = new HandlerThread("DHCP Handler Thread");
+        dhcpThread.start();
+        mDhcpTarget = new Handler(dhcpThread.getLooper(), mDhcpHandlerCallback);
+        mMonitor = new EthernetMonitor(this);
+!!!138882.java!!!	setTeardownRequested(inout isRequested : boolean) : void
+        mTeardownRequested.set(isRequested);
+!!!139010.java!!!	setTeardownRequested(inout isRequested : boolean, in subId : int) : void
+
+        mTeardownRequested.set(isRequested);
+
+!!!139138.java!!!	isTeardownRequested() : boolean
+        return mTeardownRequested.get();
+!!!139266.java!!!	isTeardownRequested(in subId : int) : boolean
+		return false;
+!!!139394.java!!!	stopInterface(inout suspend : boolean) : boolean
+        if (mEM != null) {
+            EthernetDevInfo info = mEM.getSavedEthConfig();
+            if (info != null && mEM.ethConfigured())
+            {
+                synchronized (mDhcpTarget) {
+                    mInterfaceStopped = true;
+                    Slog.i(TAG, "stop dhcp and interface");
+                    mDhcpTarget.removeMessages(EVENT_DHCP_START);
+                    mStartingDhcp = false;
+                    String ifname = info.getIfName();
+
+                    if (!NetworkUtils.stopDhcp(ifname)) {
+                        Slog.e(TAG, "Could not stop DHCP");
+                    }
+                    if (ifname != null)
+                        NetworkUtils.resetConnections(ifname, NetworkUtils.RESET_ALL_ADDRESSES);
+                    if (!suspend)
+                        NetworkUtils.disableInterface(ifname);
+                }
+            }
+        }
+
+        return true;
+!!!139522.java!!!	configureInterfaceStatic(in ifname : String, inout dhcpInfoInternal : DhcpInfoInternal) : boolean
+        IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
+        INetworkManagementService netd = INetworkManagementService.Stub.asInterface(b);
+        InterfaceConfiguration ifcg = new InterfaceConfiguration();
+        ifcg.setLinkAddress(dhcpInfoInternal.makeLinkAddress());
+        ifcg.setInterfaceUp();
+        try {
+            netd.setInterfaceConfig(ifname, ifcg);
+            mLinkProperties = dhcpInfoInternal.makeLinkProperties();
+            mLinkProperties.setInterfaceName(ifname);
+            Log.v(TAG, "Static IP configuration succeeded");
+            return true;
+        } catch (RemoteException re) {
+            Log.v(TAG, "Static IP configuration failed: " + re);
+            return false;
+        } catch (IllegalStateException e) {
+            Log.v(TAG, "Static IP configuration failed: " + e);
+            return false;
+        }
+!!!139650.java!!!	configureInterface(inout info : EthernetDevInfo) : boolean
+        mInterfaceName = info.getIfName();
+        mStackConnected = false;
+        mHWConnected = false;
+        mInterfaceStopped = false;
+
+        mDhcpInfoInternal = new DhcpInfoInternal();
+		mDhcpResults = new DhcpResults();
+
+        if (info.getConnectMode().equals(EthernetDevInfo.ETH_CONN_MODE_DHCP)) {
+            if (!mStartingDhcp) {
+                Slog.i(TAG, "trigger dhcp for device " + info.getIfName());
+                mStartingDhcp = true;
+                mDhcpTarget.sendEmptyMessage(EVENT_DHCP_START);
+            }
+        } else {
+            int event;
+            mDhcpInfoInternal.ipAddress = info.getIpAddress();
+            mDhcpInfoInternal.addRoute(new RouteInfo(NetworkUtils.numericToInetAddress(info.getRouteAddr())));
+
+            InetAddress ia = NetworkUtils.numericToInetAddress(info.getNetMask());
+            mDhcpInfoInternal.prefixLength = NetworkUtils.netmaskIntToPrefixLength(
+                    NetworkUtils.inetAddressToInt(ia));
+
+            mDhcpInfoInternal.dns1 = info.getDnsAddr();
+            Slog.i(TAG, "set ip manually " + mDhcpInfoInternal.toString());
+
+            if (info.getIfName() != null)
+                NetworkUtils.resetConnections(info.getIfName(), NetworkUtils.RESET_ALL_ADDRESSES);
+
+            if (configureInterfaceStatic(info.getIfName(), mDhcpInfoInternal)) {
+                event = EVENT_INTERFACE_CONFIGURATION_SUCCEEDED;
+                Slog.v(TAG, "Static IP configuration succeeded");
+            } else {
+                event = EVENT_INTERFACE_CONFIGURATION_FAILED;
+                Slog.v(TAG, "Static IP configuration failed");
+            }
+            mTrackerTarget.sendEmptyMessage(event);
+        }
+        return true;
+!!!139778.java!!!	resetInterface() : boolean
+        /*
+         * This will guide us to enabled the enabled device
+         */
+        if (mEM != null) {
+            EthernetDevInfo info = mEM.getSavedEthConfig();
+            if (info != null && mEM.ethConfigured()) {
+                synchronized (this) {
+                    mInterfaceName = info.getIfName();
+                    Slog.i(TAG, "reset device " + mInterfaceName);
+                    if (mInterfaceName != null)
+                        NetworkUtils.resetConnections(mInterfaceName, NetworkUtils.RESET_ALL_ADDRESSES);
+                     // Stop DHCP
+                    if (mDhcpTarget != null) {
+                        mDhcpTarget.removeMessages(EVENT_DHCP_START);
+                    }
+                    mStartingDhcp = false;
+                    if (!NetworkUtils.stopDhcp(mInterfaceName)) {
+                        Slog.e(TAG, "Could not stop DHCP");
+                    }
+                    Slog.i(TAG, "Force the connection disconnected before configuration");
+                    setEthState( false, EVENT_HW_DISCONNECTED);
+
+                    if (mInterfaceName != null)
+                        NetworkUtils.enableInterface(mInterfaceName);
+                    configureInterface(info);
+                }
+            }
+            else {
+                Slog.e(TAG, "Failed to resetInterface for EthernetManager is null");
+            }
+        }
+        return true;
+!!!139906.java!!!	getTcpBufferSizesPropName() : String
+        return "net.tcp.buffersize.default";
+!!!140034.java!!!	StartPolling() : void
+        Slog.v(TAG, "start polling");
+        mMonitor.startMonitoring();
+!!!140162.java!!!	isAvailable() : boolean
+        // Only say available if we have interfaces and user did not disable us.
+        return ((mEM.getTotalInterface() != 0) && (mEM.getEthState() != EthernetManager.ETH_STATE_DISABLED));
+!!!140290.java!!!	reconnect() : boolean
+        String devMode = mEM.getmEthDevMode();
+        Slog.i(TAG, "startMonitoring:devMode = "+devMode);
+        if(devMode != null&&devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+            Slog.d(TAG, "startMonitoring:devMode = lan,nothing to do");
+            return true;
+        }else {
+            try {
+                synchronized (this) {
+                    if (mHWConnected && mStackConnected) {
+                        Slog.i(TAG, "$$reconnect() returns DIRECTLY)");
+                        return true;
+                    }
+                }
+                if (mEM.getEthState() != EthernetManager.ETH_STATE_DISABLED ) {
+                    mEM.setEthEnabled(true);
+                    if (!mEM.ethConfigured()) {
+                        mEM.ethSetDefaultConf();
+                    }
+                    Slog.i(TAG, "$$reconnect call resetInterface()");
+                    return resetInterface();
+                }
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+!!!140546.java!!!	setRadio(inout turnOn : boolean) : boolean
+        return false;
+!!!140674.java!!!	startMonitoring(inout context : Context, inout target : Handler) : void
+        Slog.i(TAG, "start to monitor the Ethernet devices");
+        if (mServiceStarted) {
+            mContext = context;
+            mEM = (EthernetManager)mContext.getSystemService(Context.ETH_SERVICE);
+            mTarget = target;
+            mTrackerTarget = new Handler(target.getLooper(), mTrackerHandlerCallback);
+            String devMode = mEM.getmEthDevMode();
+            Slog.i(TAG, "startMonitoring:devMode = "+devMode);
+            if(devMode != null&&devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+                Slog.d(TAG, "startMonitoring:devMode = lan,nothing to do");
+            }else {//wan模式
+                int state = mEM.getEthState();
+                if (state != mEM.ETH_STATE_DISABLED) {
+                    if (state == mEM.ETH_STATE_UNKNOWN){
+                        // maybe this is the first time we run, so set it to disable
+                        mEM.setEthEnabled(false);
+                    } else {
+                        Slog.i(TAG, "$$ DISABLE startMonitoring call resetInterface()");
+                        try {
+                            resetInterface();
+                        } catch (UnknownHostException e) {
+                            Slog.e(TAG, "Wrong Ethernet configuration");
+                        }
+                    }
+                }
+            }
+
+        }
+!!!140802.java!!!	setUserDataEnable(inout enabled : boolean) : void
+        Slog.d(TAG, "ignoring setUserDataEnable(" + enabled + ")");
+!!!140930.java!!!	setUserDataEnable(inout enabled : boolean, in subId : int) : void
+
+!!!141058.java!!!	setPolicyDataEnable(inout enabled : boolean, in subId : int) : void
+	
+!!!141186.java!!!	setPolicyDataEnable(inout enabled : boolean) : void
+        Slog.d(TAG, "ignoring setPolicyDataEnable(" + enabled + ")");
+!!!141314.java!!!	isPrivateDnsRouteSet() : boolean
+        return mPrivateDnsRouteSet.get();
+!!!141442.java!!!	isPrivateDnsRouteSet(in subId : int) : boolean
+		
+		return false;
+!!!141570.java!!!	privateDnsRouteSet(inout enabled : boolean) : void
+        mPrivateDnsRouteSet.set(enabled);
+!!!141698.java!!!	privateDnsRouteSet(inout enabled : boolean, in subId : int) : void
+
+!!!141826.java!!!	isDefaultRouteSet() : boolean
+        return mDefaultRouteSet.get();
+!!!141954.java!!!	isDefaultRouteSet(in subId : int) : boolean
+		return false;
+!!!142082.java!!!	defaultRouteSet(inout enabled : boolean) : void
+        mDefaultRouteSet.set(enabled);
+!!!142210.java!!!	defaultRouteSet(inout enabled : boolean, in subId : int) : void
+		
+!!!142338.java!!!	getNetworkInfo() : NetworkInfo
+        return new NetworkInfo(mNetworkInfo);
+!!!142466.java!!!	getNetworkInfo(in subId : int) : NetworkInfo
+
+		return new NetworkInfo(mNetworkInfo);
+!!!142594.java!!!	getLinkProperties() : LinkProperties
+        return new LinkProperties(mLinkProperties);
+!!!142722.java!!!	getLinkProperties(in subId : int) : LinkProperties
+		return null;
+!!!142850.java!!!	getLinkCapabilities() : LinkCapabilities
+        return new LinkCapabilities(mLinkCapabilities);
+!!!142978.java!!!	getLinkCapabilities(in subId : int) : LinkCapabilities
+		return null;
+!!!143106.java!!!	teardown() : boolean
+        return (mEM != null) ? stopInterface(false) : false;
+!!!143234.java!!!	postNotification(in event : int) : void
+        //获取当前数据库中的dev_mode
+        String devMode  = getEthernetDevMode(new String("eth0"));
+        if(devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+            Slog.d(TAG, "notifyPhyConnected: devMode is lan ,nothing to do !!!");
+        }else {
+            final Intent intent = new Intent(EthernetManager.ETH_STATE_CHANGED_ACTION);
+            intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
+            intent.putExtra(EthernetManager.EXTRA_ETH_STATE, event);
+            //mContext.sendStickyBroadcast(intent);
+            mContext.sendStickyBroadcastAsUser(intent, UserHandle.ALL);//modify by hclydao
+            Message msg = mTarget.obtainMessage(EVENT_STATE_CHANGED, new NetworkInfo(mNetworkInfo));
+            msg.sendToTarget();
+        }
+!!!143362.java!!!	setEthState(inout state : boolean, in event : int) : void
+        Slog.d(TAG, "setEthState state=" + mNetworkInfo.isConnected() + "->" + state + " event=" + event);
+        if (mNetworkInfo.isConnected() != state) {
+			Slog.d(TAG, "++++isConnected: " + mNetworkInfo.isConnected());
+            if (state) {
+                mNetworkInfo.setDetailedState(DetailedState.CONNECTED, null, null);
+            } else {
+                mNetworkInfo.setDetailedState(DetailedState.DISCONNECTED, null, null);
+                if( EVENT_HW_DISCONNECTED == event ) {
+                    Slog.d(TAG, "EVENT_HW_DISCONNECTED: StopInterface");
+                    stopInterface(true);
+                }
+            }
+			Slog.d(TAG, "***isConnected: " + mNetworkInfo.isConnected());
+            mNetworkInfo.setIsAvailable(state);
+            Message msg = mTarget.obtainMessage(EVENT_CONFIGURATION_CHANGED, mNetworkInfo);
+            msg.sendToTarget();
+            //msg = mTarget.obtainMessage(EVENT_STATE_CHANGED, new NetworkInfo(mNetworkInfo));
+            //msg.sendToTarget();
+        }
+        postNotification(event);
+!!!143490.java!!!	getDhcpInfo() : DhcpInfo
+        return mDhcpInfoInternal.makeDhcpInfo();
+!!!143618.java!!!	getEthernetDevMode(in ethx : String) : String
+        try {
+            final ContentResolver cr = mContext.getContentResolver();
+            String devMode = Settings.Global.getString(cr, Settings.Global.ETH_DEV_MODE);
+            Slog.d(TAG, "devMode = "+devMode);
+            if(devMode == null)
+                return EthernetDevInfo.ETH_DEV_MODE_WAN;//默认返回wan模式
+
+            return devMode.trim();
+        } catch (java.lang.Exception exception) {
+            Slog.e(TAG, "获取 devMode 失败");
+            exception.printStackTrace();
+        }
+        return EthernetDevInfo.ETH_DEV_MODE_WAN;//默认返回wan模式
+!!!143746.java!!!	notifyPhyConnected(in ifname : String) : void
+        Slog.i(TAG, "report interface is up for " + ifname);
+        synchronized(this) {
+            //获取当前数据库中的dev_mode
+            String devMode = getEthernetDevMode(new String("eth0"));
+            if(devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+                Slog.d(TAG, "notifyPhyConnected: devMode is lan ,nothing to do !!!");
+            }else {
+                Message msg = mTrackerTarget.obtainMessage(EVENT_HW_PHYCONNECTED, ifname);
+                msg.sendToTarget();
+            }
+
+        }
+
+!!!143874.java!!!	notifyStateChange(in ifname : String, inout state : DetailedState) : void
+        Slog.v(TAG, "report new state " + state.toString() + " on dev " + ifname + " current=" + mInterfaceName);
+        //获取当前数据库中的dev_mode
+        String devMode = getEthernetDevMode(new String("eth0"));
+        if (devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)) {//add by chenqigan
+            Slog.d(TAG, "devMode is lan,nothing to do!!");
+            /*  */
+        }else{
+            if (ifname.equals(mInterfaceName)) {//modify by chenqigan
+
+
+                Slog.v(TAG, "update network state tracker");
+                synchronized (this) {
+                    mTrackerTarget.sendEmptyMessage(state.equals(DetailedState.CONNECTED)
+                            ? EVENT_HW_CONNECTED : EVENT_HW_DISCONNECTED);
+                }
+            } else if (ifname.equals("(pulledout)"))
+                postNotification(EVENT_HW_PHYDISCONNECTED);
+            else
+                postNotification(EVENT_HW_CHANGED);
+        }
+!!!144002.java!!!	setDependencyMet(inout met : boolean) : void
+        // not supported on this network
+!!!144258.java!!!	addStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.addStackedLink(link);
+!!!144514.java!!!	removeStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.removeStackedLink(link);
+!!!144642.java!!!	supplyMessenger(inout messenger : Messenger) : void
+        // not supported on this network
+!!!144770.java!!!	getNetworkInterfaceName() : String
+        if (mLinkProperties != null) {
+            return mLinkProperties.getInterfaceName();
+        } else {
+            return null;
+        }
+!!!144898.java!!!	getNetworkInterfaceName(in subId : int) : String
+        return "eth0";
+!!!145026.java!!!	supplyMessengerForSubscription(inout messenger : Messenger, in subId : int) : void
+        
+!!!145154.java!!!	startSampling(inout s : SamplingDataTracker.SamplingSnapshot) : void
+        // nothing to do
+!!!145282.java!!!	startSampling(inout s : SamplingDataTracker.SamplingSnapshot, in subId : int) : void
+        // nothing to do
+!!!145410.java!!!	stopSampling(inout s : SamplingDataTracker.SamplingSnapshot) : void
+        // nothing to do
+!!!145538.java!!!	stopSampling(inout s : SamplingDataTracker.SamplingSnapshot, in subId : int) : void
+        // nothing to do
+!!!145666.java!!!	captivePortalCheckCompleted(inout isCaptivePortal : boolean) : void
+        // not implemented
+!!!145794.java!!!	getLinkQualityInfo() : LinkQualityInfo
+        Log.d(TAG, "getLinkQualityInfo(),return null!!!!");
+        return null;
+!!!145922.java!!!	getLinkQualityInfo(in subId : int) : LinkQualityInfo
+        Log.d(TAG, "getLinkQualityInfo(int subId),return null!!!!");
+		return null;
+!!!146050.java!!!	removeStackedLink(inout link : LinkProperties, in subId : int) : void
+
+!!!146178.java!!!	getTcpDelayedAckPropName() : String
+        String networkTypeStr = "default";
+
+        return "net.tcp.delack." + networkTypeStr;
+!!!146306.java!!!	getTcpUserConfigPropName() : String
+        String networkTypeStr = "default";
+
+        return "net.tcp.usercfg."+networkTypeStr;
+!!!146434.java!!!	getDefaultTcpDelayedAckPropName() : String
+        return "net.tcp.delack.default";
+!!!146562.java!!!	getDefaultTcpUserConfigPropName() : String
+        return "net.tcp.usercfg.default";
+!!!146690.java!!!	teardown(in subId : int) : boolean
+        Log.d(TAG, "teardown(int subId),return false!!!!");
+		return false;
+!!!146818.java!!!	reconnect(in subId : int) : boolean
+        Log.d(TAG, "reconnect(int subId),return false!!!!");
+		return false;
+!!!146946.java!!!	isAvailable(in subId : int) : boolean
+        Log.d(TAG, "isAvailable(int subId),return false!!!!");
+		return false;

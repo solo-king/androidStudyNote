@@ -1,0 +1,5 @@
+class SilentObserver
+!!!667778.java!!!	onCreated(in moveId : int, inout extras : Bundle) : void
+            // Ignored
+!!!667906.java!!!	onStatusChanged(in moveId : int, in status : int, in estMillis : long) : void
+            // Ignored

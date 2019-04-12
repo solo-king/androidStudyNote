@@ -1,0 +1,30 @@
+class SetupChooseLockPassword
+!!!341122.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, inout confirmCredentials : boolean) : Intent
+        Intent intent = ChooseLockPassword.createIntent(context, quality, minLength,
+                maxLength, requirePasswordToDecrypt, confirmCredentials);
+        intent.setClass(context, SetupChooseLockPassword.class);
+        intent.putExtra(EXTRA_PREFS_SHOW_BUTTON_BAR, false);
+        return intent;
+!!!341250.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in password : String) : Intent
+        Intent intent = ChooseLockPassword.createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, password);
+        intent.setClass(context, SetupChooseLockPassword.class);
+        intent.putExtra(EXTRA_PREFS_SHOW_BUTTON_BAR, false);
+        return intent;
+!!!341378.java!!!	createIntent(inout context : Context, in quality : int, in minLength : int, in maxLength : int, inout requirePasswordToDecrypt : boolean, in challenge : long) : Intent
+        Intent intent = ChooseLockPassword.createIntent(context, quality, minLength, maxLength,
+                requirePasswordToDecrypt, challenge);
+        intent.setClass(context, SetupChooseLockPassword.class);
+        intent.putExtra(EXTRA_PREFS_SHOW_BUTTON_BAR, false);
+        return intent;
+!!!341506.java!!!	isValidFragment(in fragmentName : String) : boolean
+        return SetupChooseLockPasswordFragment.class.getName().equals(fragmentName);
+!!!341634.java!!!	getFragmentClass() : Class<? extends Fragment>
+        return SetupChooseLockPasswordFragment.class;
+!!!341762.java!!!	onCreate(inout savedInstance : Bundle) : void
+        super.onCreate(savedInstance);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.content_parent);
+        layout.setFitsSystemWindows(false);
+!!!341890.java!!!	onApplyThemeResource(inout theme : Resources.Theme, in resid : int, inout first : boolean) : void
+        resid = SetupWizardUtils.getTheme(getIntent());
+        super.onApplyThemeResource(theme, resid, first);

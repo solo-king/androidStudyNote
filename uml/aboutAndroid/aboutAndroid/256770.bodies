@@ -1,0 +1,121 @@
+class UserDictionaryList
+!!!775810.java!!!	getMetricsCategory() : int
+        return MetricsEvent.INPUTMETHOD_USER_DICTIONARY;
+!!!775938.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getActivity()));
+!!!776066.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        getActivity().getActionBar().setTitle(R.string.user_dict_settings_title);
+
+        final Intent intent = getActivity().getIntent();
+        final String localeFromIntent =
+                null == intent ? null : intent.getStringExtra("locale");
+
+        final Bundle arguments = getArguments();
+        final String localeFromArguments =
+                null == arguments ? null : arguments.getString("locale");
+
+        final String locale;
+        if (null != localeFromArguments) {
+            locale = localeFromArguments;
+        } else if (null != localeFromIntent) {
+            locale = localeFromIntent;
+        } else {
+            locale = null;
+        }
+        mLocale = locale;
+!!!776194.java!!!	getUserDictionaryLocalesSet(inout context : Context) : TreeSet<String>
+        final Cursor cursor = context.getContentResolver().query(
+                UserDictionary.Words.CONTENT_URI, new String[] { UserDictionary.Words.LOCALE },
+                null, null, null);
+        final TreeSet<String> localeSet = new TreeSet<String>();
+        if (null == cursor) {
+            // The user dictionary service is not present or disabled. Return null.
+            return null;
+        }
+        try {
+            if (cursor.moveToFirst()) {
+                final int columnIndex = cursor.getColumnIndex(UserDictionary.Words.LOCALE);
+                do {
+                    final String locale = cursor.getString(columnIndex);
+                    localeSet.add(null != locale ? locale : "");
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            cursor.close();
+        }
+
+        // CAVEAT: Keep this for consistency of the implementation between Keyboard and Settings
+        // if (!UserDictionarySettings.IS_SHORTCUT_API_SUPPORTED) {
+        //     // For ICS, we need to show "For all languages" in case that the keyboard locale
+        //     // is different from the system locale
+        //     localeSet.add("");
+        // }
+
+        final InputMethodManager imm =
+                (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        final List<InputMethodInfo> imis = imm.getEnabledInputMethodList();
+        for (final InputMethodInfo imi : imis) {
+            final List<InputMethodSubtype> subtypes =
+                    imm.getEnabledInputMethodSubtypeList(
+                            imi, true /* allowsImplicitlySelectedSubtypes */);
+            for (InputMethodSubtype subtype : subtypes) {
+                final String locale = subtype.getLocale();
+                if (!TextUtils.isEmpty(locale)) {
+                    localeSet.add(locale);
+                }
+            }
+        }
+
+        // We come here after we have collected locales from existing user dictionary entries and
+        // enabled subtypes. If we already have the locale-without-country version of the system
+        // locale, we don't add the system locale to avoid confusion even though it's technically
+        // correct to add it.
+        if (!localeSet.contains(Locale.getDefault().getLanguage().toString())) {
+            localeSet.add(Locale.getDefault().toString());
+        }
+
+        return localeSet;
+!!!776322.java!!!	createUserDictSettings(inout userDictGroup : PreferenceGroup) : void
+        final Activity activity = getActivity();
+        userDictGroup.removeAll();
+        final TreeSet<String> localeSet =
+                UserDictionaryList.getUserDictionaryLocalesSet(activity);
+        if (mLocale != null) {
+            // If the caller explicitly specify empty string as a locale, we'll show "all languages"
+            // in the list.
+            localeSet.add(mLocale);
+        }
+        if (localeSet.size() > 1) {
+            // Have an "All languages" entry in the languages list if there are two or more active
+            // languages
+            localeSet.add("");
+        }
+
+        if (localeSet.isEmpty()) {
+            userDictGroup.addPreference(createUserDictionaryPreference(null, activity));
+        } else {
+            for (String locale : localeSet) {
+                userDictGroup.addPreference(createUserDictionaryPreference(locale, activity));
+            }
+        }
+!!!776450.java!!!	createUserDictionaryPreference(in locale : String, inout activity : Activity) : Preference
+        final Preference newPref = new Preference(getPrefContext());
+        final Intent intent = new Intent(USER_DICTIONARY_SETTINGS_INTENT_ACTION);
+        if (null == locale) {
+            newPref.setTitle(Locale.getDefault().getDisplayName());
+        } else {
+            if ("".equals(locale))
+                newPref.setTitle(getString(R.string.user_dict_settings_all_languages));
+            else
+                newPref.setTitle(Utils.createLocaleFromString(locale).getDisplayName());
+            intent.putExtra("locale", locale);
+            newPref.getExtras().putString("locale", locale);
+        }
+        newPref.setIntent(intent);
+        newPref.setFragment(com.android.settings.UserDictionarySettings.class.getName());
+        return newPref;
+!!!776578.java!!!	onResume() : void
+        super.onResume();
+        createUserDictSettings(getPreferenceScreen());

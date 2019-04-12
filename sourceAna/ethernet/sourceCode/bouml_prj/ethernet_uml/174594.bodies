@@ -1,0 +1,3 @@
+class Transport
+!!!448770.java!!!	cancel() : void
+            mCancellationSignal.cancel();

@@ -1,0 +1,21 @@
+class AsyncPackageCheck
+!!!348418.java!!!	doInBackground(inout  : String...params) : Void
+            String key = params[0];
+            String value = params[1];
+            PackageManager pm = mContext.getPackageManager();
+            try {
+                // Check if this might be a component.
+                ComponentName name = ComponentName.unflattenFromString(value);
+                if (value != null) {
+                    value = name.getPackageName();
+                }
+            } catch (Exception e) {
+            }
+            try {
+                pm.getPackageInfo(value, PackageManager.MATCH_UNINSTALLED_PACKAGES);
+                logPackageName(key, value);
+            } catch (PackageManager.NameNotFoundException e) {
+                // Clearly not a package, lets log it.
+                logValue(key, value);
+            }
+            return null;

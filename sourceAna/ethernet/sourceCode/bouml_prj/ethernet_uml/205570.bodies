@@ -1,0 +1,120 @@
+class RestrictionEntry
+!!!759554.java!!!	RestrictionEntry(in key : String, in selectedString : String)
+        this.key = key;
+        this.type = TYPE_CHOICE;
+        this.currentValue = selectedString;
+!!!759682.java!!!	RestrictionEntry(in key : String, inout selectedState : boolean)
+        this.key = key;
+        this.type = TYPE_BOOLEAN;
+        setSelectedState(selectedState);
+!!!759810.java!!!	RestrictionEntry(in key : String, inout selectedStrings : String)
+        this.key = key;
+        this.type = TYPE_MULTI_SELECT;
+        this.currentValues = selectedStrings;
+!!!759938.java!!!	setType(in type : int) : void
+        this.type = type;
+!!!760066.java!!!	getType() : int
+        return type;
+!!!760194.java!!!	getSelectedString() : String
+        return currentValue;
+!!!760322.java!!!	getAllSelectedStrings() : String
+        return currentValues;
+!!!760450.java!!!	getSelectedState() : boolean
+        return Boolean.parseBoolean(currentValue);
+!!!760578.java!!!	setSelectedString(in selectedString : String) : void
+        currentValue = selectedString;
+!!!760706.java!!!	setSelectedState(inout state : boolean) : void
+        currentValue = Boolean.toString(state);
+!!!760834.java!!!	setAllSelectedStrings(inout allSelectedStrings : String) : void
+        currentValues = allSelectedStrings;
+!!!760962.java!!!	setChoiceValues(inout choiceValues : String) : void
+        values = choiceValues;
+!!!761090.java!!!	setChoiceValues(inout context : Context, in stringArrayResId : int) : void
+        values = context.getResources().getStringArray(stringArrayResId);
+!!!761218.java!!!	getChoiceValues() : String
+        return values;
+!!!761346.java!!!	setChoiceEntries(inout choiceEntries : String) : void
+        choices = choiceEntries;
+!!!761474.java!!!	setChoiceEntries(inout context : Context, in stringArrayResId : int) : void
+        choices = context.getResources().getStringArray(stringArrayResId);
+!!!761602.java!!!	getChoiceEntries() : String
+        return choices;
+!!!761730.java!!!	getDescription() : String
+        return description;
+!!!761858.java!!!	setDescription(in description : String) : void
+        this.description = description;
+!!!761986.java!!!	getKey() : String
+        return key;
+!!!762114.java!!!	getTitle() : String
+        return title;
+!!!762242.java!!!	setTitle(in title : String) : void
+        this.title = title;
+!!!762370.java!!!	equalArrays(inout one : String, inout other : String) : boolean
+        if (one.length != other.length) return false;
+        for (int i = 0; i < one.length; i++) {
+            if (!one[i].equals(other[i])) return false;
+        }
+        return true;
+!!!762498.java!!!	equals(inout o : Object) : boolean
+        if (o == this) return true;
+        if (!(o instanceof RestrictionEntry)) return false;
+        final RestrictionEntry other = (RestrictionEntry) o;
+        // Make sure that either currentValue matches or currentValues matches.
+        return type == other.type && key.equals(other.key)
+                &&
+                ((currentValues == null && other.currentValues == null
+                  && currentValue != null && currentValue.equals(other.currentValue))
+                 ||
+                 (currentValue == null && other.currentValue == null
+                  && currentValues != null && equalArrays(currentValues, other.currentValues)));
+!!!762626.java!!!	hashCode() : int
+        int result = 17;
+        result = 31 * result + key.hashCode();
+        if (currentValue != null) {
+            result = 31 * result + currentValue.hashCode();
+        } else if (currentValues != null) {
+            for (String value : currentValues) {
+                if (value != null) {
+                    result = 31 * result + value.hashCode();
+                }
+            }
+        }
+        return result;
+!!!762754.java!!!	readArray(inout in : Parcel) : String
+        int count = in.readInt();
+        String[] values = new String[count];
+        for (int i = 0; i < count; i++) {
+            values[i] = in.readString();
+        }
+        return values;
+!!!762882.java!!!	RestrictionEntry(inout in : Parcel)
+        type = in.readInt();
+        key = in.readString();
+        title = in.readString();
+        description = in.readString();
+        choices = readArray(in);
+        values = readArray(in);
+        currentValue = in.readString();
+        currentValues = readArray(in);
+!!!763010.java!!!	describeContents() : int
+        return 0;
+!!!763138.java!!!	writeArray(inout dest : Parcel, inout values : String) : void
+        if (values == null) {
+            dest.writeInt(0);
+        } else {
+            dest.writeInt(values.length);
+            for (int i = 0; i < values.length; i++) {
+                dest.writeString(values[i]);
+            }
+        }
+!!!763266.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeInt(type);
+        dest.writeString(key);
+        dest.writeString(title);
+        dest.writeString(description);
+        writeArray(dest, choices);
+        writeArray(dest, values);
+        dest.writeString(currentValue);
+        writeArray(dest, currentValues);
+!!!763394.java!!!	toString() : String
+        return "RestrictionsEntry {type=" + type + ", key=" + key + ", value=" + currentValue + "}";

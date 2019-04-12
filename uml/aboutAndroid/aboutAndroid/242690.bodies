@@ -1,0 +1,15 @@
+class FbDisplaySetting
+!!!682626.java!!!	getDisplayInfoList() : DisplayInfo
+        return null;
+!!!682754.java!!!	getDisplayModes(inout di : DisplayInfo) : List<String>
+        return null;
+!!!682882.java!!!	getCurDisplayMode(inout di : DisplayInfo) : String
+        return null;
+!!!683010.java!!!	getCurHdmiMode() : String
+        return null;
+!!!683138.java!!!	setDisplayModeTemp(inout di : DisplayInfo, in index : int) : void
+
+!!!683266.java!!!	setDisplayModeTemp(inout di : DisplayInfo, in mode : String) : void
+
+!!!683394.java!!!	confirmSaveDisplayMode(inout di : DisplayInfo, inout isSave : boolean) : void
+

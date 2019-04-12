@@ -1,0 +1,10 @@
+class UserDictionarySettingsUtils
+!!!776834.java!!!	getLocaleDisplayName(inout context : Context, in localeStr : String) : String
+        if (TextUtils.isEmpty(localeStr)) {
+            // CAVEAT: localeStr should not be null because a null locale stands for the system
+            // locale in UserDictionary.Words.addWord.
+            return context.getResources().getString(R.string.user_dict_settings_all_languages);
+        }
+        final Locale locale = Utils.createLocaleFromString(localeStr);
+        final Locale systemLocale = context.getResources().getConfiguration().locale;
+        return locale.getDisplayName(systemLocale);

@@ -1,0 +1,252 @@
+class FingerprintSettingsFragment
+!!!327938.java!!!	stopFingerprint() : void
+            if (mFingerprintCancel != null && !mFingerprintCancel.isCanceled()) {
+                mFingerprintCancel.cancel();
+            }
+            mFingerprintCancel = null;
+!!!328066.java!!!	handleError(in errMsgId : int, inout msg : CharSequence) : void
+            mFingerprintCancel = null;
+            switch (errMsgId) {
+                case FingerprintManager.FINGERPRINT_ERROR_CANCELED:
+                    return; // Only happens if we get preempted by another activity. Ignored.
+                case FingerprintManager.FINGERPRINT_ERROR_LOCKOUT:
+                    mInFingerprintLockout = true;
+                    // We've been locked out.  Reset after 30s.
+                    if (!mHandler.hasCallbacks(mFingerprintLockoutReset)) {
+                        mHandler.postDelayed(mFingerprintLockoutReset,
+                                LOCKOUT_DURATION);
+                    }
+                    // Fall through to show message
+                default:
+                    // Activity can be null on a screen rotation.
+                    final Activity activity = getActivity();
+                    if (activity != null) {
+                        Toast.makeText(activity, msg , Toast.LENGTH_SHORT);
+                    }
+                break;
+            }
+            retryFingerprint(); // start again
+!!!328194.java!!!	retryFingerprint() : void
+            if (!mInFingerprintLockout) {
+                mFingerprintCancel = new CancellationSignal();
+                mFingerprintManager.authenticate(null, mFingerprintCancel, 0 /* flags */,
+                        mAuthCallback, null, mUserId);
+            }
+!!!328322.java!!!	getMetricsCategory() : int
+            return MetricsEvent.FINGERPRINT;
+!!!328450.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+            super.onCreate(savedInstanceState);
+            if (savedInstanceState != null) {
+                mToken = savedInstanceState.getByteArray(
+                        ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+                mLaunchedConfirm = savedInstanceState.getBoolean(
+                        KEY_LAUNCHED_CONFIRM, false);
+            }
+            mUserId = getActivity().getIntent().getIntExtra(
+                    Intent.EXTRA_USER_ID, UserHandle.myUserId());
+
+            Activity activity = getActivity();
+            mFingerprintManager = (FingerprintManager) activity.getSystemService(
+                    Context.FINGERPRINT_SERVICE);
+
+            // Need to authenticate a session token if none
+            if (mToken == null && mLaunchedConfirm == false) {
+                mLaunchedConfirm = true;
+                launchChooseOrConfirmLock();
+            }
+!!!328578.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+            super.onViewCreated(view, savedInstanceState);
+            TextView v = (TextView) LayoutInflater.from(view.getContext()).inflate(
+                    R.layout.fingerprint_settings_footer, null);
+            EnforcedAdmin admin = RestrictedLockUtils.checkIfKeyguardFeaturesDisabled(
+                    getActivity(), DevicePolicyManager.KEYGUARD_DISABLE_FINGERPRINT, mUserId);
+            v.setText(LearnMoreSpan.linkify(getText(admin != null
+                            ? R.string.security_settings_fingerprint_enroll_disclaimer_lockscreen_disabled
+                            : R.string.security_settings_fingerprint_enroll_disclaimer),
+                    getString(getHelpResource()), admin));
+            v.setMovementMethod(new LinkMovementMethod());
+            setFooterView(v);
+!!!328706.java!!!	removeFingerprintPreference(in fingerprintId : int) : void
+            String name = genKey(fingerprintId);
+            Preference prefToRemove = findPreference(name);
+            if (prefToRemove != null) {
+                if (!getPreferenceScreen().removePreference(prefToRemove)) {
+                    Log.w(TAG, "Failed to remove preference with key " + name);
+                }
+            } else {
+                Log.w(TAG, "Can't find preference to remove: " + name);
+            }
+!!!328834.java!!!	createPreferenceHierarchy() : PreferenceScreen
+            PreferenceScreen root = getPreferenceScreen();
+            if (root != null) {
+                root.removeAll();
+            }
+            addPreferencesFromResource(R.xml.security_settings_fingerprint);
+            root = getPreferenceScreen();
+            addFingerprintItemPreferences(root);
+            setPreferenceScreen(root);
+            return root;
+!!!328962.java!!!	addFingerprintItemPreferences(inout root : PreferenceGroup) : void
+            root.removeAll();
+            final List<Fingerprint> items = mFingerprintManager.getEnrolledFingerprints(mUserId);
+            final int fingerprintCount = items.size();
+            for (int i = 0; i < fingerprintCount; i++) {
+                final Fingerprint item = items.get(i);
+                FingerprintPreference pref = new FingerprintPreference(root.getContext());
+                pref.setKey(genKey(item.getFingerId()));
+                pref.setTitle(item.getName());
+                pref.setFingerprint(item);
+                pref.setPersistent(false);
+                pref.setIcon(R.drawable.ic_fingerprint_24dp);
+                root.addPreference(pref);
+                pref.setOnPreferenceChangeListener(this);
+            }
+            Preference addPreference = new Preference(root.getContext());
+            addPreference.setKey(KEY_FINGERPRINT_ADD);
+            addPreference.setTitle(R.string.fingerprint_add_title);
+            addPreference.setIcon(R.drawable.ic_add_24dp);
+            root.addPreference(addPreference);
+            addPreference.setOnPreferenceChangeListener(this);
+            updateAddPreference();
+!!!329090.java!!!	updateAddPreference() : void
+            /* Disable preference if too many fingerprints added */
+            final int max = getContext().getResources().getInteger(
+                    com.android.internal.R.integer.config_fingerprintMaxTemplatesPerUser);
+            boolean tooMany = mFingerprintManager.getEnrolledFingerprints(mUserId).size() >= max;
+            CharSequence maxSummary = tooMany ?
+                    getContext().getString(R.string.fingerprint_add_max, max) : "";
+            Preference addPreference = findPreference(KEY_FINGERPRINT_ADD);
+            addPreference.setSummary(maxSummary);
+            addPreference.setEnabled(!tooMany);
+!!!329218.java!!!	genKey(in id : int) : String
+            return KEY_FINGERPRINT_ITEM_PREFIX + "_" + id;
+!!!329346.java!!!	onResume() : void
+            super.onResume();
+            // Make sure we reload the preference hierarchy since fingerprints may be added,
+            // deleted or renamed.
+            updatePreferences();
+!!!329474.java!!!	updatePreferences() : void
+            createPreferenceHierarchy();
+            retryFingerprint();
+!!!329602.java!!!	onPause() : void
+            super.onPause();
+            stopFingerprint();
+!!!329730.java!!!	onSaveInstanceState(in outState : Bundle) : void
+            outState.putByteArray(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN,
+                    mToken);
+            outState.putBoolean(KEY_LAUNCHED_CONFIRM, mLaunchedConfirm);
+!!!329858.java!!!	onPreferenceTreeClick(inout pref : Preference) : boolean
+            final String key = pref.getKey();
+            if (KEY_FINGERPRINT_ADD.equals(key)) {
+                Intent intent = new Intent();
+                intent.setClassName("com.android.settings",
+                        FingerprintEnrollEnrolling.class.getName());
+                intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
+                intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
+                startActivityForResult(intent, ADD_FINGERPRINT_REQUEST);
+            } else if (pref instanceof FingerprintPreference) {
+                FingerprintPreference fpref = (FingerprintPreference) pref;
+                final Fingerprint fp =fpref.getFingerprint();
+                showRenameDeleteDialog(fp);
+                return super.onPreferenceTreeClick(pref);
+            }
+            return true;
+!!!329986.java!!!	showRenameDeleteDialog(in fp : Fingerprint) : void
+            RenameDeleteDialog renameDeleteDialog = new RenameDeleteDialog();
+            Bundle args = new Bundle();
+            args.putParcelable("fingerprint", fp);
+            renameDeleteDialog.setArguments(args);
+            renameDeleteDialog.setTargetFragment(this, 0);
+            renameDeleteDialog.show(getFragmentManager(), RenameDeleteDialog.class.getName());
+!!!330114.java!!!	onPreferenceChange(inout preference : Preference, inout value : Object) : boolean
+            boolean result = true;
+            final String key = preference.getKey();
+            if (KEY_FINGERPRINT_ENABLE_KEYGUARD_TOGGLE.equals(key)) {
+                // TODO
+            } else {
+                Log.v(TAG, "Unknown key:" + key);
+            }
+            return result;
+!!!330242.java!!!	getHelpResource() : int
+            return R.string.help_url_fingerprint;
+!!!330370.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+            super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == CHOOSE_LOCK_GENERIC_REQUEST
+                    || requestCode == CONFIRM_REQUEST) {
+                if (resultCode == RESULT_FINISHED || resultCode == RESULT_OK) {
+                    // The lock pin/pattern/password was set. Start enrolling!
+                    if (data != null) {
+                        mToken = data.getByteArrayExtra(
+                                ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+                    }
+                }
+            } else if (requestCode == ADD_FINGERPRINT_REQUEST) {
+                if (resultCode == RESULT_TIMEOUT) {
+                    Activity activity = getActivity();
+                    activity.setResult(RESULT_TIMEOUT);
+                    activity.finish();
+                }
+            }
+
+            if (mToken == null) {
+                // Didn't get an authentication, finishing
+                getActivity().finish();
+            }
+!!!330498.java!!!	onDestroy() : void
+            super.onDestroy();
+            if (getActivity().isFinishing()) {
+                int result = mFingerprintManager.postEnroll();
+                if (result < 0) {
+                    Log.w(TAG, "postEnroll failed: result = " + result);
+                }
+            }
+!!!330626.java!!!	getHighlightDrawable() : Drawable
+            if (mHighlightDrawable == null) {
+                final Activity activity = getActivity();
+                if (activity != null) {
+                    mHighlightDrawable = activity.getDrawable(R.drawable.preference_highlight);
+                }
+            }
+            return mHighlightDrawable;
+!!!330754.java!!!	highlightFingerprintItem(in fpId : int) : void
+            String prefName = genKey(fpId);
+            FingerprintPreference fpref = (FingerprintPreference) findPreference(prefName);
+            final Drawable highlight = getHighlightDrawable();
+            if (highlight != null) {
+                final View view = fpref.getView();
+                final int centerX = view.getWidth() / 2;
+                final int centerY = view.getHeight() / 2;
+                highlight.setHotspot(centerX, centerY);
+                view.setBackground(highlight);
+                view.setPressed(true);
+                view.setPressed(false);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setBackground(null);
+                    }
+                }, RESET_HIGHLIGHT_DELAY_MS);
+            }
+!!!330882.java!!!	launchChooseOrConfirmLock() : void
+            Intent intent = new Intent();
+            long challenge = mFingerprintManager.preEnroll();
+            ChooseLockSettingsHelper helper = new ChooseLockSettingsHelper(getActivity(), this);
+            if (!helper.launchConfirmationActivity(CONFIRM_REQUEST,
+                    getString(R.string.security_settings_fingerprint_preference_title),
+                    null, null, challenge, mUserId)) {
+                intent.setClassName("com.android.settings", ChooseLockGeneric.class.getName());
+                intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment.MINIMUM_QUALITY_KEY,
+                        DevicePolicyManager.PASSWORD_QUALITY_SOMETHING);
+                intent.putExtra(ChooseLockGeneric.ChooseLockGenericFragment.HIDE_DISABLED_PREFS,
+                        true);
+                intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, true);
+                intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
+                intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, challenge);
+                intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
+                startActivityForResult(intent, CHOOSE_LOCK_GENERIC_REQUEST);
+            }
+!!!331010.java!!!	deleteFingerPrint(inout fingerPrint : Fingerprint) : void
+            mFingerprintManager.remove(fingerPrint, mUserId, mRemoveCallback);
+!!!331138.java!!!	renameFingerPrint(in fingerId : int, in newName : String) : void
+            mFingerprintManager.rename(fingerId, mUserId, newName);
+            updatePreferences();

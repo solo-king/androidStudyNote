@@ -1,0 +1,9 @@
+class Timer
+!!!376578.java!!!	Timer()
+        mStart = mLast = SystemClock.uptimeMillis();
+!!!376706.java!!!	mark(in message : String) : void
+        long now = SystemClock.uptimeMillis();
+        if (HttpLog.LOGV) {
+            HttpLog.v(message + " " + (now - mLast) + " total " + (now - mStart));
+        }
+        mLast = now;

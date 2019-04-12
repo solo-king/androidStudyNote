@@ -1,0 +1,17 @@
+class CycleItem
+!!!626818.java!!!	CycleItem(inout label : CharSequence)
+            this.label = label;
+!!!626946.java!!!	CycleItem(inout context : Context, in start : long, in end : long)
+            this.label = Utils.formatDateRange(context, start, end);
+            this.start = start;
+            this.end = end;
+!!!627074.java!!!	toString() : String
+            return label.toString();
+!!!627202.java!!!	equals(inout o : Object) : boolean
+            if (o instanceof CycleItem) {
+                final CycleItem another = (CycleItem) o;
+                return start == another.start && end == another.end;
+            }
+            return false;
+!!!627330.java!!!	compareTo(inout another : CycleAdapter::CycleItem) : int
+            return Long.compare(start, another.start);

@@ -1,0 +1,3 @@
+class FileDescriptorDetachedException
+!!!530818.java!!!	FileDescriptorDetachedException()
+            super("Remote side is detached");

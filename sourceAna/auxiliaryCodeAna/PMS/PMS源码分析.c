@@ -1,0 +1,11 @@
+PKMS（PMS）
+PackageManagerService.java
+ro.build.version.sdk
+	定义系统版本信息
+ro.build.type:
+		eng版本则不做dex优化
+SharedUserSettings:
+		1.与AndroidManifest.xml中的android:shareUserId="android.uid.system"对应
+		2.多个申明同一种shareUserId的应用可以共享数据
+		3.指定应用的uid
+		4.使用对应的shareUserId,在编译时则需要对应的证书进行签名。android.mk中使用变量LOCAL_CERTIFICATE:=platform指定	

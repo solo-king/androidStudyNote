@@ -1,0 +1,24 @@
+class DropBoxManager
+!!!473218.java!!!	DropBoxManager(inout service : IDropBoxManagerService)
+ mService = service;
+!!!473346.java!!!	DropBoxManager()
+ mService = null;
+!!!473474.java!!!	addText(in tag : String, in data : String) : void
+        try { mService.add(new Entry(tag, 0, data)); } catch (RemoteException e) {}
+!!!473602.java!!!	addData(in tag : String, inout data : byte, in flags : int) : void
+        if (data == null) throw new NullPointerException("data == null");
+        try { mService.add(new Entry(tag, 0, data, flags)); } catch (RemoteException e) {}
+!!!473730.java!!!	addFile(in tag : String, inout file : File, in flags : int) : void
+        if (file == null) throw new NullPointerException("file == null");
+        Entry entry = new Entry(tag, 0, file, flags);
+        try {
+            mService.add(entry);
+        } catch (RemoteException e) {
+            // ignore
+        } finally {
+            entry.close();
+        }
+!!!473858.java!!!	isTagEnabled(in tag : String) : boolean
+        try { return mService.isTagEnabled(tag); } catch (RemoteException e) { return false; }
+!!!473986.java!!!	getNextEntry(in tag : String, in msec : long) : DropBoxManager::Entry
+        try { return mService.getNextEntry(tag, msec); } catch (RemoteException e) { return null; }

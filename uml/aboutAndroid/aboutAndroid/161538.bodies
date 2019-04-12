@@ -1,0 +1,24 @@
+class PrivacySearchIndexProvider
+!!!299778.java!!!	PrivacySearchIndexProvider()
+            super();
+
+            mIsPrimary = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
+!!!299906.java!!!	getXmlResourcesToIndex(inout context : Context, inout enabled : boolean) : List<SearchIndexableResource>
+
+            List<SearchIndexableResource> result = new ArrayList<SearchIndexableResource>();
+
+            // For non-primary user, no backup or reset is available
+            // TODO: http://b/22388012
+            if (!mIsPrimary) {
+                return result;
+            }
+
+            SearchIndexableResource sir = new SearchIndexableResource(context);
+            sir.xmlResId = R.xml.privacy_settings;
+            result.add(sir);
+
+            return result;
+!!!300034.java!!!	getNonIndexableKeys(inout context : Context) : List<String>
+            final List<String> nonVisibleKeys = new ArrayList<>();
+            getNonVisibleKeys(context, nonVisibleKeys);
+            return nonVisibleKeys;

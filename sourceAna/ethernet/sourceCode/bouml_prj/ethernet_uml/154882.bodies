@@ -1,0 +1,31 @@
+class HttpConnection
+!!!340994.java!!!	HttpConnection(inout context : Context, inout host : HttpHost, inout requestFeeder : RequestFeeder)
+        super(context, host, requestFeeder);
+!!!341122.java!!!	openConnection(inout req : Request) : AndroidHttpClientConnection
+
+        // Update the certificate info (connection not secure - set to null)
+        EventHandler eventHandler = req.getEventHandler();
+        mCertificate = null;
+        eventHandler.certificate(mCertificate);
+
+        AndroidHttpClientConnection conn = new AndroidHttpClientConnection();
+        BasicHttpParams params = new BasicHttpParams();
+        Socket sock = new Socket(mHost.getHostName(), mHost.getPort());
+        params.setIntParameter(HttpConnectionParams.SOCKET_BUFFER_SIZE, 8192);
+        conn.bind(sock, params);
+        return conn;
+!!!341250.java!!!	closeConnection() : void
+        try {
+            if (mHttpClientConnection != null && mHttpClientConnection.isOpen()) {
+                mHttpClientConnection.close();
+            }
+        } catch (IOException e) {
+            if (HttpLog.LOGV) HttpLog.v(
+                    "closeConnection(): failed closing connection " +
+                    mHost);
+            e.printStackTrace();
+        }
+!!!341378.java!!!	restartConnection(inout abort : boolean) : void
+        // not required for plain http connections
+!!!341506.java!!!	getScheme() : String
+        return "http";

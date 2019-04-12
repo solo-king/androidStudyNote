@@ -1,0 +1,13 @@
+class AppProgressPreference
+!!!165762.java!!!	AppProgressPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setLayoutResource(R.layout.preference_app);
+        setWidgetLayoutResource(R.layout.widget_progress_bar);
+!!!165890.java!!!	setProgress(in amount : int) : void
+        mProgress = amount;
+        notifyChanged();
+!!!166018.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        final ProgressBar progress = (ProgressBar) view.findViewById(android.R.id.progress);
+        progress.setProgress(mProgress);

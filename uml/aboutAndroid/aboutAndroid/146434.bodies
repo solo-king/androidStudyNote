@@ -1,0 +1,25 @@
+class CopyablePreference
+!!!213122.java!!!	CopyablePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!213250.java!!!	CopyablePreference(inout context : Context)
+        this(context, null);
+!!!213378.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        holder.setDividerAllowedAbove(true);
+        holder.setDividerAllowedBelow(true);
+        holder.itemView.setLongClickable(true);
+        holder.itemView.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                copyPreference(getContext(), CopyablePreference.this);
+                return true;
+            }
+        });
+!!!213506.java!!!	getCopyableText() : CharSequence
+        return getSummary();
+!!!213634.java!!!	copyPreference(inout context : Context, inout pref : CopyablePreference) : void
+        ClipboardManager cm =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setText(pref.getCopyableText());
+        Toast.makeText(context, com.android.internal.R.string.text_copied, Toast.LENGTH_SHORT)
+                .show();

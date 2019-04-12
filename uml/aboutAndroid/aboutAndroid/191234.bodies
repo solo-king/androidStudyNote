@@ -1,0 +1,7 @@
+class AppNameComparator
+!!!379010.java!!!	AppNameComparator(inout appList : Map<String, String>)
+            mAppLabelList = appList;
+!!!379138.java!!!	compare(inout a : UsageStats, inout b : UsageStats) : int
+            String alabel = mAppLabelList.get(a.getPackageName());
+            String blabel = mAppLabelList.get(b.getPackageName());
+            return alabel.compareTo(blabel);

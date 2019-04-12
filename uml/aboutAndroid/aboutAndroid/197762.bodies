@@ -1,0 +1,46 @@
+class ToggleDaltonizerPreferenceFragment
+!!!421762.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY_TOGGLE_DALTONIZER;
+!!!421890.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.accessibility_daltonizer_settings);
+
+        mType = (ListPreference) findPreference("type");
+
+        initPreferences();
+!!!422018.java!!!	onPreferenceToggled(in preferenceKey : String, inout enabled : boolean) : void
+        Settings.Secure.putInt(getContentResolver(), ENABLED, enabled ? 1 : 0);
+!!!422146.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference == mType) {
+            Settings.Secure.putInt(getContentResolver(), TYPE, Integer.parseInt((String) newValue));
+            preference.setSummary("%s");
+        }
+
+        return true;
+!!!422274.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+
+        setTitle(getString(R.string.accessibility_display_daltonizer_preference_title));
+!!!422402.java!!!	onInstallSwitchBarToggleSwitch() : void
+        super.onInstallSwitchBarToggleSwitch();
+
+        mSwitchBar.setCheckedInternal(
+                Settings.Secure.getInt(getContentResolver(), ENABLED, 0) == 1);
+        mSwitchBar.addOnSwitchChangeListener(this);
+!!!422530.java!!!	onRemoveSwitchBarToggleSwitch() : void
+        super.onRemoveSwitchBarToggleSwitch();
+        mSwitchBar.removeOnSwitchChangeListener(this);
+!!!422658.java!!!	initPreferences() : void
+        final String value = Integer.toString(
+                Settings.Secure.getInt(getContentResolver(), TYPE, DEFAULT_TYPE));
+        mType.setValue(value);
+        mType.setOnPreferenceChangeListener(this);
+        final int index = mType.findIndexOfValue(value);
+        if (index < 0) {
+            // We're using a mode controlled by developer preferences.
+            mType.setSummary(getString(R.string.daltonizer_type_overridden,
+                    getString(R.string.simulate_color_space)));
+        }
+!!!422786.java!!!	onSwitchChanged(inout switchView : Switch, inout isChecked : boolean) : void
+        onPreferenceToggled(mPreferenceKey, isChecked);

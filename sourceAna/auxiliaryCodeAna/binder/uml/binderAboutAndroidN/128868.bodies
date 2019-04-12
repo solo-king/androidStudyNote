@@ -1,0 +1,46 @@
+class Stub
+!!!128100.java!!!	Stub()
+            this.attachInterface(this, DESCRIPTOR);
+!!!128228.java!!!	asInterface(inout obj : android.os.IBinder) : IUsrLedService
+            if ((obj == null)) {
+                return null;
+            }
+            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+            if (((iin != null) && (iin instanceof android.os.IUsrLedService))) {
+                return ((android.os.IUsrLedService) iin);
+            }
+            return new android.os.IUsrLedService.Stub.Proxy(obj);
+!!!128356.java!!!	asBinder() : android.os.IBinder
+            return this;
+!!!128484.java!!!	onTransact(in code : int, inout data : android.os.Parcel, inout reply : android.os.Parcel, in flags : int) : boolean
+            switch (code) {
+            case INTERFACE_TRANSACTION: {
+                reply.writeString(DESCRIPTOR);
+                return true;
+            }
+            case TRANSACTION_openLedDevices: {
+                data.enforceInterface(DESCRIPTOR);
+                int _result = this.openLedDevices();
+                reply.writeNoException();
+                reply.writeInt(_result);
+                return true;
+            }
+            case TRANSACTION_ledCtrl: {
+                data.enforceInterface(DESCRIPTOR);
+                int _arg0;
+                _arg0 = data.readInt();
+                int _result = this.ledCtrl(_arg0);
+                reply.writeNoException();
+                reply.writeInt(_result);
+                return true;
+            }
+            case TRANSACTION_signalCtrl: {
+                data.enforceInterface(DESCRIPTOR);
+                int _arg0;
+                _arg0 = data.readInt();
+                this.signalCtrl(_arg0);
+                reply.writeNoException();
+                return true;
+            }
+            }
+            return super.onTransact(code, data, reply, flags);

@@ -1,0 +1,91 @@
+class UsageAccessDetails
+!!!538242.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        Context context = getActivity();
+        mUsageBridge = new AppStateUsageBridge(context, mState, null);
+        mAppOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        mDpm = context.getSystemService(DevicePolicyManager.class);
+
+        addPreferencesFromResource(R.xml.app_ops_permissions_details);
+        mSwitchPref = (SwitchPreference) findPreference(KEY_APP_OPS_SETTINGS_SWITCH);
+        mUsagePrefs = findPreference(KEY_APP_OPS_SETTINGS_PREFS);
+        mUsageDesc = findPreference(KEY_APP_OPS_SETTINGS_DESC);
+
+        getPreferenceScreen().setTitle(R.string.usage_access);
+        mSwitchPref.setTitle(R.string.permit_usage_access);
+        mUsagePrefs.setTitle(R.string.app_usage_preference);
+        mUsageDesc.setSummary(R.string.usage_access_description);
+
+        mSwitchPref.setOnPreferenceChangeListener(this);
+        mUsagePrefs.setOnPreferenceClickListener(this);
+
+        mSettingsIntent = new Intent(Intent.ACTION_MAIN)
+                .addCategory(Settings.INTENT_CATEGORY_USAGE_ACCESS_CONFIG)
+                .setPackage(mPackageName);
+!!!538370.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        if (preference == mUsagePrefs) {
+            if (mSettingsIntent != null) {
+                try {
+                    getActivity().startActivityAsUser(mSettingsIntent, new UserHandle(mUserId));
+                } catch (ActivityNotFoundException e) {
+                    Log.w(TAG, "Unable to launch app usage access settings " + mSettingsIntent, e);
+                }
+            }
+            return true;
+        }
+        return false;
+!!!538498.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference == mSwitchPref) {
+            if (mUsageState != null && (Boolean) newValue != mUsageState.isPermissible()) {
+                if (mUsageState.isPermissible() && mDpm.isProfileOwnerApp(mPackageName)) {
+                    new AlertDialog.Builder(getContext())
+                            .setIcon(com.android.internal.R.drawable.ic_dialog_alert_material)
+                            .setTitle(android.R.string.dialog_alert_title)
+                            .setMessage(R.string.work_profile_usage_access_warning)
+                            .setPositiveButton(R.string.okay, null)
+                            .show();
+                }
+                setHasAccess(!mUsageState.isPermissible());
+                refreshUi();
+            }
+            return true;
+        }
+        return false;
+!!!538626.java!!!	setHasAccess(inout newState : boolean) : void
+        mAppOpsManager.setMode(AppOpsManager.OP_GET_USAGE_STATS, mPackageInfo.applicationInfo.uid,
+                mPackageName, newState ? AppOpsManager.MODE_ALLOWED : AppOpsManager.MODE_IGNORED);
+!!!538754.java!!!	refreshUi() : boolean
+        mUsageState = mUsageBridge.getUsageInfo(mPackageName,
+                mPackageInfo.applicationInfo.uid);
+
+        boolean hasAccess = mUsageState.isPermissible();
+        mSwitchPref.setChecked(hasAccess);
+        mSwitchPref.setEnabled(mUsageState.permissionDeclared);
+        mUsagePrefs.setEnabled(hasAccess);
+
+        ResolveInfo resolveInfo = mPm.resolveActivityAsUser(mSettingsIntent,
+                PackageManager.GET_META_DATA, mUserId);
+        if (resolveInfo != null) {
+            if (findPreference(KEY_APP_OPS_SETTINGS_PREFS) == null) {
+                getPreferenceScreen().addPreference(mUsagePrefs);
+            }
+            Bundle metaData = resolveInfo.activityInfo.metaData;
+            mSettingsIntent.setComponent(new ComponentName(resolveInfo.activityInfo.packageName,
+                    resolveInfo.activityInfo.name));
+            if (metaData != null
+                    && metaData.containsKey(Settings.METADATA_USAGE_ACCESS_REASON)) {
+                mSwitchPref.setSummary(
+                        metaData.getString(Settings.METADATA_USAGE_ACCESS_REASON));
+            }
+        } else {
+            if (findPreference(KEY_APP_OPS_SETTINGS_PREFS) != null) {
+                getPreferenceScreen().removePreference(mUsagePrefs);
+            }
+        }
+
+        return true;
+!!!538882.java!!!	createDialog(in id : int, in errorCode : int) : AlertDialog
+        return null;
+!!!539010.java!!!	getMetricsCategory() : int
+        return MetricsEvent.APPLICATIONS_USAGE_ACCESS_DETAIL;

@@ -1,0 +1,32 @@
+class RestrictedRadioButton
+!!!314498.java!!!	RestrictedRadioButton(inout context : Context)
+        this(context, null);
+!!!314626.java!!!	RestrictedRadioButton(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, com.android.internal.R.attr.radioButtonStyle);
+!!!314754.java!!!	RestrictedRadioButton(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        this(context, attrs, defStyleAttr, 0);
+!!!314882.java!!!	RestrictedRadioButton(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+        mContext = context;
+!!!315010.java!!!	performClick() : boolean
+        if (mDisabledByAdmin) {
+            RestrictedLockUtils.sendShowAdminSupportDetailsIntent(mContext, mEnforcedAdmin);
+            return true;
+        }
+        return super.performClick();
+!!!315138.java!!!	setDisabledByAdmin(inout admin : EnforcedAdmin) : void
+        final boolean disabled = (admin != null);
+        mEnforcedAdmin = admin;
+        if (mDisabledByAdmin != disabled) {
+            mDisabledByAdmin = disabled;
+            RestrictedLockUtils.setTextViewAsDisabledByAdmin(mContext,
+                    (TextView) this, mDisabledByAdmin);
+            if (mDisabledByAdmin) {
+                getButtonDrawable().setColorFilter(mContext.getColor(R.color.disabled_text_color),
+                        PorterDuff.Mode.MULTIPLY);
+            } else {
+                getButtonDrawable().clearColorFilter();
+            }
+        }
+!!!315266.java!!!	isDisabledByAdmin() : boolean
+        return mDisabledByAdmin;

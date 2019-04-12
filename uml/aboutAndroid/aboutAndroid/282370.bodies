@@ -1,0 +1,67 @@
+class AppPreference
+!!!930434.java!!!	AppPreference(inout context : Context, in userId : int, in packageName : String)
+        super(context, null /* attrs */);
+        super.setUserId(userId);
+
+        mPackageName = packageName;
+
+        // Fetch icon and VPN label
+        String label = packageName;
+        Drawable icon = null;
+        try {
+            // Make all calls to the package manager as the appropriate user.
+            Context userContext = getUserContext();
+            PackageManager pm = userContext.getPackageManager();
+            // The nested catch block is for the case that the app doesn't exist, so we can fall
+            // back to the default activity icon.
+            try {
+                PackageInfo pkgInfo = pm.getPackageInfo(mPackageName, 0 /* flags */);
+                if (pkgInfo != null) {
+                    icon = pkgInfo.applicationInfo.loadIcon(pm);
+                    label = VpnConfig.getVpnLabel(userContext, mPackageName).toString();
+                }
+            } catch (PackageManager.NameNotFoundException pkgNotFound) {
+                // Use default app label and icon as fallback
+            }
+            if (icon == null) {
+                icon = pm.getDefaultActivityIcon();
+            }
+        } catch (PackageManager.NameNotFoundException userNotFound) {
+            // No user, no useful information to obtain. Quietly fail.
+        }
+        mName = label;
+
+        setTitle(mName);
+        setIcon(icon);
+!!!930562.java!!!	getPackageInfo() : PackageInfo
+        try {
+            PackageManager pm = getUserContext().getPackageManager();
+            return pm.getPackageInfo(mPackageName, 0 /* flags */);
+        } catch (PackageManager.NameNotFoundException nnfe) {
+            return null;
+        }
+!!!930690.java!!!	getLabel() : String
+        return mName;
+!!!930818.java!!!	getPackageName() : String
+        return mPackageName;
+!!!930946.java!!!	getUserContext() : Context
+        UserHandle user = UserHandle.of(mUserId);
+        return getContext().createPackageContextAsUser(
+                getContext().getPackageName(), 0 /* flags */, user);
+!!!931074.java!!!	compareTo(inout preference : Preference) : int
+        if (preference instanceof AppPreference) {
+            AppPreference another = (AppPreference) preference;
+            int result;
+            if ((result = another.mState - mState) == 0 &&
+                    (result = mName.compareToIgnoreCase(another.mName)) == 0 &&
+                    (result = mPackageName.compareTo(another.mPackageName)) == 0) {
+                result = mUserId - another.mUserId;
+            }
+            return result;
+        } else if (preference instanceof LegacyVpnPreference) {
+            // Use comparator from ConfigPreference
+            LegacyVpnPreference another = (LegacyVpnPreference) preference;
+            return -another.compareTo(this);
+        } else {
+            return super.compareTo(preference);
+        }

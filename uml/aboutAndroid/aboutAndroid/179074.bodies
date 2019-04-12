@@ -1,0 +1,30 @@
+class ConfirmLastDeleteDialog
+!!!331650.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+                mFp = getArguments().getParcelable("fingerprint");
+                final boolean isProfileChallengeUser =
+                        getArguments().getBoolean("isProfileChallengeUser");
+                final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.fingerprint_last_delete_title)
+                        .setMessage((isProfileChallengeUser)
+                                ? R.string.fingerprint_last_delete_message_profile_challenge
+                                : R.string.fingerprint_last_delete_message)
+                        .setPositiveButton(R.string.fingerprint_last_delete_confirm,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        FingerprintSettingsFragment parent
+                                                = (FingerprintSettingsFragment) getTargetFragment();
+                                        parent.deleteFingerPrint(mFp);
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.cancel,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                        .create();
+                return alertDialog;

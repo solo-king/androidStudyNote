@@ -1,0 +1,17 @@
+window_sizes 1920 1056 450 1464 883 120
+cleanlooks_style
+diagrams
+  sequencediagram_ref 128100 // NitzModeUpdateQueue
+    1464 883 100 E 0 0
+  active  sequencediagram_ref 134628 // NetworkTimeUpdateServiceStart
+    1464 883 100 E 390 0
+end
+show_stereotypes
+selected sequencediagram_ref 134628 // NetworkTimeUpdateServiceStart
+open
+  
+  package_ref 128100 // sourceCode
+  classview_ref 128484 // NitzModeUpdate
+  usecaseview_ref 128100 // NetworkTimeUpdateService
+end
+end

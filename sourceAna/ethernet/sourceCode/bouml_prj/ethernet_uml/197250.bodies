@@ -1,0 +1,17 @@
+class PathPermission
+!!!836482.java!!!	PathPermission(in pattern : String, in type : int, in readPermission : String, in writePermission : String)
+        super(pattern, type);
+        mReadPermission = readPermission;
+        mWritePermission = writePermission;
+!!!836610.java!!!	getReadPermission() : String
+        return mReadPermission;
+!!!836738.java!!!	getWritePermission() : String
+        return mWritePermission;
+!!!836866.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        super.writeToParcel(dest, flags);
+        dest.writeString(mReadPermission);
+        dest.writeString(mWritePermission);
+!!!836994.java!!!	PathPermission(inout src : Parcel)
+        super(src);
+        mReadPermission = src.readString();
+        mWritePermission = src.readString();

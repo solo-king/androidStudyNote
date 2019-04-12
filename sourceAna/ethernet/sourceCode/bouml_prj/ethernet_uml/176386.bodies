@@ -1,0 +1,108 @@
+class MemoryInfo
+!!!457474.java!!!	getTotalPss() : int
+            return dalvikPss + nativePss + otherPss;
+!!!457602.java!!!	getTotalUss() : int
+            return dalvikPrivateClean + dalvikPrivateDirty
+                    + nativePrivateClean + nativePrivateDirty
+                    + otherPrivateClean + otherPrivateDirty;
+!!!457730.java!!!	getTotalSwappablePss() : int
+            return dalvikSwappablePss + nativeSwappablePss + otherSwappablePss;
+!!!457858.java!!!	getTotalPrivateDirty() : int
+            return dalvikPrivateDirty + nativePrivateDirty + otherPrivateDirty;
+!!!457986.java!!!	getTotalSharedDirty() : int
+            return dalvikSharedDirty + nativeSharedDirty + otherSharedDirty;
+!!!458114.java!!!	getTotalPrivateClean() : int
+            return dalvikPrivateClean + nativePrivateClean + otherPrivateClean;
+!!!458242.java!!!	getTotalSharedClean() : int
+            return dalvikSharedClean + nativeSharedClean + otherSharedClean;
+!!!458370.java!!!	getTotalSwappedOut() : int
+            return dalvikSwappedOut + nativeSwappedOut + otherSwappedOut;
+!!!458498.java!!!	getOtherPss(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetPss];
+!!!458626.java!!!	getOtherSwappablePss(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetSwappablePss];
+!!!458754.java!!!	getOtherPrivateDirty(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetPrivateDirty];
+!!!458882.java!!!	getOtherSharedDirty(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetSharedDirty];
+!!!459010.java!!!	getOtherPrivateClean(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetPrivateClean];
+!!!459138.java!!!	getOtherSharedClean(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetSharedClean];
+!!!459266.java!!!	getOtherSwappedOut(in which : int) : int
+            return otherStats[which*NUM_CATEGORIES + offsetSwappedOut];
+!!!459394.java!!!	getOtherLabel(in which : int) : String
+            switch (which) {
+                case 0: return "Dalvik Other";
+                case 1: return "Stack";
+                case 2: return "Cursor";
+                case 3: return "Ashmem";
+                case 4: return "Other dev";
+                case 5: return ".so mmap";
+                case 6: return ".jar mmap";
+                case 7: return ".apk mmap";
+                case 8: return ".ttf mmap";
+                case 9: return ".dex mmap";
+                case 10: return "code mmap";
+                case 11: return "image mmap";
+                case 12: return "Other mmap";
+                case 13: return "Graphics";
+                case 14: return "GL";
+                case 15: return "Memtrack";
+                case 16: return ".Heap";
+                case 17: return ".LOS";
+                case 18: return ".LinearAlloc";
+                case 19: return ".GC";
+                case 20: return ".JITCache";
+                default: return "????";
+            }
+!!!459522.java!!!	describeContents() : int
+            return 0;
+!!!459650.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+            dest.writeInt(dalvikPss);
+            dest.writeInt(dalvikSwappablePss);
+            dest.writeInt(dalvikPrivateDirty);
+            dest.writeInt(dalvikSharedDirty);
+            dest.writeInt(dalvikPrivateClean);
+            dest.writeInt(dalvikSharedClean);
+            dest.writeInt(dalvikSwappedOut);
+            dest.writeInt(nativePss);
+            dest.writeInt(nativeSwappablePss);
+            dest.writeInt(nativePrivateDirty);
+            dest.writeInt(nativeSharedDirty);
+            dest.writeInt(nativePrivateClean);
+            dest.writeInt(nativeSharedClean);
+            dest.writeInt(nativeSwappedOut);
+            dest.writeInt(otherPss);
+            dest.writeInt(otherSwappablePss);
+            dest.writeInt(otherPrivateDirty);
+            dest.writeInt(otherSharedDirty);
+            dest.writeInt(otherPrivateClean);
+            dest.writeInt(otherSharedClean);
+            dest.writeInt(otherSwappedOut);
+            dest.writeIntArray(otherStats);
+!!!459778.java!!!	readFromParcel(inout source : Parcel) : void
+            dalvikPss = source.readInt();
+            dalvikSwappablePss = source.readInt();
+            dalvikPrivateDirty = source.readInt();
+            dalvikSharedDirty = source.readInt();
+            dalvikPrivateClean = source.readInt();
+            dalvikSharedClean = source.readInt();
+            dalvikSwappedOut = source.readInt();
+            nativePss = source.readInt();
+            nativeSwappablePss = source.readInt();
+            nativePrivateDirty = source.readInt();
+            nativeSharedDirty = source.readInt();
+            nativePrivateClean = source.readInt();
+            nativeSharedClean = source.readInt();
+            nativeSwappedOut = source.readInt();
+            otherPss = source.readInt();
+            otherSwappablePss = source.readInt();
+            otherPrivateDirty = source.readInt();
+            otherSharedDirty = source.readInt();
+            otherPrivateClean = source.readInt();
+            otherSharedClean = source.readInt();
+            otherSwappedOut = source.readInt();
+            otherStats = source.createIntArray();
+!!!459906.java!!!	MemoryInfo(inout source : Parcel)
+            readFromParcel(source);

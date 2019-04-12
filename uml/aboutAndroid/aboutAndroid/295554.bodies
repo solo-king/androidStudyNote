@@ -1,0 +1,5 @@
+class BtOnClickListener
+!!!1038466.java!!!	BtOnClickListener(inout enableOnly : boolean)
+            mEnableOnly = enableOnly;
+!!!1038594.java!!!	onClick(inout v : View) : void
+            requestPermission(mEnableOnly);

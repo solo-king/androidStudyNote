@@ -1,0 +1,23 @@
+class SettingsObserver
+!!!806146.java!!!	SettingsObserver()
+            super(new Handler());
+!!!806274.java!!!	register(inout register : boolean) : void
+            final ContentResolver cr = getContentResolver();
+            if (register) {
+                cr.registerContentObserver(NOTIFICATION_LIGHT_PULSE_URI, false, this);
+                cr.registerContentObserver(LOCK_SCREEN_PRIVATE_URI, false, this);
+                cr.registerContentObserver(LOCK_SCREEN_SHOW_URI, false, this);
+            } else {
+                cr.unregisterContentObserver(this);
+            }
+!!!806402.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            super.onChange(selfChange, uri);
+            if (NOTIFICATION_LIGHT_PULSE_URI.equals(uri)) {
+                updatePulse();
+            }
+            if (LOCK_SCREEN_PRIVATE_URI.equals(uri) || LOCK_SCREEN_SHOW_URI.equals(uri)) {
+                updateLockscreenNotifications();
+                if (mProfileChallengeUserId != UserHandle.USER_NULL) {
+                    updateLockscreenNotificationsForProfile();
+                }
+            }

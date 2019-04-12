@@ -1,0 +1,20 @@
+class onPreviewSeekBarChangeListener
+!!!297858.java!!!	onProgressChanged(inout seekBar : SeekBar, in progress : int, inout fromUser : boolean) : void
+            setPreviewLayer(progress, true);
+            if (!mSeekByTouch) {
+                commit();
+            }
+!!!297986.java!!!	onStartTrackingTouch(inout seekBar : SeekBar) : void
+            mSeekByTouch = true;
+!!!298114.java!!!	onStopTrackingTouch(inout seekBar : SeekBar) : void
+            if (mPreviewPagerAdapter.isAnimating()) {
+                mPreviewPagerAdapter.setAnimationEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        commit();
+                    }
+                });
+            } else {
+                commit();
+            }
+            mSeekByTouch = false;

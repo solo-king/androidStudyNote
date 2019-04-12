@@ -1,0 +1,16 @@
+class PackageIntentReceiver
+!!!450690.java!!!	PackageIntentReceiver(inout loader : AppOpsCategory::AppListLoader)
+            mLoader = loader;
+            IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+            filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+            filter.addDataScheme("package");
+            mLoader.getContext().registerReceiver(this, filter);
+            // Register for events related to sdcard installation.
+            IntentFilter sdFilter = new IntentFilter();
+            sdFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE);
+            sdFilter.addAction(Intent.ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE);
+            mLoader.getContext().registerReceiver(this, sdFilter);
+!!!450818.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+            // Tell the loader about the change.
+            mLoader.onContentChanged();

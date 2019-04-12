@@ -1,0 +1,38 @@
+class DataUsageBase
+!!!612738.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        final Context context = getActivity();
+
+        services.mNetworkService = INetworkManagementService.Stub.asInterface(
+                ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE));
+        services.mStatsService = INetworkStatsService.Stub.asInterface(
+                ServiceManager.getService(Context.NETWORK_STATS_SERVICE));
+        services.mPolicyManager = NetworkPolicyManager.from(context);
+
+        services.mPolicyEditor = new NetworkPolicyEditor(services.mPolicyManager);
+
+        services.mTelephonyManager = TelephonyManager.from(context);
+        services.mSubscriptionManager = SubscriptionManager.from(context);
+        services.mUserManager = UserManager.get(context);
+!!!612866.java!!!	onResume() : void
+        super.onResume();
+        services.mPolicyEditor.read();
+!!!612994.java!!!	isAdmin() : boolean
+        return services.mUserManager.isAdminUser();
+!!!613122.java!!!	isMobileDataAvailable(in subId : int) : boolean
+        return services.mSubscriptionManager.getActiveSubscriptionInfo(subId) != null;
+!!!613250.java!!!	isNetworkPolicyModifiable(inout policy : NetworkPolicy, in subId : int) : boolean
+        return policy != null && isBandwidthControlEnabled() && services.mUserManager.isAdminUser()
+                && isDataEnabled(subId);
+!!!613378.java!!!	isDataEnabled(in subId : int) : boolean
+        if (subId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            return true;
+        }
+        return services.mTelephonyManager.getDataEnabled(subId);
+!!!613506.java!!!	isBandwidthControlEnabled() : boolean
+        try {
+            return services.mNetworkService.isBandwidthControlEnabled();
+        } catch (RemoteException e) {
+            Log.w(TAG, "problem talking with INetworkManagementService: " + e);
+            return false;
+        }

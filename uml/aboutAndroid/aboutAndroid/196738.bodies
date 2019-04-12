@@ -1,0 +1,29 @@
+class EdgeTypePreference
+!!!413954.java!!!	EdgeTypePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+
+        final Resources res = context.getResources();
+        setValues(res.getIntArray(R.array.captioning_edge_type_selector_values));
+        setTitles(res.getStringArray(R.array.captioning_edge_type_selector_titles));
+        setDialogLayoutResource(R.layout.grid_picker_dialog);
+        setListItemLayoutResource(R.layout.preset_picker_item);
+!!!414082.java!!!	shouldDisableDependents() : boolean
+        return getValue() == CaptionStyle.EDGE_TYPE_NONE || super.shouldDisableDependents();
+!!!414210.java!!!	onBindListItem(inout view : View, in index : int) : void
+        final SubtitleView preview = (SubtitleView) view.findViewById(R.id.preview);
+
+        preview.setForegroundColor(DEFAULT_FOREGROUND_COLOR);
+        preview.setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+
+        final float density = getContext().getResources().getDisplayMetrics().density;
+        preview.setTextSize(DEFAULT_FONT_SIZE * density);
+
+        final int value = getValueAt(index);
+        preview.setEdgeType(value);
+        preview.setEdgeColor(DEFAULT_EDGE_COLOR);
+
+        final CharSequence title = getTitleAt(index);
+        if (title != null) {
+            final TextView summary = (TextView) view.findViewById(R.id.summary);
+            summary.setText(title);
+        }

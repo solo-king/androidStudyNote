@@ -1,0 +1,64 @@
+class Utils
+!!!573698.java!!!	getConnectionStateSummary(in connectionState : int) : int
+        switch (connectionState) {
+        case BluetoothProfile.STATE_CONNECTED:
+            return R.string.bluetooth_connected;
+        case BluetoothProfile.STATE_CONNECTING:
+            return R.string.bluetooth_connecting;
+        case BluetoothProfile.STATE_DISCONNECTED:
+            return R.string.bluetooth_disconnected;
+        case BluetoothProfile.STATE_DISCONNECTING:
+            return R.string.bluetooth_disconnecting;
+        default:
+            return 0;
+        }
+!!!573826.java!!!	showDisconnectDialog(inout context : Context, inout dialog : AlertDialog, inout disconnectListener : DialogInterface.OnClickListener, inout title : CharSequence, inout message : CharSequence) : AlertDialog
+        if (dialog == null) {
+            dialog = new AlertDialog.Builder(context)
+                    .setPositiveButton(android.R.string.ok, disconnectListener)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .create();
+        } else {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            // use disconnectListener for the correct profile(s)
+            CharSequence okText = context.getText(android.R.string.ok);
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                    okText, disconnectListener);
+        }
+        dialog.setTitle(title);
+        dialog.setMessage(message);
+        dialog.show();
+        return dialog;
+!!!573954.java!!!	showConnectingError(inout context : Context, in name : String) : void
+        // if (!mIsConnectingErrorPossible) {
+        //     return;
+        // }
+        // mIsConnectingErrorPossible = false;
+
+        showError(context, name, R.string.bluetooth_connecting_error_message);
+!!!574082.java!!!	showError(inout context : Context, in name : String, in messageResId : int) : void
+        String message = context.getString(messageResId, name);
+        LocalBluetoothManager manager = getLocalBtManager(context);
+        Context activity = manager.getForegroundActivity();
+        if(manager.isForegroundActivity()) {
+            new AlertDialog.Builder(activity)
+                .setTitle(R.string.bluetooth_error_title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
+        } else {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        }
+!!!574210.java!!!	updateSearchIndex(inout context : Context, in className : String, in title : String, in screenTitle : String, in iconResId : int, inout enabled : boolean) : void
+        SearchIndexableRaw data = new SearchIndexableRaw(context);
+        data.className = className;
+        data.title = title;
+        data.screenTitle = screenTitle;
+        data.iconResId = iconResId;
+        data.enabled = enabled;
+
+        Index.getInstance(context).updateFromSearchIndexableData(data);
+!!!574338.java!!!	getLocalBtManager(inout context : Context) : LocalBluetoothManager
+        return LocalBluetoothManager.getInstance(context, mOnInitCallback);

@@ -1,0 +1,9 @@
+class ProvisioningObserver
+!!!170498.java!!!	ProvisioningObserver()
+            super(new Handler());
+            mContext.getContentResolver().registerContentObserver(Settings.Global.getUriFor(
+                    Settings.Global.DEVICE_PROVISIONED), false, this);
+            onChange(false); // load initial value
+!!!170626.java!!!	onChange(inout selfChange : boolean) : void
+            mDeviceProvisioned = Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.DEVICE_PROVISIONED, 0) != 0;

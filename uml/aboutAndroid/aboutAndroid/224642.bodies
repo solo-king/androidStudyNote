@@ -1,0 +1,10 @@
+class FocusRecyclerView
+!!!583170.java!!!	FocusRecyclerView(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!583298.java!!!	onWindowFocusChanged(inout hasWindowFocus : boolean) : void
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (mListener != null) {
+            mListener.onWindowFocusChanged(hasWindowFocus);
+        }
+!!!583426.java!!!	setListener(inout listener : FocusRecyclerView::FocusListener) : void
+        mListener = listener;

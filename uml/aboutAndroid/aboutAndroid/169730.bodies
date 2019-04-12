@@ -1,0 +1,6 @@
+class AppOpsSummaryActivity
+!!!327170.java!!!	isValidFragment(in className : String) : boolean
+            if (AppOpsSummary.class.getName().equals(className)) {
+                return true;
+            }
+            return super.isValidFragment(className);

@@ -1,0 +1,22 @@
+class ScreenZoomPreference
+!!!688258.java!!!	ScreenZoomPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs, TypedArrayUtils.getAttr(context,
+                android.support.v7.preference.R.attr.preferenceScreenStyle,
+                android.R.attr.preferenceScreenStyle));
+
+        if (TextUtils.isEmpty(getFragment())) {
+            setFragment("com.android.settings.display.ScreenZoomSettings");
+        }
+
+        final DisplayDensityUtils density = new DisplayDensityUtils(context);
+        final int defaultIndex = density.getCurrentIndex();
+        if (defaultIndex < 0) {
+            setVisible(false);
+            setEnabled(false);
+        } else if (TextUtils.isEmpty(getSummary())) {
+            final String[] entries = density.getEntries();
+            final int currentIndex = density.getCurrentIndex();
+            setSummary(entries[currentIndex]);
+        }
+!!!688386.java!!!	isOnSameScreenAsChildren() : boolean
+        return false;

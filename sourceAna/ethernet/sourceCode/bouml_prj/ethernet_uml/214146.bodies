@@ -1,0 +1,11 @@
+class ProviderIntentInfo
+!!!834306.java!!!	ProviderIntentInfo(inout provider : PackageParser::Provider)
+            this.provider = provider;
+!!!834434.java!!!	toString() : String
+            StringBuilder sb = new StringBuilder(128);
+            sb.append("ProviderIntentInfo{");
+            sb.append(Integer.toHexString(System.identityHashCode(this)));
+            sb.append(' ');
+            provider.appendComponentShortName(sb);
+            sb.append('}');
+            return sb.toString();

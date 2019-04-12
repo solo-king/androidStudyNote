@@ -1,0 +1,61 @@
+class PrintServicesController
+!!!863746.java!!!	onCreateLoader(in id : int, inout args : Bundle) : Loader<List<PrintServiceInfo>>
+            PrintManager printManager =
+                    (PrintManager) getContext().getSystemService(Context.PRINT_SERVICE);
+            if (printManager != null) {
+                return new PrintServicesLoader(printManager, getContext(),
+                        PrintManager.ALL_SERVICES);
+            } else {
+                return null;
+            }
+!!!863874.java!!!	onLoadFinished(inout loader : Loader<List<PrintServiceInfo>>, inout services : List<PrintServiceInfo>) : void
+            if (services.isEmpty()) {
+                getPreferenceScreen().removePreference(mPrintServicesCategory);
+                return;
+            } else if (getPreferenceScreen().findPreference(PRINT_SERVICES_CATEGORY) == null) {
+                getPreferenceScreen().addPreference(mPrintServicesCategory);
+            }
+
+            mPrintServicesCategory.removeAll();
+            PackageManager pm = getActivity().getPackageManager();
+
+            final int numServices = services.size();
+            for (int i = 0; i < numServices; i++) {
+                PrintServiceInfo service = services.get(i);
+                PreferenceScreen preference = getPreferenceManager().createPreferenceScreen(
+                        getActivity());
+
+                String title = service.getResolveInfo().loadLabel(pm).toString();
+                preference.setTitle(title);
+
+                ComponentName componentName = service.getComponentName();
+                preference.setKey(componentName.flattenToString());
+
+                preference.setFragment(PrintServiceSettingsFragment.class.getName());
+                preference.setPersistent(false);
+
+                if (service.isEnabled()) {
+                    preference.setSummary(getString(R.string.print_feature_state_on));
+                } else {
+                    preference.setSummary(getString(R.string.print_feature_state_off));
+                }
+
+                Drawable drawable = service.getResolveInfo().loadIcon(pm);
+                if (drawable != null) {
+                    preference.setIcon(drawable);
+                }
+
+                Bundle extras = preference.getExtras();
+                extras.putBoolean(EXTRA_CHECKED, service.isEnabled());
+                extras.putString(EXTRA_TITLE, title);
+                extras.putString(EXTRA_SERVICE_COMPONENT_NAME, componentName.flattenToString());
+
+                mPrintServicesCategory.addPreference(preference);
+            }
+
+            Preference addNewServicePreference = newAddServicePreferenceOrNull();
+            if (addNewServicePreference != null) {
+                mPrintServicesCategory.addPreference(addNewServicePreference);
+            }
+!!!864002.java!!!	onLoaderReset(inout loader : Loader<List<PrintServiceInfo>>) : void
+            getPreferenceScreen().removePreference(mPrintServicesCategory);

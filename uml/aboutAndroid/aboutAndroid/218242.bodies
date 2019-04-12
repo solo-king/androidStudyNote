@@ -1,0 +1,33 @@
+class ScaryWarningDialogFragment
+!!!540162.java!!!	setServiceInfo(inout cn : ComponentName, in label : String) : ManagedServiceSettings::ScaryWarningDialogFragment
+            Bundle args = new Bundle();
+            args.putString(KEY_COMPONENT, cn.flattenToString());
+            args.putString(KEY_LABEL, label);
+            setArguments(args);
+            return this;
+!!!540290.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            super.onCreate(savedInstanceState);
+            final Bundle args = getArguments();
+            final String label = args.getString(KEY_LABEL);
+            final ComponentName cn = ComponentName.unflattenFromString(args
+                    .getString(KEY_COMPONENT));
+
+            final String title = getResources().getString(mConfig.warningDialogTitle, label);
+            final String summary = getResources().getString(mConfig.warningDialogSummary, label);
+            return new AlertDialog.Builder(mContext)
+                    .setMessage(summary)
+                    .setTitle(title)
+                    .setCancelable(true)
+                    .setPositiveButton(R.string.allow,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    mServiceListing.setEnabled(cn, true);
+                                }
+                            })
+                    .setNegativeButton(R.string.deny,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // pass
+                                }
+                            })
+                    .create();

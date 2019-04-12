@@ -1,0 +1,11 @@
+class SyncFeeder
+!!!369282.java!!!	getRequest() : Request
+            Request r = mRequest;
+            mRequest = null;
+            return r;
+!!!369410.java!!!	getRequest(inout host : HttpHost) : Request
+            return getRequest();
+!!!369538.java!!!	haveRequest(inout host : HttpHost) : boolean
+            return mRequest != null;
+!!!369666.java!!!	requeueRequest(inout r : Request) : void
+            mRequest = r;

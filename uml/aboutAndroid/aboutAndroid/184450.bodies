@@ -1,0 +1,74 @@
+class RedactionInterstitialFragment
+!!!344450.java!!!	getMetricsCategory() : int
+            return MetricsEvent.NOTIFICATION_REDACTION;
+!!!344578.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+            return inflater.inflate(R.layout.redaction_interstitial, container, false);
+!!!344706.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+            super.onViewCreated(view, savedInstanceState);
+            mRadioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
+            mShowAllButton = (RestrictedRadioButton) view.findViewById(R.id.show_all);
+            mRedactSensitiveButton =
+                    (RestrictedRadioButton) view.findViewById(R.id.redact_sensitive);
+
+            mRadioGroup.setOnCheckedChangeListener(this);
+            mUserId = Utils.getUserIdFromBundle(
+                    getContext(), getActivity().getIntent().getExtras());
+            if (Utils.isManagedProfile(UserManager.get(getContext()), mUserId)) {
+                ((TextView) view.findViewById(R.id.message))
+                    .setText(R.string.lock_screen_notifications_interstitial_message_profile);
+                mShowAllButton.setText(R.string.lock_screen_notifications_summary_show_profile);
+                mRedactSensitiveButton
+                    .setText(R.string.lock_screen_notifications_summary_hide_profile);
+                ((RadioButton) view.findViewById(R.id.hide_all))
+                    .setText(R.string.lock_screen_notifications_summary_disable_profile);
+            }
+
+            final Button button = (Button) view.findViewById(R.id.redaction_done_button);
+            button.setOnClickListener(this);
+!!!344834.java!!!	onClick(inout v : View) : void
+            if (v.getId() == R.id.redaction_done_button) {
+                final RedactionInterstitial activity = (RedactionInterstitial) getActivity();
+                if (activity != null) {
+                    activity.setResult(RESULT_OK, activity.getResultIntentData());
+                    finish();
+                }
+            }
+!!!344962.java!!!	onResume() : void
+            super.onResume();
+            // Disable buttons according to policy.
+
+            checkNotificationFeaturesAndSetDisabled(mShowAllButton,
+                    KEYGUARD_DISABLE_SECURE_NOTIFICATIONS |
+                    KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS);
+            checkNotificationFeaturesAndSetDisabled(mRedactSensitiveButton,
+                    KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
+            loadFromSettings();
+!!!345090.java!!!	checkNotificationFeaturesAndSetDisabled(inout button : RestrictedRadioButton, in keyguardNotifications : int) : void
+            EnforcedAdmin admin = RestrictedLockUtils.checkIfKeyguardFeaturesDisabled(
+                    getActivity(), keyguardNotifications, mUserId);
+            button.setDisabledByAdmin(admin);
+!!!345218.java!!!	loadFromSettings() : void
+            final boolean enabled = Settings.Secure.getIntForUser(getContentResolver(),
+                        Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, 0, mUserId) != 0;
+            final boolean show = Settings.Secure.getIntForUser(getContentResolver(),
+                        Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, 1, mUserId) != 0;
+
+            int checkedButtonId = R.id.hide_all;
+            if (enabled) {
+                if (show && !mShowAllButton.isDisabledByAdmin()) {
+                    checkedButtonId = R.id.show_all;
+                } else if (!mRedactSensitiveButton.isDisabledByAdmin()) {
+                    checkedButtonId = R.id.redact_sensitive;
+                }
+            }
+
+            mRadioGroup.check(checkedButtonId);
+!!!345346.java!!!	onCheckedChanged(inout group : RadioGroup, in checkedId : int) : void
+            final boolean show = (checkedId == R.id.show_all);
+            final boolean enabled = (checkedId != R.id.hide_all);
+
+            Settings.Secure.putIntForUser(getContentResolver(),
+                    Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, show ? 1 : 0, mUserId);
+            Settings.Secure.putIntForUser(getContentResolver(),
+                    Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, enabled ? 1 : 0, mUserId);
+

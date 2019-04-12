@@ -1,0 +1,32 @@
+
+LOCAL_PATH:= $(call my-dir)
+
+ifneq ($(TARGET_USES_64_BIT_BINDER),true)
+ifneq ($(TARGET_IS_64_BIT),true)
+svc_c_flags += -DBINDER_IPC_32BIT=1
+#svc_c_flags += -DBINDER_IPC_32BIT=1\
+		-Wall -Werror
+endif
+endif
+
+include $(CLEAR_VARS)
+LOCAL_SHARED_LIBRARIES := liblog
+LOCAL_SRC_FILES := 	usr_native_services.c \
+			src/binder.c \
+			src/usr_string_translate.c\
+			src/usr_native_cmd_deal.c
+LOCAL_CFLAGS += $(svc_c_flags)
+LOCAL_MODULE := usr_native_services
+LOCAL_MODULE_TAGS:=debug
+include $(BUILD_EXECUTABLE)
+
+include $(CLEAR_VARS)
+LOCAL_SHARED_LIBRARIES := liblog
+LOCAL_SRC_FILES := 	usr_native_services_test.c \
+			src/binder.c \
+			src/usr_string_translate.c\
+			src/usr_native_cmd_deal.c
+LOCAL_CFLAGS += $(svc_c_flags)
+LOCAL_MODULE := usr_native_services_client
+LOCAL_MODULE_TAGS:=debug
+include $(BUILD_EXECUTABLE)

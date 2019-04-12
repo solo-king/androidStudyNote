@@ -1,0 +1,30 @@
+class AccountPreference
+!!!429698.java!!!	AccountPreference(inout context : Context, inout title : CharSequence, in titleResPackageName : String, in titleResId : int, in fragment : String, inout fragmentArguments : Bundle, inout icon : Drawable)
+            super(context);
+            mTitle = title;
+            mTitleResPackageName = titleResPackageName;
+            mTitleResId = titleResId;
+            mFragment = fragment;
+            mFragmentArguments = fragmentArguments;
+            setWidgetLayoutResource(R.layout.account_type_preference);
+
+            setTitle(title);
+            setIcon(icon);
+
+            setOnPreferenceClickListener(this);
+!!!429826.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+            if (mFragment != null) {
+                UserHandle user = mFragmentArguments.getParcelable(EXTRA_USER);
+                if (user != null && Utils.startQuietModeDialogIfNecessary(getContext(), mUm,
+                        user.getIdentifier())) {
+                    return true;
+                } else if (user != null && Utils.unlockWorkProfileIfNecessary(getContext(),
+                        user.getIdentifier())) {
+                    return true;
+                }
+                Utils.startWithFragment(getContext(), mFragment, mFragmentArguments,
+                        null /* resultTo */, 0 /* resultRequestCode */, mTitleResPackageName,
+                        mTitleResId, null /* title */);
+                return true;
+            }
+            return false;

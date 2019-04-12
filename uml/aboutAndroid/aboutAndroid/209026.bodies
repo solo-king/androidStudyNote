@@ -1,0 +1,95 @@
+class DefaultHomePreference
+!!!480130.java!!!	DefaultHomePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        mPackageName = getContext().getPackageName();
+        mHomeFilter = new IntentFilter(Intent.ACTION_MAIN);
+        mHomeFilter.addCategory(Intent.CATEGORY_HOME);
+        mHomeFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        refreshHomeOptions();
+!!!480258.java!!!	performClick() : void
+        refreshHomeOptions();
+        super.performClick();
+!!!480386.java!!!	persistString(in value : String) : boolean
+        if (value != null) {
+            ComponentName component = ComponentName.unflattenFromString(value);
+            getContext().getPackageManager().replacePreferredActivity(mHomeFilter,
+                    IntentFilter.MATCH_CATEGORY_EMPTY,
+                    mAllHomeComponents.toArray(new ComponentName[0]), component);
+            setSummary(getEntry());
+        } else {
+            // If there is only 1 launcher, use its label as summary text.
+            setSoleAppLabelAsSummary();
+        }
+        return super.persistString(value);
+!!!480514.java!!!	getSoleAppLabel() : CharSequence
+        final PackageManager pm = getContext().getPackageManager();
+        final List<ResolveInfo> homeActivities = new ArrayList<>();
+        final List<CharSequence> appLabels = new ArrayList<>();
+
+        pm.getHomeActivities(homeActivities);
+        for (ResolveInfo candidate : homeActivities) {
+            final ActivityInfo info = candidate.activityInfo;
+            if (info.packageName.equals(mPackageName)) {
+                continue;
+            }
+            appLabels.add(info.loadLabel(pm));
+        }
+        return appLabels.size() == 1 ? appLabels.get(0) : null;
+!!!480642.java!!!	refreshHomeOptions() : void
+        ArrayList<ResolveInfo> homeActivities = new ArrayList<>();
+        PackageManager pm = getContext().getPackageManager();
+        ComponentName currentDefaultHome = pm.getHomeActivities(homeActivities);
+        ArrayList<ComponentName> components = new ArrayList<>();
+        mAllHomeComponents.clear();
+        List<CharSequence> summaries = new ArrayList<>();
+
+        boolean mustSupportManagedProfile = hasManagedProfile();
+        for (ResolveInfo candidate : homeActivities) {
+            final ActivityInfo info = candidate.activityInfo;
+            ComponentName activityName = new ComponentName(info.packageName, info.name);
+            mAllHomeComponents.add(activityName);
+            if (info.packageName.equals(mPackageName)) {
+                continue;
+            }
+            components.add(activityName);
+            if (mustSupportManagedProfile && !launcherHasManagedProfilesFeature(candidate, pm)) {
+                summaries.add(getContext().getString(R.string.home_work_profile_not_supported));
+            } else {
+                summaries.add(null);
+            }
+        }
+        setComponentNames(components.toArray(new ComponentName[0]), currentDefaultHome,
+                summaries.toArray(new CharSequence[0]));
+!!!480770.java!!!	launcherHasManagedProfilesFeature(inout resolveInfo : ResolveInfo, inout pm : PackageManager) : boolean
+        try {
+            ApplicationInfo appInfo = pm.getApplicationInfo(
+                    resolveInfo.activityInfo.packageName, 0 /* default flags */);
+            return versionNumberAtLeastL(appInfo.targetSdkVersion);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+!!!480898.java!!!	versionNumberAtLeastL(in versionNumber : int) : boolean
+        return versionNumber >= Build.VERSION_CODES.LOLLIPOP;
+!!!481026.java!!!	hasManagedProfile() : boolean
+        UserManager userManager = getContext().getSystemService(UserManager.class);
+        List<UserInfo> profiles = userManager.getProfiles(getContext().getUserId());
+        for (UserInfo userInfo : profiles) {
+            if (userInfo.isManagedProfile()) return true;
+        }
+        return false;
+!!!481154.java!!!	hasHomePreference(in pkg : String, inout context : Context) : boolean
+        ArrayList<ResolveInfo> homeActivities = new ArrayList<ResolveInfo>();
+        PackageManager pm = context.getPackageManager();
+        pm.getHomeActivities(homeActivities);
+        for (int i = 0; i < homeActivities.size(); i++) {
+            if (homeActivities.get(i).activityInfo.packageName.equals(pkg)) {
+                return true;
+            }
+        }
+        return false;
+!!!481282.java!!!	isHomeDefault(in pkg : String, inout context : Context) : boolean
+        ArrayList<ResolveInfo> homeActivities = new ArrayList<ResolveInfo>();
+        PackageManager pm = context.getPackageManager();
+        ComponentName def = pm.getHomeActivities(homeActivities);
+
+        return def != null && def.getPackageName().equals(pkg);

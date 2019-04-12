@@ -1,0 +1,12 @@
+class AppInfoWithHeader
+!!!448770.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        if (mCreated) {
+            Log.w(TAG, "onActivityCreated: ignoring duplicate call");
+            return;
+        }
+        mCreated = true;
+        if (mPackageInfo == null) return;
+        AppHeader.createAppHeader(this, mPackageInfo.applicationInfo.loadIcon(mPm),
+                mPackageInfo.applicationInfo.loadLabel(mPm), mPackageName,
+                mPackageInfo.applicationInfo.uid, 0);

@@ -1,0 +1,27 @@
+class VoiceSettingsActivity
+!!!135042.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        if (isVoiceInteractionRoot()) {
+            // Only permit if this is a voice interaction.
+            if (onVoiceSettingInteraction(getIntent())) {
+                // If it's complete, finish.
+                finish();
+            }
+        } else {
+            Log.v(TAG, "Cannot modify settings without voice interaction");
+            finish();
+        }
+!!!135298.java!!!	notifySuccess(inout prompt : CharSequence) : void
+        if (getVoiceInteractor() != null) {
+            getVoiceInteractor().submitRequest(new CompleteVoiceRequest(prompt, null) {
+                @Override
+                public void onCompleteResult(Bundle options) {
+                    finish();
+                }
+            });
+        }
+!!!135426.java!!!	notifyFailure(inout prompt : CharSequence) : void
+        if (getVoiceInteractor() != null) {
+            getVoiceInteractor().submitRequest(new AbortVoiceRequest(prompt, null));
+        }

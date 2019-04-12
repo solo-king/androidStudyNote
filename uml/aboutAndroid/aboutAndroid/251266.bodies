@@ -1,0 +1,14 @@
+class SummaryProvider
+!!!740610.java!!!	SummaryProvider(inout context : Context, inout loader : SummaryLoader)
+            mContext = context;
+            mLoader = loader;
+!!!740738.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                // TODO: Listen.
+                BatteryInfo.getBatteryInfo(mContext, new BatteryInfo.Callback() {
+                    @Override
+                    public void onBatteryInfoLoaded(BatteryInfo info) {
+                        mLoader.setSummary(SummaryProvider.this, info.mChargeLabelString);
+                    }
+                });
+            }

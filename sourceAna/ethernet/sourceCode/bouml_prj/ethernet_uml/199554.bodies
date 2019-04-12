@@ -1,0 +1,78 @@
+class SyncRequest
+!!!774786.java!!!	isPeriodic() : boolean
+        return mIsPeriodic;
+!!!774914.java!!!	isExpedited() : boolean
+        return mIsExpedited;
+!!!775042.java!!!	hasAuthority() : boolean
+        return mIsAuthority;
+!!!775170.java!!!	getAccount() : Account
+        if (!hasAuthority()) {
+            throw new IllegalArgumentException("Cannot getAccount() for a sync that does not"
+                    + "specify an authority.");
+        }
+        return mAccountToSync;
+!!!775298.java!!!	getProvider() : String
+        if (!hasAuthority()) {
+            throw new IllegalArgumentException("Cannot getProvider() for a sync that does not"
+                    + "specify a provider.");
+        }
+        return mAuthority;
+!!!775426.java!!!	getBundle() : Bundle
+        return mExtras;
+!!!775554.java!!!	getSyncFlexTime() : long
+        return mSyncFlexTimeSecs;
+!!!775682.java!!!	getSyncRunTime() : long
+        return mSyncRunTimeSecs;
+!!!775810.java!!!	describeContents() : int
+        return 0;
+!!!775938.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+        parcel.writeBundle(mExtras);
+        parcel.writeLong(mSyncFlexTimeSecs);
+        parcel.writeLong(mSyncRunTimeSecs);
+        parcel.writeInt((mIsPeriodic ? 1 : 0));
+        parcel.writeInt((mDisallowMetered ? 1 : 0));
+        parcel.writeLong(mTxBytes);
+        parcel.writeLong(mRxBytes);
+        parcel.writeInt((mIsAuthority ? 1 : 0));
+        parcel.writeInt((mIsExpedited? 1 : 0));
+        if (mIsAuthority) {
+            parcel.writeParcelable(mAccountToSync, flags);
+            parcel.writeString(mAuthority);
+        } else {
+            parcel.writeParcelable(mComponentInfo, flags);
+        }
+!!!776066.java!!!	SyncRequest(inout in : Parcel)
+        mExtras = in.readBundle();
+        mSyncFlexTimeSecs = in.readLong();
+        mSyncRunTimeSecs = in.readLong();
+        mIsPeriodic = (in.readInt() != 0);
+        mDisallowMetered = (in.readInt() != 0);
+        mTxBytes = in.readLong();
+        mRxBytes = in.readLong();
+        mIsAuthority = (in.readInt() != 0);
+        mIsExpedited = (in.readInt() != 0);
+        if (mIsAuthority) {
+            mComponentInfo = null;
+            mAccountToSync = in.readParcelable(null);
+            mAuthority = in.readString();
+        } else {
+            mComponentInfo = in.readParcelable(null);
+            mAccountToSync = null;
+            mAuthority = null;
+        }
+!!!776194.java!!!	SyncRequest(inout b : SyncRequest::Builder)
+        mSyncFlexTimeSecs = b.mSyncFlexTimeSecs;
+        mSyncRunTimeSecs = b.mSyncRunTimeSecs;
+        mAccountToSync = b.mAccount;
+        mAuthority = b.mAuthority;
+        mComponentInfo = b.mComponentName;
+        mIsPeriodic = (b.mSyncType == Builder.SYNC_TYPE_PERIODIC);
+        mIsAuthority = (b.mSyncTarget == Builder.SYNC_TARGET_ADAPTER);
+        mIsExpedited = b.mExpedited;
+        mExtras = new Bundle(b.mCustomExtras);
+        // For now we merge the sync config extras & the custom extras into one bundle.
+        // TODO: pass the configuration extras through separately.
+        mExtras.putAll(b.mSyncConfigExtras);
+        mDisallowMetered = b.mDisallowMetered;
+        mTxBytes = b.mTxBytes;
+        mRxBytes = b.mRxBytes;

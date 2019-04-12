@@ -1,0 +1,38 @@
+logcat UsrMobileFlowManagerThread:S UsrNetWorkConnectThread:S Epc300ConfigrationPro:S UsrMobileManager:S LocSvc_libulp:S LocSvc_api_v02:S QC-QMI:S TelephonyIcons:S XTWiFiOS:S Ulp_jni:S rmt_storage:S WindowManager:S irsc_util:S ServiceManager:S LocSvc_ApiV02:S Atfwd_Sendcmd:S Timeline:S LocSvc_ApiV02:S Atfwd_Daemon:S BluetoothManagerService:S InputDispatcher:S BluetoothAdapter:S ResourceType:S View:S&  
+															
+logcat EthernetService:V EthernetManager:V ConnectivityService:V *:S EthernetStateTracker:V  DhcpInfoInternal:V  EthernetMonitor:V&
+logcat EthernetService:V EthernetManager:V EthernetStateTracker:V *:S &
+logcat EthernetManager:V EthernetService:V EthConfDialog:V  ConnectivityService:V EthernetStateTracker:V *:S&
+adb push  /myandroid.lns/out/target/product/msm8909_512/system/framework/EthernetTest.jar  /sdcard/
+CLASSPATH=/sdcard/EthernetTest.jar app_process / EthernetTest  open_lan
+CLASSPATH=/sdcard/EthernetTest.jar app_process / EthernetTest  close_lan
+CLASSPATH=/sdcard/EthernetTest.jar app_process / EthernetTest  run_cmd
+ifconfig eth0 192.168.13.222
+ifconfig eth0 192.168.2.222
+adb connect 192.168.13.222:5557
+adb connect 192.168.0.1:5557
+adb connect 192.168.2.222:5557
+mount -o rw,remount /system
+getprop net.tcp.usercfg.default
+getprop net.tcp.usercfg.lte
+//É±ËÀ½ø³Ìservicemanager
+kill $(ps|grep servicemanager|busybox awk '{print $2}')
+kill $(ps|grep adbd|busybox awk '{print $2}')
+CLASSPATH=/sdcard/CompatibilityMain.jar app_process / CompatibilityMain  ' usr-get-get_ethx_property  IMSI  ppp0'
+update global set value='lan' where name='eth_dev_mode';
+update global set value='wan' where name='eth_dev_mode';
+select name,value from global where name='eth_on';
+.exit
+sqlite3 /data/data/com.android.providers.settings/databases/settings.db
+select * from global where name='eth_on';
+select * from global;
+select * from global where name='eth_dev_mode';
+insert into global (name, value) values("eth_dev_mode","lan");
+logcat NetworkStats:V *:S
+logcat SignalClusterView:V StatusBar.NetworkController:V *:S 
+ethernet
+
+cat /proc/sys/net/ipv4/ip_forward
+echo 0 > /proc/sys/net/ipv4/ip_forward
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo host >/sys/kernel/debug/msm_otg/mode

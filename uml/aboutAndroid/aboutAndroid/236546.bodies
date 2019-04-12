@@ -1,0 +1,22 @@
+class StorageSummaryPreference
+!!!663554.java!!!	StorageSummaryPreference(inout context : Context)
+        super(context);
+
+        setLayoutResource(R.layout.storage_summary);
+        setEnabled(false);
+!!!663682.java!!!	setPercent(in percent : int) : void
+        mPercent = percent;
+!!!663810.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        final ProgressBar progress = (ProgressBar) view.findViewById(android.R.id.progress);
+        if (mPercent != -1) {
+            progress.setVisibility(View.VISIBLE);
+            progress.setProgress(mPercent);
+            progress.setScaleY(7f);
+        } else {
+            progress.setVisibility(View.GONE);
+        }
+
+        final TextView summary = (TextView) view.findViewById(android.R.id.summary);
+        summary.setTextColor(Color.parseColor("#8a000000"));
+
+        super.onBindViewHolder(view);

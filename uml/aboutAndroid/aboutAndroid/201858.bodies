@@ -1,0 +1,117 @@
+class AppInfoBase
+!!!445698.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        mFinishing = false;
+
+        mState = ApplicationsState.getInstance(getActivity().getApplication());
+        mSession = mState.newSession(this);
+        Context context = getActivity();
+        mDpm = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        mPm = context.getPackageManager();
+        IBinder b = ServiceManager.getService(Context.USB_SERVICE);
+        mUsbManager = IUsbManager.Stub.asInterface(b);
+
+        retrieveAppEntry();
+        startListeningToPackageRemove();
+!!!445826.java!!!	onResume() : void
+        super.onResume();
+        mSession.resume();
+        mAppsControlDisallowedAdmin = RestrictedLockUtils.checkIfRestrictionEnforced(getActivity(),
+                UserManager.DISALLOW_APPS_CONTROL, mUserId);
+        mAppsControlDisallowedBySystem = RestrictedLockUtils.hasBaseUserRestriction(getActivity(),
+                UserManager.DISALLOW_APPS_CONTROL, mUserId);
+
+        if (!refreshUi()) {
+            setIntentAndFinish(true, true);
+        }
+!!!445954.java!!!	onPause() : void
+        mSession.pause();
+        super.onPause();
+!!!446082.java!!!	onDestroy() : void
+        stopListeningToPackageRemove();
+        mSession.release();
+        super.onDestroy();
+!!!446210.java!!!	retrieveAppEntry() : String
+        final Bundle args = getArguments();
+        mPackageName = (args != null) ? args.getString(ARG_PACKAGE_NAME) : null;
+        if (mPackageName == null) {
+            Intent intent = (args == null) ?
+                    getActivity().getIntent() : (Intent) args.getParcelable("intent");
+            if (intent != null) {
+                mPackageName = intent.getData().getSchemeSpecificPart();
+            }
+        }
+        mUserId = UserHandle.myUserId();
+        mAppEntry = mState.getEntry(mPackageName, mUserId);
+        if (mAppEntry != null) {
+            // Get application info again to refresh changed properties of application
+            try {
+                mPackageInfo = mPm.getPackageInfo(mAppEntry.info.packageName,
+                        PackageManager.GET_DISABLED_COMPONENTS |
+                        PackageManager.GET_UNINSTALLED_PACKAGES |
+                        PackageManager.GET_SIGNATURES |
+                        PackageManager.GET_PERMISSIONS);
+            } catch (NameNotFoundException e) {
+                Log.e(TAG, "Exception when retrieving package:" + mAppEntry.info.packageName, e);
+            }
+        } else {
+            Log.w(TAG, "Missing AppEntry; maybe reinstalling?");
+            mPackageInfo = null;
+        }
+
+        return mPackageName;
+!!!446338.java!!!	setIntentAndFinish(inout finish : boolean, inout appChanged : boolean) : void
+        if (localLOGV) Log.i(TAG, "appChanged="+appChanged);
+        Intent intent = new Intent();
+        intent.putExtra(ManageApplications.APP_CHG, appChanged);
+        SettingsActivity sa = (SettingsActivity)getActivity();
+        sa.finishPreferencePanel(this, Activity.RESULT_OK, intent);
+        mFinishing = true;
+!!!446466.java!!!	showDialogInner(in id : int, in moveErrorCode : int) : void
+        DialogFragment newFragment = MyAlertDialogFragment.newInstance(id, moveErrorCode);
+        newFragment.setTargetFragment(this, 0);
+        newFragment.show(getFragmentManager(), "dialog " + id);
+!!!446850.java!!!	onRunningStateChanged(inout running : boolean) : void
+        // No op.
+!!!446978.java!!!	onRebuildComplete(inout apps : ArrayList<AppEntry>) : void
+        // No op.
+!!!447106.java!!!	onPackageIconChanged() : void
+        // No op.
+!!!447234.java!!!	onPackageSizeChanged(in packageName : String) : void
+        // No op.
+!!!447362.java!!!	onAllSizesComputed() : void
+        // No op.
+!!!447490.java!!!	onLauncherInfoChanged() : void
+        // No op.
+!!!447618.java!!!	onLoadEntriesCompleted() : void
+        // No op.
+!!!447746.java!!!	onPackageListChanged() : void
+        refreshUi();
+!!!447874.java!!!	startAppInfoFragment(inout fragment : Class<?>, in titleRes : int, in pkg : String, in uid : int, inout source : Fragment, in request : int) : void
+        startAppInfoFragment(fragment, titleRes, pkg, uid, source.getActivity(), request);
+!!!448002.java!!!	startAppInfoFragment(inout fragment : Class<?>, in titleRes : int, in pkg : String, in uid : int, inout source : Activity, in request : int) : void
+        Bundle args = new Bundle();
+        args.putString(AppInfoBase.ARG_PACKAGE_NAME, pkg);
+        args.putInt(AppInfoBase.ARG_PACKAGE_UID, uid);
+
+        Intent intent = Utils.onBuildStartFragmentIntent(source, fragment.getName(),
+                args, null, titleRes, null, false);
+        source.startActivityForResultAsUser(intent, request,
+                new UserHandle(UserHandle.getUserId(uid)));
+!!!448386.java!!!	startListeningToPackageRemove() : void
+        if (mListeningToPackageRemove) {
+            return;
+        }
+        mListeningToPackageRemove = true;
+        final IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        getContext().registerReceiver(mPackageRemovedReceiver, filter);
+!!!448514.java!!!	stopListeningToPackageRemove() : void
+        if (!mListeningToPackageRemove) {
+            return;
+        }
+        mListeningToPackageRemove = false;
+        getContext().unregisterReceiver(mPackageRemovedReceiver);
+!!!448642.java!!!	onPackageRemoved() : void
+        getActivity().finishAndRemoveTask();

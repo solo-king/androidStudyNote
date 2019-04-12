@@ -1,0 +1,29 @@
+class AbstractThreadedSyncAdapter
+!!!623106.java!!!	AbstractThreadedSyncAdapter(inout context : Context, inout autoInitialize : boolean)
+        this(context, autoInitialize, false /* allowParallelSyncs */);
+!!!623234.java!!!	AbstractThreadedSyncAdapter(inout context : Context, inout autoInitialize : boolean, inout allowParallelSyncs : boolean)
+        mContext = context;
+        mISyncAdapterImpl = new ISyncAdapterImpl();
+        mNumSyncStarts = new AtomicInteger(0);
+        mAutoInitialize = autoInitialize;
+        mAllowParallelSyncs = allowParallelSyncs;
+!!!623362.java!!!	getContext() : Context
+        return mContext;
+!!!623490.java!!!	toSyncKey(inout account : Account) : Account
+        if (mAllowParallelSyncs) {
+            return account;
+        } else {
+            return null;
+        }
+!!!624386.java!!!	getSyncAdapterBinder() : IBinder
+        return mISyncAdapterImpl.asBinder();
+!!!624642.java!!!	onSyncCanceled() : void
+        final SyncThread syncThread;
+        synchronized (mSyncThreadLock) {
+            syncThread = mSyncThreads.get(null);
+        }
+        if (syncThread != null) {
+            syncThread.interrupt();
+        }
+!!!624770.java!!!	onSyncCanceled(inout thread : Thread) : void
+        thread.interrupt();

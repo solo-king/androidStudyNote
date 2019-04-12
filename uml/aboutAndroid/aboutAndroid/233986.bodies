@@ -1,0 +1,17 @@
+class DataUsagePreference
+!!!633986.java!!!	DataUsagePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!634114.java!!!	setTemplate(inout template : NetworkTemplate, in subId : int, inout services : TemplatePreference::NetworkServices) : void
+        mTemplate = template;
+        mSubId = subId;
+        DataUsageController controller = new DataUsageController(getContext());
+        DataUsageController.DataUsageInfo usageInfo = controller.getDataUsageInfo(mTemplate);
+        setSummary(getContext().getString(R.string.data_usage_template,
+                Formatter.formatFileSize(getContext(), usageInfo.usageLevel), usageInfo.period));
+        setIntent(getIntent());
+!!!634242.java!!!	getIntent() : Intent
+        Bundle args = new Bundle();
+        args.putParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE, mTemplate);
+        args.putInt(DataUsageList.EXTRA_SUB_ID, mSubId);
+        return Utils.onBuildStartFragmentIntent(getContext(), DataUsageList.class.getName(), args,
+                getContext().getPackageName(), 0, getTitle(), false);

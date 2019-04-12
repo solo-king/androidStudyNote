@@ -1,0 +1,14 @@
+class ToggleScreenReaderPreferenceFragmentForSetupWizard
+!!!425090.java!!!	onProcessArguments(inout arguments : Bundle) : void
+        super.onProcessArguments(arguments);
+        mToggleSwitchWasInitiallyChecked = mToggleSwitch.isChecked();
+!!!425218.java!!!	getMetricsCategory() : int
+        return MetricsEvent.SUW_ACCESSIBILITY_TOGGLE_SCREEN_READER;
+!!!425346.java!!!	onStop() : void
+        // Log the final choice in value if it's different from the previous value.
+        if (mToggleSwitch.isChecked() != mToggleSwitchWasInitiallyChecked) {
+            MetricsLogger.action(getContext(),
+                    MetricsEvent.SUW_ACCESSIBILITY_TOGGLE_SCREEN_READER, mToggleSwitch.isChecked());
+        }
+
+        super.onStop();

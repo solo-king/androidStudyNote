@@ -1,0 +1,259 @@
+class ContentProviderClient
+!!!665090.java!!!	ContentProviderClient(inout contentResolver : ContentResolver, inout contentProvider : IContentProvider, inout stable : boolean)
+        mContentResolver = contentResolver;
+        mContentProvider = contentProvider;
+        mPackageName = contentResolver.mPackageName;
+        mStable = stable;
+
+        mGuard.open("release");
+!!!665218.java!!!	setDetectNotResponding(in timeoutMillis : long) : void
+        synchronized (ContentProviderClient.class) {
+            mAnrTimeout = timeoutMillis;
+
+            if (timeoutMillis > 0) {
+                if (mAnrRunnable == null) {
+                    mAnrRunnable = new NotRespondingRunnable();
+                }
+                if (sAnrHandler == null) {
+                    sAnrHandler = new Handler(Looper.getMainLooper(), null, true /* async */);
+                }
+            } else {
+                mAnrRunnable = null;
+            }
+        }
+!!!665346.java!!!	beforeRemote() : void
+        if (mAnrRunnable != null) {
+            sAnrHandler.postDelayed(mAnrRunnable, mAnrTimeout);
+        }
+!!!665474.java!!!	afterRemote() : void
+        if (mAnrRunnable != null) {
+            sAnrHandler.removeCallbacks(mAnrRunnable);
+        }
+!!!665602.java!!!	query(inout url : Uri, inout projection : String, in selection : String, inout selectionArgs : String, in sortOrder : String) : Cursor
+        return query(url, projection, selection,  selectionArgs, sortOrder, null);
+!!!665730.java!!!	query(inout url : Uri, inout projection : String, in selection : String, inout selectionArgs : String, in sortOrder : String, inout cancellationSignal : CancellationSignal) : Cursor
+        beforeRemote();
+        try {
+            ICancellationSignal remoteCancellationSignal = null;
+            if (cancellationSignal != null) {
+                cancellationSignal.throwIfCanceled();
+                remoteCancellationSignal = mContentProvider.createCancellationSignal();
+                cancellationSignal.setRemote(remoteCancellationSignal);
+            }
+            return mContentProvider.query(mPackageName, url, projection, selection, selectionArgs,
+                    sortOrder, remoteCancellationSignal);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!665858.java!!!	getType(inout url : Uri) : String
+        beforeRemote();
+        try {
+            return mContentProvider.getType(url);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!665986.java!!!	getStreamTypes(inout url : Uri, in mimeTypeFilter : String) : String
+        beforeRemote();
+        try {
+            return mContentProvider.getStreamTypes(url, mimeTypeFilter);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666114.java!!!	canonicalize(inout url : Uri) : Uri
+        beforeRemote();
+        try {
+            return mContentProvider.canonicalize(mPackageName, url);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666242.java!!!	uncanonicalize(inout url : Uri) : Uri
+        beforeRemote();
+        try {
+            return mContentProvider.uncanonicalize(mPackageName, url);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666370.java!!!	insert(inout url : Uri, inout initialValues : ContentValues) : Uri
+        beforeRemote();
+        try {
+            return mContentProvider.insert(mPackageName, url, initialValues);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666498.java!!!	bulkInsert(inout url : Uri, inout initialValues : ContentValues) : int
+        beforeRemote();
+        try {
+            return mContentProvider.bulkInsert(mPackageName, url, initialValues);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666626.java!!!	delete(inout url : Uri, in selection : String, inout selectionArgs : String) : int
+        beforeRemote();
+        try {
+            return mContentProvider.delete(mPackageName, url, selection, selectionArgs);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666754.java!!!	update(inout url : Uri, inout values : ContentValues, in selection : String, inout selectionArgs : String) : int
+        beforeRemote();
+        try {
+            return mContentProvider.update(mPackageName, url, values, selection, selectionArgs);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!666882.java!!!	openFile(inout url : Uri, in mode : String) : ParcelFileDescriptor
+        return openFile(url, mode, null);
+!!!667010.java!!!	openFile(inout url : Uri, in mode : String, inout signal : CancellationSignal) : ParcelFileDescriptor
+        beforeRemote();
+        try {
+            ICancellationSignal remoteSignal = null;
+            if (signal != null) {
+                signal.throwIfCanceled();
+                remoteSignal = mContentProvider.createCancellationSignal();
+                signal.setRemote(remoteSignal);
+            }
+            return mContentProvider.openFile(mPackageName, url, mode, remoteSignal);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!667138.java!!!	openAssetFile(inout url : Uri, in mode : String) : AssetFileDescriptor
+        return openAssetFile(url, mode, null);
+!!!667266.java!!!	openAssetFile(inout url : Uri, in mode : String, inout signal : CancellationSignal) : AssetFileDescriptor
+        beforeRemote();
+        try {
+            ICancellationSignal remoteSignal = null;
+            if (signal != null) {
+                signal.throwIfCanceled();
+                remoteSignal = mContentProvider.createCancellationSignal();
+                signal.setRemote(remoteSignal);
+            }
+            return mContentProvider.openAssetFile(mPackageName, url, mode, remoteSignal);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!667394.java!!!	openTypedAssetFileDescriptor(inout uri : Uri, in mimeType : String, inout opts : Bundle) : AssetFileDescriptor
+        return openTypedAssetFileDescriptor(uri, mimeType, opts, null);
+!!!667522.java!!!	openTypedAssetFileDescriptor(inout uri : Uri, in mimeType : String, inout opts : Bundle, inout signal : CancellationSignal) : AssetFileDescriptor
+        beforeRemote();
+        try {
+            ICancellationSignal remoteSignal = null;
+            if (signal != null) {
+                signal.throwIfCanceled();
+                remoteSignal = mContentProvider.createCancellationSignal();
+                signal.setRemote(remoteSignal);
+            }
+            return mContentProvider.openTypedAssetFile(
+                    mPackageName, uri, mimeType, opts, remoteSignal);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!667650.java!!!	applyBatch(inout operations : ArrayList<ContentProviderOperation>) : ContentProviderResult
+        beforeRemote();
+        try {
+            return mContentProvider.applyBatch(mPackageName, operations);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!667778.java!!!	call(in method : String, in arg : String, inout extras : Bundle) : Bundle
+        beforeRemote();
+        try {
+            return mContentProvider.call(mPackageName, method, arg, extras);
+        } catch (DeadObjectException e) {
+            if (!mStable) {
+                mContentResolver.unstableProviderDied(mContentProvider);
+            }
+            throw e;
+        } finally {
+            afterRemote();
+        }
+!!!667906.java!!!	release() : boolean
+        synchronized (this) {
+            if (mReleased) {
+                throw new IllegalStateException("Already released");
+            }
+            mReleased = true;
+            mGuard.close();
+            if (mStable) {
+                return mContentResolver.releaseProvider(mContentProvider);
+            } else {
+                return mContentResolver.releaseUnstableProvider(mContentProvider);
+            }
+        }
+!!!668034.java!!!	finalize() : void
+        if (mGuard != null) {
+            mGuard.warnIfOpen();
+        }
+!!!668162.java!!!	getLocalContentProvider() : ContentProvider
+        return ContentProvider.coerceToLocalContentProvider(mContentProvider);
+!!!668290.java!!!	releaseQuietly(inout client : ContentProviderClient) : void
+        if (client != null) {
+            try {
+                client.release();
+            } catch (Exception ignored) {
+            }
+        }

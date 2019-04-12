@@ -1,0 +1,188 @@
+class TetherServiceTest
+!!!1046402.java!!!	TetherServiceTest()
+        super(TetherService.class);
+!!!1046530.java!!!	setUp() : void
+        super.setUp();
+        MockitoAnnotations.initMocks(this);
+
+        mResources = new MockResources();
+        mContext = new TestContextWrapper(getContext());
+        setContext(mContext);
+
+        mResultReceiver = new Receiver(this);
+        mLastReceiverResultCode = BOGUS_RECEIVER_RESULT;
+        mProvisionResponse = Activity.RESULT_OK;
+        mProvisionReceiver = new ProvisionReceiver();
+        IntentFilter filter = new IntentFilter(TEST_NO_UI_ACTION);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        mContext.registerReceiver(mProvisionReceiver, filter);
+
+        final String CURRENT_TYPES = "currentTethers";
+        when(mPrefs.getString(CURRENT_TYPES, "")).thenReturn("");
+        when(mPrefs.edit()).thenReturn(mPrefEditor);
+        when(mPrefEditor.putString(eq(CURRENT_TYPES), mStoredTypes.capture())).thenReturn(
+                mPrefEditor);
+        mUsageStatsManagerWrapper = new FakeUsageStatsManagerWrapper(mContext);
+
+        ResolveInfo systemAppResolveInfo = new ResolveInfo();
+        ActivityInfo systemActivityInfo = new ActivityInfo();
+        systemActivityInfo.packageName = ENTITLEMENT_PACKAGE_NAME;
+        ApplicationInfo systemAppInfo = new ApplicationInfo();
+        systemAppInfo.flags |= ApplicationInfo.FLAG_SYSTEM;
+        systemActivityInfo.applicationInfo = systemAppInfo;
+        systemAppResolveInfo.activityInfo = systemActivityInfo;
+
+        ResolveInfo nonSystemResolveInfo = new ResolveInfo();
+        ActivityInfo nonSystemActivityInfo = new ActivityInfo();
+        nonSystemActivityInfo.packageName = FAKE_PACKAGE_NAME;
+        nonSystemActivityInfo.applicationInfo = new ApplicationInfo();
+        nonSystemResolveInfo.activityInfo = nonSystemActivityInfo;
+
+        List<ResolveInfo> resolvers = new ArrayList();
+        resolvers.add(nonSystemResolveInfo);
+        resolvers.add(systemAppResolveInfo);
+        when(mPackageManager.queryBroadcastReceivers(
+                any(Intent.class), eq(PackageManager.MATCH_ALL))).thenReturn(resolvers);
+!!!1046658.java!!!	tearDown() : void
+        mContext.unregisterReceiver(mProvisionReceiver);
+        super.tearDown();
+!!!1046786.java!!!	cancelAllProvisioning() : void
+        int[] types = new int[]{TETHERING_BLUETOOTH, TETHERING_WIFI, TETHERING_USB};
+        for (int type : types) {
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_REM_TETHER_TYPE, type);
+            startService(intent);
+        }
+!!!1046914.java!!!	testStartForProvision() : void
+        runProvisioningForType(TETHERING_WIFI);
+
+        assertTrue(waitForProvisionRequest(TETHERING_WIFI));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+!!!1047042.java!!!	testStartKeepsProvisionAppActive() : void
+        setupService();
+        getService().setUsageStatsManagerWrapper(mUsageStatsManagerWrapper);
+
+        runProvisioningForType(TETHERING_WIFI);
+
+        assertTrue(waitForProvisionRequest(TETHERING_WIFI));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+        assertFalse(mUsageStatsManagerWrapper.isAppInactive(ENTITLEMENT_PACKAGE_NAME));
+        // Non-system handler of the intent action should stay idle.
+        assertTrue(mUsageStatsManagerWrapper.isAppInactive(FAKE_PACKAGE_NAME));
+!!!1047170.java!!!	testScheduleRechecks() : void
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_ADD_TETHER_TYPE, TETHERING_WIFI);
+        intent.putExtra(EXTRA_SET_ALARM, true);
+        startService(intent);
+
+        long period = TEST_CHECK_PERIOD * MS_PER_HOUR;
+        verify(mAlarmManager).setRepeating(eq(AlarmManager.ELAPSED_REALTIME), anyLong(),
+                eq(period), mPiCaptor.capture());
+        PendingIntent pi = mPiCaptor.getValue();
+        assertEquals(TetherService.class.getName(), pi.getIntent().getComponent().getClassName());
+!!!1047298.java!!!	testStartMultiple() : void
+        runProvisioningForType(TETHERING_WIFI);
+
+        assertTrue(waitForProvisionRequest(TETHERING_WIFI));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+
+        runProvisioningForType(TETHERING_USB);
+
+        assertTrue(waitForProvisionRequest(TETHERING_USB));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+
+        runProvisioningForType(TETHERING_BLUETOOTH);
+
+        assertTrue(waitForProvisionRequest(TETHERING_BLUETOOTH));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+!!!1047426.java!!!	testPersistTypes() : void
+        runProvisioningForType(TETHERING_WIFI);
+
+        waitForProvisionRequest(TETHERING_WIFI);
+        waitForProvisionResponse(TETHER_ERROR_NO_ERROR);
+
+        runProvisioningForType(TETHERING_BLUETOOTH);
+
+        waitForProvisionRequest(TETHERING_BLUETOOTH);
+        waitForProvisionResponse(TETHER_ERROR_NO_ERROR);
+
+        shutdownService();
+        assertEquals(TETHERING_WIFI + "," + TETHERING_BLUETOOTH, mStoredTypes.getValue());
+!!!1047554.java!!!	testFailureStopsTethering_Wifi() : void
+        mProvisionResponse = Activity.RESULT_CANCELED;
+
+        runProvisioningForType(TETHERING_WIFI);
+
+        assertTrue(waitForProvisionRequest(TETHERING_WIFI));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_PROVISION_FAILED));
+
+        verify(mConnectivityManager).stopTethering(ConnectivityManager.TETHERING_WIFI);
+!!!1047682.java!!!	testFailureStopsTethering_Usb() : void
+        mProvisionResponse = Activity.RESULT_CANCELED;
+
+        runProvisioningForType(TETHERING_USB);
+
+        assertTrue(waitForProvisionRequest(TETHERING_USB));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_PROVISION_FAILED));
+
+        verify(mConnectivityManager).setUsbTethering(eq(false));
+!!!1047810.java!!!	testCancelAlarm() : void
+        runProvisioningForType(TETHERING_WIFI);
+
+        assertTrue(waitForProvisionRequest(TETHERING_WIFI));
+        assertTrue(waitForProvisionResponse(TETHER_ERROR_NO_ERROR));
+
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_REM_TETHER_TYPE, TETHERING_WIFI);
+        startService(intent);
+
+        verify(mAlarmManager).cancel(mPiCaptor.capture());
+        PendingIntent pi = mPiCaptor.getValue();
+        assertEquals(TetherService.class.getName(), pi.getIntent().getComponent().getClassName());
+!!!1047938.java!!!	runProvisioningForType(in type : int) : void
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_ADD_TETHER_TYPE, type);
+        intent.putExtra(EXTRA_RUN_PROVISION, true);
+        intent.putExtra(EXTRA_PROVISION_CALLBACK, mResultReceiver);
+        startService(intent);
+!!!1048066.java!!!	waitForAppInactive(inout usageStatsManager : UsageStatsManager, in packageName : String) : boolean
+        long startTime = SystemClock.uptimeMillis();
+        while (true) {
+            if (usageStatsManager.isAppInactive(packageName)) {
+                return true;
+            }
+            if ((SystemClock.uptimeMillis() - startTime) > PROVISION_TIMEOUT) {
+                return false;
+            }
+            SystemClock.sleep(SHORT_TIMEOUT);
+        }
+!!!1048194.java!!!	waitForProvisionRequest(in expectedType : int) : boolean
+        long startTime = SystemClock.uptimeMillis();
+        while (true) {
+            if (mLastTetherRequestType == expectedType) {
+                mLastTetherRequestType = -1;
+                return true;
+            }
+            if ((SystemClock.uptimeMillis() - startTime) > PROVISION_TIMEOUT) {
+                Log.v(TAG, String.format(
+                        "waitForProvisionRequest timeout: expected=%d, actual=%d",
+                        expectedType, mLastTetherRequestType));
+                return false;
+            }
+            SystemClock.sleep(SHORT_TIMEOUT);
+        }
+!!!1048322.java!!!	waitForProvisionResponse(in expectedValue : int) : boolean
+        long startTime = SystemClock.uptimeMillis();
+        while (true) {
+            if (mLastReceiverResultCode == expectedValue) {
+                mLastReceiverResultCode = BOGUS_RECEIVER_RESULT;
+                return true;
+            }
+            if ((SystemClock.uptimeMillis() - startTime) > PROVISION_TIMEOUT) {
+                Log.v(TAG, String.format(
+                        "waitForProvisionResponse timeout: expected=%d, actual=%d",
+                        expectedValue, mLastReceiverResultCode));
+                return false;
+            }
+            SystemClock.sleep(SHORT_TIMEOUT);
+        }

@@ -1,0 +1,233 @@
+class ContextWrapper
+!!!704514.java!!!	ContextWrapper(inout base : Context)
+        mBase = base;
+!!!704642.java!!!	attachBaseContext(inout base : Context) : void
+        if (mBase != null) {
+            throw new IllegalStateException("Base context already set");
+        }
+        mBase = base;
+!!!704770.java!!!	getBaseContext() : Context
+        return mBase;
+!!!704898.java!!!	getAssets() : AssetManager
+        return mBase.getAssets();
+!!!705026.java!!!	getResources() : Resources
+        return mBase.getResources();
+!!!705154.java!!!	getPackageManager() : PackageManager
+        return mBase.getPackageManager();
+!!!705282.java!!!	getContentResolver() : ContentResolver
+        return mBase.getContentResolver();
+!!!705410.java!!!	getMainLooper() : Looper
+        return mBase.getMainLooper();
+!!!705538.java!!!	getApplicationContext() : Context
+        return mBase.getApplicationContext();
+!!!705666.java!!!	setTheme(in resid : int) : void
+        mBase.setTheme(resid);
+!!!705794.java!!!	getThemeResId() : int
+        return mBase.getThemeResId();
+!!!705922.java!!!	getTheme() : Resources::Theme
+        return mBase.getTheme();
+!!!706050.java!!!	getClassLoader() : ClassLoader
+        return mBase.getClassLoader();
+!!!706178.java!!!	getPackageName() : String
+        return mBase.getPackageName();
+!!!706306.java!!!	getBasePackageName() : String
+        return mBase.getBasePackageName();
+!!!706434.java!!!	getOpPackageName() : String
+        return mBase.getOpPackageName();
+!!!706562.java!!!	getApplicationInfo() : ApplicationInfo
+        return mBase.getApplicationInfo();
+!!!706690.java!!!	getPackageResourcePath() : String
+        return mBase.getPackageResourcePath();
+!!!706818.java!!!	getPackageCodePath() : String
+        return mBase.getPackageCodePath();
+!!!706946.java!!!	getSharedPrefsFile(in name : String) : File
+        return mBase.getSharedPrefsFile(name);
+!!!707074.java!!!	getSharedPreferences(in name : String, in mode : int) : SharedPreferences
+        return mBase.getSharedPreferences(name, mode);
+!!!707202.java!!!	openFileInput(in name : String) : FileInputStream
+        return mBase.openFileInput(name);
+!!!707330.java!!!	openFileOutput(in name : String, in mode : int) : FileOutputStream
+        return mBase.openFileOutput(name, mode);
+!!!707458.java!!!	deleteFile(in name : String) : boolean
+        return mBase.deleteFile(name);
+!!!707586.java!!!	getFileStreamPath(in name : String) : File
+        return mBase.getFileStreamPath(name);
+!!!707714.java!!!	fileList() : String
+        return mBase.fileList();
+!!!707842.java!!!	getFilesDir() : File
+        return mBase.getFilesDir();
+!!!707970.java!!!	getExternalFilesDir(in type : String) : File
+        return mBase.getExternalFilesDir(type);
+!!!708098.java!!!	getExternalFilesDirs(in type : String) : File
+        return mBase.getExternalFilesDirs(type);
+!!!708226.java!!!	getObbDir() : File
+        return mBase.getObbDir();
+!!!708354.java!!!	getObbDirs() : File
+        return mBase.getObbDirs();
+!!!708482.java!!!	getCacheDir() : File
+        return mBase.getCacheDir();
+!!!708610.java!!!	getExternalCacheDir() : File
+        return mBase.getExternalCacheDir();
+!!!708738.java!!!	getExternalCacheDirs() : File
+        return mBase.getExternalCacheDirs();
+!!!708866.java!!!	getDir(in name : String, in mode : int) : File
+        return mBase.getDir(name, mode);
+!!!708994.java!!!	openOrCreateDatabase(in name : String, in mode : int, inout factory : CursorFactory) : SQLiteDatabase
+        return mBase.openOrCreateDatabase(name, mode, factory);
+!!!709122.java!!!	openOrCreateDatabase(in name : String, in mode : int, inout factory : CursorFactory, inout errorHandler : DatabaseErrorHandler) : SQLiteDatabase
+        return mBase.openOrCreateDatabase(name, mode, factory, errorHandler);
+!!!709250.java!!!	deleteDatabase(in name : String) : boolean
+        return mBase.deleteDatabase(name);
+!!!709378.java!!!	getDatabasePath(in name : String) : File
+        return mBase.getDatabasePath(name);
+!!!709506.java!!!	databaseList() : String
+        return mBase.databaseList();
+!!!709634.java!!!	getWallpaper() : Drawable
+        return mBase.getWallpaper();
+!!!709762.java!!!	peekWallpaper() : Drawable
+        return mBase.peekWallpaper();
+!!!709890.java!!!	getWallpaperDesiredMinimumWidth() : int
+        return mBase.getWallpaperDesiredMinimumWidth();
+!!!710018.java!!!	getWallpaperDesiredMinimumHeight() : int
+        return mBase.getWallpaperDesiredMinimumHeight();
+!!!710146.java!!!	setWallpaper(inout bitmap : Bitmap) : void
+        mBase.setWallpaper(bitmap);
+!!!710274.java!!!	setWallpaper(inout data : InputStream) : void
+        mBase.setWallpaper(data);
+!!!710402.java!!!	clearWallpaper() : void
+        mBase.clearWallpaper();
+!!!710530.java!!!	startActivity(inout intent : Intent) : void
+        mBase.startActivity(intent);
+!!!710658.java!!!	startActivityAsUser(inout intent : Intent, inout user : UserHandle) : void
+        mBase.startActivityAsUser(intent, user);
+!!!710786.java!!!	startActivity(inout intent : Intent, inout options : Bundle) : void
+        mBase.startActivity(intent, options);
+!!!710914.java!!!	startActivityAsUser(inout intent : Intent, inout options : Bundle, inout user : UserHandle) : void
+        mBase.startActivityAsUser(intent, options, user);
+!!!711042.java!!!	startActivities(inout intents : Intent) : void
+        mBase.startActivities(intents);
+!!!711170.java!!!	startActivities(inout intents : Intent, inout options : Bundle) : void
+        mBase.startActivities(intents, options);
+!!!711298.java!!!	startActivitiesAsUser(inout intents : Intent, inout options : Bundle, inout userHandle : UserHandle) : void
+        mBase.startActivitiesAsUser(intents, options, userHandle);
+!!!711426.java!!!	startIntentSender(inout intent : IntentSender, inout fillInIntent : Intent, in flagsMask : int, in flagsValues : int, in extraFlags : int) : void
+        mBase.startIntentSender(intent, fillInIntent, flagsMask,
+                flagsValues, extraFlags);
+!!!711554.java!!!	startIntentSender(inout intent : IntentSender, inout fillInIntent : Intent, in flagsMask : int, in flagsValues : int, in extraFlags : int, inout options : Bundle) : void
+        mBase.startIntentSender(intent, fillInIntent, flagsMask,
+                flagsValues, extraFlags, options);
+!!!711682.java!!!	sendBroadcast(inout intent : Intent) : void
+        mBase.sendBroadcast(intent);
+!!!711810.java!!!	sendBroadcast(inout intent : Intent, in receiverPermission : String) : void
+        mBase.sendBroadcast(intent, receiverPermission);
+!!!711938.java!!!	sendBroadcast(inout intent : Intent, in receiverPermission : String, in appOp : int) : void
+        mBase.sendBroadcast(intent, receiverPermission, appOp);
+!!!712066.java!!!	sendOrderedBroadcast(inout intent : Intent, in receiverPermission : String) : void
+        mBase.sendOrderedBroadcast(intent, receiverPermission);
+!!!712194.java!!!	sendOrderedBroadcast(inout intent : Intent, in receiverPermission : String, inout resultReceiver : BroadcastReceiver, inout scheduler : Handler, in initialCode : int, in initialData : String, inout initialExtras : Bundle) : void
+        mBase.sendOrderedBroadcast(intent, receiverPermission,
+                resultReceiver, scheduler, initialCode,
+                initialData, initialExtras);
+!!!712322.java!!!	sendOrderedBroadcast(inout intent : Intent, in receiverPermission : String, in appOp : int, inout resultReceiver : BroadcastReceiver, inout scheduler : Handler, in initialCode : int, in initialData : String, inout initialExtras : Bundle) : void
+        mBase.sendOrderedBroadcast(intent, receiverPermission, appOp,
+                resultReceiver, scheduler, initialCode,
+                initialData, initialExtras);
+!!!712450.java!!!	sendBroadcastAsUser(inout intent : Intent, inout user : UserHandle) : void
+        mBase.sendBroadcastAsUser(intent, user);
+!!!712578.java!!!	sendBroadcastAsUser(inout intent : Intent, inout user : UserHandle, in receiverPermission : String) : void
+        mBase.sendBroadcastAsUser(intent, user, receiverPermission);
+!!!712706.java!!!	sendOrderedBroadcastAsUser(inout intent : Intent, inout user : UserHandle, in receiverPermission : String, inout resultReceiver : BroadcastReceiver, inout scheduler : Handler, in initialCode : int, in initialData : String, inout initialExtras : Bundle) : void
+        mBase.sendOrderedBroadcastAsUser(intent, user, receiverPermission, resultReceiver,
+                scheduler, initialCode, initialData, initialExtras);
+!!!712834.java!!!	sendStickyBroadcast(inout intent : Intent) : void
+        mBase.sendStickyBroadcast(intent);
+!!!712962.java!!!	sendStickyOrderedBroadcast(inout intent : Intent, inout resultReceiver : BroadcastReceiver, inout scheduler : Handler, in initialCode : int, in initialData : String, inout initialExtras : Bundle) : void
+        mBase.sendStickyOrderedBroadcast(intent,
+                resultReceiver, scheduler, initialCode,
+                initialData, initialExtras);
+!!!713090.java!!!	removeStickyBroadcast(inout intent : Intent) : void
+        mBase.removeStickyBroadcast(intent);
+!!!713218.java!!!	sendStickyBroadcastAsUser(inout intent : Intent, inout user : UserHandle) : void
+        mBase.sendStickyBroadcastAsUser(intent, user);
+!!!713346.java!!!	sendStickyOrderedBroadcastAsUser(inout intent : Intent, inout user : UserHandle, inout resultReceiver : BroadcastReceiver, inout scheduler : Handler, in initialCode : int, in initialData : String, inout initialExtras : Bundle) : void
+        mBase.sendStickyOrderedBroadcastAsUser(intent, user, resultReceiver,
+                scheduler, initialCode, initialData, initialExtras);
+!!!713474.java!!!	removeStickyBroadcastAsUser(inout intent : Intent, inout user : UserHandle) : void
+        mBase.removeStickyBroadcastAsUser(intent, user);
+!!!713602.java!!!	registerReceiver(inout receiver : BroadcastReceiver, inout filter : IntentFilter) : Intent
+        return mBase.registerReceiver(receiver, filter);
+!!!713730.java!!!	registerReceiver(inout receiver : BroadcastReceiver, inout filter : IntentFilter, in broadcastPermission : String, inout scheduler : Handler) : Intent
+        return mBase.registerReceiver(receiver, filter, broadcastPermission,
+                scheduler);
+!!!713858.java!!!	registerReceiverAsUser(inout receiver : BroadcastReceiver, inout user : UserHandle, inout filter : IntentFilter, in broadcastPermission : String, inout scheduler : Handler) : Intent
+        return mBase.registerReceiverAsUser(receiver, user, filter, broadcastPermission,
+                scheduler);
+!!!713986.java!!!	unregisterReceiver(inout receiver : BroadcastReceiver) : void
+        mBase.unregisterReceiver(receiver);
+!!!714114.java!!!	startService(inout service : Intent) : ComponentName
+        return mBase.startService(service);
+!!!714242.java!!!	stopService(inout name : Intent) : boolean
+        return mBase.stopService(name);
+!!!714370.java!!!	startServiceAsUser(inout service : Intent, inout user : UserHandle) : ComponentName
+        return mBase.startServiceAsUser(service, user);
+!!!714498.java!!!	stopServiceAsUser(inout name : Intent, inout user : UserHandle) : boolean
+        return mBase.stopServiceAsUser(name, user);
+!!!714626.java!!!	bindService(inout service : Intent, inout conn : ServiceConnection, in flags : int) : boolean
+        return mBase.bindService(service, conn, flags);
+!!!714754.java!!!	bindServiceAsUser(inout service : Intent, inout conn : ServiceConnection, in flags : int, inout user : UserHandle) : boolean
+        return mBase.bindServiceAsUser(service, conn, flags, user);
+!!!714882.java!!!	unbindService(inout conn : ServiceConnection) : void
+        mBase.unbindService(conn);
+!!!715010.java!!!	startInstrumentation(inout className : ComponentName, in profileFile : String, inout arguments : Bundle) : boolean
+        return mBase.startInstrumentation(className, profileFile, arguments);
+!!!715138.java!!!	getSystemService(in name : String) : Object
+        return mBase.getSystemService(name);
+!!!715266.java!!!	checkPermission(in permission : String, in pid : int, in uid : int) : int
+        return mBase.checkPermission(permission, pid, uid);
+!!!715394.java!!!	checkCallingPermission(in permission : String) : int
+        return mBase.checkCallingPermission(permission);
+!!!715522.java!!!	checkCallingOrSelfPermission(in permission : String) : int
+        return mBase.checkCallingOrSelfPermission(permission);
+!!!715650.java!!!	enforcePermission(in permission : String, in pid : int, in uid : int, in message : String) : void
+        mBase.enforcePermission(permission, pid, uid, message);
+!!!715778.java!!!	enforceCallingPermission(in permission : String, in message : String) : void
+        mBase.enforceCallingPermission(permission, message);
+!!!715906.java!!!	enforceCallingOrSelfPermission(in permission : String, in message : String) : void
+        mBase.enforceCallingOrSelfPermission(permission, message);
+!!!716034.java!!!	grantUriPermission(in toPackage : String, inout uri : Uri, in modeFlags : int) : void
+        mBase.grantUriPermission(toPackage, uri, modeFlags);
+!!!716162.java!!!	revokeUriPermission(inout uri : Uri, in modeFlags : int) : void
+        mBase.revokeUriPermission(uri, modeFlags);
+!!!716290.java!!!	checkUriPermission(inout uri : Uri, in pid : int, in uid : int, in modeFlags : int) : int
+        return mBase.checkUriPermission(uri, pid, uid, modeFlags);
+!!!716418.java!!!	checkCallingUriPermission(inout uri : Uri, in modeFlags : int) : int
+        return mBase.checkCallingUriPermission(uri, modeFlags);
+!!!716546.java!!!	checkCallingOrSelfUriPermission(inout uri : Uri, in modeFlags : int) : int
+        return mBase.checkCallingOrSelfUriPermission(uri, modeFlags);
+!!!716674.java!!!	checkUriPermission(inout uri : Uri, in readPermission : String, in writePermission : String, in pid : int, in uid : int, in modeFlags : int) : int
+        return mBase.checkUriPermission(uri, readPermission, writePermission,
+                pid, uid, modeFlags);
+!!!716802.java!!!	enforceUriPermission(inout uri : Uri, in pid : int, in uid : int, in modeFlags : int, in message : String) : void
+        mBase.enforceUriPermission(uri, pid, uid, modeFlags, message);
+!!!716930.java!!!	enforceCallingUriPermission(inout uri : Uri, in modeFlags : int, in message : String) : void
+        mBase.enforceCallingUriPermission(uri, modeFlags, message);
+!!!717058.java!!!	enforceCallingOrSelfUriPermission(inout uri : Uri, in modeFlags : int, in message : String) : void
+        mBase.enforceCallingOrSelfUriPermission(uri, modeFlags, message);
+!!!717186.java!!!	enforceUriPermission(inout uri : Uri, in readPermission : String, in writePermission : String, in pid : int, in uid : int, in modeFlags : int, in message : String) : void
+        mBase.enforceUriPermission(
+                uri, readPermission, writePermission, pid, uid, modeFlags,
+                message);
+!!!717314.java!!!	createPackageContext(in packageName : String, in flags : int) : Context
+        return mBase.createPackageContext(packageName, flags);
+!!!717442.java!!!	createPackageContextAsUser(in packageName : String, in flags : int, inout user : UserHandle) : Context
+        return mBase.createPackageContextAsUser(packageName, flags, user);
+!!!717570.java!!!	getUserId() : int
+        return mBase.getUserId();
+!!!717698.java!!!	createConfigurationContext(inout overrideConfiguration : Configuration) : Context
+        return mBase.createConfigurationContext(overrideConfiguration);
+!!!717826.java!!!	createDisplayContext(inout display : Display) : Context
+        return mBase.createDisplayContext(display);
+!!!717954.java!!!	isRestricted() : boolean
+        return mBase.isRestricted();
+!!!718082.java!!!	getDisplayAdjustments(in displayId : int) : DisplayAdjustments
+        return mBase.getDisplayAdjustments(displayId);

@@ -1,0 +1,21 @@
+class OperationApplicationException
+!!!757378.java!!!	OperationApplicationException()
+        super();
+        mNumSuccessfulYieldPoints = 0;
+!!!757506.java!!!	OperationApplicationException(in message : String)
+        super(message);
+        mNumSuccessfulYieldPoints = 0;
+!!!757634.java!!!	OperationApplicationException(in message : String, inout cause : Throwable)
+        super(message, cause);
+        mNumSuccessfulYieldPoints = 0;
+!!!757762.java!!!	OperationApplicationException(inout cause : Throwable)
+        super(cause);
+        mNumSuccessfulYieldPoints = 0;
+!!!757890.java!!!	OperationApplicationException(in numSuccessfulYieldPoints : int)
+        super();
+        mNumSuccessfulYieldPoints = numSuccessfulYieldPoints;
+!!!758018.java!!!	OperationApplicationException(in message : String, in numSuccessfulYieldPoints : int)
+        super(message);
+        mNumSuccessfulYieldPoints = numSuccessfulYieldPoints;
+!!!758146.java!!!	getNumSuccessfulYieldPoints() : int
+        return mNumSuccessfulYieldPoints;

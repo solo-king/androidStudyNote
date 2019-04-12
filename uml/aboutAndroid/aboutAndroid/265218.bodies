@@ -1,0 +1,16 @@
+class VolumePreferenceCallback
+!!!825986.java!!!	onSampleStarting(inout sbv : SeekBarVolumizer) : void
+            if (mCurrent != null && mCurrent != sbv) {
+                mCurrent.stopSample();
+            }
+            mCurrent = sbv;
+            if (mCurrent != null) {
+                mHandler.removeMessages(H.STOP_SAMPLE);
+                mHandler.sendEmptyMessageDelayed(H.STOP_SAMPLE, SAMPLE_CUTOFF);
+            }
+!!!826114.java!!!	onStreamValueChanged(in stream : int, in progress : int) : void
+            // noop
+!!!826242.java!!!	stopSample() : void
+            if (mCurrent != null) {
+                mCurrent.stopSample();
+            }

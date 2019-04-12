@@ -1,0 +1,48 @@
+class Proxy
+!!!128612.java!!!	Proxy(inout remote : android.os.IBinder)
+                mRemote = remote;
+!!!128740.java!!!	asBinder() : android.os.IBinder
+                return mRemote;
+!!!128868.java!!!	getInterfaceDescriptor() : java.lang.String
+                return DESCRIPTOR;
+!!!128996.java!!!	openLedDevices() : int
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_openLedDevices, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!129124.java!!!	ledCtrl(in cmd : int) : int
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeInt(cmd);
+                    mRemote.transact(Stub.TRANSACTION_ledCtrl, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!129252.java!!!	signalCtrl(in level : int) : void
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeInt(level);
+                    mRemote.transact(Stub.TRANSACTION_signalCtrl, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }

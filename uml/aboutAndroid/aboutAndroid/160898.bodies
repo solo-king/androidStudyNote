@@ -1,0 +1,89 @@
+class PreviewSeekBarPreferenceFragment
+!!!298242.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        final View root = super.onCreateView(inflater, container, savedInstanceState);
+        final ViewGroup listContainer = (ViewGroup) root.findViewById(android.R.id.list_container);
+        listContainer.removeAllViews();
+
+        final View content = inflater.inflate(mActivityLayoutResId, listContainer, false);
+        listContainer.addView(content);
+
+        mLabel = (TextView) content.findViewById(R.id.current_label);
+
+        // The maximum SeekBar value always needs to be non-zero. If there's
+        // only one available value, we'll handle this by disabling the
+        // seek bar.
+        final int max = Math.max(1, mEntries.length - 1);
+
+        final LabeledSeekBar seekBar = (LabeledSeekBar) content.findViewById(R.id.seek_bar);
+        seekBar.setLabels(mEntries);
+        seekBar.setMax(max);
+        seekBar.setProgress(mInitialIndex);
+        seekBar.setOnSeekBarChangeListener(new onPreviewSeekBarChangeListener());
+
+        mSmaller = content.findViewById(R.id.smaller);
+        mSmaller.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int progress = seekBar.getProgress();
+                if (progress > 0) {
+                    seekBar.setProgress(progress - 1, true);
+                }
+            }
+        });
+
+        mLarger = content.findViewById(R.id.larger);
+        mLarger.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int progress = seekBar.getProgress();
+                if (progress < seekBar.getMax()) {
+                    seekBar.setProgress(progress + 1, true);
+                }
+            }
+        });
+
+        if (mEntries.length == 1) {
+            // The larger and smaller buttons will be disabled when we call
+            // setPreviewLayer() later in this method.
+            seekBar.setEnabled(false);
+        }
+
+        final Context context = getContext();
+        final Configuration origConfig = context.getResources().getConfiguration();
+        final boolean isLayoutRtl = origConfig.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        Configuration[] configurations = new Configuration[mEntries.length];
+        for (int i = 0; i < mEntries.length; ++i) {
+            configurations[i] = createConfig(origConfig, i);
+        }
+
+        mPreviewPager = (ViewPager) content.findViewById(R.id.preview_pager);
+        mPreviewPagerAdapter = new PreviewPagerAdapter(context, isLayoutRtl,
+                mPreviewSampleResIds, configurations);
+        mPreviewPager.setAdapter(mPreviewPagerAdapter);
+        mPreviewPager.setCurrentItem(isLayoutRtl ? mPreviewSampleResIds.length - 1 : 0);
+        mPreviewPager.addOnPageChangeListener(mPreviewPageChangeListener);
+
+        mPageIndicator = (DotsPageIndicator) content.findViewById(R.id.page_indicator);
+        if (mPreviewSampleResIds.length > 1) {
+            mPageIndicator.setViewPager(mPreviewPager);
+            mPageIndicator.setVisibility(View.VISIBLE);
+            mPageIndicator.setOnPageChangeListener(mPageIndicatorPageChangeListener);
+        } else {
+            mPageIndicator.setVisibility(View.GONE);
+        }
+
+        setPreviewLayer(mInitialIndex, false);
+        return root;
+!!!298626.java!!!	setPreviewLayer(in index : int, inout animate : boolean) : void
+        mLabel.setText(mEntries[index]);
+        mSmaller.setEnabled(index > 0);
+        mLarger.setEnabled(index < mEntries.length - 1);
+        setPagerIndicatorContentDescription(mPreviewPager.getCurrentItem());
+        mPreviewPagerAdapter.setPreviewLayer(index, mCurrentIndex,
+                mPreviewPager.getCurrentItem(), animate);
+
+        mCurrentIndex = index;
+!!!298754.java!!!	setPagerIndicatorContentDescription(in position : int) : void
+        mPageIndicator.setContentDescription(
+                getPrefContext().getString(R.string.preview_page_indicator_content_description,
+                        position + 1, mPreviewSampleResIds.length));

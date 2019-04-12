@@ -1,0 +1,45 @@
+class FallbackHome
+!!!275202.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        // Set ourselves totally black before the device is provisioned so that
+        // we don't flash the wallpaper before SUW
+        mProvisioned = Settings.Global.getInt(getContentResolver(),
+                Settings.Global.DEVICE_PROVISIONED, 0) != 0;
+        if (!mProvisioned) {
+            setTheme(R.style.FallbackHome_SetupWizard);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+
+        registerReceiver(mReceiver, new IntentFilter(Intent.ACTION_USER_UNLOCKED));
+        maybeFinish();
+!!!275330.java!!!	onResume() : void
+        super.onResume();
+        if (mProvisioned) {
+            mHandler.postDelayed(mProgressTimeoutRunnable, PROGRESS_TIMEOUT);
+        }
+!!!275458.java!!!	onPause() : void
+        super.onPause();
+        mHandler.removeCallbacks(mProgressTimeoutRunnable);
+!!!275586.java!!!	onDestroy() : void
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+!!!275714.java!!!	maybeFinish() : void
+        if (getSystemService(UserManager.class).isUserUnlocked()) {
+            final Intent homeIntent = new Intent(Intent.ACTION_MAIN)
+                    .addCategory(Intent.CATEGORY_HOME);
+            final ResolveInfo homeInfo = getPackageManager().resolveActivity(homeIntent, 0);
+            if (Objects.equals(getPackageName(), homeInfo.activityInfo.packageName)) {
+                Log.d(TAG, "User unlocked but no home; let's hope someone enables one soon?");
+                mHandler.sendEmptyMessageDelayed(0, 200);
+            } else {
+                Log.d(TAG, "User unlocked and real home found; let's go!");
+                getSystemService(PowerManager.class).userActivity(
+                        SystemClock.uptimeMillis(), false);
+                finish();
+            }
+        }

@@ -1,0 +1,14 @@
+class Permission
+!!!829826.java!!!	Permission(inout _owner : PackageParser::Package)
+            super(_owner);
+            info = new PermissionInfo();
+!!!829954.java!!!	Permission(inout _owner : PackageParser::Package, inout _info : PermissionInfo)
+            super(_owner);
+            info = _info;
+!!!830082.java!!!	setPackageName(in packageName : String) : void
+            super.setPackageName(packageName);
+            info.packageName = packageName;
+!!!830210.java!!!	toString() : String
+            return "Permission{"
+                + Integer.toHexString(System.identityHashCode(this))
+                + " " + info.name + "}";

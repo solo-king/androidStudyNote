@@ -1,0 +1,57 @@
+class MonitorThread
+!!!137730.java!!!	MonitorThread()
+            super("EthMonitor");
+!!!137858.java!!!	run() : void
+            int index;
+            int i;
+
+            //noinspection InfiniteLoopStatement
+            for (;;) {
+                if (DEBUG) Slog.i(TAG, "go poll events");
+                String eventName = EthernetNative.waitForEvent();
+
+                if (eventName == null) {
+                    continue;
+                }
+                if (DEBUG) Slog.i(TAG, "got event " + eventName);
+                /*
+                 * Map event name into event enum
+                 */
+                String [] events = eventName.split(":");
+                index = events.length;
+                if (index < 2)
+                    continue;
+                i = 0;
+                while (index != 0 && i < index-1) {
+
+                    int event = 0;
+                    if (DEBUG) Slog.i(TAG,"dev: " + events[i] + " ev " + events[i+1]);
+                    int cmd =Integer.parseInt(events[i+1]);
+                    if ( cmd == DEL_LINK) {
+                        event = DISCONNECTED;
+                        handleEvent(events[i],event);
+                    }
+                    else if (cmd == ADD_ADDR ) {
+                        event = CONNECTED;
+                        handleEvent(events[i],event);
+                    } else if (cmd == NEW_LINK) {
+                        event = PHYUP;
+                        handleEvent(events[i],event);
+                    }
+                    i = i + 2;
+                }
+            }
+!!!137986.java!!!	handleEvent(in ifname : String, in event : int) : void
+            switch (event) {
+                case DISCONNECTED:
+                    mTracker.notifyStateChange(ifname,NetworkInfo.DetailedState.DISCONNECTED);
+                    break;
+                case CONNECTED:
+                    mTracker.notifyStateChange(ifname,NetworkInfo.DetailedState.CONNECTED);
+                    break;
+                case PHYUP:
+                    mTracker.notifyPhyConnected(ifname);
+                    break;
+                default:
+                    mTracker.notifyStateChange(ifname,NetworkInfo.DetailedState.FAILED);
+            }

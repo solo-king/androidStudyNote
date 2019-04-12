@@ -1,0 +1,4 @@
+class OptionsMenuFragment
+!!!200578.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);

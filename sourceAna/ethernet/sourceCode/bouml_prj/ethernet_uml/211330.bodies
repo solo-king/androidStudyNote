@@ -1,0 +1,18 @@
+class VerifierInfo
+!!!849538.java!!!	VerifierInfo(in packageName : String, inout publicKey : PublicKey)
+        if (packageName == null || packageName.length() == 0) {
+            throw new IllegalArgumentException("packageName must not be null or empty");
+        } else if (publicKey == null) {
+            throw new IllegalArgumentException("publicKey must not be null");
+        }
+
+        this.packageName = packageName;
+        this.publicKey = publicKey;
+!!!849666.java!!!	VerifierInfo(inout source : Parcel)
+        packageName = source.readString();
+        publicKey = (PublicKey) source.readSerializable();
+!!!849794.java!!!	describeContents() : int
+        return 0;
+!!!849922.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeString(packageName);
+        dest.writeSerializable(publicKey);

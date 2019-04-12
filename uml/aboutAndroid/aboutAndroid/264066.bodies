@@ -1,0 +1,43 @@
+class HistoricalNotificationPreference
+!!!815490.java!!!	HistoricalNotificationPreference(inout context : Context, inout info : NotificationStation::HistoricalNotificationInfo)
+            super(context);
+            setLayoutResource(R.layout.notification_log_row);
+            mInfo = info;
+!!!815618.java!!!	onBindViewHolder(inout row : PreferenceViewHolder) : void
+            super.onBindViewHolder(row);
+
+            if (mInfo.icon != null) {
+                ((ImageView) row.findViewById(R.id.icon)).setImageDrawable(mInfo.icon);
+            }
+            if (mInfo.pkgicon != null) {
+                ((ImageView) row.findViewById(R.id.pkgicon)).setImageDrawable(mInfo.pkgicon);
+            }
+
+            ((DateTimeView) row.findViewById(R.id.timestamp)).setTime(mInfo.timestamp);
+            ((TextView) row.findViewById(R.id.title)).setText(mInfo.title);
+            ((TextView) row.findViewById(R.id.pkgname)).setText(mInfo.pkgname);
+
+            final TextView extra = (TextView) row.findViewById(R.id.extra);
+            extra.setText(mInfo.extra);
+            extra.setVisibility(View.GONE);
+
+            row.itemView.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            extra.setVisibility(extra.getVisibility() == View.VISIBLE
+                                    ? View.GONE : View.VISIBLE);
+                        }
+                    });
+
+            row.itemView.setAlpha(mInfo.active ? 1.0f : 0.5f);
+!!!815746.java!!!	getCopyableText() : CharSequence
+            return new SpannableStringBuilder(mInfo.title)
+                    .append(" [").append(new Date(mInfo.timestamp).toString())
+                    .append("]\n").append(mInfo.pkgname)
+                    .append("\n").append(mInfo.extra);
+!!!815874.java!!!	performClick() : void
+//            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+//                    Uri.fromParts("package", mInfo.pkg, null));
+//            intent.setComponent(intent.resolveActivity(getContext().getPackageManager()));
+//            getContext().startActivity(intent);

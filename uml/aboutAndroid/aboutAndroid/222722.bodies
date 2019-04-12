@@ -1,0 +1,70 @@
+class Condition
+!!!598274.java!!!	Condition(inout manager : ConditionManager)
+        mManager = manager;
+        Class<?> receiverClass = getReceiverClass();
+        if (receiverClass != null && shouldAlwaysListenToBroadcast()) {
+            PackageManager pm = mManager.getContext().getPackageManager();
+            pm.setComponentEnabledSetting(new ComponentName(mManager.getContext(), receiverClass),
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, DONT_KILL_APP);
+        }
+!!!598402.java!!!	restoreState(inout bundle : PersistableBundle) : void
+        mIsSilenced = bundle.getBoolean(KEY_SILENCE);
+        mIsActive = bundle.getBoolean(KEY_ACTIVE);
+        mLastStateChange = bundle.getLong(KEY_LAST_STATE);
+!!!598530.java!!!	saveState(inout bundle : PersistableBundle) : boolean
+        if (mIsSilenced) {
+            bundle.putBoolean(KEY_SILENCE, mIsSilenced);
+        }
+        if (mIsActive) {
+            bundle.putBoolean(KEY_ACTIVE, mIsActive);
+            bundle.putLong(KEY_LAST_STATE, mLastStateChange);
+        }
+        return mIsSilenced || mIsActive;
+!!!598658.java!!!	notifyChanged() : void
+        mManager.notifyChanged(this);
+!!!598786.java!!!	isSilenced() : boolean
+        return mIsSilenced;
+!!!598914.java!!!	isActive() : boolean
+        return mIsActive;
+!!!599042.java!!!	setActive(inout active : boolean) : void
+        if (mIsActive == active) {
+            return;
+        }
+        mIsActive = active;
+        mLastStateChange = System.currentTimeMillis();
+        if (mIsSilenced && !active) {
+            mIsSilenced = false;
+            onSilenceChanged(mIsSilenced);
+        }
+        notifyChanged();
+!!!599170.java!!!	silence() : void
+        if (!mIsSilenced) {
+            mIsSilenced = true;
+            MetricsLogger.action(mManager.getContext(),
+                    MetricsEvent.ACTION_SETTINGS_CONDITION_DISMISS, getMetricsConstant());
+            onSilenceChanged(mIsSilenced);
+            notifyChanged();
+        }
+!!!599298.java!!!	onSilenceChanged(inout silenced : boolean) : void
+        if (shouldAlwaysListenToBroadcast()) {
+            // Don't try to disable BroadcastReceiver if we want it always on.
+            return;
+        }
+        Class<?> clz = getReceiverClass();
+        if (clz == null) {
+            return;
+        }
+        // Only need to listen for changes when its been silenced.
+        PackageManager pm = mManager.getContext().getPackageManager();
+        pm.setComponentEnabledSetting(new ComponentName(mManager.getContext(), clz),
+                silenced ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                DONT_KILL_APP);
+!!!599426.java!!!	getReceiverClass() : Class<?>
+        return null;
+!!!599554.java!!!	shouldAlwaysListenToBroadcast() : boolean
+        return false;
+!!!599682.java!!!	shouldShow() : boolean
+        return isActive() && !isSilenced();
+!!!599810.java!!!	getLastChange() : long
+        return mLastStateChange;

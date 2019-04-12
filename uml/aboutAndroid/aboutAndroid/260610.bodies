@@ -1,0 +1,15 @@
+class HowItWorks
+!!!794242.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.nfc_payment_how_it_works);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        Button gotIt = (Button) findViewById(R.id.nfc_how_it_works_button);
+        gotIt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               finish();
+            }
+        });
+!!!794370.java!!!	onNavigateUp() : boolean
+        finish();
+        return true;

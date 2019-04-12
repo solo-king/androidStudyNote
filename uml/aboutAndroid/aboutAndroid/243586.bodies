@@ -1,0 +1,11 @@
+class ScreenZoomPreferenceFragmentForSetupWizard
+!!!689026.java!!!	getMetricsCategory() : int
+        return MetricsEvent.SUW_ACCESSIBILITY_DISPLAY_SIZE;
+!!!689154.java!!!	onStop() : void
+        // Log the final choice in value if it's different from the previous value.
+        if (mCurrentIndex != mInitialIndex) {
+            MetricsLogger.action(getContext(), MetricsEvent.SUW_ACCESSIBILITY_DISPLAY_SIZE,
+                    mCurrentIndex);
+        }
+
+        super.onStop();

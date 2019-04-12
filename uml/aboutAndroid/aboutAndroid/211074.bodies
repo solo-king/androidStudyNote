@@ -1,0 +1,362 @@
+class ApplicationsAdapter
+!!!499074.java!!!	ApplicationsAdapter(inout state : ApplicationsState, inout manageApplications : ManageApplications, in filterMode : int)
+            mState = state;
+            mFgHandler = new Handler();
+            mBgHandler = new Handler(mState.getBackgroundLooper());
+            mSession = state.newSession(this);
+            mManageApplications = manageApplications;
+            mContext = manageApplications.getActivity();
+            mPm = mContext.getPackageManager();
+            mFilterMode = filterMode;
+            if (mManageApplications.mListType == LIST_TYPE_NOTIFICATION) {
+                mExtraInfoBridge = new AppStateNotificationBridge(mContext, mState, this,
+                        manageApplications.mNotifBackend);
+            } else if (mManageApplications.mListType == LIST_TYPE_USAGE_ACCESS) {
+                mExtraInfoBridge = new AppStateUsageBridge(mContext, mState, this);
+            } else if (mManageApplications.mListType == LIST_TYPE_HIGH_POWER) {
+                mExtraInfoBridge = new AppStatePowerBridge(mState, this);
+            } else if (mManageApplications.mListType == LIST_TYPE_OVERLAY) {
+                mExtraInfoBridge = new AppStateOverlayBridge(mContext, mState, this);
+            } else if (mManageApplications.mListType == LIST_TYPE_WRITE_SETTINGS) {
+                mExtraInfoBridge = new AppStateWriteSettingsBridge(mContext, mState, this);
+            } else {
+                mExtraInfoBridge = null;
+            }
+!!!499202.java!!!	setOverrideFilter(inout overrideFilter : AppFilter) : void
+            mOverrideFilter = overrideFilter;
+            rebuild(true);
+!!!499330.java!!!	setFilter(in filter : int) : void
+            mFilterMode = filter;
+            rebuild(true);
+!!!499458.java!!!	resume(in sort : int) : void
+            if (DEBUG) Log.i(TAG, "Resume!  mResumed=" + mResumed);
+            if (!mResumed) {
+                mResumed = true;
+                mSession.resume();
+                mLastSortMode = sort;
+                if (mExtraInfoBridge != null) {
+                    mExtraInfoBridge.resume();
+                }
+                rebuild(false);
+            } else {
+                rebuild(sort);
+            }
+!!!499586.java!!!	pause() : void
+            if (mResumed) {
+                mResumed = false;
+                mSession.pause();
+                if (mExtraInfoBridge != null) {
+                    mExtraInfoBridge.pause();
+                }
+            }
+!!!499714.java!!!	release() : void
+            mSession.release();
+            if (mExtraInfoBridge != null) {
+                mExtraInfoBridge.release();
+            }
+!!!499842.java!!!	rebuild(in sort : int) : void
+            if (sort == mLastSortMode) {
+                return;
+            }
+            mLastSortMode = sort;
+            rebuild(true);
+!!!499970.java!!!	rebuild(inout eraseold : boolean) : void
+            if (!mHasReceivedLoadEntries
+                    || (mExtraInfoBridge != null && !mHasReceivedBridgeCallback)) {
+                // Don't rebuild the list until all the app entries are loaded.
+                return;
+            }
+            if (DEBUG) Log.i(TAG, "Rebuilding app list...");
+            ApplicationsState.AppFilter filterObj;
+            Comparator<AppEntry> comparatorObj;
+            boolean emulated = Environment.isExternalStorageEmulated();
+            if (emulated) {
+                mWhichSize = SIZE_TOTAL;
+            } else {
+                mWhichSize = SIZE_INTERNAL;
+            }
+            filterObj = FILTERS[mFilterMode];
+            if (mOverrideFilter != null) {
+                filterObj = mOverrideFilter;
+            }
+            if (!mManageApplications.mShowSystem) {
+                filterObj = new CompoundFilter(filterObj,
+                        ApplicationsState.FILTER_DOWNLOADED_AND_LAUNCHER);
+            }
+            switch (mLastSortMode) {
+                case R.id.sort_order_size:
+                    switch (mWhichSize) {
+                        case SIZE_INTERNAL:
+                            comparatorObj = ApplicationsState.INTERNAL_SIZE_COMPARATOR;
+                            break;
+                        case SIZE_EXTERNAL:
+                            comparatorObj = ApplicationsState.EXTERNAL_SIZE_COMPARATOR;
+                            break;
+                        default:
+                            comparatorObj = ApplicationsState.SIZE_COMPARATOR;
+                            break;
+                    }
+                    break;
+                default:
+                    comparatorObj = ApplicationsState.ALPHA_COMPARATOR;
+                    break;
+            }
+            filterObj = new CompoundFilter(filterObj, ApplicationsState.FILTER_NOT_HIDE);
+
+            AppFilter finalFilterObj = filterObj;
+            mBgHandler.post(() -> {
+                final ArrayList<AppEntry> entries = mSession.rebuild(finalFilterObj,
+                        comparatorObj, false);
+                if (entries != null) {
+                    mFgHandler.post(() -> onRebuildComplete(entries));
+                }
+            });
+!!!500098.java!!!	packageNameEquals(inout info1 : PackageItemInfo, inout info2 : PackageItemInfo) : boolean
+            if (info1 == null || info2 == null) {
+                return false;
+            }
+            if (info1.packageName == null || info2.packageName == null) {
+                return false;
+            }
+            return info1.packageName.equals(info2.packageName);
+!!!500226.java!!!	removeDuplicateIgnoringUser(inout entries : ArrayList<ApplicationsState.AppEntry>) : ArrayList<ApplicationsState.AppEntry>
+            int size = entries.size();
+            // returnList will not have more entries than entries
+            ArrayList<ApplicationsState.AppEntry> returnEntries = new
+                    ArrayList<ApplicationsState.AppEntry>(size);
+
+            // assume appinfo of same package but different users are grouped together
+            PackageItemInfo lastInfo = null;
+            for (int i = 0; i < size; i++) {
+                AppEntry appEntry = entries.get(i);
+                PackageItemInfo info = appEntry.info;
+                if (!packageNameEquals(lastInfo, appEntry.info)) {
+                    returnEntries.add(appEntry);
+                }
+                lastInfo = info;
+            }
+            returnEntries.trimToSize();
+            return returnEntries;
+!!!500354.java!!!	onRebuildComplete(inout entries : ArrayList<AppEntry>) : void
+            if (mFilterMode == FILTER_APPS_POWER_WHITELIST ||
+                    mFilterMode == FILTER_APPS_POWER_WHITELIST_ALL) {
+                entries = removeDuplicateIgnoringUser(entries);
+            }
+            mBaseEntries = entries;
+            if (mBaseEntries != null) {
+                mEntries = applyPrefixFilter(mCurFilterPrefix, mBaseEntries);
+                rebuildSections();
+            } else {
+                mEntries = null;
+                mSections = EMPTY_SECTIONS;
+                mPositionToSectionIndex = null;
+            }
+
+            notifyDataSetChanged();
+
+            if (mSession.getAllApps().size() != 0
+                    && mManageApplications.mListContainer.getVisibility() != View.VISIBLE) {
+                Utils.handleLoadingContainer(mManageApplications.mLoadingContainer,
+                        mManageApplications.mListContainer, true, true);
+            }
+            if (mManageApplications.mListType == LIST_TYPE_USAGE_ACCESS) {
+                // No enabled or disabled filters for usage access.
+                return;
+            }
+
+            mManageApplications.setHasDisabled(mState.haveDisabledApps());
+!!!500482.java!!!	rebuildSections() : void
+            if (mEntries!= null && mManageApplications.mListView.isFastScrollEnabled()) {
+                // Rebuild sections
+                if (mIndex == null) {
+                    LocaleList locales = mContext.getResources().getConfiguration().getLocales();
+                    if (locales.size() == 0) {
+                        locales = new LocaleList(Locale.ENGLISH);
+                    }
+                    AlphabeticIndex<Locale> index = new AlphabeticIndex<>(locales.get(0));
+                    int localeCount = locales.size();
+                    for (int i = 1; i < localeCount; i++) {
+                        index.addLabels(locales.get(i));
+                    }
+                    // Ensure we always have some base English locale buckets
+                    index.addLabels(Locale.ENGLISH);
+                    mIndex = index.buildImmutableIndex();
+                }
+
+                ArrayList<SectionInfo> sections = new ArrayList<>();
+                int lastSecId = -1;
+                int totalEntries = mEntries.size();
+                mPositionToSectionIndex = new int[totalEntries];
+
+                for (int pos = 0; pos < totalEntries; pos++) {
+                    String label = mEntries.get(pos).label;
+                    int secId = mIndex.getBucketIndex(TextUtils.isEmpty(label) ? "" : label);
+                    if (secId != lastSecId) {
+                        lastSecId = secId;
+                        sections.add(new SectionInfo(mIndex.getBucket(secId).getLabel(), pos));
+                    }
+                    mPositionToSectionIndex[pos] = sections.size() - 1;
+                }
+                mSections = sections.toArray(EMPTY_SECTIONS);
+            } else {
+                mSections = EMPTY_SECTIONS;
+                mPositionToSectionIndex = null;
+            }
+!!!500610.java!!!	updateLoading() : void
+            Utils.handleLoadingContainer(mManageApplications.mLoadingContainer,
+                    mManageApplications.mListContainer,
+                    mHasReceivedLoadEntries && mSession.getAllApps().size() != 0, false);
+!!!500738.java!!!	applyPrefixFilter(inout prefix : CharSequence, inout origEntries : ArrayList<ApplicationsState.AppEntry>) : ArrayList<ApplicationsState.AppEntry>
+            if (prefix == null || prefix.length() == 0) {
+                return origEntries;
+            } else {
+                String prefixStr = ApplicationsState.normalize(prefix.toString());
+                final String spacePrefixStr = " " + prefixStr;
+                ArrayList<ApplicationsState.AppEntry> newEntries
+                        = new ArrayList<ApplicationsState.AppEntry>();
+                for (int i = 0; i < origEntries.size(); i++) {
+                    ApplicationsState.AppEntry entry = origEntries.get(i);
+                    String nlabel = entry.getNormalizedLabel();
+                    if (nlabel.startsWith(prefixStr) || nlabel.indexOf(spacePrefixStr) != -1) {
+                        newEntries.add(entry);
+                    }
+                }
+                return newEntries;
+            }
+!!!500866.java!!!	onExtraInfoUpdated() : void
+            mHasReceivedBridgeCallback = true;
+            rebuild(false);
+!!!500994.java!!!	onRunningStateChanged(inout running : boolean) : void
+            mManageApplications.getActivity().setProgressBarIndeterminateVisibility(running);
+!!!501122.java!!!	onPackageListChanged() : void
+            rebuild(false);
+!!!501250.java!!!	onPackageIconChanged() : void
+            // We ensure icons are loaded when their item is displayed, so
+            // don't care about icons loaded in the background.
+!!!501378.java!!!	onLoadEntriesCompleted() : void
+            mHasReceivedLoadEntries = true;
+            // We may have been skipping rebuilds until this came in, trigger one now.
+            rebuild(false);
+!!!501506.java!!!	onPackageSizeChanged(in packageName : String) : void
+            for (int i = 0; i < mActive.size(); i++) {
+                AppViewHolder holder = (AppViewHolder) mActive.get(i).getTag();
+                if (holder.entry.info.packageName.equals(packageName)) {
+                    synchronized (holder.entry) {
+                        updateSummary(holder);
+                    }
+                    if (holder.entry.info.packageName.equals(mManageApplications.mCurrentPkgName)
+                            && mLastSortMode == R.id.sort_order_size) {
+                        // We got the size information for the last app the
+                        // user viewed, and are sorting by size...  they may
+                        // have cleared data, so we immediately want to resort
+                        // the list with the new size to reflect it to the user.
+                        rebuild(false);
+                    }
+                    return;
+                }
+            }
+!!!501634.java!!!	onLauncherInfoChanged() : void
+            if (!mManageApplications.mShowSystem) {
+                rebuild(false);
+            }
+!!!501762.java!!!	onAllSizesComputed() : void
+            if (mLastSortMode == R.id.sort_order_size) {
+                rebuild(false);
+            }
+!!!501890.java!!!	getCount() : int
+            return mEntries != null ? mEntries.size() : 0;
+!!!502018.java!!!	getItem(in position : int) : Object
+            return mEntries.get(position);
+!!!502146.java!!!	getAppEntry(in position : int) : ApplicationsState.AppEntry
+            return mEntries.get(position);
+!!!502274.java!!!	getItemId(in position : int) : long
+            return mEntries.get(position).id;
+!!!502402.java!!!	areAllItemsEnabled() : boolean
+            return false;
+!!!502530.java!!!	isEnabled(in position : int) : boolean
+            if (mManageApplications.mListType != LIST_TYPE_HIGH_POWER) {
+                return true;
+            }
+            ApplicationsState.AppEntry entry = mEntries.get(position);
+            return !PowerWhitelistBackend.getInstance().isSysWhitelisted(entry.info.packageName);
+!!!502658.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            // A ViewHolder keeps references to children views to avoid unnecessary calls
+            // to findViewById() on each row.
+            AppViewHolder holder = AppViewHolder.createOrRecycle(mManageApplications.mInflater,
+                    convertView);
+            convertView = holder.rootView;
+
+            // Bind the data efficiently with the holder
+            ApplicationsState.AppEntry entry = mEntries.get(position);
+            synchronized (entry) {
+                holder.entry = entry;
+                if (entry.label != null) {
+                    holder.appName.setText(entry.label);
+                }
+                mState.ensureIcon(entry);
+                if (entry.icon != null) {
+                    holder.appIcon.setImageDrawable(entry.icon);
+                }
+                updateSummary(holder);
+                if ((entry.info.flags & ApplicationInfo.FLAG_INSTALLED) == 0) {
+                    holder.disabled.setVisibility(View.VISIBLE);
+                    holder.disabled.setText(R.string.not_installed);
+                } else if (!entry.info.enabled) {
+                    holder.disabled.setVisibility(View.VISIBLE);
+                    holder.disabled.setText(R.string.disabled);
+                } else {
+                    holder.disabled.setVisibility(View.GONE);
+                }
+            }
+            mActive.remove(convertView);
+            mActive.add(convertView);
+            convertView.setEnabled(isEnabled(position));
+            return convertView;
+!!!502786.java!!!	updateSummary(inout holder : AppViewHolder) : void
+            switch (mManageApplications.mListType) {
+                case LIST_TYPE_NOTIFICATION:
+                    if (holder.entry.extraInfo != null) {
+                        holder.summary.setText(InstalledAppDetails.getNotificationSummary(
+                                (AppRow) holder.entry.extraInfo, mContext));
+                    } else {
+                        holder.summary.setText(null);
+                    }
+                    break;
+
+                case LIST_TYPE_USAGE_ACCESS:
+                    if (holder.entry.extraInfo != null) {
+                        holder.summary.setText((new UsageState((PermissionState) holder.entry
+                                .extraInfo)).isPermissible() ? R.string.switch_on_text :
+                                R.string.switch_off_text);
+                    } else {
+                        holder.summary.setText(null);
+                    }
+                    break;
+
+                case LIST_TYPE_HIGH_POWER:
+                    holder.summary.setText(HighPowerDetail.getSummary(mContext, holder.entry));
+                    break;
+
+                case LIST_TYPE_OVERLAY:
+                    holder.summary.setText(DrawOverlayDetails.getSummary(mContext, holder.entry));
+                    break;
+
+                case LIST_TYPE_WRITE_SETTINGS:
+                    holder.summary.setText(WriteSettingsDetails.getSummary(mContext,
+                            holder.entry));
+                    break;
+
+                default:
+                    holder.updateSizeText(mManageApplications.mInvalidSizeStr, mWhichSize);
+                    break;
+            }
+!!!502914.java!!!	getFilter() : Filter
+            return mFilter;
+!!!503042.java!!!	onMovedToScrapHeap(inout view : View) : void
+            mActive.remove(view);
+!!!503170.java!!!	getSections() : Object
+            return mSections;
+!!!503298.java!!!	getPositionForSection(in sectionIndex : int) : int
+            return mSections[sectionIndex].position;
+!!!503426.java!!!	getSectionForPosition(in position : int) : int
+            return mPositionToSectionIndex[position];

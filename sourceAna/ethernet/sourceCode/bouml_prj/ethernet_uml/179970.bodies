@@ -1,0 +1,10 @@
+class AutoCloseOutputStream
+!!!529922.java!!!	AutoCloseOutputStream(inout pfd : ParcelFileDescriptor)
+            super(pfd.getFileDescriptor());
+            mPfd = pfd;
+!!!530050.java!!!	close() : void
+            try {
+                mPfd.close();
+            } finally {
+                super.close();
+            }

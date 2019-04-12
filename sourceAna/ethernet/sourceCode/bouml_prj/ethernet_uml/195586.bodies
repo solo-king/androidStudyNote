@@ -1,0 +1,88 @@
+class ClipboardManager
+!!!639234.java!!!	getService() : IClipboard
+        synchronized (sStaticLock) {
+            if (sService != null) {
+                return sService;
+            }
+            IBinder b = ServiceManager.getService("clipboard");
+            sService = IClipboard.Stub.asInterface(b);
+            return sService;
+        }
+!!!639362.java!!!	ClipboardManager(inout context : Context, inout handler : Handler)
+        mContext = context;
+!!!639490.java!!!	setPrimaryClip(inout clip : ClipData) : void
+        try {
+            if (clip != null) {
+                clip.prepareToLeaveProcess();
+            }
+            getService().setPrimaryClip(clip, mContext.getOpPackageName());
+        } catch (RemoteException e) {
+        }
+!!!639618.java!!!	getPrimaryClip() : ClipData
+        try {
+            return getService().getPrimaryClip(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!639746.java!!!	getPrimaryClipDescription() : ClipDescription
+        try {
+            return getService().getPrimaryClipDescription(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!639874.java!!!	hasPrimaryClip() : boolean
+        try {
+            return getService().hasPrimaryClip(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!640002.java!!!	addPrimaryClipChangedListener(inout what : ClipboardManager::OnPrimaryClipChangedListener) : void
+        synchronized (mPrimaryClipChangedListeners) {
+            if (mPrimaryClipChangedListeners.size() == 0) {
+                try {
+                    getService().addPrimaryClipChangedListener(
+                            mPrimaryClipChangedServiceListener, mContext.getOpPackageName());
+                } catch (RemoteException e) {
+                }
+            }
+            mPrimaryClipChangedListeners.add(what);
+        }
+!!!640130.java!!!	removePrimaryClipChangedListener(inout what : ClipboardManager::OnPrimaryClipChangedListener) : void
+        synchronized (mPrimaryClipChangedListeners) {
+            mPrimaryClipChangedListeners.remove(what);
+            if (mPrimaryClipChangedListeners.size() == 0) {
+                try {
+                    getService().removePrimaryClipChangedListener(
+                            mPrimaryClipChangedServiceListener);
+                } catch (RemoteException e) {
+                }
+            }
+        }
+!!!640258.java!!!	getText() : CharSequence
+        ClipData clip = getPrimaryClip();
+        if (clip != null && clip.getItemCount() > 0) {
+            return clip.getItemAt(0).coerceToText(mContext);
+        }
+        return null;
+!!!640386.java!!!	setText(inout text : CharSequence) : void
+        setPrimaryClip(ClipData.newPlainText(null, text));
+!!!640514.java!!!	hasText() : boolean
+        try {
+            return getService().hasClipboardText(mContext.getOpPackageName());
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!640642.java!!!	reportPrimaryClipChanged() : void
+        Object[] listeners;
+
+        synchronized (mPrimaryClipChangedListeners) {
+            final int N = mPrimaryClipChangedListeners.size();
+            if (N <= 0) {
+                return;
+            }
+            listeners = mPrimaryClipChangedListeners.toArray();
+        }
+
+        for (int i=0; i<listeners.length; i++) {
+            ((OnPrimaryClipChangedListener)listeners[i]).onPrimaryClipChanged();
+        }

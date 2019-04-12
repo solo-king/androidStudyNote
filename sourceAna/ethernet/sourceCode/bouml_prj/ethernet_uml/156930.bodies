@@ -1,0 +1,171 @@
+class HttpAuthHeader
+!!!352386.java!!!	HttpAuthHeader(in header : String)
+        if (header != null) {
+            parseHeader(header);
+        }
+!!!352514.java!!!	isProxy() : boolean
+        return mIsProxy;
+!!!352642.java!!!	setProxy() : void
+        mIsProxy = true;
+!!!352770.java!!!	getUsername() : String
+        return mUsername;
+!!!352898.java!!!	setUsername(in username : String) : void
+        mUsername = username;
+!!!353026.java!!!	getPassword() : String
+        return mPassword;
+!!!353154.java!!!	setPassword(in password : String) : void
+        mPassword = password;
+!!!353282.java!!!	isBasic() : boolean
+        return mScheme == BASIC;
+!!!353410.java!!!	isDigest() : boolean
+        return mScheme == DIGEST;
+!!!353538.java!!!	getScheme() : int
+        return mScheme;
+!!!353666.java!!!	getStale() : boolean
+        return mStale;
+!!!353794.java!!!	getRealm() : String
+        return mRealm;
+!!!353922.java!!!	getNonce() : String
+        return mNonce;
+!!!354050.java!!!	getOpaque() : String
+        return mOpaque;
+!!!354178.java!!!	getQop() : String
+        return mQop;
+!!!354306.java!!!	getAlgorithm() : String
+        return mAlgorithm;
+!!!354434.java!!!	isSupportedScheme() : boolean
+        // it is a good idea to enforce non-null realms!
+        if (mRealm != null) {
+            if (mScheme == BASIC) {
+                return true;
+            } else {
+                if (mScheme == DIGEST) {
+                    return
+                        mAlgorithm.equals("md5") &&
+                        (mQop == null || mQop.equals("auth"));
+                }
+            }
+        }
+
+        return false;
+!!!354562.java!!!	parseHeader(in header : String) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("HttpAuthHeader.parseHeader(): header: " + header);
+        }
+
+        if (header != null) {
+            String parameters = parseScheme(header);
+            if (parameters != null) {
+                // if we have a supported scheme
+                if (mScheme != UNKNOWN) {
+                    parseParameters(parameters);
+                }
+            }
+        }
+!!!354690.java!!!	parseScheme(in header : String) : String
+        if (header != null) {
+            int i = header.indexOf(' ');
+            if (i >= 0) {
+                String scheme = header.substring(0, i).trim();
+                if (scheme.equalsIgnoreCase(DIGEST_TOKEN)) {
+                    mScheme = DIGEST;
+
+                    // md5 is the default algorithm!!!
+                    mAlgorithm = "md5";
+                } else {
+                    if (scheme.equalsIgnoreCase(BASIC_TOKEN)) {
+                        mScheme = BASIC;
+                    }
+                }
+
+                return header.substring(i + 1);
+            }
+        }
+
+        return null;
+!!!354818.java!!!	parseParameters(in parameters : String) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("HttpAuthHeader.parseParameters():" +
+                      " parameters: " + parameters);
+        }
+
+        if (parameters != null) {
+            int i;
+            do {
+                i = parameters.indexOf(',');
+                if (i < 0) {
+                    // have only one parameter
+                    parseParameter(parameters);
+                } else {
+                    parseParameter(parameters.substring(0, i));
+                    parameters = parameters.substring(i + 1);
+                }
+            } while (i >= 0);
+        }
+!!!354946.java!!!	parseParameter(in parameter : String) : void
+        if (parameter != null) {
+            // here, we are looking for the 1st occurence of '=' only!!!
+            int i = parameter.indexOf('=');
+            if (i >= 0) {
+                String token = parameter.substring(0, i).trim();
+                String value =
+                    trimDoubleQuotesIfAny(parameter.substring(i + 1).trim());
+
+                if (HttpLog.LOGV) {
+                    HttpLog.v("HttpAuthHeader.parseParameter():" +
+                              " token: " + token +
+                              " value: " + value);
+                }
+
+                if (token.equalsIgnoreCase(REALM_TOKEN)) {
+                    mRealm = value;
+                } else {
+                    if (mScheme == DIGEST) {
+                        parseParameter(token, value);
+                    }
+                }
+            }
+        }
+!!!355074.java!!!	parseParameter(in token : String, in value : String) : void
+        if (token != null && value != null) {
+            if (token.equalsIgnoreCase(NONCE_TOKEN)) {
+                mNonce = value;
+                return;
+            }
+
+            if (token.equalsIgnoreCase(STALE_TOKEN)) {
+                parseStale(value);
+                return;
+            }
+
+            if (token.equalsIgnoreCase(OPAQUE_TOKEN)) {
+                mOpaque = value;
+                return;
+            }
+
+            if (token.equalsIgnoreCase(QOP_TOKEN)) {
+                mQop = value.toLowerCase(Locale.ROOT);
+                return;
+            }
+
+            if (token.equalsIgnoreCase(ALGORITHM_TOKEN)) {
+                mAlgorithm = value.toLowerCase(Locale.ROOT);
+                return;
+            }
+        }
+!!!355202.java!!!	parseStale(in value : String) : void
+        if (value != null) {
+            if (value.equalsIgnoreCase("true")) {
+                mStale = true;
+            }
+        }
+!!!355330.java!!!	trimDoubleQuotesIfAny(in value : String) : String
+        if (value != null) {
+            int len = value.length();
+            if (len > 2 &&
+                value.charAt(0) == '\"' && value.charAt(len - 1) == '\"') {
+                return value.substring(1, len - 1);
+            }
+        }
+
+        return value;

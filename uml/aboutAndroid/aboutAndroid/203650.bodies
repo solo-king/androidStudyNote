@@ -1,0 +1,82 @@
+class AppOpEntry
+!!!456450.java!!!	AppOpEntry(inout pkg : AppOpsManager.PackageOps, inout op : AppOpsManager.OpEntry, inout app : AppOpsState::AppEntry, in switchOrder : int)
+            mPkgOps = pkg;
+            mApp = app;
+            mSwitchOrder = switchOrder;
+            mApp.addOp(this, op);
+            mOps.add(op);
+            mSwitchOps.add(op);
+!!!456578.java!!!	addOp(inout list : ArrayList<AppOpsManager.OpEntry>, inout op : AppOpsManager.OpEntry) : void
+            for (int i=0; i<list.size(); i++) {
+                AppOpsManager.OpEntry pos = list.get(i);
+                if (pos.isRunning() != op.isRunning()) {
+                    if (op.isRunning()) {
+                        list.add(i, op);
+                        return;
+                    }
+                    continue;
+                }
+                if (pos.getTime() < op.getTime()) {
+                    list.add(i, op);
+                    return;
+                }
+            }
+            list.add(op);
+!!!456706.java!!!	addOp(inout op : AppOpsManager.OpEntry) : void
+            mApp.addOp(this, op);
+            addOp(mOps, op);
+            if (mApp.getOpSwitch(AppOpsManager.opToSwitch(op.getOp())) == null) {
+                addOp(mSwitchOps, op);
+            }
+!!!456834.java!!!	getAppEntry() : AppOpsState::AppEntry
+            return mApp;
+!!!456962.java!!!	getSwitchOrder() : int
+            return mSwitchOrder;
+!!!457090.java!!!	getPackageOps() : AppOpsManager.PackageOps
+            return mPkgOps;
+!!!457218.java!!!	getNumOpEntry() : int
+            return mOps.size();
+!!!457346.java!!!	getOpEntry(in pos : int) : AppOpsManager.OpEntry
+            return mOps.get(pos);
+!!!457474.java!!!	getPrimaryOpMode() : int
+            return mOverriddenPrimaryMode >= 0 ? mOverriddenPrimaryMode : mOps.get(0).getMode();
+!!!457602.java!!!	overridePrimaryOpMode(in mode : int) : void
+            mOverriddenPrimaryMode = mode;
+!!!457730.java!!!	getCombinedText(inout ops : ArrayList<AppOpsManager.OpEntry>, inout items : CharSequence) : CharSequence
+            if (ops.size() == 1) {
+                return items[ops.get(0).getOp()];
+            } else {
+                StringBuilder builder = new StringBuilder();
+                for (int i=0; i<ops.size(); i++) {
+                    if (i > 0) {
+                        builder.append(", ");
+                    }
+                    builder.append(items[ops.get(i).getOp()]);
+                }
+                return builder.toString();
+            }
+!!!457858.java!!!	getSummaryText(inout state : AppOpsState) : CharSequence
+            return getCombinedText(mOps, state.mOpSummaries);
+!!!457986.java!!!	getSwitchText(inout state : AppOpsState) : CharSequence
+            if (mSwitchOps.size() > 0) {
+                return getCombinedText(mSwitchOps, state.mOpLabels);
+            } else {
+                return getCombinedText(mOps, state.mOpLabels);
+            }
+!!!458114.java!!!	getTimeText(inout res : Resources, inout showEmptyText : boolean) : CharSequence
+            if (isRunning()) {
+                return res.getText(R.string.app_ops_running);
+            }
+            if (getTime() > 0) {
+                return DateUtils.getRelativeTimeSpanString(getTime(),
+                        System.currentTimeMillis(),
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.FORMAT_ABBREV_RELATIVE);
+            }
+            return showEmptyText ? res.getText(R.string.app_ops_never_used) : "";
+!!!458242.java!!!	isRunning() : boolean
+            return mOps.get(0).isRunning();
+!!!458370.java!!!	getTime() : long
+            return mOps.get(0).getTime();
+!!!458498.java!!!	toString() : String
+            return mApp.getLabel();

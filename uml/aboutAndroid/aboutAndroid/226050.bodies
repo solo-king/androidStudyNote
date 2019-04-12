@@ -1,0 +1,9 @@
+class SearchResult
+!!!589954.java!!!	SearchResult(inout context : Context, in title : String, in summaryOn : String, in summaryOff : String, in entries : String, in iconResId : int, in key : String)
+            this.context = context;
+            this.title = title;
+            this.summaryOn = summaryOn;
+            this.summaryOff = summaryOff;
+            this.entries = entries;
+            this.iconResId = iconResId;
+            this.key = key;

@@ -1,0 +1,403 @@
+class ParcelFileDescriptor
+!!!525442.java!!!	ParcelFileDescriptor(inout wrapped : ParcelFileDescriptor)
+        // We keep a strong reference to the wrapped PFD, and rely on its
+        // finalizer to trigger CloseGuard. All calls are delegated to wrapper.
+        mWrapped = wrapped;
+        mFd = null;
+        mCommFd = null;
+        mClosed = true;
+!!!525570.java!!!	ParcelFileDescriptor(inout fd : FileDescriptor)
+        this(fd, null);
+!!!525698.java!!!	ParcelFileDescriptor(inout fd : FileDescriptor, inout commChannel : FileDescriptor)
+        if (fd == null) {
+            throw new NullPointerException("FileDescriptor must not be null");
+        }
+        mWrapped = null;
+        mFd = fd;
+        mCommFd = commChannel;
+        mGuard.open("close");
+!!!525826.java!!!	open(inout file : File, in mode : int) : ParcelFileDescriptor
+        final FileDescriptor fd = openInternal(file, mode);
+        if (fd == null) return null;
+
+        return new ParcelFileDescriptor(fd);
+!!!525954.java!!!	open(inout file : File, in mode : int, inout handler : Handler, inout listener : ParcelFileDescriptor::OnCloseListener) : ParcelFileDescriptor
+        if (handler == null) {
+            throw new IllegalArgumentException("Handler must not be null");
+        }
+        if (listener == null) {
+            throw new IllegalArgumentException("Listener must not be null");
+        }
+
+        final FileDescriptor fd = openInternal(file, mode);
+        if (fd == null) return null;
+
+        final FileDescriptor[] comm = createCommSocketPair();
+        final ParcelFileDescriptor pfd = new ParcelFileDescriptor(fd, comm[0]);
+
+        // Kick off thread to watch for status updates
+        IoUtils.setBlocking(comm[1], true);
+        final ListenerBridge bridge = new ListenerBridge(comm[1], handler.getLooper(), listener);
+        bridge.start();
+
+        return pfd;
+!!!526082.java!!!	openInternal(inout file : File, in mode : int) : FileDescriptor
+        if ((mode & MODE_READ_WRITE) == 0) {
+            throw new IllegalArgumentException(
+                    "Must specify MODE_READ_ONLY, MODE_WRITE_ONLY, or MODE_READ_WRITE");
+        }
+
+        final String path = file.getPath();
+        return Parcel.openFileDescriptor(path, mode);
+!!!526210.java!!!	dup(inout orig : FileDescriptor) : ParcelFileDescriptor
+        try {
+            final FileDescriptor fd = Libcore.os.dup(orig);
+            return new ParcelFileDescriptor(fd);
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!526338.java!!!	dup() : ParcelFileDescriptor
+        if (mWrapped != null) {
+            return mWrapped.dup();
+        } else {
+            return dup(getFileDescriptor());
+        }
+!!!526466.java!!!	fromFd(in fd : int) : ParcelFileDescriptor
+        final FileDescriptor original = new FileDescriptor();
+        original.setInt$(fd);
+
+        try {
+            final FileDescriptor dup = Libcore.os.dup(original);
+            return new ParcelFileDescriptor(dup);
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!526594.java!!!	adoptFd(in fd : int) : ParcelFileDescriptor
+        final FileDescriptor fdesc = new FileDescriptor();
+        fdesc.setInt$(fd);
+
+        return new ParcelFileDescriptor(fdesc);
+!!!526722.java!!!	fromSocket(inout socket : Socket) : ParcelFileDescriptor
+        FileDescriptor fd = socket.getFileDescriptor$();
+        return fd != null ? new ParcelFileDescriptor(fd) : null;
+!!!526850.java!!!	fromDatagramSocket(inout datagramSocket : DatagramSocket) : ParcelFileDescriptor
+        FileDescriptor fd = datagramSocket.getFileDescriptor$();
+        return fd != null ? new ParcelFileDescriptor(fd) : null;
+!!!526978.java!!!	createPipe() : ParcelFileDescriptor
+        try {
+            final FileDescriptor[] fds = Libcore.os.pipe();
+            return new ParcelFileDescriptor[] {
+                    new ParcelFileDescriptor(fds[0]),
+                    new ParcelFileDescriptor(fds[1]) };
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!527106.java!!!	createReliablePipe() : ParcelFileDescriptor
+        try {
+            final FileDescriptor[] comm = createCommSocketPair();
+            final FileDescriptor[] fds = Libcore.os.pipe();
+            return new ParcelFileDescriptor[] {
+                    new ParcelFileDescriptor(fds[0], comm[0]),
+                    new ParcelFileDescriptor(fds[1], comm[1]) };
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!527234.java!!!	createSocketPair() : ParcelFileDescriptor
+        try {
+            final FileDescriptor fd0 = new FileDescriptor();
+            final FileDescriptor fd1 = new FileDescriptor();
+            Libcore.os.socketpair(AF_UNIX, SOCK_STREAM, 0, fd0, fd1);
+            return new ParcelFileDescriptor[] {
+                    new ParcelFileDescriptor(fd0),
+                    new ParcelFileDescriptor(fd1) };
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!527362.java!!!	createReliableSocketPair() : ParcelFileDescriptor
+        try {
+            final FileDescriptor[] comm = createCommSocketPair();
+            final FileDescriptor fd0 = new FileDescriptor();
+            final FileDescriptor fd1 = new FileDescriptor();
+            Libcore.os.socketpair(AF_UNIX, SOCK_STREAM, 0, fd0, fd1);
+            return new ParcelFileDescriptor[] {
+                    new ParcelFileDescriptor(fd0, comm[0]),
+                    new ParcelFileDescriptor(fd1, comm[1]) };
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!527490.java!!!	createCommSocketPair() : FileDescriptor
+        try {
+            final FileDescriptor comm1 = new FileDescriptor();
+            final FileDescriptor comm2 = new FileDescriptor();
+            Libcore.os.socketpair(AF_UNIX, SOCK_STREAM, 0, comm1, comm2);
+            IoUtils.setBlocking(comm1, false);
+            IoUtils.setBlocking(comm2, false);
+            return new FileDescriptor[] { comm1, comm2 };
+        } catch (ErrnoException e) {
+            throw e.rethrowAsIOException();
+        }
+!!!527618.java!!!	fromData(inout data : byte, in name : String) : ParcelFileDescriptor
+        if (data == null) return null;
+        MemoryFile file = new MemoryFile(name, data.length);
+        if (data.length > 0) {
+            file.writeBytes(data, 0, 0, data.length);
+        }
+        file.deactivate();
+        FileDescriptor fd = file.getFileDescriptor();
+        return fd != null ? new ParcelFileDescriptor(fd) : null;
+!!!527746.java!!!	parseMode(in mode : String) : int
+        final int modeBits;
+        if ("r".equals(mode)) {
+            modeBits = ParcelFileDescriptor.MODE_READ_ONLY;
+        } else if ("w".equals(mode) || "wt".equals(mode)) {
+            modeBits = ParcelFileDescriptor.MODE_WRITE_ONLY
+                    | ParcelFileDescriptor.MODE_CREATE
+                    | ParcelFileDescriptor.MODE_TRUNCATE;
+        } else if ("wa".equals(mode)) {
+            modeBits = ParcelFileDescriptor.MODE_WRITE_ONLY
+                    | ParcelFileDescriptor.MODE_CREATE
+                    | ParcelFileDescriptor.MODE_APPEND;
+        } else if ("rw".equals(mode)) {
+            modeBits = ParcelFileDescriptor.MODE_READ_WRITE
+                    | ParcelFileDescriptor.MODE_CREATE;
+        } else if ("rwt".equals(mode)) {
+            modeBits = ParcelFileDescriptor.MODE_READ_WRITE
+                    | ParcelFileDescriptor.MODE_CREATE
+                    | ParcelFileDescriptor.MODE_TRUNCATE;
+        } else {
+            throw new IllegalArgumentException("Bad mode '" + mode + "'");
+        }
+        return modeBits;
+!!!527874.java!!!	getFileDescriptor() : FileDescriptor
+        if (mWrapped != null) {
+            return mWrapped.getFileDescriptor();
+        } else {
+            return mFd;
+        }
+!!!528002.java!!!	getStatSize() : long
+        if (mWrapped != null) {
+            return mWrapped.getStatSize();
+        } else {
+            try {
+                final StructStat st = Libcore.os.fstat(mFd);
+                if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+                    return st.st_size;
+                } else {
+                    return -1;
+                }
+            } catch (ErrnoException e) {
+                Log.w(TAG, "fstat() failed: " + e);
+                return -1;
+            }
+        }
+!!!528130.java!!!	seekTo(in pos : long) : long
+        if (mWrapped != null) {
+            return mWrapped.seekTo(pos);
+        } else {
+            try {
+                return Libcore.os.lseek(mFd, pos, SEEK_SET);
+            } catch (ErrnoException e) {
+                throw e.rethrowAsIOException();
+            }
+        }
+!!!528258.java!!!	getFd() : int
+        if (mWrapped != null) {
+            return mWrapped.getFd();
+        } else {
+            if (mClosed) {
+                throw new IllegalStateException("Already closed");
+            }
+            return mFd.getInt$();
+        }
+!!!528386.java!!!	detachFd() : int
+        if (mWrapped != null) {
+            return mWrapped.detachFd();
+        } else {
+            if (mClosed) {
+                throw new IllegalStateException("Already closed");
+            }
+            final int fd = getFd();
+            Parcel.clearFileDescriptor(mFd);
+            writeCommStatusAndClose(Status.DETACHED, null);
+            return fd;
+        }
+!!!528514.java!!!	close() : void
+        if (mWrapped != null) {
+            try {
+                mWrapped.close();
+            } finally {
+                releaseResources();
+            }
+        } else {
+            closeWithStatus(Status.OK, null);
+        }
+!!!528642.java!!!	closeWithError(in msg : String) : void
+        if (mWrapped != null) {
+            try {
+                mWrapped.closeWithError(msg);
+            } finally {
+                releaseResources();
+            }
+        } else {
+            if (msg == null) {
+                throw new IllegalArgumentException("Message must not be null");
+            }
+            closeWithStatus(Status.ERROR, msg);
+        }
+!!!528770.java!!!	closeWithStatus(in status : int, in msg : String) : void
+        if (mClosed) return;
+        mClosed = true;
+        mGuard.close();
+        // Status MUST be sent before closing actual descriptor
+        writeCommStatusAndClose(status, msg);
+        IoUtils.closeQuietly(mFd);
+        releaseResources();
+!!!529026.java!!!	getOrCreateStatusBuffer() : byte
+        if (mStatusBuf == null) {
+            mStatusBuf = new byte[MAX_STATUS];
+        }
+        return mStatusBuf;
+!!!529154.java!!!	writeCommStatusAndClose(in status : int, in msg : String) : void
+        if (mCommFd == null) {
+            // Not reliable, or someone already sent status
+            if (msg != null) {
+                Log.w(TAG, "Unable to inform peer: " + msg);
+            }
+            return;
+        }
+
+        if (status == Status.DETACHED) {
+            Log.w(TAG, "Peer expected signal when closed; unable to deliver after detach");
+        }
+
+        try {
+            if (status == Status.SILENCE) return;
+
+            // Since we're about to close, read off any remote status. It's
+            // okay to remember missing here.
+            mStatus = readCommStatus(mCommFd, getOrCreateStatusBuffer());
+
+            // Skip writing status when other end has already gone away.
+            if (mStatus != null) return;
+
+            try {
+                final byte[] buf = getOrCreateStatusBuffer();
+                int writePtr = 0;
+
+                Memory.pokeInt(buf, writePtr, status, ByteOrder.BIG_ENDIAN);
+                writePtr += 4;
+
+                if (msg != null) {
+                    final byte[] rawMsg = msg.getBytes();
+                    final int len = Math.min(rawMsg.length, buf.length - writePtr);
+                    System.arraycopy(rawMsg, 0, buf, writePtr, len);
+                    writePtr += len;
+                }
+
+                Libcore.os.write(mCommFd, buf, 0, writePtr);
+            } catch (ErrnoException e) {
+                // Reporting status is best-effort
+                Log.w(TAG, "Failed to report status: " + e);
+            }
+
+        } finally {
+            IoUtils.closeQuietly(mCommFd);
+            mCommFd = null;
+        }
+!!!529282.java!!!	readCommStatus(inout comm : FileDescriptor, inout buf : byte) : ParcelFileDescriptor::Status
+        try {
+            final int n = Libcore.os.read(comm, buf, 0, buf.length);
+            if (n == 0) {
+                // EOF means they're dead
+                return new Status(Status.DEAD);
+            } else {
+                final int status = Memory.peekInt(buf, 0, ByteOrder.BIG_ENDIAN);
+                if (status == Status.ERROR) {
+                    final String msg = new String(buf, 4, n - 4);
+                    return new Status(status, msg);
+                }
+                return new Status(status);
+            }
+        } catch (ErrnoException e) {
+            if (e.errno == OsConstants.EAGAIN) {
+                // Remote is still alive, but no status written yet
+                return null;
+            } else {
+                Log.d(TAG, "Failed to read status; assuming dead: " + e);
+                return new Status(Status.DEAD);
+            }
+        }
+!!!529410.java!!!	canDetectErrors() : boolean
+        if (mWrapped != null) {
+            return mWrapped.canDetectErrors();
+        } else {
+            return mCommFd != null;
+        }
+!!!529538.java!!!	checkError() : void
+        if (mWrapped != null) {
+            mWrapped.checkError();
+        } else {
+            if (mStatus == null) {
+                if (mCommFd == null) {
+                    Log.w(TAG, "Peer didn't provide a comm channel; unable to check for errors");
+                    return;
+                }
+
+                // Try reading status; it might be null if nothing written yet.
+                // Either way, we keep comm open to write our status later.
+                mStatus = readCommStatus(mCommFd, getOrCreateStatusBuffer());
+            }
+
+            if (mStatus == null || mStatus.status == Status.OK) {
+                // No status yet, or everything is peachy!
+                return;
+            } else {
+                throw mStatus.asIOException();
+            }
+        }
+!!!530178.java!!!	toString() : String
+        if (mWrapped != null) {
+            return mWrapped.toString();
+        } else {
+            return "{ParcelFileDescriptor: " + mFd + "}";
+        }
+!!!530306.java!!!	finalize() : void
+        if (mWrapped != null) {
+            releaseResources();
+        }
+        if (mGuard != null) {
+            mGuard.warnIfOpen();
+        }
+        try {
+            if (!mClosed) {
+                closeWithStatus(Status.LEAKED, null);
+            }
+        } finally {
+            super.finalize();
+        }
+!!!530434.java!!!	describeContents() : int
+        if (mWrapped != null) {
+            return mWrapped.describeContents();
+        } else {
+            return Parcelable.CONTENTS_FILE_DESCRIPTOR;
+        }
+!!!530562.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        if (mWrapped != null) {
+            try {
+                mWrapped.writeToParcel(out, flags);
+            } finally {
+                releaseResources();
+            }
+        } else {
+            out.writeFileDescriptor(mFd);
+            if (mCommFd != null) {
+                out.writeInt(1);
+                out.writeFileDescriptor(mCommFd);
+            } else {
+                out.writeInt(0);
+            }
+            if ((flags & PARCELABLE_WRITE_RETURN_VALUE) != 0 && !mClosed) {
+                // Not a real close, so emit no status
+                closeWithStatus(Status.SILENCE, null);
+            }
+        }

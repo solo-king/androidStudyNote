@@ -1,0 +1,13 @@
+class IconTouchDialog
+!!!703874.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.security_settings_fingerprint_enroll_touch_dialog_title)
+                    .setMessage(R.string.security_settings_fingerprint_enroll_touch_dialog_message)
+                    .setPositiveButton(R.string.security_settings_fingerprint_enroll_dialog_ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+            return builder.create();

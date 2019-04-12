@@ -1,0 +1,3 @@
+class DeadObjectException
+!!!457090.java!!!	DeadObjectException()
+        super();

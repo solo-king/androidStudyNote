@@ -1,0 +1,105 @@
+class ZenAccessSettings
+!!!828290.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NOTIFICATION_ZEN_MODE_ACCESS;
+!!!828418.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        mContext = getActivity();
+        mPkgMan = mContext.getPackageManager();
+        mNoMan = mContext.getSystemService(NotificationManager.class);
+        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(mContext));
+!!!828546.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+        setEmptyText(R.string.zen_access_empty_text);
+!!!828674.java!!!	onResume() : void
+        super.onResume();
+        reloadList();
+        getContentResolver().registerContentObserver(
+                Secure.getUriFor(Secure.ENABLED_NOTIFICATION_POLICY_ACCESS_PACKAGES), false,
+                mObserver);
+        getContentResolver().registerContentObserver(
+                Secure.getUriFor(Secure.ENABLED_NOTIFICATION_LISTENERS), false,
+                mObserver);
+!!!828802.java!!!	onPause() : void
+        super.onPause();
+        getContentResolver().unregisterContentObserver(mObserver);
+!!!828930.java!!!	reloadList() : void
+        final PreferenceScreen screen = getPreferenceScreen();
+        screen.removeAll();
+        final ArrayList<ApplicationInfo> apps = new ArrayList<>();
+        final ArraySet<String> requesting = mNoMan.getPackagesRequestingNotificationPolicyAccess();
+        if (!requesting.isEmpty()) {
+            final List<ApplicationInfo> installed = mPkgMan.getInstalledApplications(0);
+            if (installed != null) {
+                for (ApplicationInfo app : installed) {
+                    if (requesting.contains(app.packageName)) {
+                        apps.add(app);
+                    }
+                }
+            }
+        }
+        ArraySet<String> autoApproved = getEnabledNotificationListeners();
+        requesting.addAll(autoApproved);
+        Collections.sort(apps, new PackageItemInfo.DisplayNameComparator(mPkgMan));
+        for (ApplicationInfo app : apps) {
+            final String pkg = app.packageName;
+            final CharSequence label = app.loadLabel(mPkgMan);
+            final SwitchPreference pref = new SwitchPreference(getPrefContext());
+            pref.setPersistent(false);
+            pref.setIcon(app.loadIcon(mPkgMan));
+            pref.setTitle(label);
+            pref.setChecked(hasAccess(pkg));
+            if (autoApproved.contains(pkg)) {
+                pref.setEnabled(false);
+                pref.setSummary(getString(R.string.zen_access_disabled_package_warning));
+            }
+            pref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    final boolean access = (Boolean) newValue;
+                    if (access) {
+                        new ScaryWarningDialogFragment()
+                                .setPkgInfo(pkg, label)
+                                .show(getFragmentManager(), "dialog");
+                    } else {
+                        new FriendlyWarningDialogFragment()
+                                .setPkgInfo(pkg, label)
+                                .show(getFragmentManager(), "dialog");
+                    }
+                    return false;
+                }
+            });
+            screen.addPreference(pref);
+        }
+!!!829058.java!!!	getEnabledNotificationListeners() : ArraySet<String>
+        ArraySet<String> packages = new ArraySet<>();
+        String settingValue = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ENABLED_NOTIFICATION_LISTENERS);
+        if (!TextUtils.isEmpty(settingValue)) {
+            String[] restored = settingValue.split(ENABLED_SERVICES_SEPARATOR);
+            for (int i = 0; i < restored.length; i++) {
+                ComponentName value = ComponentName.unflattenFromString(restored[i]);
+                if (null != value) {
+                    packages.add(value.getPackageName());
+                }
+            }
+        }
+        return packages;
+!!!829186.java!!!	hasAccess(in pkg : String) : boolean
+        return mNoMan.isNotificationPolicyAccessGrantedForPackage(pkg);
+!!!829314.java!!!	setAccess(in context : Context, in pkg : String, in access : boolean) : void
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                final NotificationManager mgr = context.getSystemService(NotificationManager.class);
+                mgr.setNotificationPolicyAccessGranted(pkg, access);
+            }
+        });
+!!!829442.java!!!	deleteRules(in context : Context, in pkg : String) : void
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                final NotificationManager mgr = context.getSystemService(NotificationManager.class);
+                mgr.removeAutomaticZenRules(pkg);
+            }
+        });

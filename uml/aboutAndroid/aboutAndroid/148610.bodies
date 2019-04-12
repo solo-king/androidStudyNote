@@ -1,0 +1,83 @@
+class CryptKeeperSettings
+!!!223490.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedState : Bundle) : View
+        mContentView = inflater.inflate(R.layout.crypt_keeper_settings, null);
+
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+
+        mInitiateButton = (Button) mContentView.findViewById(R.id.initiate_encrypt);
+        mInitiateButton.setOnClickListener(mInitiateListener);
+        mInitiateButton.setEnabled(false);
+
+        mPowerWarning = mContentView.findViewById(R.id.warning_unplugged);
+        mBatteryWarning = mContentView.findViewById(R.id.warning_low_charge);
+
+        return mContentView;
+!!!223618.java!!!	getMetricsCategory() : int
+        return MetricsEvent.CRYPT_KEEPER;
+!!!223746.java!!!	onResume() : void
+        super.onResume();
+        getActivity().registerReceiver(mIntentReceiver, mIntentFilter);
+!!!223874.java!!!	onPause() : void
+        super.onPause();
+        getActivity().unregisterReceiver(mIntentReceiver);
+!!!224002.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        Activity activity = getActivity();
+        Intent intent = activity.getIntent();
+        if (DevicePolicyManager.ACTION_START_ENCRYPTION.equals(intent.getAction())) {
+            DevicePolicyManager dpm = (DevicePolicyManager)
+                    activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            if (dpm != null) {
+                int status = dpm.getStorageEncryptionStatus();
+                if (status != DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE) {
+                    // There is nothing to do here, so simply finish() (which returns to caller)
+                    activity.finish();
+                }
+            }
+        }
+!!!224130.java!!!	runKeyguardConfirmation(in request : int) : boolean
+        Resources res = getActivity().getResources();
+        ChooseLockSettingsHelper helper = new ChooseLockSettingsHelper(getActivity(), this);
+
+        if (helper.utils().getKeyguardStoredPasswordQuality(UserHandle.myUserId())
+                == DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED) {
+            showFinalConfirmation(StorageManager.CRYPT_TYPE_DEFAULT, "");
+            return true;
+        }
+
+        return helper.launchConfirmationActivity(request,
+                res.getText(R.string.crypt_keeper_encrypt_title), true);
+!!!224258.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode != KEYGUARD_REQUEST) {
+            return;
+        }
+
+        // If the user entered a valid keyguard trace, present the final
+        // confirmation prompt; otherwise, go back to the initial state.
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            int type = data.getIntExtra(ChooseLockSettingsHelper.EXTRA_KEY_TYPE, -1);
+            String password = data.getStringExtra(ChooseLockSettingsHelper.EXTRA_KEY_PASSWORD);
+            if (!TextUtils.isEmpty(password)) {
+                showFinalConfirmation(type, password);
+            }
+        }
+!!!224386.java!!!	showFinalConfirmation(in type : int, in password : String) : void
+        Preference preference = new Preference(getPreferenceManager().getContext());
+        preference.setFragment(CryptKeeperConfirm.class.getName());
+        preference.setTitle(R.string.crypt_keeper_confirm_title);
+        addEncryptionInfoToPreference(preference, type, password);
+        ((SettingsActivity) getActivity()).onPreferenceStartFragment(null, preference);
+!!!224514.java!!!	addEncryptionInfoToPreference(inout preference : Preference, in type : int, in password : String) : void
+        Activity activity = getActivity();
+        DevicePolicyManager dpm = (DevicePolicyManager)
+                activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (dpm.getDoNotAskCredentialsOnBoot()) {
+            preference.getExtras().putInt(TYPE, StorageManager.CRYPT_TYPE_DEFAULT);
+            preference.getExtras().putString(PASSWORD, "");
+        } else {
+            preference.getExtras().putInt(TYPE, type);
+            preference.getExtras().putString(PASSWORD, password);
+        }

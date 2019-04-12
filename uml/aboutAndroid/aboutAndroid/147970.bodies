@@ -1,0 +1,3 @@
+class NonConfigurationInstanceState
+!!!217346.java!!!	NonConfigurationInstanceState(inout _wakelock : PowerManager.WakeLock)
+            wakelock = _wakelock;

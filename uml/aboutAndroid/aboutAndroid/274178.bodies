@@ -1,0 +1,71 @@
+class IndexDatabaseHelper
+!!!878978.java!!!	getInstance(inout context : Context) : IndexDatabaseHelper
+        if (sSingleton == null) {
+            sSingleton = new IndexDatabaseHelper(context);
+        }
+        return sSingleton;
+!!!879106.java!!!	IndexDatabaseHelper(inout context : Context)
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
+!!!879234.java!!!	onCreate(inout db : SQLiteDatabase) : void
+        bootstrapDB(db);
+!!!879362.java!!!	bootstrapDB(inout db : SQLiteDatabase) : void
+        db.execSQL(CREATE_INDEX_TABLE);
+        db.execSQL(CREATE_META_TABLE);
+        db.execSQL(CREATE_SAVED_QUERIES_TABLE);
+        db.execSQL(INSERT_BUILD_VERSION);
+        Log.i(TAG, "Bootstrapped database");
+!!!879490.java!!!	onOpen(inout db : SQLiteDatabase) : void
+        super.onOpen(db);
+
+        Log.i(TAG, "Using schema version: " + db.getVersion());
+
+        if (!Build.VERSION.INCREMENTAL.equals(getBuildVersion(db))) {
+            Log.w(TAG, "Index needs to be rebuilt as build-version is not the same");
+            // We need to drop the tables and recreate them
+            reconstruct(db);
+        } else {
+            Log.i(TAG, "Index is fine");
+        }
+!!!879618.java!!!	onUpgrade(inout db : SQLiteDatabase, in oldVersion : int, in newVersion : int) : void
+        if (oldVersion < DATABASE_VERSION) {
+            Log.w(TAG, "Detected schema version '" + oldVersion + "'. " +
+                    "Index needs to be rebuilt for schema version '" + newVersion + "'.");
+            // We need to drop the tables and recreate them
+            reconstruct(db);
+        }
+!!!879746.java!!!	onDowngrade(inout db : SQLiteDatabase, in oldVersion : int, in newVersion : int) : void
+        Log.w(TAG, "Detected schema version '" + oldVersion + "'. " +
+                "Index needs to be rebuilt for schema version '" + newVersion + "'.");
+        // We need to drop the tables and recreate them
+        reconstruct(db);
+!!!879874.java!!!	reconstruct(inout db : SQLiteDatabase) : void
+        dropTables(db);
+        bootstrapDB(db);
+!!!880002.java!!!	getBuildVersion(inout db : SQLiteDatabase) : String
+        String version = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(SELECT_BUILD_VERSION, null);
+            if (cursor.moveToFirst()) {
+                version = cursor.getString(0);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot get build version from Index metadata");
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return version;
+!!!880130.java!!!	clearLocalesIndexed(inout context : Context) : void
+        context.getSharedPreferences(INDEX, 0).edit().clear().commit();
+!!!880258.java!!!	setLocaleIndexed(inout context : Context, in locale : String) : void
+        context.getSharedPreferences(INDEX, 0).edit().putBoolean(locale, true).commit();
+!!!880386.java!!!	isLocaleAlreadyIndexed(inout context : Context, in locale : String) : boolean
+        return context.getSharedPreferences(INDEX, 0).getBoolean(locale, false);
+!!!880514.java!!!	dropTables(inout db : SQLiteDatabase) : void
+        clearLocalesIndexed(mContext);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.TABLE_META_INDEX);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.TABLE_PREFS_INDEX);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.TABLE_SAVED_QUERIES);

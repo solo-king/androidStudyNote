@@ -1,0 +1,43 @@
+class InactiveApps
+!!!732802.java!!!	getMetricsCategory() : int
+        return MetricsEvent.FUELGAUGE_INACTIVE_APPS;
+!!!732930.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        mUsageStats = getActivity().getSystemService(UsageStatsManager.class);
+        addPreferencesFromResource(R.xml.inactive_apps);
+!!!733058.java!!!	onResume() : void
+        super.onResume();
+        init();
+!!!733186.java!!!	init() : void
+        PreferenceGroup screen = getPreferenceScreen();
+        screen.removeAll();
+        screen.setOrderingAsAdded(false);
+        final Context context = getActivity();
+        final PackageManager pm = context.getPackageManager();
+        final UsageStatsManager usm = context.getSystemService(UsageStatsManager.class);
+
+        Intent launcherIntent = new Intent(Intent.ACTION_MAIN);
+        launcherIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> apps = pm.queryIntentActivities(launcherIntent, 0);
+        for (ResolveInfo app : apps) {
+            String packageName = app.activityInfo.applicationInfo.packageName;
+            Preference p = new Preference(getPrefContext());
+            p.setTitle(app.loadLabel(pm));
+            p.setIcon(app.loadIcon(pm));
+            p.setKey(packageName);
+            updateSummary(p);
+            p.setOnPreferenceClickListener(this);
+
+            screen.addPreference(p);
+        }
+!!!733314.java!!!	updateSummary(inout p : Preference) : void
+        boolean inactive = mUsageStats.isAppInactive(p.getKey());
+        p.setSummary(inactive
+                ? R.string.inactive_app_inactive_summary
+                : R.string.inactive_app_active_summary);
+!!!733442.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        String packageName = preference.getKey();
+        mUsageStats.setAppInactive(packageName, !mUsageStats.isAppInactive(packageName));
+        updateSummary(preference);
+        return false;

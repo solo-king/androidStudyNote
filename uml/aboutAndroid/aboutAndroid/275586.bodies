@@ -1,0 +1,202 @@
+class SimDialogActivity
+!!!882050.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        final Bundle extras = getIntent().getExtras();
+        final int dialogType = extras.getInt(DIALOG_TYPE_KEY, INVALID_PICK);
+
+        switch (dialogType) {
+            case DATA_PICK:
+            case CALLS_PICK:
+            case SMS_PICK:
+                createDialog(this, dialogType).show();
+                break;
+            case PREFERRED_PICK:
+                displayPreferredDialog(extras.getInt(PREFERRED_SIM));
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid dialog type " + dialogType + " sent.");
+        }
+
+!!!882178.java!!!	displayPreferredDialog(in slotId : int) : void
+        final Resources res = getResources();
+        final Context context = getApplicationContext();
+        final SubscriptionInfo sir = SubscriptionManager.from(context)
+                .getActiveSubscriptionInfoForSimSlotIndex(slotId);
+
+        if (sir != null) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(R.string.sim_preferred_title);
+            alertDialogBuilder.setMessage(res.getString(
+                        R.string.sim_preferred_message, sir.getDisplayName()));
+
+            alertDialogBuilder.setPositiveButton(R.string.yes, new
+                    DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    final int subId = sir.getSubscriptionId();
+                    PhoneAccountHandle phoneAccountHandle =
+                            subscriptionIdToPhoneAccountHandle(subId);
+                    setDefaultDataSubId(context, subId);
+                    setDefaultSmsSubId(context, subId);
+                    setUserSelectedOutgoingPhoneAccount(phoneAccountHandle);
+                    finish();
+                }
+            });
+            alertDialogBuilder.setNegativeButton(R.string.no, new
+                    DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog,int id) {
+                    finish();
+                }
+            });
+
+            alertDialogBuilder.create().show();
+        } else {
+            finish();
+        }
+!!!882306.java!!!	setDefaultDataSubId(in context : Context, in subId : int) : void
+        final SubscriptionManager subscriptionManager = SubscriptionManager.from(context);
+        subscriptionManager.setDefaultDataSubId(subId);
+        Toast.makeText(context, R.string.data_switch_started, Toast.LENGTH_LONG).show();
+!!!882434.java!!!	setDefaultSmsSubId(in context : Context, in subId : int) : void
+        final SubscriptionManager subscriptionManager = SubscriptionManager.from(context);
+        subscriptionManager.setDefaultSmsSubId(subId);
+!!!882562.java!!!	setUserSelectedOutgoingPhoneAccount(inout phoneAccount : PhoneAccountHandle) : void
+        final TelecomManager telecomManager = TelecomManager.from(this);
+        telecomManager.setUserSelectedOutgoingPhoneAccount(phoneAccount);
+!!!882690.java!!!	subscriptionIdToPhoneAccountHandle(in subId : int) : PhoneAccountHandle
+        final TelecomManager telecomManager = TelecomManager.from(this);
+        final TelephonyManager telephonyManager = TelephonyManager.from(this);
+        final Iterator<PhoneAccountHandle> phoneAccounts =
+                telecomManager.getCallCapablePhoneAccounts().listIterator();
+
+        while (phoneAccounts.hasNext()) {
+            final PhoneAccountHandle phoneAccountHandle = phoneAccounts.next();
+            final PhoneAccount phoneAccount = telecomManager.getPhoneAccount(phoneAccountHandle);
+            if (subId == telephonyManager.getSubIdForPhoneAccount(phoneAccount)) {
+                return phoneAccountHandle;
+            }
+        }
+
+        return null;
+!!!882818.java!!!	createDialog(in context : Context, in id : int) : Dialog
+        final ArrayList<String> list = new ArrayList<String>();
+        final SubscriptionManager subscriptionManager = SubscriptionManager.from(context);
+        final List<SubscriptionInfo> subInfoList =
+            subscriptionManager.getActiveSubscriptionInfoList();
+        final int selectableSubInfoLength = subInfoList == null ? 0 : subInfoList.size();
+
+        final DialogInterface.OnClickListener selectionListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int value) {
+
+                        final SubscriptionInfo sir;
+
+                        switch (id) {
+                            case DATA_PICK:
+                                sir = subInfoList.get(value);
+                                setDefaultDataSubId(context, sir.getSubscriptionId());
+                                break;
+                            case CALLS_PICK:
+                                final TelecomManager telecomManager =
+                                        TelecomManager.from(context);
+                                final List<PhoneAccountHandle> phoneAccountsList =
+                                        telecomManager.getCallCapablePhoneAccounts();
+                                setUserSelectedOutgoingPhoneAccount(
+                                        value < 1 ? null : phoneAccountsList.get(value - 1));
+                                break;
+                            case SMS_PICK:
+                                sir = subInfoList.get(value);
+                                setDefaultSmsSubId(context, sir.getSubscriptionId());
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Invalid dialog type "
+                                        + id + " in SIM dialog.");
+                        }
+
+                        finish();
+                    }
+                };
+
+        Dialog.OnKeyListener keyListener = new Dialog.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode,
+                    KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        finish();
+                    }
+                    return true;
+                }
+            };
+
+        ArrayList<SubscriptionInfo> callsSubInfoList = new ArrayList<SubscriptionInfo>();
+        if (id == CALLS_PICK) {
+            final TelecomManager telecomManager = TelecomManager.from(context);
+            final TelephonyManager telephonyManager = TelephonyManager.from(context);
+            final Iterator<PhoneAccountHandle> phoneAccounts =
+                    telecomManager.getCallCapablePhoneAccounts().listIterator();
+
+            list.add(getResources().getString(R.string.sim_calls_ask_first_prefs_title));
+            callsSubInfoList.add(null);
+            while (phoneAccounts.hasNext()) {
+                final PhoneAccount phoneAccount =
+                        telecomManager.getPhoneAccount(phoneAccounts.next());
+                list.add((String)phoneAccount.getLabel());
+                int subId = telephonyManager.getSubIdForPhoneAccount(phoneAccount);
+                if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                    final SubscriptionInfo sir = SubscriptionManager.from(context)
+                            .getActiveSubscriptionInfo(subId);
+                    callsSubInfoList.add(sir);
+                } else {
+                    callsSubInfoList.add(null);
+                }
+            }
+        } else {
+            for (int i = 0; i < selectableSubInfoLength; ++i) {
+                final SubscriptionInfo sir = subInfoList.get(i);
+                CharSequence displayName = sir.getDisplayName();
+                if (displayName == null) {
+                    displayName = "";
+                }
+                list.add(displayName.toString());
+            }
+        }
+
+        String[] arr = list.toArray(new String[0]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        ListAdapter adapter = new SelectAccountListAdapter(
+                id == CALLS_PICK ? callsSubInfoList : subInfoList,
+                builder.getContext(),
+                R.layout.select_account_list_item,
+                arr, id);
+
+        switch (id) {
+            case DATA_PICK:
+                builder.setTitle(R.string.select_sim_for_data);
+                break;
+            case CALLS_PICK:
+                builder.setTitle(R.string.select_sim_for_calls);
+                break;
+            case SMS_PICK:
+                builder.setTitle(R.string.sim_card_select_title);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid dialog type "
+                        + id + " in SIM dialog.");
+        }
+
+        Dialog dialog = builder.setAdapter(adapter, selectionListener).create();
+        dialog.setOnKeyListener(keyListener);
+
+        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                finish();
+            }
+        });
+
+        return dialog;
+

@@ -1,0 +1,182 @@
+class UsrLedService
+!!!133604.java!!!	getImportComponents() : void
+        mConnectivityManager = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(mConnectivityManager == null){
+            Log.e(TAG, "#########################getImportComponents:[mConnectivityManager] is null!!!#########################");
+        }
+!!!133732.java!!!	UsrLedService(inout context : Context)
+
+        mContext = context;
+        getImportComponents();
+        openLedDevices();
+        new Thread(bingRunnable).start();
+        addNetWorkChanageListener();
+        addSignalChanageListener();
+        
+!!!133860.java!!!	netLedCtrl(inout netLedCtrlCmd : boolean) : void
+
+        if(netLedCtrlCmd){
+            ledCtrl(NET_LED_ON);
+        }else{
+            ledCtrl(NET_LED_OFF);
+        }
+!!!133988.java!!!	updateNetLed() : void
+        //跑马灯ok后才可以进行操作
+        if(!serviceCanCalledFlags){
+            networkStatusChangeBeforeBlink = true;
+            Log.w(TAG, "############################led is not ready!!!############################[networkStatusChangeBeforeBlink]"+networkStatusChangeBeforeBlink);
+            return;
+        }
+        NetworkInfo networkInfo = null;
+        try {
+            networkInfo = mConnectivityManager.getActiveNetworkInfo();
+            //如果为空代表无可用网络
+            if(networkInfo == null){
+                netLedCtrl(false);
+                Log.e(TAG, "updateNetLed:no network can be used!!");
+                return;
+            }
+            boolean isAvailable  = networkInfo.isAvailable();
+            Log.w(TAG, "updateNetLed:[isAvailable]"+isAvailable);
+            netLedCtrl(isAvailable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            netLedCtrl(false);
+            Log.e(TAG, "############################updateNetLed:call updateNetLed error!!!############################");
+        }
+
+!!!134116.java!!!	isNetworkChanged(in action : String) : boolean
+        
+        if(action == null)return false;
+        return action.equals(ConnectivityManager.CONNECTIVITY_ACTION);
+!!!134372.java!!!	addSignalChanageListener() : void
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("cn.usr.www.LED_SIGNAL_NOT_SHOW");
+        mContext.registerReceiver(new SignalStrengthReceiver(), intentFilter);
+!!!134628.java!!!	addNetWorkChanageListener() : void
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        mContext.registerReceiver(new NetworkChanagerReceiver(), intentFilter);
+!!!134756.java!!!	openLedDevices() : int
+        try{
+            UsrLog.LOGD(TAG, "openLedDevices");
+            return open_led_devices();
+        }catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+!!!134884.java!!!	ledCtrl(in cmd : int) : int
+        //记录最新level值
+
+        try {
+            //UsrLog.LOGD(TAG, "ledCtrl, cmd = "+cmd);
+            return led_ctrl(cmd);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1;
+
+!!!135012.java!!!	led_bing() : void
+		   ledCtrl(CUSTOM_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(NET_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+   		   ledCtrl(WORK_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL1_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL2_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL3_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL4_LED_ON);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+	
+	
+		   ledCtrl(SIGNAL4_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL3_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL2_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(SIGNAL1_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(WORK_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+   		   ledCtrl(NET_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+		   ledCtrl(CUSTOM_LED_OFF);
+		   UsrGeneralUtils.sleepMs(LED_BING_INTERVAL_TIME);
+!!!135140.java!!!	ledBlinkCount(in blinkCount : int) : void
+
+		while(((blinkCount--) == 0 ? false:true))
+	           led_bing();
+!!!135268.java!!!	closeAllSignalLed() : void
+
+		ledCtrl(SIGNAL1_LED_OFF);
+		ledCtrl(SIGNAL2_LED_OFF);
+	    ledCtrl(SIGNAL3_LED_OFF);
+		ledCtrl(SIGNAL4_LED_OFF);
+!!!135396.java!!!	updateCurrentlySignalLevel(in level : int) : boolean
+
+        if(currentlySignalLevel != level){
+
+            currentlySignalLevel = level;
+            //return true;
+        }
+        return true;
+!!!135524.java!!!	updateSignalLevelLed(in level : int) : void
+        
+        switch(level){
+			
+			case SignalStrength.SIGNAL_STRENGTH_POOR:{
+				closeAllSignalLed();
+				ledCtrl(SIGNAL1_LED_ON);
+				break;
+			}
+			case SignalStrength.SIGNAL_STRENGTH_MODERATE:{
+				closeAllSignalLed();
+				ledCtrl(SIGNAL1_LED_ON);
+				ledCtrl(SIGNAL2_LED_ON);
+				break;
+			}
+			case SignalStrength.SIGNAL_STRENGTH_GOOD:{
+				closeAllSignalLed();
+				ledCtrl(SIGNAL1_LED_ON);
+				ledCtrl(SIGNAL2_LED_ON);
+				ledCtrl(SIGNAL3_LED_ON);
+				break;
+			}
+			case SignalStrength.SIGNAL_STRENGTH_GREAT:
+			case SignalStrength.NUM_SIGNAL_STRENGTH_BINS:{
+				closeAllSignalLed();
+				ledCtrl(SIGNAL1_LED_ON);
+				ledCtrl(SIGNAL2_LED_ON);
+				ledCtrl(SIGNAL3_LED_ON);
+				ledCtrl(SIGNAL4_LED_ON);
+				break;
+			}
+
+			default:{
+				UsrLog.LOGE(TAG, "UNKOWN [level]:"+level);
+				closeAllSignalLed();
+				break;
+			}
+		}
+!!!135652.java!!!	signalCtrl(in level : int) : void
+        
+        if(!updateCurrentlySignalLevel(level)){
+            //存在更新时才需要往下执行
+            return ;
+        }
+
+		if(!serviceCanCalledFlags) {//等待跑马灯结束
+			UsrLog.LOGD(TAG, "wait ...,serviceCanCalledFlags = "+serviceCanCalledFlags);
+			return;
+        }
+
+        if(holdSignalAndCloseAll){//等待信号灯可以显示
+            if(DEBUG)Log.e(TAG, "signalCtrl:[holdSignalAndCloseAll]"+holdSignalAndCloseAll+"can't opr led signal!!!");
+            return ;
+        }
+		updateSignalLevelLed(currentlySignalLevel);

@@ -1,0 +1,20 @@
+class BatteryUpdater
+!!!490626.java!!!	doInBackground(inout  : Void...params) : Void
+            mBatteryHelper.create((Bundle) null);
+            mBatteryHelper.refreshStats(BatteryStats.STATS_SINCE_CHARGED,
+                    mUserManager.getUserProfiles());
+            List<BatterySipper> usageList = mBatteryHelper.getUsageList();
+            final int N = usageList.size();
+            for (int i = 0; i < N; i++) {
+                BatterySipper sipper = usageList.get(i);
+                if (sipper.getUid() == mPackageInfo.applicationInfo.uid) {
+                    mSipper = sipper;
+                    break;
+                }
+            }
+            return null;
+!!!490754.java!!!	onPostExecute(inout result : Void) : void
+            if (getActivity() == null) {
+                return;
+            }
+            refreshUi();

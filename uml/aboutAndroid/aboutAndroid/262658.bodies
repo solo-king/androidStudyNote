@@ -1,0 +1,79 @@
+class RestrictedDropDownPreference
+!!!817666.java!!!	RestrictedDropDownPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setLayoutResource(R.layout.restricted_preference_dropdown);
+        setWidgetLayoutResource(R.layout.restricted_icon);
+        mHelper = new RestrictedPreferenceHelper(context, this, attrs);
+!!!817794.java!!!	createAdapter() : ArrayAdapter
+        return new RestrictedArrayItemAdapter(getContext());
+!!!817922.java!!!	setValue(in value : String) : void
+        if (getRestrictedItemForEntryValue(value) != null) {
+            return;
+        }
+        super.setValue(value);
+!!!818050.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        mSpinner = (ReselectionSpinner) view.itemView.findViewById(R.id.spinner);
+        mSpinner.setPreference(this);
+        super.onBindViewHolder(view);
+        mHelper.onBindViewHolder(view);
+        mSpinner.setOnItemSelectedListener(mItemSelectedListener);
+        final View restrictedIcon = view.findViewById(R.id.restricted_icon);
+        if (restrictedIcon != null) {
+            restrictedIcon.setVisibility(isDisabledByAdmin() ? View.VISIBLE : View.GONE);
+        }
+!!!818178.java!!!	isRestrictedForEntry(inout entry : CharSequence) : boolean
+        if (entry == null) {
+            return false;
+        }
+        for (RestrictedItem item : mRestrictedItems) {
+            if (entry.equals(item.entry)) {
+                return true;
+            }
+        }
+        return false;
+!!!818306.java!!!	getRestrictedItemForEntryValue(inout entryValue : CharSequence) : RestrictedDropDownPreference::RestrictedItem
+        if (entryValue == null) {
+            return null;
+        }
+        for (RestrictedItem item : mRestrictedItems) {
+            if (entryValue.equals(item.entryValue)) {
+                return item;
+            }
+        }
+        return null;
+!!!818434.java!!!	getRestrictedItemForPosition(in position : int) : RestrictedDropDownPreference::RestrictedItem
+        if (position < 0 || position >= getEntryValues().length) {
+            return null;
+        }
+        CharSequence entryValue = getEntryValues()[position];
+        return getRestrictedItemForEntryValue(entryValue);
+!!!818562.java!!!	addRestrictedItem(inout item : RestrictedDropDownPreference::RestrictedItem) : void
+        mRestrictedItems.add(item);
+!!!818690.java!!!	clearRestrictedItems() : void
+        mRestrictedItems.clear();
+!!!818818.java!!!	performClick() : void
+        if (mPreClickListener != null && mPreClickListener.onPreferenceClick(this)) {
+            return;
+        }
+        if (!mHelper.performClick()) {
+            mUserClicked = true;
+            super.performClick();
+        }
+!!!818946.java!!!	setEnabled(inout enabled : boolean) : void
+        if (enabled && isDisabledByAdmin()) {
+            mHelper.setDisabledByAdmin(null);
+            return;
+        }
+        super.setEnabled(enabled);
+!!!819074.java!!!	setDisabledByAdmin(inout admin : EnforcedAdmin) : void
+        if (mHelper.setDisabledByAdmin(admin)) {
+            notifyChanged();
+        }
+!!!819202.java!!!	setOnPreClickListener(inout l : OnPreferenceClickListener) : void
+        mPreClickListener = l;
+!!!819330.java!!!	isDisabledByAdmin() : boolean
+        return mHelper.isDisabledByAdmin();
+!!!819458.java!!!	setUserClicked(inout userClicked : boolean) : void
+        mUserClicked = userClicked;
+!!!819586.java!!!	isUserClicked() : boolean
+        return mUserClicked;

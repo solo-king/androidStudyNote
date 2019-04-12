@@ -1,0 +1,50 @@
+class UserCapabilities
+!!!916098.java!!!	create(inout context : Context) : UserSettings::UserCapabilities
+            UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+            UserCapabilities caps = new UserCapabilities();
+            if (!UserManager.supportsMultipleUsers() || Utils.isMonkeyRunning()) {
+                caps.mEnabled = false;
+                return caps;
+            }
+
+            final UserInfo myUserInfo = userManager.getUserInfo(UserHandle.myUserId());
+            caps.mIsGuest = myUserInfo.isGuest();
+            caps.mIsAdmin = myUserInfo.isAdmin();
+            DevicePolicyManager dpm = (DevicePolicyManager) context.getSystemService(
+                    Context.DEVICE_POLICY_SERVICE);
+            // No restricted profiles for tablets with a device owner, or phones.
+            if (dpm.isDeviceManaged() || Utils.isVoiceCapable(context)) {
+                caps.mCanAddRestrictedProfile = false;
+            }
+            caps.updateAddUserCapabilities(context);
+            return caps;
+!!!916226.java!!!	updateAddUserCapabilities(inout context : Context) : void
+            mEnforcedAdmin = RestrictedLockUtils.checkIfRestrictionEnforced(context,
+                    UserManager.DISALLOW_ADD_USER, UserHandle.myUserId());
+            final boolean hasBaseUserRestriction = RestrictedLockUtils.hasBaseUserRestriction(
+                    context, UserManager.DISALLOW_ADD_USER, UserHandle.myUserId());
+            mDisallowAddUserSetByAdmin =
+                    mEnforcedAdmin != null && !hasBaseUserRestriction;
+            mDisallowAddUser =
+                    (mEnforcedAdmin != null || hasBaseUserRestriction);
+            mCanAddUser = true;
+            if (!mIsAdmin || UserManager.getMaxSupportedUsers() < 2
+                    || !UserManager.supportsMultipleUsers()
+                    || mDisallowAddUser) {
+                mCanAddUser = false;
+            }
+
+            final boolean canAddUsersWhenLocked = mIsAdmin || Settings.Global.getInt(
+                    context.getContentResolver(), Settings.Global.ADD_USERS_WHEN_LOCKED, 0) == 1;
+            mCanAddGuest = !mIsGuest && !mDisallowAddUser && canAddUsersWhenLocked;
+!!!916354.java!!!	toString() : String
+            return "UserCapabilities{" +
+                    "mEnabled=" + mEnabled +
+                    ", mCanAddUser=" + mCanAddUser +
+                    ", mCanAddRestrictedProfile=" + mCanAddRestrictedProfile +
+                    ", mIsAdmin=" + mIsAdmin +
+                    ", mIsGuest=" + mIsGuest +
+                    ", mCanAddGuest=" + mCanAddGuest +
+                    ", mDisallowAddUser=" + mDisallowAddUser +
+                    ", mEnforcedAdmin=" + mEnforcedAdmin +
+                    '}';

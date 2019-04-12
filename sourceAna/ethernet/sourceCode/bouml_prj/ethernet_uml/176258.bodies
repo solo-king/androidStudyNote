@@ -1,0 +1,310 @@
+class Debug
+!!!460034.java!!!	waitForDebugger() : void
+        if (!VMDebug.isDebuggingEnabled()) {
+            //System.out.println("debugging not enabled, not waiting");
+            return;
+        }
+        if (isDebuggerConnected())
+            return;
+
+        // if DDMS is listening, inform them of our plight
+        System.out.println("Sending WAIT chunk");
+        byte[] data = new byte[] { 0 };     // 0 == "waiting for debugger"
+        Chunk waitChunk = new Chunk(ChunkHandler.type("WAIT"), data, 0, 1);
+        DdmServer.sendChunk(waitChunk);
+
+        mWaiting = true;
+        while (!isDebuggerConnected()) {
+            try { Thread.sleep(SPIN_DELAY); }
+            catch (InterruptedException ie) {}
+        }
+        mWaiting = false;
+
+        System.out.println("Debugger has connected");
+
+        /*
+         * There is no "ready to go" signal from the debugger, and we're
+         * not allowed to suspend ourselves -- the debugger expects us to
+         * be running happily, and gets confused if we aren't.  We need to
+         * allow the debugger a chance to set breakpoints before we start
+         * running again.
+         *
+         * Sit and spin until the debugger has been idle for a short while.
+         */
+        while (true) {
+            long delta = VMDebug.lastDebuggerActivity();
+            if (delta < 0) {
+                System.out.println("debugger detached?");
+                break;
+            }
+
+            if (delta < MIN_DEBUGGER_IDLE) {
+                System.out.println("waiting for debugger to settle...");
+                try { Thread.sleep(SPIN_DELAY); }
+                catch (InterruptedException ie) {}
+            } else {
+                System.out.println("debugger has settled (" + delta + ")");
+                break;
+            }
+        }
+!!!460162.java!!!	waitingForDebugger() : boolean
+        return mWaiting;
+!!!460290.java!!!	isDebuggerConnected() : boolean
+        return VMDebug.isDebuggerConnected();
+!!!460418.java!!!	getVmFeatureList() : String
+        return VMDebug.getVmFeatureList();
+!!!460674.java!!!	startNativeTracing() : void
+        // Open the sysfs file for writing and write "1" to it.
+        PrintWriter outStream = null;
+        try {
+            FileOutputStream fos = new FileOutputStream(SYSFS_QEMU_TRACE_STATE);
+            outStream = new FastPrintWriter(fos);
+            outStream.println("1");
+        } catch (Exception e) {
+        } finally {
+            if (outStream != null)
+                outStream.close();
+        }
+
+        VMDebug.startEmulatorTracing();
+!!!460802.java!!!	stopNativeTracing() : void
+        VMDebug.stopEmulatorTracing();
+
+        // Open the sysfs file for writing and write "0" to it.
+        PrintWriter outStream = null;
+        try {
+            FileOutputStream fos = new FileOutputStream(SYSFS_QEMU_TRACE_STATE);
+            outStream = new FastPrintWriter(fos);
+            outStream.println("0");
+        } catch (Exception e) {
+            // We could print an error message here but we probably want
+            // to quietly ignore errors if we are not running in the emulator.
+        } finally {
+            if (outStream != null)
+                outStream.close();
+        }
+!!!460930.java!!!	enableEmulatorTraceOutput() : void
+        VMDebug.startEmulatorTracing();
+!!!461058.java!!!	startMethodTracing() : void
+        VMDebug.startMethodTracing(DEFAULT_TRACE_FILE_PATH, 0, 0);
+!!!461186.java!!!	startMethodTracing(in traceName : String) : void
+        startMethodTracing(traceName, 0, 0);
+!!!461314.java!!!	startMethodTracing(in traceName : String, in bufferSize : int) : void
+        startMethodTracing(traceName, bufferSize, 0);
+!!!461442.java!!!	startMethodTracing(in traceName : String, in bufferSize : int, in flags : int) : void
+
+        String pathName = traceName;
+        if (pathName.charAt(0) != '/')
+            pathName = DEFAULT_TRACE_PATH_PREFIX + pathName;
+        if (!pathName.endsWith(DEFAULT_TRACE_EXTENSION))
+            pathName = pathName + DEFAULT_TRACE_EXTENSION;
+
+        VMDebug.startMethodTracing(pathName, bufferSize, flags);
+!!!461570.java!!!	startMethodTracing(in traceName : String, inout fd : FileDescriptor, in bufferSize : int, in flags : int) : void
+        VMDebug.startMethodTracing(traceName, fd, bufferSize, flags);
+!!!461698.java!!!	startMethodTracingDdms(in bufferSize : int, in flags : int, inout samplingEnabled : boolean, in intervalUs : int) : void
+        VMDebug.startMethodTracingDdms(bufferSize, flags, samplingEnabled, intervalUs);
+!!!461826.java!!!	getMethodTracingMode() : int
+        return VMDebug.getMethodTracingMode();
+!!!461954.java!!!	stopMethodTracing() : void
+        VMDebug.stopMethodTracing();
+!!!462082.java!!!	threadCpuTimeNanos() : long
+        return VMDebug.threadCpuTimeNanos();
+!!!462210.java!!!	startAllocCounting() : void
+        VMDebug.startAllocCounting();
+!!!462338.java!!!	stopAllocCounting() : void
+        VMDebug.stopAllocCounting();
+!!!462466.java!!!	getGlobalAllocCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_ALLOCATED_OBJECTS);
+!!!462594.java!!!	resetGlobalAllocCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_ALLOCATED_OBJECTS);
+!!!462722.java!!!	getGlobalAllocSize() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_ALLOCATED_BYTES);
+!!!462850.java!!!	resetGlobalAllocSize() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_ALLOCATED_BYTES);
+!!!462978.java!!!	getGlobalFreedCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_FREED_OBJECTS);
+!!!463106.java!!!	resetGlobalFreedCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_FREED_OBJECTS);
+!!!463234.java!!!	getGlobalFreedSize() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_FREED_BYTES);
+!!!463362.java!!!	resetGlobalFreedSize() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_FREED_BYTES);
+!!!463490.java!!!	getGlobalGcInvocationCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_GC_INVOCATIONS);
+!!!463618.java!!!	resetGlobalGcInvocationCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_GC_INVOCATIONS);
+!!!463746.java!!!	getGlobalClassInitCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_CLASS_INIT_COUNT);
+!!!463874.java!!!	resetGlobalClassInitCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_CLASS_INIT_COUNT);
+!!!464002.java!!!	getGlobalClassInitTime() : int
+        /* cumulative elapsed time for class initialization, in usec */
+        return VMDebug.getAllocCount(VMDebug.KIND_GLOBAL_CLASS_INIT_TIME);
+!!!464130.java!!!	resetGlobalClassInitTime() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_GLOBAL_CLASS_INIT_TIME);
+!!!464258.java!!!	getGlobalExternalAllocCount() : int
+        return 0;
+!!!464642.java!!!	getGlobalExternalAllocSize() : int
+        return 0;
+!!!464770.java!!!	getGlobalExternalFreedCount() : int
+        return 0;
+!!!465026.java!!!	getGlobalExternalFreedSize() : int
+        return 0;
+!!!465282.java!!!	getThreadAllocCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_THREAD_ALLOCATED_OBJECTS);
+!!!465410.java!!!	resetThreadAllocCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_THREAD_ALLOCATED_OBJECTS);
+!!!465538.java!!!	getThreadAllocSize() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_THREAD_ALLOCATED_BYTES);
+!!!465666.java!!!	resetThreadAllocSize() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_THREAD_ALLOCATED_BYTES);
+!!!465794.java!!!	getThreadExternalAllocCount() : int
+        return 0;
+!!!466050.java!!!	getThreadExternalAllocSize() : int
+        return 0;
+!!!466306.java!!!	getThreadGcInvocationCount() : int
+        return VMDebug.getAllocCount(VMDebug.KIND_THREAD_GC_INVOCATIONS);
+!!!466434.java!!!	resetThreadGcInvocationCount() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_THREAD_GC_INVOCATIONS);
+!!!466562.java!!!	resetAllCounts() : void
+        VMDebug.resetAllocCount(VMDebug.KIND_ALL_COUNTS);
+!!!467714.java!!!	setAllocationLimit(in limit : int) : int
+        return -1;
+!!!467842.java!!!	setGlobalAllocationLimit(in limit : int) : int
+        return -1;
+!!!467970.java!!!	printLoadedClasses(in flags : int) : void
+        VMDebug.printLoadedClasses(flags);
+!!!468098.java!!!	getLoadedClassCount() : int
+        return VMDebug.getLoadedClassCount();
+!!!468226.java!!!	dumpHprofData(in fileName : String) : void
+        VMDebug.dumpHprofData(fileName);
+!!!468354.java!!!	dumpHprofData(in fileName : String, inout fd : FileDescriptor) : void
+        VMDebug.dumpHprofData(fileName, fd);
+!!!468482.java!!!	dumpHprofDataDdms() : void
+        VMDebug.dumpHprofDataDdms();
+!!!468738.java!!!	countInstancesOfClass(inout cls : Class) : long
+        return VMDebug.countInstancesOfClass(cls, true);
+!!!469506.java!!!	cacheRegisterMap(in classAndMethodDesc : String) : boolean
+        return VMDebug.cacheRegisterMap(classAndMethodDesc);
+!!!469634.java!!!	dumpReferenceTables() : void
+        VMDebug.dumpReferenceTables();
+!!!470402.java!!!	fieldTypeMatches(inout field : Field, inout cl : Class<?>) : boolean
+        Class<?> fieldClass = field.getType();
+        if (fieldClass == cl) {
+            return true;
+        }
+        Field primitiveTypeField;
+        try {
+            /* All of the classes we care about (Boolean, Integer, etc.)
+             * have a Class field called "TYPE" that points to the corresponding
+             * primitive class.
+             */
+            primitiveTypeField = cl.getField("TYPE");
+        } catch (NoSuchFieldException ex) {
+            return false;
+        }
+        try {
+            return fieldClass == (Class<?>) primitiveTypeField.get(null);
+        } catch (IllegalAccessException ex) {
+            return false;
+        }
+!!!470530.java!!!	modifyFieldIfSet(in field : Field, in properties : TypedProperties, in propertyName : String) : void
+        if (field.getType() == java.lang.String.class) {
+            int stringInfo = properties.getStringInfo(propertyName);
+            switch (stringInfo) {
+                case TypedProperties.STRING_SET:
+                    // Handle as usual below.
+                    break;
+                case TypedProperties.STRING_NULL:
+                    try {
+                        field.set(null, null);  // null object for static fields; null string
+                    } catch (IllegalAccessException ex) {
+                        throw new IllegalArgumentException(
+                            "Cannot set field for " + propertyName, ex);
+                    }
+                    return;
+                case TypedProperties.STRING_NOT_SET:
+                    return;
+                case TypedProperties.STRING_TYPE_MISMATCH:
+                    throw new IllegalArgumentException(
+                        "Type of " + propertyName + " " +
+                        " does not match field type (" + field.getType() + ")");
+                default:
+                    throw new IllegalStateException(
+                        "Unexpected getStringInfo(" + propertyName + ") return value " +
+                        stringInfo);
+            }
+        }
+        Object value = properties.get(propertyName);
+        if (value != null) {
+            if (!fieldTypeMatches(field, value.getClass())) {
+                throw new IllegalArgumentException(
+                    "Type of " + propertyName + " (" + value.getClass() + ") " +
+                    " does not match field type (" + field.getType() + ")");
+            }
+            try {
+                field.set(null, value);  // null object for static fields
+            } catch (IllegalAccessException ex) {
+                throw new IllegalArgumentException(
+                    "Cannot set field for " + propertyName, ex);
+            }
+        }
+!!!470658.java!!!	setFieldsOn(inout cl : Class<?>) : void
+        setFieldsOn(cl, false);
+!!!470786.java!!!	setFieldsOn(inout cl : Class<?>, inout partial : boolean) : void
+        if (false) {
+            if (debugProperties != null) {
+                /* Only look for fields declared directly by the class,
+                 * so we don't mysteriously change static fields in superclasses.
+                 */
+                for (Field field : cl.getDeclaredFields()) {
+                    if (!partial || field.getAnnotation(DebugProperty.class) != null) {
+                        final String propertyName = cl.getName() + "." + field.getName();
+                        boolean isStatic = Modifier.isStatic(field.getModifiers());
+                        boolean isFinal = Modifier.isFinal(field.getModifiers());
+
+                        if (!isStatic || isFinal) {
+                            throw new IllegalArgumentException(propertyName +
+                                " must be static and non-final");
+                        }
+                        modifyFieldIfSet(field, debugProperties, propertyName);
+                    }
+                }
+            }
+        } else {
+            Log.wtf(TAG,
+                  "setFieldsOn(" + (cl == null ? "null" : cl.getName()) +
+                  ") called in non-DEBUG build");
+        }
+!!!470914.java!!!	getCaller(inout callStack : StackTraceElement, in depth : int) : String
+        // callStack[4] is the caller of the method that called getCallers()
+        if (4 + depth >= callStack.length) {
+            return "<bottom of call stack>";
+        }
+        StackTraceElement caller = callStack[4 + depth];
+        return caller.getClassName() + "." + caller.getMethodName() + ":" + caller.getLineNumber();
+!!!471042.java!!!	getCallers(in depth : int) : String
+        final StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < depth; i++) {
+            sb.append(getCaller(callStack, i)).append(" ");
+        }
+        return sb.toString();
+!!!471170.java!!!	getCallers(in start : int, in depth : int) : String
+        final StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
+        StringBuffer sb = new StringBuffer();
+        depth += start;
+        for (int i = start; i < depth; i++) {
+            sb.append(getCaller(callStack, i)).append(" ");
+        }
+        return sb.toString();
+!!!471298.java!!!	getCallers(in depth : int, in linePrefix : String) : String
+        final StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < depth; i++) {
+            sb.append(linePrefix).append(getCaller(callStack, i)).append("\n");
+        }
+        return sb.toString();
+!!!471426.java!!!	getCaller() : String
+        return getCaller(Thread.currentThread().getStackTrace(), 0);

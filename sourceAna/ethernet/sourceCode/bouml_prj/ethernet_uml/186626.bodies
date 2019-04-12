@@ -1,0 +1,3 @@
+class AndroidCloseGuardReporter
+!!!570242.java!!!	report(in message : String, inout allocationSite : Throwable) : void
+            onVmPolicyViolation(message, allocationSite);

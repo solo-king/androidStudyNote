@@ -1,0 +1,711 @@
+class Utils
+!!!385154.java!!!	updatePreferenceToSpecificActivityOrRemove(inout context : Context, inout parentPreferenceGroup : PreferenceGroup, in preferenceKey : String, in flags : int) : boolean
+
+        Preference preference = parentPreferenceGroup.findPreference(preferenceKey);
+        if (preference == null) {
+            return false;
+        }
+
+        Intent intent = preference.getIntent();
+        if (intent != null) {
+            // Find the activity that is in the system image
+            PackageManager pm = context.getPackageManager();
+            List<ResolveInfo> list = pm.queryIntentActivities(intent, 0);
+            int listSize = list.size();
+            for (int i = 0; i < listSize; i++) {
+                ResolveInfo resolveInfo = list.get(i);
+                if ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM)
+                        != 0) {
+
+                    // Replace the intent with this specific activity
+                    preference.setIntent(new Intent().setClassName(
+                            resolveInfo.activityInfo.packageName,
+                            resolveInfo.activityInfo.name));
+
+                    if ((flags & UPDATE_PREFERENCE_FLAG_SET_TITLE_TO_MATCHING_ACTIVITY) != 0) {
+                        // Set the preference title to the activity's label
+                        preference.setTitle(resolveInfo.loadLabel(pm));
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        // Did not find a matching activity, so remove the preference
+        parentPreferenceGroup.removePreference(preference);
+
+        return false;
+!!!385282.java!!!	getUserManager(inout context : Context) : UserManager
+        UserManager um = UserManager.get(context);
+        if (um == null) {
+            throw new IllegalStateException("Unable to load UserManager");
+        }
+        return um;
+!!!385410.java!!!	isMonkeyRunning() : boolean
+        return ActivityManager.isUserAMonkey();
+!!!385538.java!!!	isVoiceCapable(inout context : Context) : boolean
+        TelephonyManager telephony =
+                (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        return telephony != null && telephony.isVoiceCapable();
+!!!385666.java!!!	isWifiOnly(inout context : Context) : boolean
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(
+                Context.CONNECTIVITY_SERVICE);
+        return (cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE) == false);
+!!!385794.java!!!	getWifiIpAddresses(inout context : Context) : String
+        ConnectivityManager cm = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        LinkProperties prop = cm.getLinkProperties(ConnectivityManager.TYPE_WIFI);
+        return formatIpAddresses(prop);
+!!!385922.java!!!	getDefaultIpAddresses(inout cm : ConnectivityManager) : String
+        LinkProperties prop = cm.getActiveLinkProperties();
+        return formatIpAddresses(prop);
+!!!386050.java!!!	formatIpAddresses(inout prop : LinkProperties) : String
+        if (prop == null) return null;
+        Iterator<InetAddress> iter = prop.getAllAddresses().iterator();
+        // If there are no entries, return null
+        if (!iter.hasNext()) return null;
+        // Concatenate all available addresses, comma separated
+        String addresses = "";
+        while (iter.hasNext()) {
+            addresses += iter.next().getHostAddress();
+            if (iter.hasNext()) addresses += "\n";
+        }
+        return addresses;
+!!!386178.java!!!	createLocaleFromString(in localeStr : String) : Locale
+        // TODO: is there a better way to actually construct a locale that will match?
+        // The main problem is, on top of Java specs, locale.toString() and
+        // new Locale(locale.toString()).toString() do not return equal() strings in
+        // many cases, because the constructor takes the only string as the language
+        // code. So : new Locale("en", "US").toString() => "en_US"
+        // And : new Locale("en_US").toString() => "en_us"
+        if (null == localeStr)
+            return Locale.getDefault();
+        String[] brokenDownLocale = localeStr.split("_", 3);
+        // split may not return a 0-length array.
+        if (1 == brokenDownLocale.length) {
+            return new Locale(brokenDownLocale[0]);
+        } else if (2 == brokenDownLocale.length) {
+            return new Locale(brokenDownLocale[0], brokenDownLocale[1]);
+        } else {
+            return new Locale(brokenDownLocale[0], brokenDownLocale[1], brokenDownLocale[2]);
+        }
+!!!386306.java!!!	isBatteryPresent(inout batteryChangedIntent : Intent) : boolean
+        return batteryChangedIntent.getBooleanExtra(BatteryManager.EXTRA_PRESENT, true);
+!!!386434.java!!!	getBatteryPercentage(inout batteryChangedIntent : Intent) : String
+        return formatPercentage(getBatteryLevel(batteryChangedIntent));
+!!!386562.java!!!	forcePrepareCustomPreferencesList(inout parent : ViewGroup, inout child : View, inout list : ListView, inout ignoreSidePadding : boolean) : void
+        list.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+        list.setClipToPadding(false);
+        prepareCustomPreferencesList(parent, child, list, ignoreSidePadding);
+!!!386690.java!!!	prepareCustomPreferencesList(inout parent : ViewGroup, inout child : View, inout list : View, inout ignoreSidePadding : boolean) : void
+        final boolean movePadding = list.getScrollBarStyle() == View.SCROLLBARS_OUTSIDE_OVERLAY;
+        if (movePadding) {
+            final Resources res = list.getResources();
+            final int paddingSide = res.getDimensionPixelSize(R.dimen.settings_side_margin);
+            final int paddingBottom = res.getDimensionPixelSize(
+                    com.android.internal.R.dimen.preference_fragment_padding_bottom);
+
+            if (parent instanceof PreferenceFrameLayout) {
+                ((PreferenceFrameLayout.LayoutParams) child.getLayoutParams()).removeBorders = true;
+
+                final int effectivePaddingSide = ignoreSidePadding ? 0 : paddingSide;
+                list.setPaddingRelative(effectivePaddingSide, 0, effectivePaddingSide, paddingBottom);
+            } else {
+                list.setPaddingRelative(paddingSide, 0, paddingSide, paddingBottom);
+            }
+        }
+!!!386818.java!!!	forceCustomPadding(inout view : View, inout additive : boolean) : void
+        final Resources res = view.getResources();
+        final int paddingSide = res.getDimensionPixelSize(R.dimen.settings_side_margin);
+
+        final int paddingStart = paddingSide + (additive ? view.getPaddingStart() : 0);
+        final int paddingEnd = paddingSide + (additive ? view.getPaddingEnd() : 0);
+        final int paddingBottom = res.getDimensionPixelSize(
+                com.android.internal.R.dimen.preference_fragment_padding_bottom);
+
+        view.setPaddingRelative(paddingStart, 0, paddingEnd, paddingBottom);
+!!!386946.java!!!	copyMeProfilePhoto(inout context : Context, inout user : UserInfo) : void
+        Uri contactUri = Profile.CONTENT_URI;
+
+        int userId = user != null ? user.id : UserHandle.myUserId();
+
+        InputStream avatarDataStream = Contacts.openContactPhotoInputStream(
+                    context.getContentResolver(),
+                    contactUri, true);
+        // If there's no profile photo, assign a default avatar
+        if (avatarDataStream == null) {
+            assignDefaultPhoto(context, userId);
+            return;
+        }
+
+        UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        Bitmap icon = BitmapFactory.decodeStream(avatarDataStream);
+        um.setUserIcon(userId, icon);
+        try {
+            avatarDataStream.close();
+        } catch (IOException ioe) { }
+!!!387074.java!!!	assignDefaultPhoto(inout context : Context, in userId : int) : void
+        UserManager um = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        Bitmap bitmap = getDefaultUserIconAsBitmap(userId);
+        um.setUserIcon(userId, bitmap);
+!!!387202.java!!!	getMeProfileName(inout context : Context, inout full : boolean) : String
+        if (full) {
+            return getProfileDisplayName(context);
+        } else {
+            return getShorterNameIfPossible(context);
+        }
+!!!387330.java!!!	getShorterNameIfPossible(inout context : Context) : String
+        final String given = getLocalProfileGivenName(context);
+        return !TextUtils.isEmpty(given) ? given : getProfileDisplayName(context);
+!!!387458.java!!!	getLocalProfileGivenName(inout context : Context) : String
+        final ContentResolver cr = context.getContentResolver();
+
+        // Find the raw contact ID for the local ME profile raw contact.
+        final long localRowProfileId;
+        final Cursor localRawProfile = cr.query(
+                Profile.CONTENT_RAW_CONTACTS_URI,
+                new String[] {RawContacts._ID},
+                RawContacts.ACCOUNT_TYPE + " IS NULL AND " +
+                        RawContacts.ACCOUNT_NAME + " IS NULL",
+                null, null);
+        if (localRawProfile == null) return null;
+
+        try {
+            if (!localRawProfile.moveToFirst()) {
+                return null;
+            }
+            localRowProfileId = localRawProfile.getLong(0);
+        } finally {
+            localRawProfile.close();
+        }
+
+        // Find the structured name for the raw contact.
+        final Cursor structuredName = cr.query(
+                Profile.CONTENT_URI.buildUpon().appendPath(Contacts.Data.CONTENT_DIRECTORY).build(),
+                new String[] {CommonDataKinds.StructuredName.GIVEN_NAME,
+                    CommonDataKinds.StructuredName.FAMILY_NAME},
+                Data.RAW_CONTACT_ID + "=" + localRowProfileId,
+                null, null);
+        if (structuredName == null) return null;
+
+        try {
+            if (!structuredName.moveToFirst()) {
+                return null;
+            }
+            String partialName = structuredName.getString(0);
+            if (TextUtils.isEmpty(partialName)) {
+                partialName = structuredName.getString(1);
+            }
+            return partialName;
+        } finally {
+            structuredName.close();
+        }
+!!!387586.java!!!	getProfileDisplayName(inout context : Context) : String
+        final ContentResolver cr = context.getContentResolver();
+        final Cursor profile = cr.query(Profile.CONTENT_URI,
+                new String[] {Profile.DISPLAY_NAME}, null, null, null);
+        if (profile == null) return null;
+
+        try {
+            if (!profile.moveToFirst()) {
+                return null;
+            }
+            return profile.getString(0);
+        } finally {
+            profile.close();
+        }
+!!!387714.java!!!	buildGlobalChangeWarningDialog(in context : Context, in titleResId : int, in positiveAction : Runnable) : Dialog
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(titleResId);
+        builder.setMessage(R.string.global_change_warning);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                positiveAction.run();
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+
+        return builder.create();
+!!!387842.java!!!	hasMultipleUsers(inout context : Context) : boolean
+        return ((UserManager) context.getSystemService(Context.USER_SERVICE))
+                .getUsers().size() > 1;
+!!!387970.java!!!	startWithFragment(inout context : Context, in fragmentName : String, inout args : Bundle, inout resultTo : Fragment, in resultRequestCode : int, in titleResId : int, inout title : CharSequence) : void
+        startWithFragment(context, fragmentName, args, resultTo, resultRequestCode,
+                null /* titleResPackageName */, titleResId, title, false /* not a shortcut */);
+!!!388098.java!!!	startWithFragment(inout context : Context, in fragmentName : String, inout args : Bundle, inout resultTo : Fragment, in resultRequestCode : int, in titleResPackageName : String, in titleResId : int, inout title : CharSequence) : void
+        startWithFragment(context, fragmentName, args, resultTo, resultRequestCode,
+                titleResPackageName, titleResId, title, false /* not a shortcut */);
+!!!388226.java!!!	startWithFragment(inout context : Context, in fragmentName : String, inout args : Bundle, inout resultTo : Fragment, in resultRequestCode : int, in titleResId : int, inout title : CharSequence, inout isShortcut : boolean) : void
+        Intent intent = onBuildStartFragmentIntent(context, fragmentName, args,
+                null /* titleResPackageName */, titleResId, title, isShortcut);
+        if (resultTo == null) {
+            context.startActivity(intent);
+        } else {
+            resultTo.getActivity().startActivityForResult(intent, resultRequestCode);
+        }
+!!!388354.java!!!	startWithFragment(inout context : Context, in fragmentName : String, inout args : Bundle, inout resultTo : Fragment, in resultRequestCode : int, in titleResPackageName : String, in titleResId : int, inout title : CharSequence, inout isShortcut : boolean) : void
+        Intent intent = onBuildStartFragmentIntent(context, fragmentName, args, titleResPackageName,
+                titleResId, title, isShortcut);
+        if (resultTo == null) {
+            context.startActivity(intent);
+        } else {
+            resultTo.startActivityForResult(intent, resultRequestCode);
+        }
+!!!388482.java!!!	startWithFragmentAsUser(inout context : Context, in fragmentName : String, inout args : Bundle, in titleResId : int, inout title : CharSequence, inout isShortcut : boolean, inout userHandle : UserHandle) : void
+        // workaround to avoid crash in b/17523189
+        if (userHandle.getIdentifier() == UserHandle.myUserId()) {
+            startWithFragment(context, fragmentName, args, null, 0, titleResId, title, isShortcut);
+        } else {
+            Intent intent = onBuildStartFragmentIntent(context, fragmentName, args,
+                    null /* titleResPackageName */, titleResId, title, isShortcut);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivityAsUser(intent, userHandle);
+        }
+!!!388610.java!!!	startWithFragmentAsUser(inout context : Context, in fragmentName : String, inout args : Bundle, in titleResPackageName : String, in titleResId : int, inout title : CharSequence, inout isShortcut : boolean, inout userHandle : UserHandle) : void
+        // workaround to avoid crash in b/17523189
+        if (userHandle.getIdentifier() == UserHandle.myUserId()) {
+            startWithFragment(context, fragmentName, args, null, 0, titleResPackageName, titleResId,
+                    title, isShortcut);
+        } else {
+            Intent intent = onBuildStartFragmentIntent(context, fragmentName, args,
+                    titleResPackageName, titleResId, title, isShortcut);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            context.startActivityAsUser(intent, userHandle);
+        }
+!!!388738.java!!!	onBuildStartFragmentIntent(inout context : Context, in fragmentName : String, inout args : Bundle, in titleResPackageName : String, in titleResId : int, inout title : CharSequence, inout isShortcut : boolean) : Intent
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClass(context, SubSettings.class);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE_RES_PACKAGE_NAME,
+                titleResPackageName);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE_RESID, titleResId);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_TITLE, title);
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_AS_SHORTCUT, isShortcut);
+        return intent;
+!!!388866.java!!!	getManagedProfile(inout userManager : UserManager) : UserHandle
+        List<UserHandle> userProfiles = userManager.getUserProfiles();
+        final int count = userProfiles.size();
+        for (int i = 0; i < count; i++) {
+            final UserHandle profile = userProfiles.get(i);
+            if (profile.getIdentifier() == userManager.getUserHandle()) {
+                continue;
+            }
+            final UserInfo userInfo = userManager.getUserInfo(profile.getIdentifier());
+            if (userInfo.isManagedProfile()) {
+                return profile;
+            }
+        }
+        return null;
+!!!388994.java!!!	isManagedProfile(inout userManager : UserManager) : boolean
+        return isManagedProfile(userManager, UserHandle.myUserId());
+!!!389122.java!!!	getManagedProfileId(inout um : UserManager, in parentUserId : int) : int
+        int[] profileIds = um.getProfileIdsWithDisabled(parentUserId);
+        for (int profileId : profileIds) {
+            if (profileId != parentUserId) {
+                return profileId;
+            }
+        }
+        return UserHandle.USER_NULL;
+!!!389250.java!!!	isManagedProfile(inout userManager : UserManager, in userId : int) : boolean
+        if (userManager == null) {
+            throw new IllegalArgumentException("userManager must not be null");
+        }
+        UserInfo userInfo = userManager.getUserInfo(userId);
+        return (userInfo != null) ? userInfo.isManagedProfile() : false;
+!!!389378.java!!!	getSecureTargetUser(inout activityToken : IBinder, inout um : UserManager, inout arguments : Bundle, inout intentExtras : Bundle) : UserHandle
+        UserHandle currentUser = new UserHandle(UserHandle.myUserId());
+        IActivityManager am = ActivityManagerNative.getDefault();
+        try {
+            String launchedFromPackage = am.getLaunchedFromPackage(activityToken);
+            boolean launchedFromSettingsApp = SETTINGS_PACKAGE_NAME.equals(launchedFromPackage);
+
+            UserHandle launchedFromUser = new UserHandle(UserHandle.getUserId(
+                    am.getLaunchedFromUid(activityToken)));
+            if (launchedFromUser != null && !launchedFromUser.equals(currentUser)) {
+                // Check it's secure
+                if (isProfileOf(um, launchedFromUser)) {
+                    return launchedFromUser;
+                }
+            }
+            UserHandle extrasUser = getUserHandleFromBundle(intentExtras);
+            if (extrasUser != null && !extrasUser.equals(currentUser)) {
+                // Check it's secure
+                if (launchedFromSettingsApp && isProfileOf(um, extrasUser)) {
+                    return extrasUser;
+                }
+            }
+            UserHandle argumentsUser = getUserHandleFromBundle(arguments);
+            if (argumentsUser != null && !argumentsUser.equals(currentUser)) {
+                // Check it's secure
+                if (launchedFromSettingsApp && isProfileOf(um, argumentsUser)) {
+                    return argumentsUser;
+                }
+            }
+        } catch (RemoteException e) {
+            // Should not happen
+            Log.v(TAG, "Could not talk to activity manager.", e);
+        }
+        return currentUser;
+!!!389506.java!!!	getUserHandleFromBundle(inout bundle : Bundle) : UserHandle
+        if (bundle == null) {
+            return null;
+        }
+        final UserHandle user = bundle.getParcelable(EXTRA_USER);
+        if (user != null) {
+            return user;
+        }
+        final int userId = bundle.getInt(EXTRA_USER_ID, -1);
+        if (userId != -1) {
+            return UserHandle.of(userId);
+        }
+        return null;
+!!!389634.java!!!	getInsecureTargetUser(inout activityToken : IBinder, inout arguments : Bundle, inout intentExtras : Bundle) : UserHandle
+       UserHandle currentUser = new UserHandle(UserHandle.myUserId());
+       IActivityManager am = ActivityManagerNative.getDefault();
+       try {
+           UserHandle launchedFromUser = new UserHandle(UserHandle.getUserId(
+                   am.getLaunchedFromUid(activityToken)));
+           if (launchedFromUser != null && !launchedFromUser.equals(currentUser)) {
+               return launchedFromUser;
+           }
+           UserHandle extrasUser = intentExtras != null
+                   ? (UserHandle) intentExtras.getParcelable(EXTRA_USER) : null;
+           if (extrasUser != null && !extrasUser.equals(currentUser)) {
+               return extrasUser;
+           }
+           UserHandle argumentsUser = arguments != null
+                   ? (UserHandle) arguments.getParcelable(EXTRA_USER) : null;
+           if (argumentsUser != null && !argumentsUser.equals(currentUser)) {
+               return argumentsUser;
+           }
+       } catch (RemoteException e) {
+           // Should not happen
+           Log.v(TAG, "Could not talk to activity manager.", e);
+           return null;
+       }
+       return currentUser;
+!!!389762.java!!!	isProfileOf(inout um : UserManager, inout otherUser : UserHandle) : boolean
+       if (um == null || otherUser == null) return false;
+       return (UserHandle.myUserId() == otherUser.getIdentifier())
+               || um.getUserProfiles().contains(otherUser);
+!!!389890.java!!!	isOemUnlockEnabled(inout context : Context) : boolean
+        PersistentDataBlockManager manager =(PersistentDataBlockManager)
+                context.getSystemService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
+        return manager.getOemUnlockEnabled();
+!!!390018.java!!!	setOemUnlockEnabled(inout context : Context, inout enabled : boolean) : void
+        try {
+            PersistentDataBlockManager manager = (PersistentDataBlockManager)
+                    context.getSystemService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
+            manager.setOemUnlockEnabled(enabled);
+        } catch (SecurityException e) {
+            Log.e(TAG, "Fail to set oem unlock.", e);
+        }
+!!!390146.java!!!	showSimCardTile(inout context : Context) : boolean
+        final TelephonyManager tm =
+                (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        return tm.getSimCount() > 1;
+!!!390274.java!!!	formatElapsedTime(inout context : Context, in millis : double, inout withSeconds : boolean) : String
+        StringBuilder sb = new StringBuilder();
+        int seconds = (int) Math.floor(millis / 1000);
+        if (!withSeconds) {
+            // Round up.
+            seconds += 30;
+        }
+
+        int days = 0, hours = 0, minutes = 0;
+        if (seconds >= SECONDS_PER_DAY) {
+            days = seconds / SECONDS_PER_DAY;
+            seconds -= days * SECONDS_PER_DAY;
+        }
+        if (seconds >= SECONDS_PER_HOUR) {
+            hours = seconds / SECONDS_PER_HOUR;
+            seconds -= hours * SECONDS_PER_HOUR;
+        }
+        if (seconds >= SECONDS_PER_MINUTE) {
+            minutes = seconds / SECONDS_PER_MINUTE;
+            seconds -= minutes * SECONDS_PER_MINUTE;
+        }
+        if (withSeconds) {
+            if (days > 0) {
+                sb.append(context.getString(R.string.battery_history_days,
+                        days, hours, minutes, seconds));
+            } else if (hours > 0) {
+                sb.append(context.getString(R.string.battery_history_hours,
+                        hours, minutes, seconds));
+            } else if (minutes > 0) {
+                sb.append(context.getString(R.string.battery_history_minutes, minutes, seconds));
+            } else {
+                sb.append(context.getString(R.string.battery_history_seconds, seconds));
+            }
+        } else {
+            if (days > 0) {
+                sb.append(context.getString(R.string.battery_history_days_no_seconds,
+                        days, hours, minutes));
+            } else if (hours > 0) {
+                sb.append(context.getString(R.string.battery_history_hours_no_seconds,
+                        hours, minutes));
+            } else {
+                sb.append(context.getString(R.string.battery_history_minutes_no_seconds, minutes));
+            }
+        }
+        return sb.toString();
+!!!390402.java!!!	getExistingUser(inout userManager : UserManager, inout checkUser : UserHandle) : UserInfo
+        final List<UserInfo> users = userManager.getUsers(true /* excludeDying */);
+        final int checkUserId = checkUser.getIdentifier();
+        for (UserInfo user : users) {
+            if (user.id == checkUserId) {
+                return user;
+            }
+        }
+        return null;
+!!!390530.java!!!	inflateCategoryHeader(inout inflater : LayoutInflater, inout parent : ViewGroup) : View
+        final TypedArray a = inflater.getContext().obtainStyledAttributes(null,
+                com.android.internal.R.styleable.Preference,
+                com.android.internal.R.attr.preferenceCategoryStyle, 0);
+        final int resId = a.getResourceId(com.android.internal.R.styleable.Preference_layout,
+                0);
+        a.recycle();
+        return inflater.inflate(resId, parent, false);
+!!!390658.java!!!	isLowStorage(inout context : Context) : boolean
+        final StorageManager sm = StorageManager.from(context);
+        return (sm.getStorageBytesUntilLow(context.getFilesDir()) < 0);
+!!!390786.java!!!	getDefaultUserIconAsBitmap(in userId : int) : Bitmap
+        Bitmap bitmap = null;
+        // Try finding the corresponding bitmap in the dark bitmap cache
+        bitmap = sDarkDefaultUserBitmapCache.get(userId);
+        if (bitmap == null) {
+            bitmap = UserIcons.convertToBitmap(UserIcons.getDefaultUserIcon(userId, false));
+            // Save it to cache
+            sDarkDefaultUserBitmapCache.put(userId, bitmap);
+        }
+        return bitmap;
+!!!390914.java!!!	hasPreferredActivities(inout pm : PackageManager, in packageName : String) : boolean
+        // Get list of preferred activities
+        List<ComponentName> prefActList = new ArrayList<>();
+        // Intent list cannot be null. so pass empty list
+        List<IntentFilter> intentList = new ArrayList<>();
+        pm.getPreferredActivities(intentList, prefActList, packageName);
+        Log.d(TAG, "Have " + prefActList.size() + " number of activities in preferred list");
+        return prefActList.size() > 0;
+!!!391042.java!!!	getHandledDomains(inout pm : PackageManager, in packageName : String) : ArraySet<String>
+        List<IntentFilterVerificationInfo> iviList = pm.getIntentFilterVerifications(packageName);
+        List<IntentFilter> filters = pm.getAllIntentFilters(packageName);
+
+        ArraySet<String> result = new ArraySet<>();
+        if (iviList.size() > 0) {
+            for (IntentFilterVerificationInfo ivi : iviList) {
+                for (String host : ivi.getDomains()) {
+                    result.add(host);
+                }
+            }
+        }
+        if (filters != null && filters.size() > 0) {
+            for (IntentFilter filter : filters) {
+                if (filter.hasCategory(Intent.CATEGORY_BROWSABLE)
+                        && (filter.hasDataScheme(IntentFilter.SCHEME_HTTP) ||
+                                filter.hasDataScheme(IntentFilter.SCHEME_HTTPS))) {
+                    result.addAll(filter.getHostsList());
+                }
+            }
+        }
+        return result;
+!!!391170.java!!!	handleLoadingContainer(inout loading : View, inout doneLoading : View, inout done : boolean, inout animate : boolean) : void
+        setViewShown(loading, !done, animate);
+        setViewShown(doneLoading, done, animate);
+!!!391298.java!!!	setViewShown(in view : View, inout shown : boolean, inout animate : boolean) : void
+        if (animate) {
+            Animation animation = AnimationUtils.loadAnimation(view.getContext(),
+                    shown ? android.R.anim.fade_in : android.R.anim.fade_out);
+            if (shown) {
+                view.setVisibility(View.VISIBLE);
+            } else {
+                animation.setAnimationListener(new AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        view.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+            view.startAnimation(animation);
+        } else {
+            view.clearAnimation();
+            view.setVisibility(shown ? View.VISIBLE : View.INVISIBLE);
+        }
+!!!391426.java!!!	getAdminApplicationInfo(inout context : Context, in profileId : int) : ApplicationInfo
+        DevicePolicyManager dpm =
+                (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName mdmPackage = dpm.getProfileOwnerAsUser(profileId);
+        if (mdmPackage == null) {
+            return null;
+        }
+        String mdmPackageName = mdmPackage.getPackageName();
+        try {
+            IPackageManager ipm = AppGlobals.getPackageManager();
+            ApplicationInfo mdmApplicationInfo =
+                    ipm.getApplicationInfo(mdmPackageName, 0, profileId);
+            return mdmApplicationInfo;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error while retrieving application info for package " + mdmPackageName
+                    + ", userId " + profileId, e);
+            return null;
+        }
+!!!391554.java!!!	isBandwidthControlEnabled() : boolean
+        final INetworkManagementService netManager = INetworkManagementService.Stub
+                .asInterface(ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE));
+        try {
+            return netManager.isBandwidthControlEnabled();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!391682.java!!!	createAccessibleSequence(inout displayText : CharSequence, in accessibileText : String) : SpannableString
+        SpannableString str = new SpannableString(displayText);
+        str.setSpan(new TtsSpan.TextBuilder(accessibileText).build(), 0,
+                displayText.length(),
+                Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        return str;
+!!!391810.java!!!	getUserIdFromBundle(inout context : Context, inout bundle : Bundle) : int
+        if (bundle == null) {
+            return getCredentialOwnerUserId(context);
+        }
+        int userId = bundle.getInt(Intent.EXTRA_USER_ID, UserHandle.myUserId());
+        return enforceSameOwner(context, userId);
+!!!391938.java!!!	enforceSameOwner(inout context : Context, in userId : int) : int
+        final UserManager um = getUserManager(context);
+        final int[] profileIds = um.getProfileIdsWithDisabled(UserHandle.myUserId());
+        if (ArrayUtils.contains(profileIds, userId)) {
+            return userId;
+        }
+        throw new SecurityException("Given user id " + userId + " does not belong to user "
+                + UserHandle.myUserId());
+!!!392066.java!!!	getCredentialOwnerUserId(inout context : Context) : int
+        return getCredentialOwnerUserId(context, UserHandle.myUserId());
+!!!392194.java!!!	getCredentialOwnerUserId(inout context : Context, in userId : int) : int
+        UserManager um = getUserManager(context);
+        return um.getCredentialOwnerProfile(userId);
+!!!392322.java!!!	resolveResource(inout context : Context, in attr : int) : int
+        TypedValue value = new TypedValue();
+        context.getTheme().resolveAttribute(attr, value, true);
+        return value.resourceId;
+!!!392450.java!!!	formatDateRange(inout context : Context, in start : long, in end : long) : String
+        final int flags = FORMAT_SHOW_DATE | FORMAT_ABBREV_MONTH;
+
+        synchronized (sBuilder) {
+            sBuilder.setLength(0);
+            return DateUtils.formatDateRange(context, sFormatter, start, end, flags, null)
+                    .toString();
+        }
+!!!392578.java!!!	getNonIndexable(in xml : int, inout context : Context) : List<String>
+        if (Looper.myLooper() == null) {
+            // Hack to make sure Preferences can initialize.  Prefs expect a looper, but
+            // don't actually use it for the basic stuff here.
+            Looper.prepare();
+        }
+        final List<String> ret = new ArrayList<>();
+        PreferenceManager manager = new PreferenceManager(context);
+        PreferenceScreen screen = manager.inflateFromResource(context, xml, null);
+        checkPrefs(screen, ret);
+
+        return ret;
+!!!392706.java!!!	checkPrefs(inout group : PreferenceGroup, inout ret : List<String>) : void
+        if (group == null) return;
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            Preference pref = group.getPreference(i);
+            if (pref instanceof SelfAvailablePreference
+                    && !((SelfAvailablePreference) pref).isAvailable(group.getContext())) {
+                ret.add(pref.getKey());
+                if (pref instanceof PreferenceGroup) {
+                    addAll((PreferenceGroup) pref, ret);
+                }
+            } else if (pref instanceof PreferenceGroup) {
+                checkPrefs((PreferenceGroup) pref, ret);
+            }
+        }
+!!!392834.java!!!	addAll(inout group : PreferenceGroup, inout ret : List<String>) : void
+        if (group == null) return;
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            Preference pref = group.getPreference(i);
+            ret.add(pref.getKey());
+            if (pref instanceof PreferenceGroup) {
+                addAll((PreferenceGroup) pref, ret);
+            }
+        }
+!!!392962.java!!!	isDeviceProvisioned(inout context : Context) : boolean
+        return Settings.Global.getInt(context.getContentResolver(),
+                Settings.Global.DEVICE_PROVISIONED, 0) != 0;
+!!!393090.java!!!	startQuietModeDialogIfNecessary(inout context : Context, inout um : UserManager, in userId : int) : boolean
+        if (um.isQuietModeEnabled(UserHandle.of(userId))) {
+            final Intent intent = UnlaunchableAppActivity.createInQuietModeDialogIntent(userId);
+            context.startActivity(intent);
+            return true;
+        }
+        return false;
+!!!393218.java!!!	unlockWorkProfileIfNecessary(inout context : Context, in userId : int) : boolean
+        try {
+            if (!ActivityManagerNative.getDefault().isUserRunning(userId,
+                    ActivityManager.FLAG_AND_LOCKED)) {
+                return false;
+            }
+        } catch (RemoteException e) {
+            return false;
+        }
+        if (!(new LockPatternUtils(context)).isSecure(userId)) {
+            return false;
+        }
+        final KeyguardManager km = (KeyguardManager) context.getSystemService(
+                Context.KEYGUARD_SERVICE);
+        final Intent unlockIntent = km.createConfirmDeviceCredentialIntent(null, null, userId);
+        if (unlockIntent != null) {
+            context.startActivity(unlockIntent);
+            return true;
+        } else {
+            return false;
+        }
+
+!!!393346.java!!!	getApplicationLabel(inout context : Context, in packageName : String) : CharSequence
+        try {
+            final ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(
+                    packageName,
+                    PackageManager.MATCH_DISABLED_COMPONENTS
+                    | PackageManager.MATCH_UNINSTALLED_PACKAGES);
+            return appInfo.loadLabel(context.getPackageManager());
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Unable to find info for package: " + packageName);
+        }
+        return null;
+!!!393474.java!!!	isPackageEnabled(inout context : Context, in packageName : String) : boolean
+        try {
+            return context.getPackageManager().getApplicationInfo(packageName, 0).enabled;
+        } catch (NameNotFoundException e) {
+            // Thrown by PackageManager.getApplicationInfo if the package does not exist
+        }
+        return false;
+!!!393602.java!!!	isPackageDirectBootAware(inout context : Context, in packageName : String) : boolean
+        try {
+            final ApplicationInfo ai = context.getPackageManager().getApplicationInfo(
+                    packageName, 0);
+            return ai.isDirectBootAware() || ai.isPartiallyDirectBootAware();
+        } catch (NameNotFoundException ignored) {
+        }
+        return false;
+!!!393730.java!!!	isCarrierDemoUser(inout context : Context) : boolean
+        final String carrierDemoModeSetting =
+                context.getString(com.android.internal.R.string.config_carrierDemoModeSetting);
+        return UserManager.isDeviceInDemoMode(context)
+                && getUserManager(context).isDemoUser()
+                && !TextUtils.isEmpty(carrierDemoModeSetting)
+                && Settings.Secure.getInt(
+                        context.getContentResolver(), carrierDemoModeSetting, 0) == 1;

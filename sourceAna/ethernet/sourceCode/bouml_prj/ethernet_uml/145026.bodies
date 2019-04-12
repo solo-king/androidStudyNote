@@ -1,0 +1,3 @@
+class ParseException
+!!!270082.java!!!	ParseException(in response : String)
+        this.response = response;

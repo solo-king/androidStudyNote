@@ -1,0 +1,124 @@
+class StorageWizardBase
+!!!664322.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mStorage = getSystemService(StorageManager.class);
+
+        final String volumeId = getIntent().getStringExtra(VolumeInfo.EXTRA_VOLUME_ID);
+        if (!TextUtils.isEmpty(volumeId)) {
+            mVolume = mStorage.findVolumeById(volumeId);
+        }
+
+        final String diskId = getIntent().getStringExtra(DiskInfo.EXTRA_DISK_ID);
+        if (!TextUtils.isEmpty(diskId)) {
+            mDisk = mStorage.findDiskById(diskId);
+        } else if (mVolume != null) {
+            mDisk = mVolume.getDisk();
+        }
+
+        setTheme(R.style.SetupWizardStorageStyle);
+
+        if (mDisk != null) {
+            mStorage.registerListener(mStorageListener);
+        }
+!!!664450.java!!!	setContentView(in layoutResID : int) : void
+        super.setContentView(layoutResID);
+
+        // Our wizard is a unique flower, so it has custom buttons
+        final ViewGroup navParent = (ViewGroup) findViewById(R.id.suw_layout_navigation_bar)
+                .getParent();
+        mCustomNav = getLayoutInflater().inflate(R.layout.storage_wizard_navigation,
+                navParent, false);
+
+        mCustomNext = (Button) mCustomNav.findViewById(R.id.suw_navbar_next);
+        mCustomNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onNavigateNext();
+            }
+        });
+
+        // Swap our custom navigation bar into place
+        for (int i = 0; i < navParent.getChildCount(); i++) {
+            if (navParent.getChildAt(i).getId() == R.id.suw_layout_navigation_bar) {
+                navParent.removeViewAt(i);
+                navParent.addView(mCustomNav, i);
+                break;
+            }
+        }
+!!!664578.java!!!	onPostCreate(inout savedInstanceState : Bundle) : void
+        super.onPostCreate(savedInstanceState);
+
+        final Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR);
+        window.setStatusBarColor(Color.TRANSPARENT);
+
+        mCustomNav.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+
+        final View scrollView = findViewById(R.id.suw_bottom_scroll_view);
+        scrollView.setVerticalFadingEdgeEnabled(true);
+        scrollView.setFadingEdgeLength(scrollView.getVerticalFadingEdgeLength() * 2);
+
+        if (findViewById(R.id.suw_layout_decor) instanceof Illustration) {
+            // Our header illustration already have padding baked in
+            final View title = findViewById(R.id.suw_layout_title);
+            title.setPadding(title.getPaddingLeft(), 0, title.getPaddingRight(),
+                    title.getPaddingBottom());
+        }
+!!!664706.java!!!	onDestroy() : void
+        mStorage.unregisterListener(mStorageListener);
+        super.onDestroy();
+!!!664834.java!!!	getNextButton() : Button
+        return mCustomNext;
+!!!664962.java!!!	getSetupWizardLayout() : SetupWizardLayout
+        return (SetupWizardLayout) findViewById(R.id.setup_wizard_layout);
+!!!665090.java!!!	getProgressBar() : ProgressBar
+        return (ProgressBar) findViewById(R.id.storage_wizard_progress);
+!!!665218.java!!!	setCurrentProgress(in progress : int) : void
+        getProgressBar().setProgress(progress);
+        ((TextView) findViewById(R.id.storage_wizard_progress_summary)).setText(
+                NumberFormat.getPercentInstance().format((double) progress / 100));
+!!!665346.java!!!	setHeaderText(in resId : int, inout  : String...args) : void
+        final CharSequence headerText = TextUtils.expandTemplate(getText(resId), args);
+        getSetupWizardLayout().setHeaderText(headerText);
+        setTitle(headerText);
+!!!665474.java!!!	setBodyText(in resId : int, inout  : String...args) : void
+        ((TextView) findViewById(R.id.storage_wizard_body)).setText(
+                TextUtils.expandTemplate(getText(resId), args));
+!!!665602.java!!!	setSecondaryBodyText(in resId : int, inout  : String...args) : void
+        final TextView secondBody = ((TextView) findViewById(R.id.storage_wizard_second_body));
+        secondBody.setText(TextUtils.expandTemplate(getText(resId), args));
+        secondBody.setVisibility(View.VISIBLE);
+!!!665730.java!!!	setIllustrationType(in type : int) : void
+        switch (type) {
+            case ILLUSTRATION_SETUP:
+                getSetupWizardLayout().setIllustration(
+                        R.drawable.bg_setup_header,
+                        R.drawable.bg_header_horizontal_tile);
+                break;
+            case ILLUSTRATION_INTERNAL:
+                getSetupWizardLayout().setIllustration(
+                        R.drawable.bg_internal_storage_header,
+                        R.drawable.bg_header_horizontal_tile);
+                break;
+            case ILLUSTRATION_PORTABLE:
+                getSetupWizardLayout().setIllustration(
+                        R.drawable.bg_portable_storage_header,
+                        R.drawable.bg_header_horizontal_tile);
+                break;
+        }
+!!!665858.java!!!	setKeepScreenOn(inout keepScreenOn : boolean) : void
+        getSetupWizardLayout().setKeepScreenOn(keepScreenOn);
+!!!665986.java!!!	onNavigateNext() : void
+        throw new UnsupportedOperationException();
+!!!666114.java!!!	findFirstVolume(in type : int) : VolumeInfo
+        final List<VolumeInfo> vols = mStorage.getVolumes();
+        for (VolumeInfo vol : vols) {
+            if (Objects.equals(mDisk.getId(), vol.getDiskId()) && (vol.getType() == type)) {
+                return vol;
+            }
+        }
+        return null;

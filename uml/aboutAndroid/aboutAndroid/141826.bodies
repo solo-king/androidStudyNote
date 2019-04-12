@@ -1,0 +1,11 @@
+class TextChangedHandler
+!!!189954.java!!!	notifyAfterTextChanged() : void
+                removeMessages(ON_TEXT_CHANGED);
+                sendEmptyMessageDelayed(ON_TEXT_CHANGED, DELAY_IN_MILLISECOND);
+!!!190082.java!!!	handleMessage(inout msg : Message) : void
+                if (getActivity() == null) {
+                    return;
+                }
+                if (msg.what == ON_TEXT_CHANGED) {
+                    updateUi();
+                }

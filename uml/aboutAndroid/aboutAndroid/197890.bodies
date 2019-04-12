@@ -1,0 +1,17 @@
+class ToggleGlobalGesturePreferenceFragment
+!!!422914.java!!!	onPreferenceToggled(in preferenceKey : String, inout enabled : boolean) : void
+        Settings.Global.putInt(getContentResolver(),
+                Settings.Global.ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, enabled ? 1 : 0);
+!!!423042.java!!!	onInstallSwitchBarToggleSwitch() : void
+        super.onInstallSwitchBarToggleSwitch();
+        mToggleSwitch.setOnBeforeCheckedChangeListener(new OnBeforeCheckedChangeListener() {
+                @Override
+            public boolean onBeforeCheckedChanged(ToggleSwitch toggleSwitch, boolean checked) {
+                mSwitchBar.setCheckedInternal(checked);
+                getArguments().putBoolean(AccessibilitySettings.EXTRA_CHECKED, checked);
+                onPreferenceToggled(mPreferenceKey, checked);
+                return false;
+            }
+        });
+!!!423170.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY_TOGGLE_GLOBAL_GESTURE;

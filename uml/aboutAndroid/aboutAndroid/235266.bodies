@@ -1,0 +1,98 @@
+class ImeiInformation
+!!!645634.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        mSubscriptionManager = SubscriptionManager.from(getContext());
+        final TelephonyManager telephonyManager =
+            (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        initPreferenceScreen(telephonyManager.getSimCount());
+!!!645762.java!!!	initPreferenceScreen(in slotCount : int) : void
+        isMultiSIM = (slotCount > 1);
+        for (int slotId = 0; slotId < slotCount; slotId ++) {
+            addPreferencesFromResource(R.xml.device_info_phone_status);
+            setPreferenceValue(slotId);
+            setNewKey(slotId);
+        }
+!!!645890.java!!!	setPreferenceValue(in phoneId : int) : void
+        final Phone phone = PhoneFactory.getPhone(phoneId);
+
+        if (phone != null) {
+            if (phone.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
+                setSummaryText(KEY_MEID_NUMBER, phone.getMeid());
+                setSummaryText(KEY_MIN_NUMBER, phone.getCdmaMin());
+
+                if (getResources().getBoolean(R.bool.config_msid_enable)) {
+                    findPreference(KEY_MIN_NUMBER).setTitle(R.string.status_msid_number);
+                }
+
+                setSummaryText(KEY_PRL_VERSION, phone.getCdmaPrlVersion());
+
+                if (phone.getLteOnCdmaMode() == PhoneConstants.LTE_ON_CDMA_TRUE) {
+                    // Show ICC ID and IMEI for LTE device
+                    setSummaryText(KEY_ICC_ID, phone.getIccSerialNumber());
+                    setSummaryTextAsDigit(KEY_IMEI, phone.getImei());
+                    setSummaryTextAsDigit(KEY_IMEI_SV, phone.getDeviceSvn());
+                } else {
+                    // device is not GSM/UMTS, do not display GSM/UMTS features
+                    // check Null in case no specified preference in overlay xml
+                    removePreferenceFromScreen(KEY_IMEI_SV);
+                    removePreferenceFromScreen(KEY_IMEI);
+                    removePreferenceFromScreen(KEY_ICC_ID);
+                }
+            } else {
+                setSummaryTextAsDigit(KEY_IMEI, phone.getImei());
+                setSummaryTextAsDigit(KEY_IMEI_SV, phone.getDeviceSvn());
+                // device is not CDMA, do not display CDMA features
+                // check Null in case no specified preference in overlay xml
+                removePreferenceFromScreen(KEY_PRL_VERSION);
+                removePreferenceFromScreen(KEY_MEID_NUMBER);
+                removePreferenceFromScreen(KEY_MIN_NUMBER);
+                removePreferenceFromScreen(KEY_ICC_ID);
+            }
+        }
+!!!646018.java!!!	setNewKey(in slotId : int) : void
+        final PreferenceScreen prefScreen = getPreferenceScreen();
+        final int count = prefScreen.getPreferenceCount();
+        for (int i = 0; i < count; i++) {
+            Preference pref = prefScreen.getPreference(i);
+            String key = pref.getKey();
+            if (!key.startsWith("_")){
+                key = "_" + key + String.valueOf(slotId);
+                pref.setKey(key);
+                updateTitle(pref, slotId);
+            }
+        }
+!!!646146.java!!!	updateTitle(inout pref : Preference, in slotId : int) : void
+        if (pref != null) {
+            String title = pref.getTitle().toString();
+            if (isMultiSIM) {
+                // Slot starts from 1, slotId starts from 0 so plus 1
+                title += " " + getResources().getString(R.string.slot_number, slotId + 1);
+            }
+            pref.setTitle(title);
+        }
+!!!646274.java!!!	setSummaryText(in key : String, in text : String) : void
+        setSummaryText(key, text, false /* forceDigit */);
+!!!646402.java!!!	setSummaryTextAsDigit(in key : String, in text : String) : void
+        setSummaryText(key, text, true /* forceDigit */);
+!!!646530.java!!!	setSummaryText(in key : String, inout text : CharSequence, inout forceDigit : boolean) : void
+        final Preference preference = findPreference(key);
+
+        if (TextUtils.isEmpty(text)) {
+            text = getResources().getString(R.string.device_info_default);
+        } else if (forceDigit && TextUtils.isDigitsOnly(text)) {
+            final Spannable spannable = new SpannableStringBuilder(text);
+            final TtsSpan span = new TtsSpan.DigitsBuilder(text.toString()).build();
+            spannable.setSpan(span, 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            text = spannable;
+        }
+
+        if (preference != null) {
+            preference.setSummary(text);
+        }
+!!!646658.java!!!	removePreferenceFromScreen(in key : String) : void
+        final Preference preference = findPreference(key);
+        if (preference != null) {
+            getPreferenceScreen().removePreference(preference);
+        }
+!!!646786.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DEVICEINFO_IMEI_INFORMATION;

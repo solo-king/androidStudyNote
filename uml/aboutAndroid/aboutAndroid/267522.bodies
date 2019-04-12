@@ -1,0 +1,144 @@
+class ZenModeEventRuleSettings
+!!!838146.java!!!	setRule(inout rule : AutomaticZenRule) : boolean
+        mEvent = rule != null ? ZenModeConfig.tryParseEventConditionId(rule.getConditionId())
+                : null;
+        return mEvent != null;
+!!!838274.java!!!	getZenModeDependency() : String
+        return null;
+!!!838402.java!!!	getEnabledToastText() : int
+        return R.string.zen_event_rule_enabled_toast;
+!!!838530.java!!!	onResume() : void
+        super.onResume();
+        if (isUiRestricted()) {
+            return;
+        }
+        if (!mCreate) {
+            reloadCalendar();
+        }
+        mCreate = false;
+!!!838658.java!!!	reloadCalendar() : void
+        mCalendars = getCalendars(mContext);
+        ArrayList<CharSequence> entries = new ArrayList<>();
+        ArrayList<CharSequence> values = new ArrayList<>();
+        entries.add(getString(R.string.zen_mode_event_rule_calendar_any));
+        values.add(key(0, null));
+        final String eventCalendar = mEvent != null ? mEvent.calendar : null;
+        boolean found = false;
+        for (CalendarInfo calendar : mCalendars) {
+            entries.add(calendar.name);
+            values.add(key(calendar));
+            if (eventCalendar != null && eventCalendar.equals(calendar.name)) {
+                found = true;
+            }
+        }
+        if (eventCalendar != null && !found) {
+            entries.add(eventCalendar);
+            values.add(key(mEvent.userId, eventCalendar));
+        }
+        mCalendar.setEntries(entries.toArray(new CharSequence[entries.size()]));
+        mCalendar.setEntryValues(values.toArray(new CharSequence[values.size()]));
+!!!838786.java!!!	onCreateInternal() : void
+        mCreate = true;
+        addPreferencesFromResource(R.xml.zen_mode_event_rule_settings);
+        final PreferenceScreen root = getPreferenceScreen();
+
+        mCalendar = (DropDownPreference) root.findPreference(KEY_CALENDAR);
+        mCalendar.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final String calendarKey = (String) newValue;
+                if (calendarKey.equals(key(mEvent))) return false;
+                final int i = calendarKey.indexOf(':');
+                mEvent.userId = Integer.parseInt(calendarKey.substring(0, i));
+                mEvent.calendar = calendarKey.substring(i + 1);
+                if (mEvent.calendar.isEmpty()) {
+                    mEvent.calendar = null;
+                }
+                updateRule(ZenModeConfig.toEventConditionId(mEvent));
+                return true;
+            }
+        });
+
+        mReply = (DropDownPreference) root.findPreference(KEY_REPLY);
+        mReply.setEntries(new CharSequence[] {
+                getString(R.string.zen_mode_event_rule_reply_any_except_no),
+                getString(R.string.zen_mode_event_rule_reply_yes_or_maybe),
+                getString(R.string.zen_mode_event_rule_reply_yes),
+        });
+        mReply.setEntryValues(new CharSequence[] {
+                Integer.toString(EventInfo.REPLY_ANY_EXCEPT_NO),
+                Integer.toString(EventInfo.REPLY_YES_OR_MAYBE),
+                Integer.toString(EventInfo.REPLY_YES),
+        });
+        mReply.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final int reply = Integer.parseInt((String) newValue);
+                if (reply == mEvent.reply) return false;
+                mEvent.reply = reply;
+                updateRule(ZenModeConfig.toEventConditionId(mEvent));
+                return true;
+            }
+        });
+
+        reloadCalendar();
+        updateControlsInternal();
+!!!838914.java!!!	updateControlsInternal() : void
+        mCalendar.setValue(key(mEvent));
+        mReply.setValue(Integer.toString(mEvent.reply));
+!!!839042.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NOTIFICATION_ZEN_MODE_EVENT_RULE;
+!!!839170.java!!!	findCalendar(inout context : Context, inout event : EventInfo) : ZenModeEventRuleSettings::CalendarInfo
+        if (context == null || event == null) return null;
+        final String eventKey = key(event);
+        for (CalendarInfo calendar : getCalendars(context)) {
+            if (eventKey.equals(key(calendar))) {
+                return calendar;
+            }
+        }
+        return null;
+!!!839298.java!!!	getCalendars(inout context : Context) : ZenModeEventRuleSettings::CalendarInfo
+        final List<CalendarInfo> calendars = new ArrayList<>();
+        for (UserHandle user : UserManager.get(context).getUserProfiles()) {
+            final Context userContext = getContextForUser(context, user);
+            if (userContext != null) {
+                addCalendars(userContext, calendars);
+            }
+        }
+        Collections.sort(calendars, CALENDAR_NAME);
+        return calendars;
+!!!839426.java!!!	getContextForUser(inout context : Context, inout user : UserHandle) : Context
+        try {
+            return context.createPackageContextAsUser(context.getPackageName(), 0, user);
+        } catch (NameNotFoundException e) {
+            return null;
+        }
+!!!839554.java!!!	addCalendars(inout context : Context, inout outCalendars : List<CalendarInfo>) : void
+        final String primary = "\"primary\"";
+        final String[] projection = { Calendars._ID, Calendars.CALENDAR_DISPLAY_NAME,
+                "(" + Calendars.ACCOUNT_NAME + "=" + Calendars.OWNER_ACCOUNT + ") AS " + primary };
+        final String selection = primary + " = 1";
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(Calendars.CONTENT_URI, projection,
+                    selection, null, null);
+            if (cursor == null) {
+                return;
+            }
+            while (cursor.moveToNext()) {
+                final CalendarInfo ci = new CalendarInfo();
+                ci.name = cursor.getString(1);
+                ci.userId = context.getUserId();
+                outCalendars.add(ci);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+!!!839682.java!!!	key(inout calendar : ZenModeEventRuleSettings::CalendarInfo) : String
+        return key(calendar.userId, calendar.name);
+!!!839810.java!!!	key(inout event : EventInfo) : String
+        return key(event.userId, event.calendar);
+!!!839938.java!!!	key(in userId : int, in calendar : String) : String
+        return EventInfo.resolveUserId(userId) + ":" + (calendar == null ? "" : calendar);

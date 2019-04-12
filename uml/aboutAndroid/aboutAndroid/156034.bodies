@@ -1,0 +1,16 @@
+class InitDualModeTask
+!!!276866.java!!!	doInBackground(inout  : String...params) : Void
+           // TODO Auto-generated method stub
+           try {
+               byte[] buf = new byte[10];
+               int len = 0;
+               RandomAccessFile rdf = new RandomAccessFile(DualModeFile, "r");
+               len = rdf.read(buf);
+               String modeStr = new String(buf, 0, 1);
+               int dualMode = Integer.valueOf(modeStr);
+               preferences.edit().putInt("dual_mode", dualMode).commit();
+               rdf.close();
+           } catch (Exception e) {
+               e.printStackTrace();
+           } 
+           return null;

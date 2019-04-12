@@ -1,0 +1,3 @@
+class StrictModeNetworkViolation
+!!!566786.java!!!	StrictModeNetworkViolation(in policyMask : int)
+            super(policyMask, DETECT_NETWORK, null);

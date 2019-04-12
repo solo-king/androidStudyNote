@@ -1,0 +1,564 @@
+class CryptKeeper
+!!!217986.java!!!	beginAttempt() : void
+        final TextView status = (TextView) findViewById(R.id.status);
+        status.setText(R.string.checking_decryption);
+!!!218114.java!!!	handleBadAttempt(inout failedAttempts : Integer) : void
+        // Wrong entry. Handle pattern case.
+        if (mLockPatternView != null) {
+            mLockPatternView.setDisplayMode(DisplayMode.Wrong);
+            mLockPatternView.removeCallbacks(mClearPatternRunnable);
+            mLockPatternView.postDelayed(mClearPatternRunnable, WRONG_PATTERN_CLEAR_TIMEOUT_MS);
+        }
+        if ((failedAttempts % COOL_DOWN_ATTEMPTS) == 0) {
+            mCooldown = true;
+            // No need to setBackFunctionality(false) - it's already done
+            // at this point.
+            cooldown();
+        } else {
+            final TextView status = (TextView) findViewById(R.id.status);
+
+            int remainingAttempts = MAX_FAILED_ATTEMPTS - failedAttempts;
+            if (remainingAttempts < COOL_DOWN_ATTEMPTS) {
+                CharSequence warningTemplate = getText(R.string.crypt_keeper_warn_wipe);
+                CharSequence warning = TextUtils.expandTemplate(warningTemplate,
+                        Integer.toString(remainingAttempts));
+                status.setText(warning);
+            } else {
+                int passwordType = StorageManager.CRYPT_TYPE_PASSWORD;
+                try {
+                    final IMountService service = getMountService();
+                    passwordType = service.getPasswordType();
+                } catch (Exception e) {
+                    Log.e(TAG, "Error calling mount service " + e);
+                }
+
+                if (passwordType == StorageManager.CRYPT_TYPE_PIN) {
+                    status.setText(R.string.cryptkeeper_wrong_pin);
+                } else if (passwordType == StorageManager.CRYPT_TYPE_PATTERN) {
+                    status.setText(R.string.cryptkeeper_wrong_pattern);
+                } else {
+                    status.setText(R.string.cryptkeeper_wrong_password);
+                }
+            }
+
+            if (mLockPatternView != null) {
+                mLockPatternView.setDisplayMode(DisplayMode.Wrong);
+                mLockPatternView.setEnabled(true);
+            }
+
+            // Reenable the password entry
+            if (mPasswordEntry != null) {
+                mPasswordEntry.setEnabled(true);
+                final InputMethodManager imm = (InputMethodManager) getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mPasswordEntry, 0);
+                setBackFunctionality(true);
+            }
+        }
+!!!218498.java!!!	isDebugView() : boolean
+        return getIntent().hasExtra(EXTRA_FORCE_VIEW);
+!!!218626.java!!!	isDebugView(in viewType : String) : boolean
+        return viewType.equals(getIntent().getStringExtra(EXTRA_FORCE_VIEW));
+!!!218754.java!!!	notifyUser() : void
+        if (mNotificationCountdown > 0) {
+            --mNotificationCountdown;
+        } else if (mAudioManager != null) {
+            try {
+                // Play the standard keypress sound at full volume. This should be available on
+                // every device. We cannot play a ringtone here because media services aren't
+                // available yet. A DTMF-style tone is too soft to be noticed, and might not exist
+                // on tablet devices. The idea is to alert the user that something is needed: this
+                // does not have to be pleasing.
+                mAudioManager.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD, 100);
+            } catch (Exception e) {
+                Log.w(TAG, "notifyUser: Exception while playing sound: " + e);
+            }
+        }
+        // Notify the user again in 5 seconds.
+        mHandler.removeMessages(MESSAGE_NOTIFY);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_NOTIFY, 5 * 1000);
+
+        if (mWakeLock.isHeld()) {
+            if (mReleaseWakeLockCountdown > 0) {
+                --mReleaseWakeLockCountdown;
+            } else {
+                mWakeLock.release();
+            }
+        }
+!!!219010.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        // If we are not encrypted or encrypting, get out quickly.
+        final String state = SystemProperties.get("vold.decrypt");
+        if (!isDebugView() && ("".equals(state) || DECRYPT_STATE.equals(state))) {
+            disableCryptKeeperComponent(this);
+            // Typically CryptKeeper is launched as the home app.  We didn't
+            // want to be running, so need to finish this activity.  We can count
+            // on the activity manager re-launching the new home app upon finishing
+            // this one, since this will leave the activity stack empty.
+            // NOTE: This is really grungy.  I think it would be better for the
+            // activity manager to explicitly launch the crypt keeper instead of
+            // home in the situation where we need to decrypt the device
+            finish();
+            return;
+        }
+
+        try {
+            if (getResources().getBoolean(R.bool.crypt_keeper_allow_rotation)) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+            }
+        } catch (NotFoundException e) {
+        }
+
+        // Disable the status bar, but do NOT disable back because the user needs a way to go
+        // from keyboard settings and back to the password screen.
+        mStatusBar = (StatusBarManager) getSystemService(Context.STATUS_BAR_SERVICE);
+        mStatusBar.disable(sWidgetsToDisable);
+
+        if (savedInstanceState != null) {
+            mCooldown = savedInstanceState.getBoolean(STATE_COOLDOWN);
+        }
+
+        setAirplaneModeIfNecessary();
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        // Check for (and recover) retained instance data
+        final Object lastInstance = getLastNonConfigurationInstance();
+        if (lastInstance instanceof NonConfigurationInstanceState) {
+            NonConfigurationInstanceState retained = (NonConfigurationInstanceState) lastInstance;
+            mWakeLock = retained.wakelock;
+            Log.d(TAG, "Restoring wakelock from NonConfigurationInstanceState");
+        }
+!!!219138.java!!!	onSaveInstanceState(inout savedInstanceState : Bundle) : void
+        savedInstanceState.putBoolean(STATE_COOLDOWN, mCooldown);
+!!!219266.java!!!	onStart() : void
+        super.onStart();
+        setupUi();
+!!!219394.java!!!	setupUi() : void
+        if (mEncryptionGoneBad || isDebugView(FORCE_VIEW_ERROR)) {
+            setContentView(R.layout.crypt_keeper_progress);
+            showFactoryReset(mCorrupt);
+            return;
+        }
+
+        final String progress = SystemProperties.get("vold.encrypt_progress");
+        if (!"".equals(progress) || isDebugView(FORCE_VIEW_PROGRESS)) {
+            setContentView(R.layout.crypt_keeper_progress);
+            encryptionProgressInit();
+        } else if (mValidationComplete || isDebugView(FORCE_VIEW_PASSWORD)) {
+            new AsyncTask<Void, Void, Void>() {
+                int passwordType = StorageManager.CRYPT_TYPE_PASSWORD;
+                String owner_info;
+                boolean pattern_visible;
+                boolean password_visible;
+
+                @Override
+                public Void doInBackground(Void... v) {
+                    try {
+                        final IMountService service = getMountService();
+                        passwordType = service.getPasswordType();
+                        owner_info = service.getField(StorageManager.OWNER_INFO_KEY);
+                        pattern_visible = !("0".equals(service.getField(StorageManager.PATTERN_VISIBLE_KEY)));
+                        password_visible = !("0".equals(service.getField(StorageManager.PASSWORD_VISIBLE_KEY)));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error calling mount service " + e);
+                    }
+
+                    return null;
+                }
+
+                @Override
+                public void onPostExecute(java.lang.Void v) {
+                    Settings.System.putInt(getContentResolver(), Settings.System.TEXT_SHOW_PASSWORD,
+                                  password_visible ? 1 : 0);
+
+                    if (passwordType == StorageManager.CRYPT_TYPE_PIN) {
+                        setContentView(R.layout.crypt_keeper_pin_entry);
+                        mStatusString = R.string.enter_pin;
+                    } else if (passwordType == StorageManager.CRYPT_TYPE_PATTERN) {
+                        setContentView(R.layout.crypt_keeper_pattern_entry);
+                        setBackFunctionality(false);
+                        mStatusString = R.string.enter_pattern;
+                    } else {
+                        setContentView(R.layout.crypt_keeper_password_entry);
+                        mStatusString = R.string.enter_password;
+                    }
+                    final TextView status = (TextView) findViewById(R.id.status);
+                    status.setText(mStatusString);
+
+                    final TextView ownerInfo = (TextView) findViewById(R.id.owner_info);
+                    ownerInfo.setText(owner_info);
+                    ownerInfo.setSelected(true); // Required for marquee'ing to work
+
+                    passwordEntryInit();
+
+                    findViewById(android.R.id.content).setSystemUiVisibility(View.STATUS_BAR_DISABLE_BACK);
+
+                    if (mLockPatternView != null) {
+                        mLockPatternView.setInStealthMode(!pattern_visible);
+                    }
+                    if (mCooldown) {
+                        // in case we are cooling down and coming back from emergency dialler
+                        setBackFunctionality(false);
+                        cooldown();
+                    }
+
+                }
+            }.execute();
+        } else if (!mValidationRequested) {
+            // We're supposed to be encrypted, but no validation has been done.
+            new ValidationTask().execute((Void[]) null);
+            mValidationRequested = true;
+        }
+!!!219522.java!!!	onStop() : void
+        super.onStop();
+        mHandler.removeMessages(MESSAGE_UPDATE_PROGRESS);
+        mHandler.removeMessages(MESSAGE_NOTIFY);
+!!!219650.java!!!	onRetainNonConfigurationInstance() : Object
+        NonConfigurationInstanceState state = new NonConfigurationInstanceState(mWakeLock);
+        Log.d(TAG, "Handing wakelock off to NonConfigurationInstanceState");
+        mWakeLock = null;
+        return state;
+!!!219778.java!!!	onDestroy() : void
+        super.onDestroy();
+
+        if (mWakeLock != null) {
+            Log.d(TAG, "Releasing and destroying wakelock");
+            mWakeLock.release();
+            mWakeLock = null;
+        }
+!!!219906.java!!!	encryptionProgressInit() : void
+        // Accquire a partial wakelock to prevent the device from sleeping. Note
+        // we never release this wakelock as we will be restarted after the device
+        // is encrypted.
+        Log.d(TAG, "Encryption progress screen initializing.");
+        if (mWakeLock == null) {
+            Log.d(TAG, "Acquiring wakelock.");
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            mWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
+            mWakeLock.acquire();
+        }
+
+        ((ProgressBar) findViewById(R.id.progress_bar)).setIndeterminate(true);
+        // Ignore all back presses from now, both hard and soft keys.
+        setBackFunctionality(false);
+        // Start the first run of progress manually. This method sets up messages to occur at
+        // repeated intervals.
+        updateProgress();
+!!!220034.java!!!	showFactoryReset(in corrupt : boolean) : void
+        // Hide the encryption-bot to make room for the "factory reset" button
+        findViewById(R.id.encroid).setVisibility(View.GONE);
+
+        // Show the reset button, failure text, and a divider
+        final Button button = (Button) findViewById(R.id.factory_reset);
+        button.setVisibility(View.VISIBLE);
+        button.setOnClickListener(new OnClickListener() {
+                @Override
+            public void onClick(View v) {
+                // Factory reset the device.
+                Intent intent = new Intent(Intent.ACTION_MASTER_CLEAR);
+                intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+                intent.putExtra(Intent.EXTRA_REASON,
+                        "CryptKeeper.showFactoryReset() corrupt=" + corrupt);
+                sendBroadcast(intent);
+            }
+        });
+
+        // Alert the user of the failure.
+        if (corrupt) {
+            ((TextView) findViewById(R.id.title)).setText(R.string.crypt_keeper_data_corrupt_title);
+            ((TextView) findViewById(R.id.status)).setText(R.string.crypt_keeper_data_corrupt_summary);
+        } else {
+            ((TextView) findViewById(R.id.title)).setText(R.string.crypt_keeper_failed_title);
+            ((TextView) findViewById(R.id.status)).setText(R.string.crypt_keeper_failed_summary);
+        }
+
+        final View view = findViewById(R.id.bottom_divider);
+        // TODO(viki): Why would the bottom divider be missing in certain layouts? Investigate.
+        if (view != null) {
+            view.setVisibility(View.VISIBLE);
+        }
+!!!220162.java!!!	updateProgress() : void
+        final String state = SystemProperties.get("vold.encrypt_progress");
+
+        if ("error_partially_encrypted".equals(state)) {
+            showFactoryReset(false);
+            return;
+        }
+
+        // Get status as percentage first
+        CharSequence status = getText(R.string.crypt_keeper_setup_description);
+        int percent = 0;
+        try {
+            // Force a 50% progress state when debugging the view.
+            percent = isDebugView() ? 50 : Integer.parseInt(state);
+        } catch (Exception e) {
+            Log.w(TAG, "Error parsing progress: " + e.toString());
+        }
+        String progress = Integer.toString(percent);
+
+        // Now try to get status as time remaining and replace as appropriate
+        Log.v(TAG, "Encryption progress: " + progress);
+        try {
+            final String timeProperty = SystemProperties.get("vold.encrypt_time_remaining");
+            int time = Integer.parseInt(timeProperty);
+            if (time >= 0) {
+                // Round up to multiple of 10 - this way display is less jerky
+                time = (time + 9) / 10 * 10;
+                progress = DateUtils.formatElapsedTime(time);
+                status = getText(R.string.crypt_keeper_setup_time_remaining);
+            }
+        } catch (Exception e) {
+            // Will happen if no time etc - show percentage
+        }
+
+        final TextView tv = (TextView) findViewById(R.id.status);
+        if (tv != null) {
+            tv.setText(TextUtils.expandTemplate(status, progress));
+        }
+
+        // Check the progress every 1 seconds
+        mHandler.removeMessages(MESSAGE_UPDATE_PROGRESS);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_UPDATE_PROGRESS, 1000);
+!!!220290.java!!!	cooldown() : void
+        // Disable the password entry.
+        if (mPasswordEntry != null) {
+            mPasswordEntry.setEnabled(false);
+        }
+        if (mLockPatternView != null) {
+            mLockPatternView.setEnabled(false);
+        }
+
+        final TextView status = (TextView) findViewById(R.id.status);
+        status.setText(R.string.crypt_keeper_force_power_cycle);
+!!!220418.java!!!	setBackFunctionality(inout isEnabled : boolean) : void
+        if (isEnabled) {
+            mStatusBar.disable(sWidgetsToDisable);
+        } else {
+            mStatusBar.disable(sWidgetsToDisable | StatusBarManager.DISABLE_BACK);
+        }
+!!!220546.java!!!	fakeUnlockAttempt(inout postingView : View) : void
+        beginAttempt();
+        postingView.postDelayed(mFakeUnlockAttemptRunnable, FAKE_ATTEMPT_DELAY);
+!!!220674.java!!!	passwordEntryInit() : void
+        // Password/pin case
+        mPasswordEntry = (EditText) findViewById(R.id.passwordEntry);
+        if (mPasswordEntry != null){
+            mPasswordEntry.setOnEditorActionListener(this);
+            mPasswordEntry.requestFocus();
+            // Become quiet when the user interacts with the Edit text screen.
+            mPasswordEntry.setOnKeyListener(this);
+            mPasswordEntry.setOnTouchListener(this);
+            mPasswordEntry.addTextChangedListener(this);
+        }
+
+        // Pattern case
+        mLockPatternView = (LockPatternView) findViewById(R.id.lockPattern);
+        if (mLockPatternView != null) {
+            mLockPatternView.setOnPatternListener(mChooseNewLockPatternListener);
+        }
+
+        // Disable the Emergency call button if the device has no voice telephone capability
+        if (!getTelephonyManager().isVoiceCapable()) {
+            final View emergencyCall = findViewById(R.id.emergencyCallButton);
+            if (emergencyCall != null) {
+                Log.d(TAG, "Removing the emergency Call button");
+                emergencyCall.setVisibility(View.GONE);
+            }
+        }
+
+        final View imeSwitcher = findViewById(R.id.switch_ime_button);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        if (imeSwitcher != null && hasMultipleEnabledIMEsOrSubtypes(imm, false)) {
+            imeSwitcher.setVisibility(View.VISIBLE);
+            imeSwitcher.setOnClickListener(new OnClickListener() {
+                    @Override
+                public void onClick(View v) {
+                    imm.showInputMethodPicker(false /* showAuxiliarySubtypes */);
+                }
+            });
+        }
+
+        // We want to keep the screen on while waiting for input. In minimal boot mode, the device
+        // is completely non-functional, and we want the user to notice the device and enter a
+        // password.
+        if (mWakeLock == null) {
+            Log.d(TAG, "Acquiring wakelock.");
+            final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (pm != null) {
+                mWakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
+                mWakeLock.acquire();
+                // Keep awake for 10 minutes - if the user hasn't been alerted by then
+                // best not to just drain their battery
+                mReleaseWakeLockCountdown = 96; // 96 * 5 secs per click + 120 secs before we show this = 600
+            }
+        }
+
+        // Asynchronously throw up the IME, since there are issues with requesting it to be shown
+        // immediately.
+        if (mLockPatternView == null && !mCooldown) {
+            getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            mHandler.postDelayed(new Runnable() {
+                @Override public void run() {
+                    imm.showSoftInputUnchecked(0, null);
+                }
+            }, 0);
+        }
+
+        updateEmergencyCallButtonState();
+        // Notify the user in 120 seconds that we are waiting for him to enter the password.
+        mHandler.removeMessages(MESSAGE_NOTIFY);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_NOTIFY, 120 * 1000);
+
+        // Dismiss secure & non-secure keyguards while this screen is showing.
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+!!!220802.java!!!	hasMultipleEnabledIMEsOrSubtypes(inout imm : InputMethodManager, in shouldIncludeAuxiliarySubtypes : boolean) : boolean
+        final List<InputMethodInfo> enabledImis = imm.getEnabledInputMethodList();
+
+        // Number of the filtered IMEs
+        int filteredImisCount = 0;
+
+        for (InputMethodInfo imi : enabledImis) {
+            // We can return true immediately after we find two or more filtered IMEs.
+            if (filteredImisCount > 1) return true;
+            final List<InputMethodSubtype> subtypes =
+                    imm.getEnabledInputMethodSubtypeList(imi, true);
+            // IMEs that have no subtypes should be counted.
+            if (subtypes.isEmpty()) {
+                ++filteredImisCount;
+                continue;
+            }
+
+            int auxCount = 0;
+            for (InputMethodSubtype subtype : subtypes) {
+                if (subtype.isAuxiliary()) {
+                    ++auxCount;
+                }
+            }
+            final int nonAuxCount = subtypes.size() - auxCount;
+
+            // IMEs that have one or more non-auxiliary subtypes should be counted.
+            // If shouldIncludeAuxiliarySubtypes is true, IMEs that have two or more auxiliary
+            // subtypes should be counted as well.
+            if (nonAuxCount > 0 || (shouldIncludeAuxiliarySubtypes && auxCount > 1)) {
+                ++filteredImisCount;
+                continue;
+            }
+        }
+
+        return filteredImisCount > 1
+        // imm.getEnabledInputMethodSubtypeList(null, false) will return the current IME's enabled
+        // input method subtype (The current IME should be LatinIME.)
+                || imm.getEnabledInputMethodSubtypeList(null, false).size() > 1;
+!!!220930.java!!!	getMountService() : IMountService
+        final IBinder service = ServiceManager.getService("mount");
+        if (service != null) {
+            return IMountService.Stub.asInterface(service);
+        }
+        return null;
+!!!221058.java!!!	onEditorAction(inout v : TextView, in actionId : int, inout event : KeyEvent) : boolean
+        if (actionId == EditorInfo.IME_NULL || actionId == EditorInfo.IME_ACTION_DONE) {
+            // Get the password
+            final String password = v.getText().toString();
+
+            if (TextUtils.isEmpty(password)) {
+                return true;
+            }
+
+            // Now that we have the password clear the password field.
+            v.setText(null);
+
+            // Disable the password entry and back keypress while checking the password. These
+            // we either be re-enabled if the password was wrong or after the cooldown period.
+            mPasswordEntry.setEnabled(false);
+            setBackFunctionality(false);
+
+            if (password.length() >= LockPatternUtils.MIN_LOCK_PATTERN_SIZE) {
+                new DecryptTask().execute(password);
+            } else {
+                // Allow user to make as many of these as they want.
+                fakeUnlockAttempt(mPasswordEntry);
+            }
+
+            return true;
+        }
+        return false;
+!!!221186.java!!!	setAirplaneModeIfNecessary() : void
+        final boolean isLteDevice =
+                getTelephonyManager().getLteOnCdmaMode() == PhoneConstants.LTE_ON_CDMA_TRUE;
+        if (!isLteDevice) {
+            Log.d(TAG, "Going into airplane mode.");
+            Settings.Global.putInt(getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 1);
+            final Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+            intent.putExtra("state", true);
+            sendBroadcastAsUser(intent, UserHandle.ALL);
+        }
+!!!221314.java!!!	updateEmergencyCallButtonState() : void
+        final Button emergencyCall = (Button) findViewById(R.id.emergencyCallButton);
+        // The button isn't present at all in some configurations.
+        if (emergencyCall == null)
+            return;
+
+        if (isEmergencyCallCapable()) {
+            emergencyCall.setVisibility(View.VISIBLE);
+            emergencyCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+
+                    public void onClick(View v) {
+                        takeEmergencyCallAction();
+                    }
+                });
+        } else {
+            emergencyCall.setVisibility(View.GONE);
+            return;
+        }
+
+        int textId;
+        if (getTelecomManager().isInCall()) {
+            // Show "return to call"
+            textId = R.string.cryptkeeper_return_to_call;
+        } else {
+            textId = R.string.cryptkeeper_emergency_call;
+        }
+        emergencyCall.setText(textId);
+!!!221442.java!!!	isEmergencyCallCapable() : boolean
+        return getResources().getBoolean(com.android.internal.R.bool.config_voice_capable);
+!!!221570.java!!!	takeEmergencyCallAction() : void
+        TelecomManager telecomManager = getTelecomManager();
+        if (telecomManager.isInCall()) {
+            telecomManager.showInCallScreen(false /* showDialpad */);
+        } else {
+            launchEmergencyDialer();
+        }
+!!!221698.java!!!	launchEmergencyDialer() : void
+        final Intent intent = new Intent(ACTION_EMERGENCY_DIAL);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        setBackFunctionality(true);
+        startActivity(intent);
+!!!221826.java!!!	getTelephonyManager() : TelephonyManager
+        return (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+!!!221954.java!!!	getTelecomManager() : TelecomManager
+        return (TelecomManager) getSystemService(Context.TELECOM_SERVICE);
+!!!222082.java!!!	delayAudioNotification() : void
+        mNotificationCountdown = 20;
+!!!222210.java!!!	onKey(inout v : View, in keyCode : int, inout event : KeyEvent) : boolean
+        delayAudioNotification();
+        return false;
+!!!222338.java!!!	onTouch(inout v : View, inout event : MotionEvent) : boolean
+        delayAudioNotification();
+        return false;
+!!!222466.java!!!	beforeTextChanged(inout s : CharSequence, in start : int, in count : int, in after : int) : void
+        return;
+!!!222594.java!!!	onTextChanged(inout s : CharSequence, in start : int, in before : int, in count : int) : void
+        delayAudioNotification();
+!!!222722.java!!!	afterTextChanged(inout s : Editable) : void
+        return;
+!!!222850.java!!!	disableCryptKeeperComponent(inout context : Context) : void
+        PackageManager pm = context.getPackageManager();
+        ComponentName name = new ComponentName(context, CryptKeeper.class);
+        Log.d(TAG, "Disabling component " + name);
+        pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);

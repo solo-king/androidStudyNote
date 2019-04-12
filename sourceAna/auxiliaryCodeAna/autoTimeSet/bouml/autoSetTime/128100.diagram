@@ -1,0 +1,90 @@
+format 221
+
+classinstance 128228 class_ref 128100 // DateTimeSettings
+  name ""   xyz 120 6 2005 life_line_z 2000
+classinstance 131428 class_ref 130148 // ServiceStateTracker
+  name ""   xyz 488 4 2005 life_line_z 2000
+classinstance 132068 class_ref 130660 // SystemClock
+  name ""   xyz 773 4 2005 life_line_z 2000
+classinstance 132452 class_ref 129380 // NetworkTimeUpdateService
+  name ""   xyz 981 4 2005 life_line_z 2000
+durationcanvas 128356 classinstance_ref 128228 // :DateTimeSettings
+  xyzwh 181 71 2010 11 430
+  overlappingdurationcanvas 128740
+    xyzwh 187 108 2020 11 148
+    overlappingdurationcanvas 128996
+      xyzwh 193 156 2030 11 25
+    end
+    overlappingdurationcanvas 129252
+      xyzwh 193 207 2030 11 25
+    end
+  end
+  overlappingdurationcanvas 131044
+    xyzwh 187 293 2020 11 147
+  end
+end
+durationcanvas 131556 classinstance_ref 131428 // :ServiceStateTracker
+  xyzwh 557 321 2010 11 243
+  overlappingdurationcanvas 131812
+    xyzwh 563 355 2020 11 161
+  end
+end
+durationcanvas 132196 classinstance_ref 132068 // :SystemClock
+  xyzwh 818 395 2010 11 26
+end
+durationcanvas 132580 classinstance_ref 132452 // :NetworkTimeUpdateService
+  xyzwh 1075 454 2010 11 25
+end
+lostfoundmsgsupport 128484 xyz 65 73 2015
+lostfoundmsgsupport 131172 xyz 71 295 2025
+msg 128612 found_synchronous
+  from lostfoundmsgsupport_ref 128484
+  to durationcanvas_ref 128356
+  yz 71 2015 explicitmsg "1.onCreate()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 96 52
+reflexivemsg 128868 synchronous
+  to durationcanvas_ref 128740
+  yz 108 2025 explicitmsg "A1.initUI()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 195 88
+reflexivemsg 129124 synchronous
+  to durationcanvas_ref 128996
+  yz 156 2035 explicitmsg "B1.mAutoTimePref = (RestrictedSwitchPreference) findPreference(KEY_AUTO_TIME);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 58 134
+reflexivemsg 129380 synchronous
+  to durationcanvas_ref 129252
+  yz 207 2035 explicitmsg "B2.mAutoTimePref.setOnPreferenceChangeListener(this);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 54 185
+msg 131300 found_synchronous
+  from lostfoundmsgsupport_ref 131172
+  to durationcanvas_ref 131044
+  yz 293 2025 explicitmsg "2.onPreferenceChange()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 58 274
+msg 131684 asynchronous
+  from durationcanvas_ref 131044
+  to durationcanvas_ref 131556
+  yz 321 2025 explicitmsg "A1.revertToNitzTime()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 400 304
+reflexivemsg 131940 synchronous
+  to durationcanvas_ref 131812
+  yz 355 2025 explicitmsg "B1.setAndBroadcastNetworkSetTime(time)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 457 336
+msg 132324 synchronous
+  from durationcanvas_ref 131812
+  to durationcanvas_ref 132196
+  yz 395 2025 explicitmsg "C1.setCurrentTimeMillis(time)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 612 378
+msg 132708 synchronous
+  from durationcanvas_ref 131812
+  to durationcanvas_ref 132580
+  yz 454 2025 explicitmsg "C2mNitzTimeSetTime = SystemClock.elapsedRealtime();"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 647 435
+end

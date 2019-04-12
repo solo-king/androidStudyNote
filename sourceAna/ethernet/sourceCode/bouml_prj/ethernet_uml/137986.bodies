@@ -1,0 +1,204 @@
+class SamplingDataTracker
+!!!277250.java!!!	getSamplingSnapshots(inout mapIfaceToSample : Map<String, SamplingSnapshot>) : void
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader("/proc/net/dev"));
+
+            // Skip over the line bearing column titles (there are 2 lines)
+            String line;
+            reader.readLine();
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+
+                // remove leading whitespace
+                line = line.trim();
+
+                String[] tokens = line.split("[ ]+");
+                if (tokens.length < 17) {
+                    continue;
+                }
+
+                /* column format is
+                 * Interface  (Recv)bytes packets errs drop fifo frame compressed multicast \
+                 *            (Transmit)bytes packets errs drop fifo colls carrier compress
+                */
+
+                String currentIface = tokens[0].split(":")[0];
+                if (DBG) Slog.d(TAG, "Found data for interface " + currentIface);
+                if (mapIfaceToSample.containsKey(currentIface)) {
+
+                    try {
+                        SamplingSnapshot ss = new SamplingSnapshot();
+
+                        ss.mTxByteCount        = Long.parseLong(tokens[1]);
+                        ss.mTxPacketCount      = Long.parseLong(tokens[2]);
+                        ss.mTxPacketErrorCount = Long.parseLong(tokens[3]);
+                        ss.mRxByteCount        = Long.parseLong(tokens[9]);
+                        ss.mRxPacketCount      = Long.parseLong(tokens[10]);
+                        ss.mRxPacketErrorCount = Long.parseLong(tokens[11]);
+
+                        ss.mTimestamp          = SystemClock.elapsedRealtime();
+
+                        if (DBG) {
+                            Slog.d(TAG, "Interface = " + currentIface);
+                            Slog.d(TAG, "ByteCount = " + String.valueOf(ss.mTxByteCount));
+                            Slog.d(TAG, "TxPacketCount = " + String.valueOf(ss.mTxPacketCount));
+                            Slog.d(TAG, "TxPacketErrorCount = "
+                                    + String.valueOf(ss.mTxPacketErrorCount));
+                            Slog.d(TAG, "RxByteCount = " + String.valueOf(ss.mRxByteCount));
+                            Slog.d(TAG, "RxPacketCount = " + String.valueOf(ss.mRxPacketCount));
+                            Slog.d(TAG, "RxPacketErrorCount = "
+                                    + String.valueOf(ss.mRxPacketErrorCount));
+                            Slog.d(TAG, "Timestamp = " + String.valueOf(ss.mTimestamp));
+                            Slog.d(TAG, "---------------------------");
+                        }
+
+                        mapIfaceToSample.put(currentIface, ss);
+
+                    } catch (NumberFormatException e) {
+                        // just ignore this data point
+                    }
+                }
+            }
+
+            if (DBG) {
+                Iterator it = mapIfaceToSample.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry kvpair = (Map.Entry)it.next();
+                    if (kvpair.getValue() == null) {
+                        Slog.d(TAG, "could not find snapshot for interface " + kvpair.getKey());
+                    }
+                }
+            }
+        } catch(FileNotFoundException e) {
+            Slog.e(TAG, "could not find /proc/net/dev");
+        } catch (IOException e) {
+            Slog.e(TAG, "could not read /proc/net/dev");
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                Slog.e(TAG, "could not close /proc/net/dev");
+            }
+        }
+!!!277378.java!!!	startSampling(inout s : SamplingDataTracker::SamplingSnapshot) : void
+        synchronized(mSamplingDataLock) {
+            mLastSample = s;
+        }
+!!!277506.java!!!	stopSampling(inout s : SamplingDataTracker::SamplingSnapshot) : void
+        synchronized(mSamplingDataLock) {
+            if (mLastSample != null) {
+                if (s.mTimestamp - mLastSample.mTimestamp > MINIMUM_SAMPLING_INTERVAL
+                        && getSampledPacketCount(mLastSample, s) > MINIMUM_SAMPLED_PACKETS) {
+                    mBeginningSample = mLastSample;
+                    mEndingSample = s;
+                    mLastSample = null;
+                } else {
+                    if (DBG) Slog.d(TAG, "Throwing current sample away because it is too small");
+                }
+            }
+        }
+!!!277634.java!!!	resetSamplingData() : void
+        if (DBG) Slog.d(TAG, "Resetting sampled network data");
+        synchronized(mSamplingDataLock) {
+
+            // We could just take another sample here and treat it as an
+            // 'ending sample' effectively shortening sampling interval, but that
+            // requires extra work (specifically, reading the sample needs to be
+            // done asynchronously)
+
+            mLastSample = null;
+        }
+!!!277762.java!!!	getSampledTxByteCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mTxByteCount - mBeginningSample.mTxByteCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!277890.java!!!	getSampledTxPacketCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mTxPacketCount - mBeginningSample.mTxPacketCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!278018.java!!!	getSampledTxPacketErrorCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mTxPacketErrorCount - mBeginningSample.mTxPacketErrorCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!278146.java!!!	getSampledRxByteCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mRxByteCount - mBeginningSample.mRxByteCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!278274.java!!!	getSampledRxPacketCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mRxPacketCount - mBeginningSample.mRxPacketCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!278402.java!!!	getSampledPacketCount() : long
+        return getSampledPacketCount(mBeginningSample, mEndingSample);
+!!!278530.java!!!	getSampledPacketCount(inout begin : SamplingDataTracker::SamplingSnapshot, inout end : SamplingDataTracker::SamplingSnapshot) : long
+        if (begin != null && end != null) {
+            long rxPacketCount = end.mRxPacketCount - begin.mRxPacketCount;
+            long txPacketCount = end.mTxPacketCount - begin.mTxPacketCount;
+            return rxPacketCount + txPacketCount;
+        } else {
+            return LinkQualityInfo.UNKNOWN_LONG;
+        }
+!!!278658.java!!!	getSampledPacketErrorCount() : long
+        if (mBeginningSample != null && mEndingSample != null) {
+            long rxPacketErrorCount = getSampledRxPacketErrorCount();
+            long txPacketErrorCount = getSampledTxPacketErrorCount();
+            return rxPacketErrorCount + txPacketErrorCount;
+        } else {
+            return LinkQualityInfo.UNKNOWN_LONG;
+        }
+!!!278786.java!!!	getSampledRxPacketErrorCount() : long
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return mEndingSample.mRxPacketErrorCount - mBeginningSample.mRxPacketErrorCount;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!278914.java!!!	getSampleTimestamp() : long
+        synchronized(mSamplingDataLock) {
+            if (mEndingSample != null) {
+                return mEndingSample.mTimestamp;
+            } else {
+                return LinkQualityInfo.UNKNOWN_LONG;
+            }
+        }
+!!!279042.java!!!	getSampleDuration() : int
+        synchronized(mSamplingDataLock) {
+            if (mBeginningSample != null && mEndingSample != null) {
+                return (int) (mEndingSample.mTimestamp - mBeginningSample.mTimestamp);
+            } else {
+                return LinkQualityInfo.UNKNOWN_INT;
+            }
+        }
+!!!279170.java!!!	setCommonLinkQualityInfoFields(inout li : LinkQualityInfo) : void
+        synchronized(mSamplingDataLock) {
+            li.setLastDataSampleTime(getSampleTimestamp());
+            li.setDataSampleDuration(getSampleDuration());
+            li.setPacketCount(getSampledPacketCount());
+            li.setPacketErrorCount(getSampledPacketErrorCount());
+        }

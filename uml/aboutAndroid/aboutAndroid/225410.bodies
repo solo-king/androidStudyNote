@@ -1,0 +1,102 @@
+class SearchResultsAdapter
+!!!590082.java!!!	SearchResultsAdapter(inout context : Context)
+            mContext = context;
+            mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mDataValid = false;
+!!!590210.java!!!	swapCursor(inout newCursor : Cursor) : Cursor
+            if (newCursor == mCursor) {
+                return null;
+            }
+            Cursor oldCursor = mCursor;
+            mCursor = newCursor;
+            if (newCursor != null) {
+                mDataValid = true;
+                notifyDataSetChanged();
+            } else {
+                mDataValid = false;
+                notifyDataSetInvalidated();
+            }
+            return oldCursor;
+!!!590338.java!!!	getCount() : int
+            if (!mDataValid || mCursor == null || mCursor.isClosed()) return 0;
+            return mCursor.getCount();
+!!!590466.java!!!	getItem(in position : int) : Object
+            if (mDataValid && mCursor.moveToPosition(position)) {
+                final String title = mCursor.getString(Index.COLUMN_INDEX_TITLE);
+                final String summaryOn = mCursor.getString(Index.COLUMN_INDEX_SUMMARY_ON);
+                final String summaryOff = mCursor.getString(Index.COLUMN_INDEX_SUMMARY_OFF);
+                final String entries = mCursor.getString(Index.COLUMN_INDEX_ENTRIES);
+                final String iconResStr = mCursor.getString(Index.COLUMN_INDEX_ICON);
+                final String className = mCursor.getString(
+                        Index.COLUMN_INDEX_CLASS_NAME);
+                final String packageName = mCursor.getString(
+                        Index.COLUMN_INDEX_INTENT_ACTION_TARGET_PACKAGE);
+                final String key = mCursor.getString(
+                        Index.COLUMN_INDEX_KEY);
+
+                Context packageContext;
+                if (TextUtils.isEmpty(className) && !TextUtils.isEmpty(packageName)) {
+                    packageContext = mContextMap.get(packageName);
+                    if (packageContext == null) {
+                        try {
+                            packageContext = mContext.createPackageContext(packageName, 0);
+                        } catch (PackageManager.NameNotFoundException e) {
+                            Log.e(LOG_TAG, "Cannot create Context for package: " + packageName);
+                            return null;
+                        }
+                        mContextMap.put(packageName, packageContext);
+                    }
+                } else {
+                    packageContext = mContext;
+                }
+
+                final int iconResId = TextUtils.isEmpty(iconResStr) ?
+                        R.drawable.empty_icon : Integer.parseInt(iconResStr);
+
+                return new SearchResult(packageContext, title, summaryOn, summaryOff,
+                        entries, iconResId, key);
+            }
+            return null;
+!!!590594.java!!!	getItemId(in position : int) : long
+            return 0;
+!!!590722.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            if (!mDataValid && convertView == null) {
+                throw new IllegalStateException(
+                        "this should only be called when the cursor is valid");
+            }
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            View view;
+            TextView textTitle;
+            ImageView imageView;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.search_result_item, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            textTitle = (TextView) view.findViewById(R.id.title);
+            imageView = (ImageView) view.findViewById(R.id.icon);
+
+            final SearchResult result = (SearchResult) getItem(position);
+            textTitle.setText(result.title);
+
+            if (result.iconResId != R.drawable.empty_icon) {
+                final Context packageContext = result.context;
+                final Drawable drawable;
+                try {
+                    drawable = packageContext.getDrawable(result.iconResId);
+                    imageView.setImageDrawable(drawable);
+                } catch (Resources.NotFoundException nfe) {
+                    // Not much we can do except logging
+                    Log.e(LOG_TAG, "Cannot load Drawable for " + result.title);
+                }
+            } else {
+                imageView.setImageDrawable(null);
+                imageView.setBackgroundResource(R.drawable.empty_icon);
+            }
+
+            return view;

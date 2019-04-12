@@ -1,0 +1,244 @@
+class EditUserPhotoController
+!!!903042.java!!!	EditUserPhotoController(inout fragment : Fragment, inout view : ImageView, inout bitmap : Bitmap, inout drawable : Drawable, inout waiting : boolean)
+        mContext = view.getContext();
+        mFragment = fragment;
+        mImageView = view;
+        mCropPictureUri = createTempImageUri(mContext, CROP_PICTURE_FILE_NAME, !waiting);
+        mTakePictureUri = createTempImageUri(mContext, TAKE_PICTURE_FILE_NAME, !waiting);
+        mPhotoSize = getPhotoSize(mContext);
+        mImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showUpdatePhotoPopup();
+            }
+        });
+        mNewUserPhotoBitmap = bitmap;
+        mNewUserPhotoDrawable = drawable;
+!!!903170.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : boolean
+        if (resultCode != Activity.RESULT_OK) {
+            return false;
+        }
+        final Uri pictureUri = data != null && data.getData() != null
+                ? data.getData() : mTakePictureUri;
+        switch (requestCode) {
+            case REQUEST_CODE_CROP_PHOTO:
+                onPhotoCropped(pictureUri, true);
+                return true;
+            case REQUEST_CODE_TAKE_PHOTO:
+            case REQUEST_CODE_CHOOSE_PHOTO:
+                cropPhoto(pictureUri);
+                return true;
+        }
+        return false;
+!!!903298.java!!!	getNewUserPhotoBitmap() : Bitmap
+        return mNewUserPhotoBitmap;
+!!!903426.java!!!	getNewUserPhotoDrawable() : Drawable
+        return mNewUserPhotoDrawable;
+!!!903554.java!!!	showUpdatePhotoPopup() : void
+        final boolean canTakePhoto = canTakePhoto();
+        final boolean canChoosePhoto = canChoosePhoto();
+
+        if (!canTakePhoto && !canChoosePhoto) {
+            return;
+        }
+
+        final Context context = mImageView.getContext();
+        final List<EditUserPhotoController.RestrictedMenuItem> items = new ArrayList<>();
+
+        if (canTakePhoto) {
+            final String title = context.getString(R.string.user_image_take_photo);
+            final Runnable action = new Runnable() {
+                @Override
+                public void run() {
+                    takePhoto();
+                }
+            };
+            items.add(new RestrictedMenuItem(context, title, UserManager.DISALLOW_SET_USER_ICON,
+                    action));
+        }
+
+        if (canChoosePhoto) {
+            final String title = context.getString(R.string.user_image_choose_photo);
+            final Runnable action = new Runnable() {
+                @Override
+                public void run() {
+                    choosePhoto();
+                }
+            };
+            items.add(new RestrictedMenuItem(context, title, UserManager.DISALLOW_SET_USER_ICON,
+                    action));
+        }
+
+        final ListPopupWindow listPopupWindow = new ListPopupWindow(context);
+
+        listPopupWindow.setAnchorView(mImageView);
+        listPopupWindow.setModal(true);
+        listPopupWindow.setInputMethodMode(ListPopupWindow.INPUT_METHOD_NOT_NEEDED);
+        listPopupWindow.setAdapter(new RestrictedPopupMenuAdapter(context, items));
+
+        final int width = Math.max(mImageView.getWidth(), context.getResources()
+                .getDimensionPixelSize(R.dimen.update_user_photo_popup_min_width));
+        listPopupWindow.setWidth(width);
+        listPopupWindow.setDropDownGravity(Gravity.START);
+
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listPopupWindow.dismiss();
+                final RestrictedMenuItem item =
+                        (RestrictedMenuItem) parent.getAdapter().getItem(position);
+                item.doAction();
+            }
+        });
+
+        listPopupWindow.show();
+!!!903682.java!!!	canTakePhoto() : boolean
+        return mImageView.getContext().getPackageManager().queryIntentActivities(
+                new Intent(MediaStore.ACTION_IMAGE_CAPTURE),
+                PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+!!!903810.java!!!	canChoosePhoto() : boolean
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        return mImageView.getContext().getPackageManager().queryIntentActivities(
+                intent, 0).size() > 0;
+!!!903938.java!!!	takePhoto() : void
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        appendOutputExtra(intent, mTakePictureUri);
+        mFragment.startActivityForResult(intent, REQUEST_CODE_TAKE_PHOTO);
+!!!904066.java!!!	choosePhoto() : void
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+        intent.setType("image/*");
+        appendOutputExtra(intent, mTakePictureUri);
+        mFragment.startActivityForResult(intent, REQUEST_CODE_CHOOSE_PHOTO);
+!!!904194.java!!!	cropPhoto(inout pictureUri : Uri) : void
+        // TODO: Use a public intent, when there is one.
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(pictureUri, "image/*");
+        appendOutputExtra(intent, mCropPictureUri);
+        appendCropExtras(intent);
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+            try {
+                StrictMode.disableDeathOnFileUriExposure();
+                mFragment.startActivityForResult(intent, REQUEST_CODE_CROP_PHOTO);
+            } finally {
+                StrictMode.enableDeathOnFileUriExposure();
+            }
+        } else {
+            onPhotoCropped(pictureUri, false);
+        }
+!!!904322.java!!!	appendOutputExtra(inout intent : Intent, inout pictureUri : Uri) : void
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setClipData(ClipData.newRawUri(MediaStore.EXTRA_OUTPUT, pictureUri));
+!!!904450.java!!!	appendCropExtras(inout intent : Intent) : void
+        intent.putExtra("crop", "true");
+        intent.putExtra("scale", true);
+        intent.putExtra("scaleUpIfNeeded", true);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", mPhotoSize);
+        intent.putExtra("outputY", mPhotoSize);
+!!!904578.java!!!	onPhotoCropped(in data : Uri, in cropped : boolean) : void
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                if (cropped) {
+                    InputStream imageStream = null;
+                    try {
+                        imageStream = mContext.getContentResolver()
+                                .openInputStream(data);
+                        return BitmapFactory.decodeStream(imageStream);
+                    } catch (FileNotFoundException fe) {
+                        Log.w(TAG, "Cannot find image file", fe);
+                        return null;
+                    } finally {
+                        if (imageStream != null) {
+                            try {
+                                imageStream.close();
+                            } catch (IOException ioe) {
+                                Log.w(TAG, "Cannot close image stream", ioe);
+                            }
+                        }
+                    }
+                } else {
+                    // Scale and crop to a square aspect ratio
+                    Bitmap croppedImage = Bitmap.createBitmap(mPhotoSize, mPhotoSize,
+                            Config.ARGB_8888);
+                    Canvas canvas = new Canvas(croppedImage);
+                    Bitmap fullImage = null;
+                    try {
+                        InputStream imageStream = mContext.getContentResolver()
+                                .openInputStream(data);
+                        fullImage = BitmapFactory.decodeStream(imageStream);
+                    } catch (FileNotFoundException fe) {
+                        return null;
+                    }
+                    if (fullImage != null) {
+                        final int squareSize = Math.min(fullImage.getWidth(),
+                                fullImage.getHeight());
+                        final int left = (fullImage.getWidth() - squareSize) / 2;
+                        final int top = (fullImage.getHeight() - squareSize) / 2;
+                        Rect rectSource = new Rect(left, top,
+                                left + squareSize, top + squareSize);
+                        Rect rectDest = new Rect(0, 0, mPhotoSize, mPhotoSize);
+                        Paint paint = new Paint();
+                        canvas.drawBitmap(fullImage, rectSource, rectDest, paint);
+                        return croppedImage;
+                    } else {
+                        // Bah! Got nothin.
+                        return null;
+                    }
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null) {
+                    mNewUserPhotoBitmap = bitmap;
+                    mNewUserPhotoDrawable = CircleFramedDrawable
+                            .getInstance(mImageView.getContext(), mNewUserPhotoBitmap);
+                    mImageView.setImageDrawable(mNewUserPhotoDrawable);
+                }
+                new File(mContext.getCacheDir(), TAKE_PICTURE_FILE_NAME).delete();
+                new File(mContext.getCacheDir(), CROP_PICTURE_FILE_NAME).delete();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
+!!!904706.java!!!	getPhotoSize(inout context : Context) : int
+        Cursor cursor = context.getContentResolver().query(
+                DisplayPhoto.CONTENT_MAX_DIMENSIONS_URI,
+                new String[]{DisplayPhoto.DISPLAY_MAX_DIM}, null, null, null);
+        try {
+            cursor.moveToFirst();
+            return cursor.getInt(0);
+        } finally {
+            cursor.close();
+        }
+!!!904834.java!!!	createTempImageUri(inout context : Context, in fileName : String, inout purge : boolean) : Uri
+        final File folder = context.getCacheDir();
+        folder.mkdirs();
+        final File fullPath = new File(folder, fileName);
+        if (purge) {
+            fullPath.delete();
+        }
+        return FileProvider.getUriForFile(context,
+                RestrictedProfileSettings.FILE_PROVIDER_AUTHORITY, fullPath);
+!!!904962.java!!!	saveNewUserPhotoBitmap() : File
+        if (mNewUserPhotoBitmap == null) {
+            return null;
+        }
+        try {
+            File file = new File(mContext.getCacheDir(), NEW_USER_PHOTO_FILE_NAME);
+            OutputStream os = new FileOutputStream(file);
+            mNewUserPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.flush();
+            os.close();
+            return file;
+        } catch (IOException e) {
+            Log.e(TAG, "Cannot create temp file", e);
+        }
+        return null;
+!!!905090.java!!!	loadNewUserPhotoBitmap(inout file : File) : Bitmap
+        return BitmapFactory.decodeFile(file.getAbsolutePath());
+!!!905218.java!!!	removeNewUserPhotoBitmapFile() : void
+        new File(mContext.getCacheDir(), NEW_USER_PHOTO_FILE_NAME).delete();

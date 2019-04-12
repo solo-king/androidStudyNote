@@ -1,0 +1,273 @@
+class SimStatus
+!!!655874.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        mCarrierConfigManager = (CarrierConfigManager) getSystemService(CARRIER_CONFIG_SERVICE);
+
+        mSelectableSubInfos = SubscriptionManager.from(getContext())
+                .getActiveSubscriptionInfoList();
+
+        addPreferencesFromResource(R.xml.device_info_sim_status);
+
+        mRes = getResources();
+        mDefaultText = mRes.getString(R.string.device_info_default);
+        // Note - missing in zaku build, be careful later...
+        mSignalStrength = findPreference(KEY_SIGNAL_STRENGTH);
+!!!656002.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        if (mSelectableSubInfos == null) {
+            mSir = null;
+        } else {
+            mSir = mSelectableSubInfos.size() > 0 ? mSelectableSubInfos.get(0) : null;
+
+            if (mSelectableSubInfos.size() > 1) {
+                View view = inflater.inflate(R.layout.icc_lock_tabs, container, false);
+                final ViewGroup prefs_container = (ViewGroup) view.findViewById(
+                        R.id.prefs_container);
+                Utils.prepareCustomPreferencesList(container, view, prefs_container, false);
+                View prefs = super.onCreateView(inflater, prefs_container, savedInstanceState);
+                prefs_container.addView(prefs);
+
+                mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
+                mTabWidget = (TabWidget) view.findViewById(android.R.id.tabs);
+                mListView = (ListView) view.findViewById(android.R.id.list);
+
+                mTabHost.setup();
+                mTabHost.setOnTabChangedListener(mTabListener);
+                mTabHost.clearAllTabs();
+
+                for (int i = 0; i < mSelectableSubInfos.size(); i++) {
+                    mTabHost.addTab(buildTabSpec(String.valueOf(i),
+                            String.valueOf(mSelectableSubInfos.get(i).getDisplayName())));
+                }
+                return view;
+            }
+        }
+        return super.onCreateView(inflater, container, savedInstanceState);
+!!!656130.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+
+        updatePhoneInfos();
+!!!656258.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DEVICEINFO_SIM_STATUS;
+!!!656386.java!!!	onResume() : void
+        super.onResume();
+        if (mPhone != null) {
+            updatePreference();
+
+            updateSignalStrength(mPhone.getSignalStrength());
+            updateServiceState(mPhone.getServiceState());
+            updateDataState();
+            mTelephonyManager.listen(mPhoneStateListener,
+                    PhoneStateListener.LISTEN_DATA_CONNECTION_STATE
+                    | PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
+                    | PhoneStateListener.LISTEN_SERVICE_STATE);
+            if (mShowLatestAreaInfo) {
+                getContext().registerReceiver(mAreaInfoReceiver,
+                        new IntentFilter(CB_AREA_INFO_RECEIVED_ACTION),
+                        CB_AREA_INFO_SENDER_PERMISSION, null);
+                // Ask CellBroadcastReceiver to broadcast the latest area info received
+                Intent getLatestIntent = new Intent(GET_LATEST_CB_AREA_INFO_ACTION);
+                getContext().sendBroadcastAsUser(getLatestIntent, UserHandle.ALL,
+                        CB_AREA_INFO_SENDER_PERMISSION);
+            }
+        }
+!!!656514.java!!!	onPause() : void
+        super.onPause();
+
+        if (mPhone != null) {
+            mTelephonyManager.listen(mPhoneStateListener,
+                    PhoneStateListener.LISTEN_NONE);
+        }
+        if (mShowLatestAreaInfo) {
+            getContext().unregisterReceiver(mAreaInfoReceiver);
+        }
+!!!656642.java!!!	removePreferenceFromScreen(in key : String) : void
+        Preference pref = findPreference(key);
+        if (pref != null) {
+            getPreferenceScreen().removePreference(pref);
+        }
+!!!656770.java!!!	setSummaryText(in key : String, in text : String) : void
+        if (TextUtils.isEmpty(text)) {
+            text = mDefaultText;
+        }
+        // some preferences may be missing
+        final Preference preference = findPreference(key);
+        if (preference != null) {
+            preference.setSummary(text);
+        }
+!!!656898.java!!!	updateNetworkType() : void
+        // Whether EDGE, UMTS, etc...
+        String networktype = null;
+        final int subId = mSir.getSubscriptionId();
+        final int actualDataNetworkType = mTelephonyManager.getDataNetworkType(
+                mSir.getSubscriptionId());
+        final int actualVoiceNetworkType = mTelephonyManager.getVoiceNetworkType(
+                mSir.getSubscriptionId());
+        if (TelephonyManager.NETWORK_TYPE_UNKNOWN != actualDataNetworkType) {
+            networktype = mTelephonyManager.getNetworkTypeName(actualDataNetworkType);
+        } else if (TelephonyManager.NETWORK_TYPE_UNKNOWN != actualVoiceNetworkType) {
+            networktype = mTelephonyManager.getNetworkTypeName(actualVoiceNetworkType);
+        }
+
+        boolean show4GForLTE = false;
+        try {
+            Context con = getActivity().createPackageContext("com.android.systemui", 0);
+            int id = con.getResources().getIdentifier("config_show4GForLTE",
+                    "bool", "com.android.systemui");
+            show4GForLTE = con.getResources().getBoolean(id);
+        } catch (NameNotFoundException e) {
+            Log.e(TAG, "NameNotFoundException for show4GFotLTE");
+        }
+
+        if (networktype != null && networktype.equals("LTE") && show4GForLTE) {
+            networktype = "4G";
+        }
+        setSummaryText(KEY_NETWORK_TYPE, networktype);
+!!!657026.java!!!	updateDataState() : void
+        final int state =
+                DefaultPhoneNotifier.convertDataState(mPhone.getDataConnectionState());
+
+        String display = mRes.getString(R.string.radioInfo_unknown);
+
+        switch (state) {
+            case TelephonyManager.DATA_CONNECTED:
+                display = mRes.getString(R.string.radioInfo_data_connected);
+                break;
+            case TelephonyManager.DATA_SUSPENDED:
+                display = mRes.getString(R.string.radioInfo_data_suspended);
+                break;
+            case TelephonyManager.DATA_CONNECTING:
+                display = mRes.getString(R.string.radioInfo_data_connecting);
+                break;
+            case TelephonyManager.DATA_DISCONNECTED:
+                display = mRes.getString(R.string.radioInfo_data_disconnected);
+                break;
+        }
+
+        setSummaryText(KEY_DATA_STATE, display);
+!!!657154.java!!!	updateServiceState(inout serviceState : ServiceState) : void
+        final int state = serviceState.getState();
+        String display = mRes.getString(R.string.radioInfo_unknown);
+
+        switch (state) {
+            case ServiceState.STATE_IN_SERVICE:
+                display = mRes.getString(R.string.radioInfo_service_in);
+                break;
+            case ServiceState.STATE_OUT_OF_SERVICE:
+                // Set signal strength to 0 when service state is STATE_OUT_OF_SERVICE
+                mSignalStrength.setSummary("0");
+            case ServiceState.STATE_EMERGENCY_ONLY:
+                // Set summary string of service state to radioInfo_service_out when
+                // service state is both STATE_OUT_OF_SERVICE & STATE_EMERGENCY_ONLY
+                display = mRes.getString(R.string.radioInfo_service_out);
+                break;
+            case ServiceState.STATE_POWER_OFF:
+                display = mRes.getString(R.string.radioInfo_service_off);
+                // Also set signal strength to 0
+                mSignalStrength.setSummary("0");
+                break;
+        }
+
+        setSummaryText(KEY_SERVICE_STATE, display);
+
+        if (serviceState.getRoaming()) {
+            setSummaryText(KEY_ROAMING_STATE, mRes.getString(R.string.radioInfo_roaming_in));
+        } else {
+            setSummaryText(KEY_ROAMING_STATE, mRes.getString(R.string.radioInfo_roaming_not));
+        }
+        setSummaryText(KEY_OPERATOR_NAME, serviceState.getOperatorAlphaLong());
+!!!657282.java!!!	updateAreaInfo(in areaInfo : String) : void
+        if (areaInfo != null) {
+            setSummaryText(KEY_LATEST_AREA_INFO, areaInfo);
+        }
+!!!657410.java!!!	updateSignalStrength(inout signalStrength : SignalStrength) : void
+        if (mSignalStrength != null) {
+            final int state = mPhone.getServiceState().getState();
+            Resources r = getResources();
+
+            if ((ServiceState.STATE_OUT_OF_SERVICE == state) ||
+                    (ServiceState.STATE_POWER_OFF == state)) {
+                mSignalStrength.setSummary("0");
+                return;
+            }
+
+            int signalDbm = signalStrength.getDbm();
+            int signalAsu = signalStrength.getAsuLevel();
+
+            if (-1 == signalDbm) {
+                signalDbm = 0;
+            }
+
+            if (-1 == signalAsu) {
+                signalAsu = 0;
+            }
+
+            mSignalStrength.setSummary(r.getString(R.string.sim_signal_strength,
+                        signalDbm, signalAsu));
+        }
+!!!657538.java!!!	updatePreference() : void
+        if (mPhone.getPhoneType() != TelephonyManager.PHONE_TYPE_CDMA) {
+            // only show area info when SIM country is Brazil
+            if (COUNTRY_ABBREVIATION_BRAZIL.equals(mTelephonyManager.getSimCountryIso(
+                            mSir.getSubscriptionId()))) {
+                mShowLatestAreaInfo = true;
+            }
+        }
+        PersistableBundle carrierConfig = mCarrierConfigManager.getConfigForSubId(
+                mSir.getSubscriptionId());
+        mShowICCID = carrierConfig.getBoolean(
+                CarrierConfigManager.KEY_SHOW_ICCID_IN_SIM_STATUS_BOOL);
+
+
+        // If formattedNumber is null or empty, it'll display as "Unknown".
+        setSummaryText(KEY_PHONE_NUMBER,
+                DeviceInfoUtils.getFormattedPhoneNumber(getContext(), mSir));
+        setSummaryText(KEY_IMEI, mPhone.getImei());
+        setSummaryText(KEY_IMEI_SV, mPhone.getDeviceSvn());
+
+        if (!mShowICCID) {
+            removePreferenceFromScreen(KEY_ICCID);
+        } else {
+            // Get ICCID, which is SIM serial number
+            String iccid = mTelephonyManager.getSimSerialNumber(mSir.getSubscriptionId());
+            setSummaryText(KEY_ICCID, iccid);
+        }
+
+        if (!mShowLatestAreaInfo) {
+            removePreferenceFromScreen(KEY_LATEST_AREA_INFO);
+        }
+!!!657666.java!!!	updatePhoneInfos() : void
+        if (mSir != null) {
+            // TODO: http://b/23763013
+            final Phone phone = PhoneFactory.getPhone(SubscriptionManager.getPhoneId(
+                        mSir.getSubscriptionId()));
+            if (UserManager.get(getContext()).isAdminUser()
+                    && SubscriptionManager.isValidSubscriptionId(mSir.getSubscriptionId())) {
+                if (phone == null) {
+                    Log.e(TAG, "Unable to locate a phone object for the given Subscription ID.");
+                    return;
+                }
+
+                mPhone = phone;
+                mPhoneStateListener = new PhoneStateListener(mSir.getSubscriptionId()) {
+                    @Override
+                    public void onDataConnectionStateChanged(int state) {
+                        updateDataState();
+                        updateNetworkType();
+                    }
+
+                    @Override
+                    public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+                        updateSignalStrength(signalStrength);
+                    }
+
+                    @Override
+                    public void onServiceStateChanged(ServiceState serviceState) {
+                        updateServiceState(serviceState);
+                    }
+                };
+            }
+        }
+!!!657794.java!!!	buildTabSpec(in tag : String, in title : String) : TabSpec
+        return mTabHost.newTabSpec(tag).setIndicator(title).setContent(
+                mEmptyTabContent);

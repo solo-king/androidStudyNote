@@ -1,0 +1,69 @@
+class HomeAppPreference
+!!!283266.java!!!	HomeAppPreference(inout context : Context, inout activity : ComponentName, in i : int, inout icon : Drawable, inout title : CharSequence, inout parent : HomeSettings, inout info : ActivityInfo, inout enabled : boolean, inout summary : CharSequence)
+            super(context);
+            setLayoutResource(R.layout.preference_home_app);
+            setIcon(icon);
+            setTitle(title);
+            setEnabled(enabled);
+            setSummary(summary);
+            activityName = activity;
+            fragment = parent;
+            index = i;
+
+            ColorMatrix colorMatrix = new ColorMatrix();
+            colorMatrix.setSaturation(0f);
+            float[] matrix = colorMatrix.getArray();
+            matrix[18] = 0.5f;
+            grayscaleFilter = new ColorMatrixColorFilter(colorMatrix);
+
+            determineTargets(info);
+!!!283394.java!!!	determineTargets(inout info : ActivityInfo) : void
+            final Bundle meta = info.metaData;
+            if (meta != null) {
+                final String altHomePackage = meta.getString(ActivityManager.META_HOME_ALTERNATE);
+                if (altHomePackage != null) {
+                    try {
+                        final int match = mPm.checkSignatures(info.packageName, altHomePackage);
+                        if (match >= PackageManager.SIGNATURE_MATCH) {
+                            PackageInfo altInfo = mPm.getPackageInfo(altHomePackage, 0);
+                            final int altFlags = altInfo.applicationInfo.flags;
+                            isSystem = (altFlags & ApplicationInfo.FLAG_SYSTEM) != 0;
+                            uninstallTarget = altInfo.packageName;
+                            return;
+                        }
+                    } catch (Exception e) {
+                        // e.g. named alternate package not found during lookup
+                        Log.w(TAG, "Unable to compare/resolve alternate", e);
+                    }
+                }
+            }
+            // No suitable metadata redirect, so use the package's own info
+            isSystem = (info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            uninstallTarget = info.packageName;
+!!!283522.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+            super.onBindViewHolder(view);
+
+            RadioButton radio = (RadioButton) view.findViewById(R.id.home_radio);
+            radio.setChecked(isChecked);
+
+            Integer indexObj = new Integer(index);
+
+            ImageView icon = (ImageView) view.findViewById(R.id.home_app_uninstall);
+            if (isSystem) {
+                icon.setEnabled(false);
+                icon.setColorFilter(grayscaleFilter);
+            } else {
+                icon.setEnabled(true);
+                icon.setOnClickListener(mDeleteClickListener);
+                icon.setTag(indexObj);
+            }
+
+            View v = view.findViewById(R.id.home_app_pref);
+            v.setTag(indexObj);
+
+            v.setOnClickListener(mHomeClickListener);
+!!!283650.java!!!	setChecked(inout state : boolean) : void
+            if (state != isChecked) {
+                isChecked = state;
+                notifyChanged();
+            }

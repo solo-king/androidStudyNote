@@ -1,0 +1,9 @@
+class CustomListPreference
+!!!158466.java!!!	CustomListPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!158594.java!!!	CustomListPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+!!!159106.java!!!	isAutoClosePreference() : boolean
+        return true;
+!!!159234.java!!!	getConfirmationMessage(in value : String) : CharSequence
+        return null;

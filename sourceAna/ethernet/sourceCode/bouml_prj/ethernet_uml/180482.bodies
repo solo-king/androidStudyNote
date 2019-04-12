@@ -1,0 +1,19 @@
+class ListenerBridge
+!!!531330.java!!!	ListenerBridge(inout comm : FileDescriptor, inout looper : Looper, in listener : ParcelFileDescriptor::OnCloseListener)
+            mCommFd = comm;
+            mHandler = new Handler(looper) {
+                @Override
+                public void handleMessage(Message msg) {
+                    final Status s = (Status) msg.obj;
+                    listener.onClose(s != null ? s.asIOException() : null);
+                }
+            };
+!!!531458.java!!!	run() : void
+            try {
+                final byte[] buf = new byte[MAX_STATUS];
+                final Status status = readCommStatus(mCommFd, buf);
+                mHandler.obtainMessage(0, status).sendToTarget();
+            } finally {
+                IoUtils.closeQuietly(mCommFd);
+                mCommFd = null;
+            }

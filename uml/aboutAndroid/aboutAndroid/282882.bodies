@@ -1,0 +1,20 @@
+class AppVpnInfo
+!!!931202.java!!!	AppVpnInfo(in userId : int, in packageName : String)
+        this.userId = userId;
+        this.packageName = Preconditions.checkNotNull(packageName);
+!!!931330.java!!!	compareTo(inout other : Object) : int
+        AppVpnInfo that = (AppVpnInfo) other;
+
+        int result = packageName.compareTo(that.packageName);
+        if (result == 0) {
+            result = that.userId - userId;
+        }
+        return result;
+!!!931458.java!!!	equals(inout other : Object) : boolean
+        if (other instanceof AppVpnInfo) {
+            AppVpnInfo that = (AppVpnInfo) other;
+            return userId == that.userId && Objects.equals(packageName, that.packageName);
+        }
+        return false;
+!!!931586.java!!!	hashCode() : int
+        return Objects.hash(packageName, userId);

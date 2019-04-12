@@ -1,0 +1,18 @@
+class PrivateVolumeFormat
+!!!649346.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DEVICEINFO_STORAGE;
+!!!649474.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        final StorageManager storage = getActivity().getSystemService(StorageManager.class);
+        final String volumeId = getArguments().getString(VolumeInfo.EXTRA_VOLUME_ID);
+        mVolume = storage.findVolumeById(volumeId);
+        mDisk = storage.findDiskById(mVolume.getDiskId());
+
+        final View view = inflater.inflate(R.layout.storage_internal_format, container, false);
+        final TextView body = (TextView) view.findViewById(R.id.body);
+        final Button confirm = (Button) view.findViewById(R.id.confirm);
+
+        body.setText(TextUtils.expandTemplate(getText(R.string.storage_internal_format_details),
+                mDisk.getDescription()));
+        confirm.setOnClickListener(mConfirmListener);
+
+        return view;

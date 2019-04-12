@@ -1,0 +1,5 @@
+class SuggestionFeatureProviderImpl
+!!!591106.java!!!	isPresent(in className : String) : boolean
+        return false;
+!!!591234.java!!!	isSuggestionCompleted(inout context : Context) : boolean
+        return false;

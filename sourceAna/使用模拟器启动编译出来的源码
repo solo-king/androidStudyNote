@@ -1,0 +1,14 @@
+谷歌装门为模拟器开发的kernel
+    谷歌官方:
+        git clone https://android.googlesource.com/kernel/goldfish
+    国内清华镜像源:
+        git clone https://aosp.tuna.tsinghua.edu.cn/kernel/goldfish
+编译kernel:
+    export ARCH=arm
+    export SUBARCH=arm
+    export PATH=/media/chenqigan/GANYE_SSD/EPC400_Deving/source/rk3288_update/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin:$PATH
+    export CROSS_COMPILE=arm-linux-androidkernel-
+    make goldfish_armv7_defconfig
+    make -j8
+
+    

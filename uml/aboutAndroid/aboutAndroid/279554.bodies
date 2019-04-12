@@ -1,0 +1,74 @@
+class UserPreference
+!!!909570.java!!!	UserPreference(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, USERID_UNKNOWN, null, null);
+!!!909698.java!!!	UserPreference(inout context : Context, inout attrs : AttributeSet, in userId : int, inout settingsListener : OnClickListener, inout deleteListener : OnClickListener)
+        super(context, attrs);
+        if (deleteListener != null || settingsListener != null) {
+            setWidgetLayoutResource(R.layout.restricted_preference_user_delete_widget);
+        }
+        mDeleteClickListener = deleteListener;
+        mSettingsClickListener = settingsListener;
+        mUserId = userId;
+        useAdminDisabledSummary(true);
+!!!909826.java!!!	dimIcon(inout dimmed : boolean) : void
+        Drawable icon = getIcon();
+        if (icon != null) {
+            icon.mutate().setAlpha(dimmed ? ALPHA_DISABLED : ALPHA_ENABLED);
+            setIcon(icon);
+        }
+!!!909954.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        final boolean disabledByAdmin = isDisabledByAdmin();
+        dimIcon(disabledByAdmin);
+        View userDeleteWidget = view.findViewById(R.id.user_delete_widget);
+        if (userDeleteWidget != null) {
+            userDeleteWidget.setVisibility(disabledByAdmin ? View.GONE : View.VISIBLE);
+        }
+        if (!disabledByAdmin) {
+            UserManager um = (UserManager) getContext().getSystemService(Context.USER_SERVICE);
+            View deleteDividerView = view.findViewById(R.id.divider_delete);
+            View manageDividerView = view.findViewById(R.id.divider_manage);
+            View deleteView = view.findViewById(R.id.trash_user);
+            if (deleteView != null) {
+                if (mDeleteClickListener != null
+                        && !RestrictedLockUtils.hasBaseUserRestriction(getContext(),
+                                UserManager.DISALLOW_REMOVE_USER, UserHandle.myUserId())) {
+                    deleteView.setVisibility(View.VISIBLE);
+                    deleteDividerView.setVisibility(View.VISIBLE);
+                    deleteView.setOnClickListener(mDeleteClickListener);
+                    deleteView.setTag(this);
+                } else {
+                    deleteView.setVisibility(View.GONE);
+                    deleteDividerView.setVisibility(View.GONE);
+                }
+            }
+            ImageView manageView = (ImageView) view.findViewById(R.id.manage_user);
+            if (manageView != null) {
+                if (mSettingsClickListener != null) {
+                    manageView.setVisibility(View.VISIBLE);
+                    manageDividerView.setVisibility(mDeleteClickListener == null
+                            ? View.VISIBLE : View.GONE);
+                    manageView.setOnClickListener(mSettingsClickListener);
+                    manageView.setTag(this);
+                } else {
+                    manageView.setVisibility(View.GONE);
+                    manageDividerView.setVisibility(View.GONE);
+                }
+            }
+        }
+!!!910082.java!!!	getSerialNumber() : int
+        if (mUserId == UserHandle.myUserId()) return Integer.MIN_VALUE;
+        if (mSerialNumber < 0) {
+            // If the userId is unknown
+            if (mUserId == USERID_UNKNOWN) {
+                return Integer.MAX_VALUE;
+            } else if (mUserId == USERID_GUEST_DEFAULTS) {
+                return Integer.MAX_VALUE - 1;
+            }
+            mSerialNumber = ((UserManager) getContext().getSystemService(Context.USER_SERVICE))
+                    .getUserSerialNumber(mUserId);
+            if (mSerialNumber < 0) return mUserId;
+        }
+        return mSerialNumber;
+!!!910210.java!!!	getUserId() : int
+        return mUserId;

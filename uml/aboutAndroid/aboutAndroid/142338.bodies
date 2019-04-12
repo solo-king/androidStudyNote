@@ -1,0 +1,5 @@
+class Task
+!!!191106.java!!!	doInBackground(inout  : Void...params) : Intent
+            return saveAndVerifyInBackground();
+!!!191234.java!!!	onPostExecute(inout resultData : Intent) : void
+            finish(resultData);

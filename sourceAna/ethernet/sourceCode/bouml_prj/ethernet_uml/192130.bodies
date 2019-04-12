@@ -1,0 +1,7 @@
+class StorageEvent
+!!!615298.java!!!	StorageEvent(in what : int)
+            mMessage = Message.obtain();
+            mMessage.what = what;
+            mMessage.obj = this;
+!!!615426.java!!!	getMessage() : Message
+            return mMessage;

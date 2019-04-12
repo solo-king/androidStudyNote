@@ -1,0 +1,107 @@
+class ChooseLockSettingsHelper
+!!!195970.java!!!	ChooseLockSettingsHelper(inout activity : Activity)
+        mActivity = activity;
+        mLockPatternUtils = new LockPatternUtils(activity);
+!!!196098.java!!!	ChooseLockSettingsHelper(inout activity : Activity, inout fragment : Fragment)
+        this(activity);
+        mFragment = fragment;
+!!!196226.java!!!	utils() : LockPatternUtils
+        return mLockPatternUtils;
+!!!196354.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence) : boolean
+        return launchConfirmationActivity(request, title, null, null, false, false);
+!!!196482.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout returnCredentials : boolean) : boolean
+        return launchConfirmationActivity(request, title, null, null, returnCredentials, false);
+!!!196610.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout returnCredentials : boolean, in userId : int) : boolean
+        return launchConfirmationActivity(request, title, null, null,
+                returnCredentials, false, false, 0, Utils.enforceSameOwner(mActivity, userId));
+!!!196738.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, inout returnCredentials : boolean, inout external : boolean) : boolean
+        return launchConfirmationActivity(request, title, header, description,
+                returnCredentials, external, false, 0, Utils.getCredentialOwnerUserId(mActivity));
+!!!196866.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, inout returnCredentials : boolean, inout external : boolean, in userId : int) : boolean
+        return launchConfirmationActivity(request, title, header, description,
+                returnCredentials, external, false, 0, Utils.enforceSameOwner(mActivity, userId));
+!!!196994.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, in challenge : long) : boolean
+        return launchConfirmationActivity(request, title, header, description,
+                true, false, true, challenge, Utils.getCredentialOwnerUserId(mActivity));
+!!!197122.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, in challenge : long, in userId : int) : boolean
+        return launchConfirmationActivity(request, title, header, description,
+                true, false, true, challenge, Utils.enforceSameOwner(mActivity, userId));
+!!!197250.java!!!	launchConfirmationActivityWithExternalAndChallenge(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, inout external : boolean, in challenge : long, in userId : int) : boolean
+        return launchConfirmationActivity(request, title, header, description, false,
+                external, true, challenge, Utils.enforceSameOwner(mActivity, userId));
+!!!197378.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout description : CharSequence, inout returnCredentials : boolean, inout external : boolean, inout hasChallenge : boolean, in challenge : long, in userId : int) : boolean
+        final int effectiveUserId = UserManager.get(mActivity).getCredentialOwnerProfile(userId);
+        boolean launched = false;
+
+        switch (mLockPatternUtils.getKeyguardStoredPasswordQuality(effectiveUserId)) {
+            case DevicePolicyManager.PASSWORD_QUALITY_SOMETHING:
+                launched = launchConfirmationActivity(request, title, header, description,
+                        returnCredentials || hasChallenge
+                                ? ConfirmLockPattern.InternalActivity.class
+                                : ConfirmLockPattern.class, returnCredentials, external,
+                                hasChallenge, challenge, userId);
+                break;
+            case DevicePolicyManager.PASSWORD_QUALITY_NUMERIC:
+            case DevicePolicyManager.PASSWORD_QUALITY_NUMERIC_COMPLEX:
+            case DevicePolicyManager.PASSWORD_QUALITY_ALPHABETIC:
+            case DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC:
+            case DevicePolicyManager.PASSWORD_QUALITY_COMPLEX:
+            case DevicePolicyManager.PASSWORD_QUALITY_MANAGED:
+                launched = launchConfirmationActivity(request, title, header, description,
+                        returnCredentials || hasChallenge
+                                ? ConfirmLockPassword.InternalActivity.class
+                                : ConfirmLockPassword.class, returnCredentials, external,
+                                hasChallenge, challenge, userId);
+                break;
+        }
+        return launched;
+!!!197506.java!!!	launchConfirmationActivity(in request : int, inout title : CharSequence, inout header : CharSequence, inout message : CharSequence, inout activityClass : Class<?>, inout returnCredentials : boolean, inout external : boolean, inout hasChallenge : boolean, in challenge : long, in userId : int) : boolean
+        final Intent intent = new Intent();
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.TITLE_TEXT, title);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.HEADER_TEXT, header);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.DETAILS_TEXT, message);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.ALLOW_FP_AUTHENTICATION, external);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.DARK_THEME, external);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.SHOW_CANCEL_BUTTON, external);
+        intent.putExtra(ConfirmDeviceCredentialBaseFragment.SHOW_WHEN_LOCKED, external);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_RETURN_CREDENTIALS, returnCredentials);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, hasChallenge);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, challenge);
+        // we should never have a drawer when confirming device credentials.
+        intent.putExtra(SettingsActivity.EXTRA_HIDE_DRAWER, true);
+        intent.putExtra(Intent.EXTRA_USER_ID, userId);
+        intent.setClassName(ConfirmDeviceCredentialBaseFragment.PACKAGE, activityClass.getName());
+        if (external) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            if (mFragment != null) {
+                copyOptionalExtras(mFragment.getActivity().getIntent(), intent);
+                mFragment.startActivity(intent);
+            } else {
+                copyOptionalExtras(mActivity.getIntent(), intent);
+                mActivity.startActivity(intent);
+            }
+        } else {
+            if (mFragment != null) {
+                mFragment.startActivityForResult(intent, request);
+            } else {
+                mActivity.startActivityForResult(intent, request);
+            }
+        }
+        return true;
+!!!197634.java!!!	copyOptionalExtras(inout inIntent : Intent, inout outIntent : Intent) : void
+        IntentSender intentSender = inIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        if (intentSender != null) {
+            outIntent.putExtra(Intent.EXTRA_INTENT, intentSender);
+        }
+        int taskId = inIntent.getIntExtra(Intent.EXTRA_TASK_ID, -1);
+        if (taskId != -1) {
+            outIntent.putExtra(Intent.EXTRA_TASK_ID, taskId);
+        }
+        // If we will launch another activity once credentials are confirmed, exclude from recents.
+        // This is a workaround to a framework bug where affinity is incorrect for activities
+        // that are started from a no display activity, as is ConfirmDeviceCredentialActivity.
+        // TODO: Remove once that bug is fixed.
+        if (intentSender != null || taskId != -1) {
+            outIntent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            outIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        }

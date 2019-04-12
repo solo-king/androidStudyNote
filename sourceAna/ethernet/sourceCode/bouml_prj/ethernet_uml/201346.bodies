@@ -1,0 +1,3 @@
+class NotFoundException
+!!!875650.java!!!	NotFoundException(in name : String)
+            super(name);

@@ -1,0 +1,14 @@
+class ProviderPreference
+!!!441090.java!!!	ProviderPreference(inout context : Context, in accountType : String, inout icon : Drawable, inout providerName : CharSequence)
+        super(context);
+        mAccountType = accountType;
+        setIcon(icon);
+        setPersistent(false);
+        setTitle(providerName);
+        useAdminDisabledSummary(true);
+!!!441218.java!!!	getAccountType() : String
+        return mAccountType;
+!!!441346.java!!!	checkAccountManagementAndSetDisabled(in userId : int) : void
+        EnforcedAdmin admin = RestrictedLockUtils.checkIfAccountManagementDisabled(
+                getContext(), getAccountType(), userId);
+        setDisabledByAdmin(admin);

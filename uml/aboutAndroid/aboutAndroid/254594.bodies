@@ -1,0 +1,5 @@
+class SwitchWithNoTextPreference
+!!!761730.java!!!	SwitchWithNoTextPreference(in context : Context)
+        super(context);
+        setSwitchTextOn(EMPTY_TEXT);
+        setSwitchTextOff(EMPTY_TEXT);

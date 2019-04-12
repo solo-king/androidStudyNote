@@ -1,0 +1,190 @@
+class DateTimeSettings
+!!!227330.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DATE_TIME;
+!!!227458.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        addPreferencesFromResource(R.xml.date_time_prefs);
+
+        initUI();
+!!!227586.java!!!	initUI() : void
+        boolean autoTimeEnabled = getAutoState(Settings.Global.AUTO_TIME);
+        boolean autoTimeZoneEnabled = getAutoState(Settings.Global.AUTO_TIME_ZONE);
+
+        mAutoTimePref = (RestrictedSwitchPreference) findPreference(KEY_AUTO_TIME);
+        mAutoTimePref.setOnPreferenceChangeListener(this);
+        EnforcedAdmin admin = RestrictedLockUtils.checkIfAutoTimeRequired(getActivity());
+        mAutoTimePref.setDisabledByAdmin(admin);
+
+        Intent intent = getActivity().getIntent();
+        boolean isFirstRun = intent.getBooleanExtra(EXTRA_IS_FIRST_RUN, false);
+
+        mDummyDate = Calendar.getInstance();
+
+        // If device admin requires auto time device policy manager will set
+        // Settings.Global.AUTO_TIME to true. Note that this app listens to that change.
+        mAutoTimePref.setChecked(autoTimeEnabled);
+        mAutoTimeZonePref = (SwitchPreference) findPreference(KEY_AUTO_TIME_ZONE);
+        mAutoTimeZonePref.setOnPreferenceChangeListener(this);
+        // Override auto-timezone if it's a wifi-only device or if we're still in setup wizard.
+        // TODO: Remove the wifiOnly test when auto-timezone is implemented based on wifi-location.
+        if (Utils.isWifiOnly(getActivity()) || isFirstRun) {
+            getPreferenceScreen().removePreference(mAutoTimeZonePref);
+            autoTimeZoneEnabled = false;
+        }
+        mAutoTimeZonePref.setChecked(autoTimeZoneEnabled);
+
+        mTimePref = findPreference("time");
+        mTime24Pref = findPreference("24 hour");
+        mTimeZone = findPreference("timezone");
+        mDatePref = findPreference("date");
+        if (isFirstRun) {
+            getPreferenceScreen().removePreference(mTime24Pref);
+        }
+
+        mTimePref.setEnabled(!autoTimeEnabled);
+        mDatePref.setEnabled(!autoTimeEnabled);
+        mTimeZone.setEnabled(!autoTimeZoneEnabled);
+!!!227714.java!!!	onResume() : void
+        super.onResume();
+
+        ((SwitchPreference)mTime24Pref).setChecked(is24Hour());
+
+        // Register for time ticks and other reasons for time change
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_TIME_TICK);
+        filter.addAction(Intent.ACTION_TIME_CHANGED);
+        filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        getActivity().registerReceiver(mIntentReceiver, filter, null, null);
+
+        updateTimeAndDateDisplay(getActivity());
+!!!227842.java!!!	onPause() : void
+        super.onPause();
+        getActivity().unregisterReceiver(mIntentReceiver);
+!!!227970.java!!!	updateTimeAndDateDisplay(inout context : Context) : void
+        final Calendar now = Calendar.getInstance();
+        mDummyDate.setTimeZone(now.getTimeZone());
+        // We use December 31st because it's unambiguous when demonstrating the date format.
+        // We use 13:00 so we can demonstrate the 12/24 hour options.
+        mDummyDate.set(now.get(Calendar.YEAR), 11, 31, 13, 0, 0);
+        Date dummyDate = mDummyDate.getTime();
+        mDatePref.setSummary(DateFormat.getLongDateFormat(context).format(now.getTime()));
+        mTimePref.setSummary(DateFormat.getTimeFormat(getActivity()).format(now.getTime()));
+        mTimeZone.setSummary(ZoneGetter.getTimeZoneOffsetAndName(now.getTimeZone(), now.getTime()));
+        mTime24Pref.setSummary(DateFormat.getTimeFormat(getActivity()).format(dummyDate));
+!!!228098.java!!!	onDateSet(inout view : DatePicker, in year : int, in month : int, in day : int) : void
+        final Activity activity = getActivity();
+        if (activity != null) {
+            setDate(activity, year, month, day);
+            updateTimeAndDateDisplay(activity);
+        }
+!!!228226.java!!!	onTimeSet(inout view : TimePicker, in hourOfDay : int, in minute : int) : void
+        final Activity activity = getActivity();
+        if (activity != null) {
+            setTime(activity, hourOfDay, minute);
+            updateTimeAndDateDisplay(activity);
+        }
+
+        // We don't need to call timeUpdated() here because the TIME_CHANGED
+        // broadcast is sent by the AlarmManager as a side effect of setting the
+        // SystemClock time.
+!!!228354.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference.getKey().equals(KEY_AUTO_TIME)) {
+            boolean autoEnabled = (Boolean) newValue;
+            Settings.Global.putInt(getContentResolver(), Settings.Global.AUTO_TIME,
+                    autoEnabled ? 1 : 0);
+            mTimePref.setEnabled(!autoEnabled);
+            mDatePref.setEnabled(!autoEnabled);
+        } else if (preference.getKey().equals(KEY_AUTO_TIME_ZONE)) {
+            boolean autoZoneEnabled = (Boolean) newValue;
+            Settings.Global.putInt(
+                    getContentResolver(), Settings.Global.AUTO_TIME_ZONE, autoZoneEnabled ? 1 : 0);
+            mTimeZone.setEnabled(!autoZoneEnabled);
+        }
+        return true;
+!!!228482.java!!!	onCreateDialog(in id : int) : Dialog
+        final Calendar calendar = Calendar.getInstance();
+        switch (id) {
+        case DIALOG_DATEPICKER:
+            DatePickerDialog d = new DatePickerDialog(
+                    getActivity(),
+                    this,
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH));
+            configureDatePicker(d.getDatePicker());
+            return d;
+        case DIALOG_TIMEPICKER:
+            return new TimePickerDialog(
+                    getActivity(),
+                    this,
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    DateFormat.is24HourFormat(getActivity()));
+        default:
+            throw new IllegalArgumentException();
+        }
+!!!228610.java!!!	configureDatePicker(inout datePicker : DatePicker) : void
+        // The system clock can't represent dates outside this range.
+        Calendar t = Calendar.getInstance();
+        t.clear();
+        t.set(1970, Calendar.JANUARY, 1);
+        datePicker.setMinDate(t.getTimeInMillis());
+        t.clear();
+        t.set(2037, Calendar.DECEMBER, 31);
+        datePicker.setMaxDate(t.getTimeInMillis());
+!!!228738.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        if (preference == mDatePref) {
+            showDialog(DIALOG_DATEPICKER);
+        } else if (preference == mTimePref) {
+            // The 24-hour mode may have changed, so recreate the dialog
+            removeDialog(DIALOG_TIMEPICKER);
+            showDialog(DIALOG_TIMEPICKER);
+        } else if (preference == mTime24Pref) {
+            final boolean is24Hour = ((SwitchPreference)mTime24Pref).isChecked();
+            set24Hour(is24Hour);
+            updateTimeAndDateDisplay(getActivity());
+            timeUpdated(is24Hour);
+        }
+        return super.onPreferenceTreeClick(preference);
+!!!228866.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+        updateTimeAndDateDisplay(getActivity());
+!!!228994.java!!!	timeUpdated(inout is24Hour : boolean) : void
+        Intent timeChanged = new Intent(Intent.ACTION_TIME_CHANGED);
+        timeChanged.putExtra(Intent.EXTRA_TIME_PREF_24_HOUR_FORMAT, is24Hour);
+        getActivity().sendBroadcast(timeChanged);
+!!!229122.java!!!	is24Hour() : boolean
+        return DateFormat.is24HourFormat(getActivity());
+!!!229250.java!!!	set24Hour(inout is24Hour : boolean) : void
+        Settings.System.putString(getContentResolver(),
+                Settings.System.TIME_12_24,
+                is24Hour? HOURS_24 : HOURS_12);
+!!!229378.java!!!	getAutoState(in name : String) : boolean
+        try {
+            return Settings.Global.getInt(getContentResolver(), name) > 0;
+        } catch (SettingNotFoundException snfe) {
+            return false;
+        }
+!!!229506.java!!!	setDate(inout context : Context, in year : int, in month : int, in day : int) : void
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, day);
+        long when = Math.max(c.getTimeInMillis(), MIN_DATE);
+
+        if (when / 1000 < Integer.MAX_VALUE) {
+            ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).setTime(when);
+        }
+!!!229634.java!!!	setTime(inout context : Context, in hourOfDay : int, in minute : int) : void
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        c.set(Calendar.MINUTE, minute);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        long when = Math.max(c.getTimeInMillis(), MIN_DATE);
+
+        if (when / 1000 < Integer.MAX_VALUE) {
+            ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).setTime(when);
+        }

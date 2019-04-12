@@ -1,0 +1,16 @@
+class RestrictedArrayItemAdapter
+!!!819714.java!!!	RestrictedArrayItemAdapter(inout context : Context)
+            super(context, R.layout.spinner_dropdown_restricted_item, TEXT_RES_ID);
+!!!819842.java!!!	getDropDownView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            View rootView = super.getView(position, convertView, parent);
+            CharSequence entry = getItem(position);
+            boolean isEntryRestricted = isRestrictedForEntry(entry);
+            TextView text = (TextView) rootView.findViewById(TEXT_RES_ID);
+            if (text != null) {
+                text.setEnabled(!isEntryRestricted);
+            }
+            View restrictedIcon = rootView.findViewById(R.id.restricted_icon);
+            if (restrictedIcon != null) {
+                restrictedIcon.setVisibility(isEntryRestricted ? View.VISIBLE : View.GONE);
+            }
+            return rootView;

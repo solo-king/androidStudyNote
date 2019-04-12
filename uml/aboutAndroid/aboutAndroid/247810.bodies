@@ -1,0 +1,20 @@
+class NameAndIconLoader
+!!!715010.java!!!	NameAndIconLoader()
+            super("BatteryUsage Icon Loader");
+!!!715138.java!!!	abort() : void
+            mAbort = true;
+!!!715266.java!!!	run() : void
+            while (true) {
+                BatteryEntry be;
+                synchronized (mRequestQueue) {
+                    if (mRequestQueue.isEmpty() || mAbort) {
+                        if (sHandler != null) {
+                            sHandler.sendEmptyMessage(MSG_REPORT_FULLY_DRAWN);
+                        }
+                        mRequestQueue.clear();
+                        return;
+                    }
+                    be = mRequestQueue.remove(0);
+                }
+                be.loadNameAndIcon();
+            }

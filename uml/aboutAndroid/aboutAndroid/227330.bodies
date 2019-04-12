@@ -1,0 +1,9 @@
+class EscalationData
+!!!598146.java!!!	EscalationData(inout builder : SupportItemAdapter::SupportData::Builder)
+            super(builder);
+            this.text1 = builder.mText1;
+            this.text2 = builder.mText2;
+            this.summary1 = builder.mSummary1;
+            this.summary2 = builder.mSummary2;
+            this.enabled1 = builder.mEnabled1;
+            this.enabled2 = builder.mEnabled2;

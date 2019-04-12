@@ -1,0 +1,263 @@
+class ExploreByTouchHelper
+!!!966658.java!!!	ExploreByTouchHelper(inout forView : View)
+        if (forView == null) {
+            throw new IllegalArgumentException("View may not be null");
+        }
+
+        mView = forView;
+        mContext = forView.getContext();
+        mManager = (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+!!!966786.java!!!	getAccessibilityNodeProvider(inout host : View) : AccessibilityNodeProvider
+        if (mNodeProvider == null) {
+            mNodeProvider = new ExploreByTouchNodeProvider();
+        }
+        return mNodeProvider;
+!!!966914.java!!!	dispatchHoverEvent(inout event : MotionEvent) : boolean
+        if (!mManager.isEnabled() || !mManager.isTouchExplorationEnabled()) {
+            return false;
+        }
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_HOVER_MOVE:
+            case MotionEvent.ACTION_HOVER_ENTER:
+                final int virtualViewId = getVirtualViewAt(event.getX(), event.getY());
+                updateHoveredVirtualView(virtualViewId);
+                return (virtualViewId != INVALID_ID);
+            case MotionEvent.ACTION_HOVER_EXIT:
+                if (mFocusedVirtualViewId != INVALID_ID) {
+                    updateHoveredVirtualView(INVALID_ID);
+                    return true;
+                }
+                return false;
+            default:
+                return false;
+        }
+!!!967042.java!!!	sendEventForVirtualView(in virtualViewId : int, in eventType : int) : boolean
+        if ((virtualViewId == INVALID_ID) || !mManager.isEnabled()) {
+            return false;
+        }
+
+        final ViewParent parent = mView.getParent();
+        if (parent == null) {
+            return false;
+        }
+
+        final AccessibilityEvent event = createEvent(virtualViewId, eventType);
+        return parent.requestSendAccessibilityEvent(mView, event);
+!!!967170.java!!!	invalidateRoot() : void
+        invalidateVirtualView(View.NO_ID);
+!!!967298.java!!!	invalidateVirtualView(in virtualViewId : int) : void
+        sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+!!!967426.java!!!	getFocusedVirtualView() : int
+        return mFocusedVirtualViewId;
+!!!967554.java!!!	updateHoveredVirtualView(in virtualViewId : int) : void
+        if (mHoveredVirtualViewId == virtualViewId) {
+            return;
+        }
+
+        final int previousVirtualViewId = mHoveredVirtualViewId;
+        mHoveredVirtualViewId = virtualViewId;
+
+        // Stay consistent with framework behavior by sending ENTER/EXIT pairs
+        // in reverse order. This is accurate as of API 18.
+        sendEventForVirtualView(virtualViewId, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
+        sendEventForVirtualView(previousVirtualViewId, AccessibilityEvent.TYPE_VIEW_HOVER_EXIT);
+!!!967682.java!!!	createEvent(in virtualViewId : int, in eventType : int) : AccessibilityEvent
+        switch (virtualViewId) {
+            case View.NO_ID:
+                return createEventForHost(eventType);
+            default:
+                return createEventForChild(virtualViewId, eventType);
+        }
+!!!967810.java!!!	createEventForHost(in eventType : int) : AccessibilityEvent
+        final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
+        mView.onInitializeAccessibilityEvent(event);
+        return event;
+!!!967938.java!!!	createEventForChild(in virtualViewId : int, in eventType : int) : AccessibilityEvent
+        final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
+        event.setEnabled(true);
+        event.setClassName(DEFAULT_CLASS_NAME);
+
+        // Allow the client to populate the event.
+        onPopulateEventForVirtualView(virtualViewId, event);
+
+        // Make sure the developer is following the rules.
+        if (event.getText().isEmpty() && (event.getContentDescription() == null)) {
+            throw new RuntimeException("Callbacks must add text or a content description in "
+                    + "populateEventForVirtualViewId()");
+        }
+
+        // Don't allow the client to override these properties.
+        event.setPackageName(mView.getContext().getPackageName());
+        event.setSource(mView, virtualViewId);
+
+        return event;
+!!!968066.java!!!	createNode(in virtualViewId : int) : AccessibilityNodeInfo
+        switch (virtualViewId) {
+            case View.NO_ID:
+                return createNodeForHost();
+            default:
+                return createNodeForChild(virtualViewId);
+        }
+!!!968194.java!!!	createNodeForHost() : AccessibilityNodeInfo
+        final AccessibilityNodeInfo node = AccessibilityNodeInfo.obtain(mView);
+        mView.onInitializeAccessibilityNodeInfo(node);
+
+        // Add the virtual descendants.
+        final LinkedList<Integer> virtualViewIds = new LinkedList<Integer>();
+        getVisibleVirtualViews(virtualViewIds);
+
+        for (Integer childVirtualViewId : virtualViewIds) {
+            node.addChild(mView, childVirtualViewId);
+        }
+
+        return node;
+!!!968322.java!!!	createNodeForChild(in virtualViewId : int) : AccessibilityNodeInfo
+        final AccessibilityNodeInfo node = AccessibilityNodeInfo.obtain();
+
+        // Ensure the client has good defaults.
+        node.setEnabled(true);
+        node.setClassName(DEFAULT_CLASS_NAME);
+
+        // Allow the client to populate the node.
+        onPopulateNodeForVirtualView(virtualViewId, node);
+
+        // Make sure the developer is following the rules.
+        if ((node.getText() == null) && (node.getContentDescription() == null)) {
+            throw new RuntimeException("Callbacks must add text or a content description in "
+                    + "populateNodeForVirtualViewId()");
+        }
+
+        node.getBoundsInParent(mTempParentRect);
+        if (mTempParentRect.isEmpty()) {
+            throw new RuntimeException("Callbacks must set parent bounds in "
+                    + "populateNodeForVirtualViewId()");
+        }
+
+        final int actions = node.getActions();
+        if ((actions & AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS) != 0) {
+            throw new RuntimeException("Callbacks must not add ACTION_ACCESSIBILITY_FOCUS in "
+                    + "populateNodeForVirtualViewId()");
+        }
+        if ((actions & AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS) != 0) {
+            throw new RuntimeException("Callbacks must not add ACTION_CLEAR_ACCESSIBILITY_FOCUS in "
+                    + "populateNodeForVirtualViewId()");
+        }
+
+        // Don't allow the client to override these properties.
+        node.setPackageName(mView.getContext().getPackageName());
+        node.setSource(mView, virtualViewId);
+        node.setParent(mView);
+
+        // Manage internal accessibility focus state.
+        if (mFocusedVirtualViewId == virtualViewId) {
+            node.setAccessibilityFocused(true);
+            node.addAction(AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS);
+        } else {
+            node.setAccessibilityFocused(false);
+            node.addAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS);
+        }
+
+        // Set the visibility based on the parent bound.
+        if (intersectVisibleToUser(mTempParentRect)) {
+            node.setVisibleToUser(true);
+            node.setBoundsInParent(mTempParentRect);
+        }
+
+        // Calculate screen-relative bound.
+        mView.getLocationOnScreen(mTempGlobalRect);
+        final int offsetX = mTempGlobalRect[0];
+        final int offsetY = mTempGlobalRect[1];
+        mTempScreenRect.set(mTempParentRect);
+        mTempScreenRect.offset(offsetX, offsetY);
+        node.setBoundsInScreen(mTempScreenRect);
+
+        return node;
+!!!968450.java!!!	performAction(in virtualViewId : int, in action : int, inout arguments : Bundle) : boolean
+        switch (virtualViewId) {
+            case View.NO_ID:
+                return performActionForHost(action, arguments);
+            default:
+                return performActionForChild(virtualViewId, action, arguments);
+        }
+!!!968578.java!!!	performActionForHost(in action : int, inout arguments : Bundle) : boolean
+        return mView.performAccessibilityAction(action, arguments);
+!!!968706.java!!!	performActionForChild(in virtualViewId : int, in action : int, inout arguments : Bundle) : boolean
+        switch (action) {
+            case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
+            case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS:
+                return manageFocusForChild(virtualViewId, action, arguments);
+            default:
+                return onPerformActionForVirtualView(virtualViewId, action, arguments);
+        }
+!!!968834.java!!!	manageFocusForChild(in virtualViewId : int, in action : int, inout arguments : Bundle) : boolean
+        switch (action) {
+            case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
+                return requestAccessibilityFocus(virtualViewId);
+            case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS:
+                return clearAccessibilityFocus(virtualViewId);
+            default:
+                return false;
+        }
+!!!968962.java!!!	intersectVisibleToUser(inout localRect : Rect) : boolean
+        // Missing or empty bounds mean this view is not visible.
+        if ((localRect == null) || localRect.isEmpty()) {
+            return false;
+        }
+
+        // Attached to invisible window means this view is not visible.
+        if (mView.getWindowVisibility() != View.VISIBLE) {
+            return false;
+        }
+
+        // An invisible predecessor means that this view is not visible.
+        ViewParent viewParent = mView.getParent();
+        while (viewParent instanceof View) {
+            final View view = (View) viewParent;
+            if ((view.getAlpha() <= 0) || (view.getVisibility() != View.VISIBLE)) {
+                return false;
+            }
+            viewParent = view.getParent();
+        }
+
+        // A null parent implies the view is not visible.
+        if (viewParent == null) {
+            return false;
+        }
+
+        // If no portion of the parent is visible, this view is not visible.
+        if (!mView.getLocalVisibleRect(mTempVisibleRect)) {
+            return false;
+        }
+
+        // Check if the view intersects the visible portion of the parent.
+        return localRect.intersect(mTempVisibleRect);
+!!!969090.java!!!	isAccessibilityFocused(in virtualViewId : int) : boolean
+        return (mFocusedVirtualViewId == virtualViewId);
+!!!969218.java!!!	requestAccessibilityFocus(in virtualViewId : int) : boolean
+        final AccessibilityManager accessibilityManager =
+                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+
+        if (!mManager.isEnabled()
+                || !accessibilityManager.isTouchExplorationEnabled()) {
+            return false;
+        }
+        // TODO: Check virtual view visibility.
+        if (!isAccessibilityFocused(virtualViewId)) {
+            mFocusedVirtualViewId = virtualViewId;
+            // TODO: Only invalidate virtual view bounds.
+            mView.invalidate();
+            sendEventForVirtualView(virtualViewId,
+                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+            return true;
+        }
+        return false;
+!!!969346.java!!!	clearAccessibilityFocus(in virtualViewId : int) : boolean
+        if (isAccessibilityFocused(virtualViewId)) {
+            mFocusedVirtualViewId = INVALID_ID;
+            mView.invalidate();
+            sendEventForVirtualView(virtualViewId,
+                    AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+            return true;
+        }
+        return false;

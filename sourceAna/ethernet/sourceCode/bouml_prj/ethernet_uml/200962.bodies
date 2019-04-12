@@ -1,0 +1,38 @@
+class PackageManager
+!!!812162.java!!!	buildPermissionRequestIntent(inout  : String...permissions) : Intent
+        if (permissions == null) {
+            throw new NullPointerException("permissions cannot be null");
+        }
+        for (String permission : permissions) {
+            if (permission == null) {
+                throw new IllegalArgumentException("permissions cannot contain null");
+            }
+        }
+
+        Intent i = new Intent(ACTION_REQUEST_PERMISSION);
+        i.putExtra(EXTRA_REQUEST_PERMISSION_PERMISSION_LIST, permissions);
+        i.setPackage("com.android.packageinstaller");
+        return i;
+!!!817922.java!!!	getPackageArchiveInfo(in archiveFilePath : String, in flags : int) : PackageInfo
+        PackageParser packageParser = new PackageParser(archiveFilePath);
+        DisplayMetrics metrics = new DisplayMetrics();
+        metrics.setToDefaults();
+        final File sourceFile = new File(archiveFilePath);
+        PackageParser.Package pkg = packageParser.parsePackage(
+                sourceFile, archiveFilePath, metrics, 0);
+        if (pkg == null) {
+            return null;
+        }
+        if ((flags & GET_SIGNATURES) != 0) {
+            packageParser.collectCertificates(pkg, 0);
+        }
+        PackageUserState state = new PackageUserState();
+        return PackageParser.generatePackageInfo(pkg, null, flags, 0, 0, null, state);
+!!!819842.java!!!	getPackageSizeInfo(in packageName : String, inout observer : IPackageStatsObserver) : void
+        getPackageSizeInfo(packageName, UserHandle.myUserId(), observer);
+!!!820482.java!!!	addPreferredActivity(inout filter : IntentFilter, in match : int, inout set : ComponentName, inout activity : ComponentName, in userId : int) : void
+        throw new RuntimeException("Not implemented. Must override in a subclass.");
+!!!822274.java!!!	getDataDirForUser(in userId : int, in packageName : String) : String
+        // TODO: This should be shared with Installer's knowledge of user directory
+        return Environment.getDataDirectory().toString() + "/user/" + userId
+                + "/" + packageName;

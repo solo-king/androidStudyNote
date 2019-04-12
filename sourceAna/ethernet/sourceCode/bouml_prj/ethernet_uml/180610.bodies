@@ -1,0 +1,5 @@
+class ParcelFormatException
+!!!531586.java!!!	ParcelFormatException()
+        super();
+!!!531714.java!!!	ParcelFormatException(in reason : String)
+        super(reason);

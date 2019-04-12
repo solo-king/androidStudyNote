@@ -1,0 +1,46 @@
+format 221
+
+classcanvas 128100 class_ref 128100 // RIL
+  classdiagramsettings show_members_full_definition yes show_members_visibility no show_members_stereotype yes member_max_width 0 show_stereotype_properties yes end
+  xyzwh 192 269 2000 183 83
+end
+classcanvas 128228 class_ref 128228 // RILSender
+  classdiagramsettings member_max_width 0 end
+  xyz 534 198 2000
+end
+classcanvas 128356 class_ref 128356 // Handler
+  classdiagramsettings member_max_width 0 end
+  xyz 540 109 2005
+end
+classcanvas 128612 class_ref 128484 // Runnable
+  classdiagramsettings member_max_width 0 end
+  xyz 719 186 2000
+end
+classcanvas 128868 class_ref 128612 // RILReceiver
+  classdiagramsettings member_max_width 0 end
+  xyz 514 400 2000
+end
+classcanvas 128996 class_ref 128484 // Runnable
+  classdiagramsettings member_max_width 0 end
+  xyz 734 389 2000
+end
+relationcanvas 128484 relation_ref 128100 // <generalisation>
+  from ref 128228 z 2006 to ref 128356
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 128740 relation_ref 128228 // <realization>
+  from ref 128228 z 2001 to ref 128612
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 129124 relation_ref 128356 // <realization>
+  from ref 128868 z 2001 to ref 128996
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+line 129892 ---+
+  from ref 128228 z 2001 to ref 128100
+line 130020 ---+
+  from ref 128868 z 2001 to ref 128100
+end

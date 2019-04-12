@@ -1,0 +1,22 @@
+class MountTask
+!!!661890.java!!!	MountTask(inout context : Context, inout volume : VolumeInfo)
+            mContext = context.getApplicationContext();
+            mStorageManager = mContext.getSystemService(StorageManager.class);
+            mVolumeId = volume.getId();
+            mDescription = mStorageManager.getBestVolumeDescription(volume);
+!!!662018.java!!!	doInBackground(inout  : Void...params) : Exception
+            try {
+                mStorageManager.mount(mVolumeId);
+                return null;
+            } catch (Exception e) {
+                return e;
+            }
+!!!662146.java!!!	onPostExecute(inout e : Exception) : void
+            if (e == null) {
+                Toast.makeText(mContext, mContext.getString(R.string.storage_mount_success,
+                        mDescription), Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e(TAG, "Failed to mount " + mVolumeId, e);
+                Toast.makeText(mContext, mContext.getString(R.string.storage_mount_failure,
+                        mDescription), Toast.LENGTH_SHORT).show();
+            }

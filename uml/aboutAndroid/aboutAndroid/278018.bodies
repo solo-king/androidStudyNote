@@ -1,0 +1,6 @@
+class AppLoadingTask
+!!!898818.java!!!	doInBackground(inout  : Void...params) : Void
+            mHelper.fetchAndMergeApps();
+            return null;
+!!!898946.java!!!	onPostExecute(inout result : Void) : void
+            populateApps();

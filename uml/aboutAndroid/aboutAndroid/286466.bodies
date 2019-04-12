@@ -1,0 +1,5 @@
+class LeftwardStartPredicate
+!!!966402.java!!!	LeftwardStartPredicate(in thresholdValue : float)
+            super(thresholdValue);
+!!!966530.java!!!	shouldStart(in currentValue : float) : boolean
+            return currentValue < thresholdValue;

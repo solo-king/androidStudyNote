@@ -1,0 +1,8 @@
+class ActivationWarningFragment
+!!!644226.java!!!	newInstance() : ActivationWarningFragment
+        return new ActivationWarningFragment();
+!!!644354.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+        return new AlertDialog.Builder(getActivity())
+                .setMessage(R.string.automatic_storage_manager_activation_warning)
+                .setPositiveButton(android.R.string.ok, null)
+                .create();

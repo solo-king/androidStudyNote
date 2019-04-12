@@ -1,0 +1,34 @@
+class DockBluetoothCallback
+!!!569218.java!!!	DockBluetoothCallback(inout context : Context)
+            mContext = context;
+!!!569858.java!!!	onScanningStateChanged(inout started : boolean) : void
+            // TODO: Find a more unified place for a persistent BluetoothCallback to live
+            // as this is not exactly dock related.
+            LocalBluetoothPreferences.persistDiscoveringTimestamp(mContext);
+!!!569986.java!!!	onDeviceBondStateChanged(inout cachedDevice : CachedBluetoothDevice, in bondState : int) : void
+            BluetoothDevice device = cachedDevice.getDevice();
+            if (bondState == BluetoothDevice.BOND_NONE) {
+                if (device.isBluetoothDock()) {
+                    // After a dock is unpaired, we will forget the settings
+                    LocalBluetoothPreferences
+                            .removeDockAutoConnectSetting(mContext, device.getAddress());
+
+                    // if the device is undocked, remove it from the list as well
+                    if (!device.getAddress().equals(getDockedDeviceAddress(mContext))) {
+                        cachedDevice.setVisible(false);
+                    }
+                }
+            }
+!!!570114.java!!!	getDockedDeviceAddress(inout context : Context) : String
+            // This works only because these broadcast intents are "sticky"
+            Intent i = context.registerReceiver(null, new IntentFilter(Intent.ACTION_DOCK_EVENT));
+            if (i != null) {
+                int state = i.getIntExtra(Intent.EXTRA_DOCK_STATE, Intent.EXTRA_DOCK_STATE_UNDOCKED);
+                if (state != Intent.EXTRA_DOCK_STATE_UNDOCKED) {
+                    BluetoothDevice device = i.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    if (device != null) {
+                        return device.getAddress();
+                    }
+                }
+            }
+            return null;

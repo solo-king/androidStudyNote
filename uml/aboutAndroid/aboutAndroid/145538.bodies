@@ -1,0 +1,32 @@
+class CredentialCheckResultTracker
+!!!205698.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+!!!205826.java!!!	setListener(inout listener : CredentialCheckResultTracker::Listener) : void
+        if (mListener == listener) {
+            return;
+        }
+
+        mListener = listener;
+        if (mListener != null && mHasResult) {
+            mListener.onCredentialChecked(mResultMatched, mResultData, mResultTimeoutMs,
+                    mResultEffectiveUserId, false /* newResult */);
+        }
+!!!205954.java!!!	setResult(inout matched : boolean, inout intent : Intent, in timeoutMs : int, in effectiveUserId : int) : void
+        mResultMatched = matched;
+        mResultData = intent;
+        mResultTimeoutMs = timeoutMs;
+        mResultEffectiveUserId = effectiveUserId;
+
+        mHasResult = true;
+        if (mListener != null) {
+            mListener.onCredentialChecked(mResultMatched, mResultData, mResultTimeoutMs,
+                    mResultEffectiveUserId, true /* newResult */);
+            mHasResult = false;
+        }
+!!!206082.java!!!	clearResult() : void
+        mHasResult = false;
+        mResultMatched = false;
+        mResultData = null;
+        mResultTimeoutMs = 0;
+        mResultEffectiveUserId = 0;

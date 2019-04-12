@@ -1,0 +1,123 @@
+class ComponentName
+!!!647682.java!!!	ComponentName(in pkg : String, in cls : String)
+        if (pkg == null) throw new NullPointerException("package name is null");
+        if (cls == null) throw new NullPointerException("class name is null");
+        mPackage = pkg;
+        mClass = cls;
+!!!647810.java!!!	ComponentName(inout pkg : Context, in cls : String)
+        if (cls == null) throw new NullPointerException("class name is null");
+        mPackage = pkg.getPackageName();
+        mClass = cls;
+!!!647938.java!!!	ComponentName(inout pkg : Context, inout cls : Class<?>)
+        mPackage = pkg.getPackageName();
+        mClass = cls.getName();
+!!!648066.java!!!	clone() : ComponentName
+        return new ComponentName(mPackage, mClass);
+!!!648194.java!!!	getPackageName() : String
+        return mPackage;
+!!!648322.java!!!	getClassName() : String
+        return mClass;
+!!!648450.java!!!	getShortClassName() : String
+        if (mClass.startsWith(mPackage)) {
+            int PN = mPackage.length();
+            int CN = mClass.length();
+            if (CN > PN && mClass.charAt(PN) == '.') {
+                return mClass.substring(PN, CN);
+            }
+        }
+        return mClass;
+!!!648578.java!!!	appendShortClassName(inout sb : StringBuilder, in packageName : String, in className : String) : void
+        if (className.startsWith(packageName)) {
+            int PN = packageName.length();
+            int CN = className.length();
+            if (CN > PN && className.charAt(PN) == '.') {
+                sb.append(className, PN, CN);
+                return;
+            }
+        }
+        sb.append(className);
+!!!648706.java!!!	printShortClassName(inout pw : PrintWriter, in packageName : String, in className : String) : void
+        if (className.startsWith(packageName)) {
+            int PN = packageName.length();
+            int CN = className.length();
+            if (CN > PN && className.charAt(PN) == '.') {
+                pw.write(className, PN, CN-PN);
+                return;
+            }
+        }
+        pw.print(className);
+!!!648834.java!!!	flattenToString() : String
+        return mPackage + "/" + mClass;
+!!!648962.java!!!	flattenToShortString() : String
+        StringBuilder sb = new StringBuilder(mPackage.length() + mClass.length());
+        appendShortString(sb, mPackage, mClass);
+        return sb.toString();
+!!!649090.java!!!	appendShortString(inout sb : StringBuilder) : void
+        appendShortString(sb, mPackage, mClass);
+!!!649218.java!!!	appendShortString(inout sb : StringBuilder, in packageName : String, in className : String) : void
+        sb.append(packageName).append('/');
+        appendShortClassName(sb, packageName, className);
+!!!649346.java!!!	printShortString(inout pw : PrintWriter, in packageName : String, in className : String) : void
+        pw.print(packageName);
+        pw.print('/');
+        printShortClassName(pw, packageName, className);
+!!!649474.java!!!	unflattenFromString(in str : String) : ComponentName
+        int sep = str.indexOf('/');
+        if (sep < 0 || (sep+1) >= str.length()) {
+            return null;
+        }
+        String pkg = str.substring(0, sep);
+        String cls = str.substring(sep+1);
+        if (cls.length() > 0 && cls.charAt(0) == '.') {
+            cls = pkg + cls;
+        }
+        return new ComponentName(pkg, cls);
+!!!649602.java!!!	toShortString() : String
+        return "{" + mPackage + "/" + mClass + "}";
+!!!649730.java!!!	toString() : String
+        return "ComponentInfo{" + mPackage + "/" + mClass + "}";
+!!!649858.java!!!	equals(inout obj : Object) : boolean
+        try {
+            if (obj != null) {
+                ComponentName other = (ComponentName)obj;
+                // Note: no null checks, because mPackage and mClass can
+                // never be null.
+                return mPackage.equals(other.mPackage)
+                        && mClass.equals(other.mClass);
+            }
+        } catch (ClassCastException e) {
+        }
+        return false;
+!!!649986.java!!!	hashCode() : int
+        return mPackage.hashCode() + mClass.hashCode();
+!!!650114.java!!!	compareTo(inout that : ComponentName) : int
+        int v;
+        v = this.mPackage.compareTo(that.mPackage);
+        if (v != 0) {
+            return v;
+        }
+        return this.mClass.compareTo(that.mClass);
+!!!650242.java!!!	describeContents() : int
+        return 0;
+!!!650370.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        out.writeString(mPackage);
+        out.writeString(mClass);
+!!!650498.java!!!	writeToParcel(inout c : ComponentName, inout out : Parcel) : void
+        if (c != null) {
+            c.writeToParcel(out, 0);
+        } else {
+            out.writeString(null);
+        }
+!!!650626.java!!!	readFromParcel(inout in : Parcel) : ComponentName
+        String pkg = in.readString();
+        return pkg != null ? new ComponentName(pkg, in) : null;
+!!!650754.java!!!	ComponentName(inout in : Parcel)
+        mPackage = in.readString();
+        if (mPackage == null) throw new NullPointerException(
+                "package name is null");
+        mClass = in.readString();
+        if (mClass == null) throw new NullPointerException(
+                "class name is null");
+!!!650882.java!!!	ComponentName(in pkg : String, inout in : Parcel)
+        mPackage = pkg;
+        mClass = in.readString();

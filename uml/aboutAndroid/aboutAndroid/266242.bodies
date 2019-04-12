@@ -1,0 +1,5 @@
+class SettingObserver
+!!!829570.java!!!	SettingObserver()
+            super(new Handler(Looper.getMainLooper()));
+!!!829698.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            reloadList();

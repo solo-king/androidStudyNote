@@ -1,0 +1,41 @@
+class KeyboardLayoutLoader
+!!!750850.java!!!	KeyboardLayoutLoader(inout context : Context, inout inputDeviceIdentifier : InputDeviceIdentifier)
+            super(context);
+            mInputDeviceIdentifier = inputDeviceIdentifier;
+!!!750978.java!!!	loadInBackground() : KeyboardLayoutDialogFragment::Keyboards
+            Keyboards keyboards = new Keyboards();
+            InputManager im = (InputManager)getContext().getSystemService(Context.INPUT_SERVICE);
+            String[] keyboardLayoutDescriptors = im.getEnabledKeyboardLayoutsForInputDevice(
+                    mInputDeviceIdentifier);
+            for (String keyboardLayoutDescriptor : keyboardLayoutDescriptors) {
+                KeyboardLayout keyboardLayout = im.getKeyboardLayout(keyboardLayoutDescriptor);
+                if (keyboardLayout != null) {
+                    keyboards.keyboardLayouts.add(keyboardLayout);
+                }
+            }
+            Collections.sort(keyboards.keyboardLayouts);
+
+            String currentKeyboardLayoutDescriptor =
+                    im.getCurrentKeyboardLayoutForInputDevice(mInputDeviceIdentifier);
+            if (currentKeyboardLayoutDescriptor != null) {
+                final int numKeyboardLayouts = keyboards.keyboardLayouts.size();
+                for (int i = 0; i < numKeyboardLayouts; i++) {
+                    if (keyboards.keyboardLayouts.get(i).getDescriptor().equals(
+                            currentKeyboardLayoutDescriptor)) {
+                        keyboards.current = i;
+                        break;
+                    }
+                }
+            }
+
+            if (keyboards.keyboardLayouts.isEmpty()) {
+                keyboards.keyboardLayouts.add(null); // default layout
+                keyboards.current = 0;
+            }
+            return keyboards;
+!!!751106.java!!!	onStartLoading() : void
+            super.onStartLoading();
+            forceLoad();
+!!!751234.java!!!	onStopLoading() : void
+            super.onStopLoading();
+            cancelLoad();

@@ -1,0 +1,3 @@
+class SearchIndexableRaw
+!!!880898.java!!!	SearchIndexableRaw(inout context : Context)
+        super(context);

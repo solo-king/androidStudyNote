@@ -1,0 +1,56 @@
+class ToggleScreenMagnificationPreferenceFragment
+!!!423682.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mVideoPreference = new VideoPreference(getPrefContext());
+        mVideoPreference.setSelectable(false);
+        mVideoPreference.setPersistent(false);
+        mVideoPreference.setLayoutResource(R.layout.video_preference);
+
+        final PreferenceScreen preferenceScreen = getPreferenceManager().getPreferenceScreen();
+        preferenceScreen.setOrderingAsAdded(false);
+        mVideoPreference.setOrder(0);
+        mSummaryPreference.setOrder(1);
+        preferenceScreen.addPreference(mVideoPreference);
+!!!423810.java!!!	onPreferenceToggled(in preferenceKey : String, inout enabled : boolean) : void
+        // Do nothing.
+!!!423938.java!!!	onInstallSwitchBarToggleSwitch() : void
+        super.onInstallSwitchBarToggleSwitch();
+        mToggleSwitch.setOnBeforeCheckedChangeListener(new OnBeforeCheckedChangeListener() {
+            @Override
+            public boolean onBeforeCheckedChanged(ToggleSwitch toggleSwitch, boolean checked) {
+                mSwitchBar.setCheckedInternal(checked);
+                getArguments().putBoolean(AccessibilitySettings.EXTRA_CHECKED, checked);
+                onPreferenceToggled(mPreferenceKey, checked);
+                return false;
+            }
+        });
+!!!424066.java!!!	onResume() : void
+        super.onResume();
+
+        // Temporarily enable Magnification on this screen if it's disabled.
+        if (Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED, 0) == 0) {
+            setMagnificationEnabled(1);
+        }
+
+        VideoView videoView = (VideoView) getView().findViewById(R.id.video);
+        if (videoView != null) {
+            videoView.start();
+        }
+!!!424194.java!!!	onPause() : void
+        super.onPause();
+        if (!mToggleSwitch.isChecked()) {
+            setMagnificationEnabled(0);
+        }
+!!!424322.java!!!	setMagnificationEnabled(in enabled : int) : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED, enabled);
+!!!424450.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY_TOGGLE_SCREEN_MAGNIFICATION;
+!!!424578.java!!!	getScreenWidth(inout context : Context) : int
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;

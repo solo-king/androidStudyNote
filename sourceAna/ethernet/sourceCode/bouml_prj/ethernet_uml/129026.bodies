@@ -1,0 +1,88 @@
+class EthernetSettings
+!!!130946.java!!!	onPreferenceTreeClick(inout preferenceScreen : PreferenceScreen, inout preference : Preference) : boolean
+        super.onPreferenceTreeClick(preferenceScreen, preference);
+
+        if (preference == mEthConfigPref) {
+            mEthConfigDialog.show();
+        }
+        return false;
+!!!131074.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        USR_LOGD("onCreate");
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.ethernet_settings);
+
+        final PreferenceScreen preferenceScreen = getPreferenceScreen();
+        mEthConfigPref = preferenceScreen.findPreference(KEY_CONF_ETH);
+!!!131202.java!!!	onResume() : void
+        USR_LOGD("onResume");
+        super.onResume();
+        if (mEthEnabler != null) {
+            mEthEnabler.resume();
+        }
+!!!131330.java!!!	onStart() : void
+        USR_LOGD("onStart");
+        super.onStart();
+        initToggles();
+!!!131458.java!!!	onPause() : void
+        USR_LOGD("onPause");
+        super.onPause();
+        if (mEthEnabler != null) {
+            mEthEnabler.pause();
+        }
+!!!131586.java!!!	onStop() : void
+        USR_LOGD("onStop");
+        super.onStop();
+/*
+        if(Utils.platformHasMbxUiMode()){
+	        final Activity activity = getActivity();
+	        activity.getActionBar().setDisplayOptions(0, ActionBar.DISPLAY_SHOW_CUSTOM);
+	        activity.getActionBar().setCustomView(null);
+        }
+*/
+!!!131714.java!!!	initToggles() : void
+        // For MultiPane preference, the switch is on the left column header.
+        // Other layouts unsupported for now.
+        USR_LOGD("initToggles");
+        final Activity activity = getActivity();
+        Switch actionBarSwitch = new Switch(activity);
+        if (activity instanceof PreferenceActivity) {
+            PreferenceActivity preferenceActivity = (PreferenceActivity) activity;
+            /*if (Utils.platformHasMbxUiMode()) {
+                final int padding = activity.getResources().getDimensionPixelSize(
+                        R.dimen.action_bar_switch_padding);
+                actionBarSwitch.setPadding(0, 0, padding, 0);
+                activity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
+                        ActionBar.DISPLAY_SHOW_CUSTOM);
+                activity.getActionBar().setCustomView(actionBarSwitch, new ActionBar.LayoutParams(
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER_VERTICAL | Gravity.RIGHT));
+            }
+            else  if (preferenceActivity.onIsHidingHeaders() || !preferenceActivity.onIsMultiPane()) {*/
+                final int padding = activity.getResources().getDimensionPixelSize(
+                        R.dimen.action_bar_switch_padding);
+                actionBarSwitch.setPadding(0, 0, padding, 0);
+                activity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
+                        ActionBar.DISPLAY_SHOW_CUSTOM);
+                activity.getActionBar().setCustomView(actionBarSwitch, new ActionBar.LayoutParams(
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        ActionBar.LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER_VERTICAL | Gravity.RIGHT));
+           // }
+            mEthEnabler = new EthernetEnabler(
+                    (EthernetManager)getSystemService(Context.ETH_SERVICE),
+                    actionBarSwitch);
+            mEthConfigDialog = new EthernetConfigDialog(
+                    getActivity(),
+                    (EthernetManager)getSystemService(Context.ETH_SERVICE));
+            mEthEnabler.setConfigDialog(mEthConfigDialog);
+        }
+/*
+        if (!Utils.platformHasMbxUiMode()) {
+            mEthConfigDialog = new EthernetConfigDialog(getActivity(),
+                    (EthernetManager) getSystemService(Context.ETH_SERVICE));
+        }  
+*/  
+!!!131842.java!!!	USR_LOGD(in str : String) : void
+        if(DEBUG)Log.d(LOG_TAG, str);

@@ -1,0 +1,239 @@
+class ConfigureNotificationSettings
+!!!804482.java!!!	getMetricsCategory() : int
+        return MetricsEvent.CONFIGURE_NOTIFICATION;
+!!!804610.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        mContext = getActivity();
+        mProfileChallengeUserId = Utils.getManagedProfileId(
+                UserManager.get(mContext), UserHandle.myUserId());
+
+        final LockPatternUtils utils = new LockPatternUtils(getActivity());
+        final boolean isUnified =
+                !utils.isSeparateProfileChallengeEnabled(mProfileChallengeUserId);
+
+        mSecure = utils.isSecure(UserHandle.myUserId());
+        mSecureProfile = (mProfileChallengeUserId != UserHandle.USER_NULL)
+                && (utils.isSecure(mProfileChallengeUserId) || (isUnified && mSecure));
+
+        addPreferencesFromResource(R.xml.configure_notification_settings);
+
+        initPulse();
+        initLockscreenNotifications();
+
+        if (mProfileChallengeUserId != UserHandle.USER_NULL) {
+            addPreferencesFromResource(R.xml.configure_notification_settings_profile);
+            initLockscreenNotificationsForProfile();
+        }
+
+!!!804738.java!!!	onResume() : void
+        super.onResume();
+        mSettingsObserver.register(true);
+!!!804866.java!!!	onPause() : void
+        super.onPause();
+        mSettingsObserver.register(false);
+!!!804994.java!!!	initPulse() : void
+        mNotificationPulse =
+                (TwoStatePreference) getPreferenceScreen().findPreference(KEY_NOTIFICATION_PULSE);
+        if (mNotificationPulse == null) {
+            Log.i(TAG, "Preference not found: " + KEY_NOTIFICATION_PULSE);
+            return;
+        }
+        if (!getResources()
+                .getBoolean(com.android.internal.R.bool.config_intrusiveNotificationLed)) {
+            getPreferenceScreen().removePreference(mNotificationPulse);
+        } else {
+            updatePulse();
+            mNotificationPulse.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    final boolean val = (Boolean)newValue;
+                    return Settings.System.putInt(getContentResolver(),
+                            Settings.System.NOTIFICATION_LIGHT_PULSE,
+                            val ? 1 : 0);
+                }
+            });
+        }
+!!!805122.java!!!	updatePulse() : void
+        if (mNotificationPulse == null) {
+            return;
+        }
+        try {
+            mNotificationPulse.setChecked(Settings.System.getInt(getContentResolver(),
+                    Settings.System.NOTIFICATION_LIGHT_PULSE) == 1);
+        } catch (Settings.SettingNotFoundException snfe) {
+            Log.e(TAG, Settings.System.NOTIFICATION_LIGHT_PULSE + " not found");
+        }
+!!!805250.java!!!	initLockscreenNotifications() : void
+        mLockscreen = (RestrictedDropDownPreference) getPreferenceScreen().findPreference(
+                KEY_LOCK_SCREEN_NOTIFICATIONS);
+        if (mLockscreen == null) {
+            Log.i(TAG, "Preference not found: " + KEY_LOCK_SCREEN_NOTIFICATIONS);
+            return;
+        }
+
+        ArrayList<CharSequence> entries = new ArrayList<>();
+        ArrayList<CharSequence> values = new ArrayList<>();
+        entries.add(getString(R.string.lock_screen_notifications_summary_disable));
+        values.add(Integer.toString(R.string.lock_screen_notifications_summary_disable));
+
+        String summaryShowEntry = getString(R.string.lock_screen_notifications_summary_show);
+        String summaryShowEntryValue = Integer.toString(
+                R.string.lock_screen_notifications_summary_show);
+        entries.add(summaryShowEntry);
+        values.add(summaryShowEntryValue);
+        setRestrictedIfNotificationFeaturesDisabled(summaryShowEntry, summaryShowEntryValue,
+                KEYGUARD_DISABLE_SECURE_NOTIFICATIONS | KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS);
+
+        if (mSecure) {
+            String summaryHideEntry = getString(R.string.lock_screen_notifications_summary_hide);
+            String summaryHideEntryValue = Integer.toString(
+                    R.string.lock_screen_notifications_summary_hide);
+            entries.add(summaryHideEntry);
+            values.add(summaryHideEntryValue);
+            setRestrictedIfNotificationFeaturesDisabled(summaryHideEntry, summaryHideEntryValue,
+                    KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
+        }
+
+        mLockscreen.setEntries(entries.toArray(new CharSequence[entries.size()]));
+        mLockscreen.setEntryValues(values.toArray(new CharSequence[values.size()]));
+        updateLockscreenNotifications();
+        if (mLockscreen.getEntries().length > 1) {
+            mLockscreen.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    final int val = Integer.parseInt((String) newValue);
+                    if (val == mLockscreenSelectedValue) {
+                        return false;
+                    }
+                    final boolean enabled =
+                            val != R.string.lock_screen_notifications_summary_disable;
+                    final boolean show = val == R.string.lock_screen_notifications_summary_show;
+                    Settings.Secure.putInt(getContentResolver(),
+                            Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, show ? 1 : 0);
+                    Settings.Secure.putInt(getContentResolver(),
+                            Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, enabled ? 1 : 0);
+                    mLockscreenSelectedValue = val;
+                    return true;
+                }
+            });
+        } else {
+            // There is one or less option for the user, disable the drop down.
+            mLockscreen.setEnabled(false);
+        }
+!!!805378.java!!!	initLockscreenNotificationsForProfile() : void
+        mLockscreenProfile = (RestrictedDropDownPreference) getPreferenceScreen()
+                .findPreference(KEY_LOCK_SCREEN_PROFILE_NOTIFICATIONS);
+        if (mLockscreenProfile == null) {
+            Log.i(TAG, "Preference not found: " + KEY_LOCK_SCREEN_PROFILE_NOTIFICATIONS);
+            return;
+        }
+        ArrayList<CharSequence> entries = new ArrayList<>();
+        ArrayList<CharSequence> values = new ArrayList<>();
+        entries.add(getString(R.string.lock_screen_notifications_summary_disable_profile));
+        values.add(Integer.toString(R.string.lock_screen_notifications_summary_disable_profile));
+
+        String summaryShowEntry = getString(
+                R.string.lock_screen_notifications_summary_show_profile);
+        String summaryShowEntryValue = Integer.toString(
+                R.string.lock_screen_notifications_summary_show_profile);
+        entries.add(summaryShowEntry);
+        values.add(summaryShowEntryValue);
+        setRestrictedIfNotificationFeaturesDisabled(summaryShowEntry, summaryShowEntryValue,
+                KEYGUARD_DISABLE_SECURE_NOTIFICATIONS | KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS);
+
+        if (mSecureProfile) {
+            String summaryHideEntry = getString(
+                    R.string.lock_screen_notifications_summary_hide_profile);
+            String summaryHideEntryValue = Integer.toString(
+                    R.string.lock_screen_notifications_summary_hide_profile);
+            entries.add(summaryHideEntry);
+            values.add(summaryHideEntryValue);
+            setRestrictedIfNotificationFeaturesDisabled(summaryHideEntry, summaryHideEntryValue,
+                    KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
+        }
+
+        mLockscreenProfile.setOnPreClickListener(
+                (Preference p) -> Utils.startQuietModeDialogIfNecessary(mContext,
+                        UserManager.get(mContext),
+                        mProfileChallengeUserId)
+        );
+
+        mLockscreenProfile.setEntries(entries.toArray(new CharSequence[entries.size()]));
+        mLockscreenProfile.setEntryValues(values.toArray(new CharSequence[values.size()]));
+        updateLockscreenNotificationsForProfile();
+        if (mLockscreenProfile.getEntries().length > 1) {
+            mLockscreenProfile.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    final int val = Integer.parseInt((String) newValue);
+                    if (val == mLockscreenSelectedValueProfile) {
+                        return false;
+                    }
+                    final boolean enabled =
+                            val != R.string.lock_screen_notifications_summary_disable_profile;
+                    final boolean show =
+                            val == R.string.lock_screen_notifications_summary_show_profile;
+                    Settings.Secure.putIntForUser(getContentResolver(),
+                            Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS,
+                            show ? 1 : 0, mProfileChallengeUserId);
+                    Settings.Secure.putIntForUser(getContentResolver(),
+                            Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS,
+                            enabled ? 1 : 0, mProfileChallengeUserId);
+                    mLockscreenSelectedValueProfile = val;
+                    return true;
+                }
+            });
+        } else {
+            // There is one or less option for the user, disable the drop down.
+            mLockscreenProfile.setEnabled(false);
+        }
+!!!805506.java!!!	setRestrictedIfNotificationFeaturesDisabled(inout entry : CharSequence, inout entryValue : CharSequence, in keyguardNotificationFeatures : int) : void
+        EnforcedAdmin admin = RestrictedLockUtils.checkIfKeyguardFeaturesDisabled(
+                mContext, keyguardNotificationFeatures, UserHandle.myUserId());
+        if (admin != null && mLockscreen != null) {
+            RestrictedDropDownPreference.RestrictedItem item =
+                    new RestrictedDropDownPreference.RestrictedItem(entry, entryValue, admin);
+            mLockscreen.addRestrictedItem(item);
+        }
+        if (mProfileChallengeUserId != UserHandle.USER_NULL) {
+            EnforcedAdmin profileAdmin = RestrictedLockUtils.checkIfKeyguardFeaturesDisabled(
+                    mContext, keyguardNotificationFeatures, mProfileChallengeUserId);
+            if (profileAdmin != null && mLockscreenProfile != null) {
+                RestrictedDropDownPreference.RestrictedItem item =
+                        new RestrictedDropDownPreference.RestrictedItem(
+                                entry, entryValue, profileAdmin);
+                mLockscreenProfile.addRestrictedItem(item);
+            }
+        }
+!!!805634.java!!!	updateLockscreenNotifications() : void
+        if (mLockscreen == null) {
+            return;
+        }
+        final boolean enabled = getLockscreenNotificationsEnabled(UserHandle.myUserId());
+        final boolean allowPrivate = !mSecure
+                || getLockscreenAllowPrivateNotifications(UserHandle.myUserId());
+        mLockscreenSelectedValue = !enabled ? R.string.lock_screen_notifications_summary_disable :
+                allowPrivate ? R.string.lock_screen_notifications_summary_show :
+                R.string.lock_screen_notifications_summary_hide;
+        mLockscreen.setValue(Integer.toString(mLockscreenSelectedValue));
+!!!805762.java!!!	updateLockscreenNotificationsForProfile() : void
+        if (mProfileChallengeUserId == UserHandle.USER_NULL) {
+            return;
+        }
+        if (mLockscreenProfile == null) {
+            return;
+        }
+        final boolean enabled = getLockscreenNotificationsEnabled(mProfileChallengeUserId);
+        final boolean allowPrivate = !mSecureProfile
+                || getLockscreenAllowPrivateNotifications(mProfileChallengeUserId);
+        mLockscreenSelectedValueProfile = !enabled
+                ? R.string.lock_screen_notifications_summary_disable_profile
+                        : (allowPrivate ? R.string.lock_screen_notifications_summary_show_profile
+                                : R.string.lock_screen_notifications_summary_hide_profile);
+        mLockscreenProfile.setValue(Integer.toString(mLockscreenSelectedValueProfile));
+!!!805890.java!!!	getLockscreenNotificationsEnabled(in userId : int) : boolean
+        return Settings.Secure.getIntForUser(getContentResolver(),
+                Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, 0, userId) != 0;
+!!!806018.java!!!	getLockscreenAllowPrivateNotifications(in userId : int) : boolean
+        return Settings.Secure.getIntForUser(getContentResolver(),
+                Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, 0, userId) != 0;

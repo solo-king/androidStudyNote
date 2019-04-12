@@ -1,0 +1,313 @@
+class ContentProvider
+!!!651394.java!!!	ContentProvider(inout context : Context, in readPermission : String, in writePermission : String, inout pathPermissions : PathPermission)
+        mContext = context;
+        mReadPermission = readPermission;
+        mWritePermission = writePermission;
+        mPathPermissions = pathPermissions;
+!!!651522.java!!!	coerceToLocalContentProvider(inout abstractInterface : IContentProvider) : ContentProvider
+        if (abstractInterface instanceof Transport) {
+            return ((Transport)abstractInterface).getContentProvider();
+        }
+        return null;
+!!!659074.java!!!	enforceReadPermissionInner(inout uri : Uri) : void
+        final Context context = getContext();
+        final int pid = Binder.getCallingPid();
+        final int uid = Binder.getCallingUid();
+        String missingPerm = null;
+
+        if (UserHandle.isSameApp(uid, mMyUid)) {
+            return;
+        }
+
+        if (mExported) {
+            final String componentPerm = getReadPermission();
+            if (componentPerm != null) {
+                if (context.checkPermission(componentPerm, pid, uid) == PERMISSION_GRANTED) {
+                    return;
+                } else {
+                    missingPerm = componentPerm;
+                }
+            }
+
+            // track if unprotected read is allowed; any denied
+            // <path-permission> below removes this ability
+            boolean allowDefaultRead = (componentPerm == null);
+
+            final PathPermission[] pps = getPathPermissions();
+            if (pps != null) {
+                final String path = uri.getPath();
+                for (PathPermission pp : pps) {
+                    final String pathPerm = pp.getReadPermission();
+                    if (pathPerm != null && pp.match(path)) {
+                        if (context.checkPermission(pathPerm, pid, uid) == PERMISSION_GRANTED) {
+                            return;
+                        } else {
+                            // any denied <path-permission> means we lose
+                            // default <provider> access.
+                            allowDefaultRead = false;
+                            missingPerm = pathPerm;
+                        }
+                    }
+                }
+            }
+
+            // if we passed <path-permission> checks above, and no default
+            // <provider> permission, then allow access.
+            if (allowDefaultRead) return;
+        }
+
+        // last chance, check against any uri grants
+        if (context.checkUriPermission(uri, pid, uid, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                == PERMISSION_GRANTED) {
+            return;
+        }
+
+        final String failReason = mExported
+                ? " requires " + missingPerm + ", or grantUriPermission()"
+                : " requires the provider be exported, or grantUriPermission()";
+        throw new SecurityException("Permission Denial: reading "
+                + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
+                + ", uid=" + uid + failReason);
+!!!659202.java!!!	enforceWritePermissionInner(inout uri : Uri) : void
+        final Context context = getContext();
+        final int pid = Binder.getCallingPid();
+        final int uid = Binder.getCallingUid();
+        String missingPerm = null;
+
+        if (UserHandle.isSameApp(uid, mMyUid)) {
+            return;
+        }
+
+        if (mExported) {
+            final String componentPerm = getWritePermission();
+            if (componentPerm != null) {
+                if (context.checkPermission(componentPerm, pid, uid) == PERMISSION_GRANTED) {
+                    return;
+                } else {
+                    missingPerm = componentPerm;
+                }
+            }
+
+            // track if unprotected write is allowed; any denied
+            // <path-permission> below removes this ability
+            boolean allowDefaultWrite = (componentPerm == null);
+
+            final PathPermission[] pps = getPathPermissions();
+            if (pps != null) {
+                final String path = uri.getPath();
+                for (PathPermission pp : pps) {
+                    final String pathPerm = pp.getWritePermission();
+                    if (pathPerm != null && pp.match(path)) {
+                        if (context.checkPermission(pathPerm, pid, uid) == PERMISSION_GRANTED) {
+                            return;
+                        } else {
+                            // any denied <path-permission> means we lose
+                            // default <provider> access.
+                            allowDefaultWrite = false;
+                            missingPerm = pathPerm;
+                        }
+                    }
+                }
+            }
+
+            // if we passed <path-permission> checks above, and no default
+            // <provider> permission, then allow access.
+            if (allowDefaultWrite) return;
+        }
+
+        // last chance, check against any uri grants
+        if (context.checkUriPermission(uri, pid, uid, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                == PERMISSION_GRANTED) {
+            return;
+        }
+
+        final String failReason = mExported
+                ? " requires " + missingPerm + ", or grantUriPermission()"
+                : " requires the provider be exported, or grantUriPermission()";
+        throw new SecurityException("Permission Denial: writing "
+                + ContentProvider.this.getClass().getName() + " uri " + uri + " from pid=" + pid
+                + ", uid=" + uid + failReason);
+!!!659330.java!!!	getContext() : Context
+        return mContext;
+!!!659458.java!!!	setCallingPackage(in callingPackage : String) : String
+        final String original = mCallingPackage.get();
+        mCallingPackage.set(callingPackage);
+        return original;
+!!!659586.java!!!	getCallingPackage() : String
+        final String pkg = mCallingPackage.get();
+        if (pkg != null) {
+            mTransport.mAppOpsManager.checkPackage(Binder.getCallingUid(), pkg);
+        }
+        return pkg;
+!!!659714.java!!!	setReadPermission(in permission : String) : void
+        mReadPermission = permission;
+!!!659842.java!!!	getReadPermission() : String
+        return mReadPermission;
+!!!659970.java!!!	setWritePermission(in permission : String) : void
+        mWritePermission = permission;
+!!!660098.java!!!	getWritePermission() : String
+        return mWritePermission;
+!!!660226.java!!!	setPathPermissions(inout permissions : PathPermission) : void
+        mPathPermissions = permissions;
+!!!660354.java!!!	getPathPermissions() : PathPermission
+        return mPathPermissions;
+!!!660482.java!!!	setAppOps(in readOp : int, in writeOp : int) : void
+        if (!mNoPerms) {
+            mTransport.mReadOp = readOp;
+            mTransport.mWriteOp = writeOp;
+        }
+!!!660610.java!!!	getAppOpsManager() : AppOpsManager
+        return mTransport.mAppOpsManager;
+!!!661250.java!!!	rejectQuery(inout uri : Uri, inout projection : String, in selection : String, inout selectionArgs : String, in sortOrder : String, inout cancellationSignal : CancellationSignal) : Cursor
+        // The read is not allowed...  to fake it out, we replace the given
+        // selection statement with a dummy one that will always be false.
+        // This way we will get a cursor back that has the correct structure
+        // but contains no rows.
+        if (selection == null || selection.isEmpty()) {
+            selection = "'A' = 'B'";
+        } else {
+            selection = "'A' = 'B' AND (" + selection + ")";
+        }
+        return query(uri, projection, selection, selectionArgs, sortOrder, cancellationSignal);
+!!!661506.java!!!	query(inout uri : Uri, inout projection : String, in selection : String, inout selectionArgs : String, in sortOrder : String, inout cancellationSignal : CancellationSignal) : Cursor
+        return query(uri, projection, selection, selectionArgs, sortOrder);
+!!!661762.java!!!	canonicalize(inout url : Uri) : Uri
+        return null;
+!!!661890.java!!!	uncanonicalize(inout url : Uri) : Uri
+        return url;
+!!!662018.java!!!	rejectInsert(inout uri : Uri, inout values : ContentValues) : Uri
+        // If not allowed, we need to return some reasonable URI.  Maybe the
+        // content provider should be responsible for this, but for now we
+        // will just return the base URI with a dummy '0' tagged on to it.
+        // You shouldn't be able to read if you can't write, anyway, so it
+        // shouldn't matter much what is returned.
+        return uri.buildUpon().appendPath("0").build();
+!!!662274.java!!!	bulkInsert(inout uri : Uri, inout values : ContentValues) : int
+        int numValues = values.length;
+        for (int i = 0; i < numValues; i++) {
+            insert(uri, values[i]);
+        }
+        return numValues;
+!!!662658.java!!!	openFile(inout uri : Uri, in mode : String) : ParcelFileDescriptor
+        throw new FileNotFoundException("No files supported by provider at "
+                + uri);
+!!!662786.java!!!	openFile(inout uri : Uri, in mode : String, inout signal : CancellationSignal) : ParcelFileDescriptor
+        return openFile(uri, mode);
+!!!662914.java!!!	openAssetFile(inout uri : Uri, in mode : String) : AssetFileDescriptor
+        ParcelFileDescriptor fd = openFile(uri, mode);
+        return fd != null ? new AssetFileDescriptor(fd, 0, -1) : null;
+!!!663042.java!!!	openAssetFile(inout uri : Uri, in mode : String, inout signal : CancellationSignal) : AssetFileDescriptor
+        return openAssetFile(uri, mode);
+!!!663170.java!!!	openFileHelper(inout uri : Uri, in mode : String) : ParcelFileDescriptor
+        Cursor c = query(uri, new String[]{"_data"}, null, null, null);
+        int count = (c != null) ? c.getCount() : 0;
+        if (count != 1) {
+            // If there is not exactly one result, throw an appropriate
+            // exception.
+            if (c != null) {
+                c.close();
+            }
+            if (count == 0) {
+                throw new FileNotFoundException("No entry for " + uri);
+            }
+            throw new FileNotFoundException("Multiple items at " + uri);
+        }
+
+        c.moveToFirst();
+        int i = c.getColumnIndex("_data");
+        String path = (i >= 0 ? c.getString(i) : null);
+        c.close();
+        if (path == null) {
+            throw new FileNotFoundException("Column _data not found.");
+        }
+
+        int modeBits = ParcelFileDescriptor.parseMode(mode);
+        return ParcelFileDescriptor.open(new File(path), modeBits);
+!!!663298.java!!!	getStreamTypes(inout uri : Uri, in mimeTypeFilter : String) : String
+        return null;
+!!!663426.java!!!	openTypedAssetFile(inout uri : Uri, in mimeTypeFilter : String, inout opts : Bundle) : AssetFileDescriptor
+        if ("*/*".equals(mimeTypeFilter)) {
+            // If they can take anything, the untyped open call is good enough.
+            return openAssetFile(uri, "r");
+        }
+        String baseType = getType(uri);
+        if (baseType != null && ClipDescription.compareMimeTypes(baseType, mimeTypeFilter)) {
+            // Use old untyped open call if this provider has a type for this
+            // URI and it matches the request.
+            return openAssetFile(uri, "r");
+        }
+        throw new FileNotFoundException("Can't open " + uri + " as type " + mimeTypeFilter);
+!!!663554.java!!!	openTypedAssetFile(inout uri : Uri, in mimeTypeFilter : String, inout opts : Bundle, inout signal : CancellationSignal) : AssetFileDescriptor
+        return openTypedAssetFile(uri, mimeTypeFilter, opts);
+!!!663810.java!!!	openPipeHelper(in uri : Uri, in mimeType : String, in opts : Bundle, in args : T, in func : ContentProvider::PipeDataWriter) : ParcelFileDescriptor
+        try {
+            final ParcelFileDescriptor[] fds = ParcelFileDescriptor.createPipe();
+
+            AsyncTask<Object, Object, Object> task = new AsyncTask<Object, Object, Object>() {
+                @Override
+                protected Object doInBackground(Object... params) {
+                    func.writeDataToPipe(fds[1], uri, mimeType, opts, args);
+                    try {
+                        fds[1].close();
+                    } catch (IOException e) {
+                        Log.w(TAG, "Failure closing pipe", e);
+                    }
+                    return null;
+                }
+            };
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Object[])null);
+
+            return fds[0];
+        } catch (IOException e) {
+            throw new FileNotFoundException("failure making pipe");
+        }
+!!!663938.java!!!	isTemporary() : boolean
+        return false;
+!!!664066.java!!!	getIContentProvider() : IContentProvider
+        return mTransport;
+!!!664194.java!!!	attachInfoForTesting(inout context : Context, inout info : ProviderInfo) : void
+        attachInfo(context, info, true);
+!!!664322.java!!!	attachInfo(inout context : Context, inout info : ProviderInfo) : void
+        attachInfo(context, info, false);
+!!!664450.java!!!	attachInfo(inout context : Context, inout info : ProviderInfo, inout testing : boolean) : void
+        /*
+         * We may be using AsyncTask from binder threads.  Make it init here
+         * so its static handler is on the main thread.
+         */
+        AsyncTask.init();
+
+        mNoPerms = testing;
+
+        /*
+         * Only allow it to be set once, so after the content service gives
+         * this to us clients can't change it.
+         */
+        if (mContext == null) {
+            mContext = context;
+            if (context != null) {
+                mTransport.mAppOpsManager = (AppOpsManager) context.getSystemService(
+                        Context.APP_OPS_SERVICE);
+            }
+            mMyUid = Process.myUid();
+            if (info != null) {
+                setReadPermission(info.readPermission);
+                setWritePermission(info.writePermission);
+                setPathPermissions(info.pathPermissions);
+                mExported = info.exported;
+            }
+            ContentProvider.this.onCreate();
+        }
+!!!664578.java!!!	applyBatch(inout operations : ArrayList<ContentProviderOperation>) : ContentProviderResult
+        final int numOperations = operations.size();
+        final ContentProviderResult[] results = new ContentProviderResult[numOperations];
+        for (int i = 0; i < numOperations; i++) {
+            results[i] = operations.get(i).apply(this, results, i);
+        }
+        return results;
+!!!664706.java!!!	call(in method : String, in arg : String, inout extras : Bundle) : Bundle
+        return null;
+!!!664834.java!!!	shutdown() : void
+        Log.w(TAG, "implement ContentProvider shutdown() to make sure all database " +
+                "connections are gracefully shutdown");
+!!!664962.java!!!	dump(inout fd : FileDescriptor, inout writer : PrintWriter, inout args : String) : void
+        writer.println("nothing to dump");

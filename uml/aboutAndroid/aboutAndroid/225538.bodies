@@ -1,0 +1,12 @@
+class UpdateSearchResultsTask
+!!!585730.java!!!	doInBackground(inout  : String...params) : Cursor
+            return Index.getInstance(getActivity()).search(params[0]);
+!!!585858.java!!!	onPostExecute(inout cursor : Cursor) : void
+            if (!isCancelled()) {
+                MetricsLogger.action(getContext(), MetricsEvent.ACTION_SEARCH_RESULTS,
+                        cursor.getCount());
+                setResultsCursor(cursor);
+                setResultsVisibility(cursor.getCount() > 0);
+            } else if (cursor != null) {
+                cursor.close();
+            }

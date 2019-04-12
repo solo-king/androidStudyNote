@@ -1,0 +1,78 @@
+class SmsDefaultDialog
+!!!350850.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        String packageName = intent.getStringExtra(Intents.EXTRA_PACKAGE_NAME);
+
+        setResult(RESULT_CANCELED);
+        if (!buildDialog(packageName)) {
+            finish();
+        }
+!!!350978.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        switch (which) {
+            case BUTTON_POSITIVE:
+                SmsApplication.setDefaultApplication(mNewSmsApplicationData.mPackageName, this);
+                setResult(RESULT_OK);
+                break;
+            case BUTTON_NEGATIVE:
+                break;
+            default:
+                if (which >= 0) {
+                    AppListAdapter adapter = (AppListAdapter) mAlertParams.mAdapter;
+                    if (!adapter.isSelected(which)) {
+                        String packageName = adapter.getPackageName(which);
+                        if (!TextUtils.isEmpty(packageName)) {
+                            SmsApplication.setDefaultApplication(packageName, this);
+                            setResult(RESULT_OK);
+                        }
+                    }
+                }
+                break;
+        }
+!!!351106.java!!!	buildDialog(in packageName : String) : boolean
+        TelephonyManager tm = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        if (!tm.isSmsCapable()) {
+            // No phone, no SMS
+            return false;
+        }
+        final AlertController.AlertParams p = mAlertParams;
+        p.mTitle = getString(R.string.sms_change_default_dialog_title);
+        mNewSmsApplicationData = SmsApplication.getSmsApplicationData(packageName, this);
+        if (mNewSmsApplicationData != null) {
+            // New default SMS app specified, change to that directly after the confirmation
+            // dialog.
+            SmsApplicationData oldSmsApplicationData = null;
+            ComponentName oldSmsComponent = SmsApplication.getDefaultSmsApplication(this, true);
+            if (oldSmsComponent != null) {
+                oldSmsApplicationData = SmsApplication.getSmsApplicationData(
+                        oldSmsComponent.getPackageName(), this);
+                if (oldSmsApplicationData.mPackageName.equals(
+                        mNewSmsApplicationData.mPackageName)) {
+                    return false;
+                }
+            }
+
+            // Compose dialog; get
+            if (oldSmsApplicationData != null) {
+                p.mMessage = getString(R.string.sms_change_default_dialog_text,
+                        mNewSmsApplicationData.getApplicationName(this),
+                        oldSmsApplicationData.getApplicationName(this));
+            } else {
+                p.mMessage = getString(R.string.sms_change_default_no_previous_dialog_text,
+                        mNewSmsApplicationData.getApplicationName(this));
+            }
+            p.mPositiveButtonText = getString(R.string.yes);
+            p.mNegativeButtonText = getString(R.string.no);
+            p.mPositiveButtonListener = this;
+            p.mNegativeButtonListener = this;
+        } else {
+            // No new default SMS app specified, show a list of all SMS apps and let user to pick
+            p.mAdapter = new AppListAdapter();
+            p.mOnClickListener = this;
+            p.mNegativeButtonText = getString(R.string.cancel);
+            p.mNegativeButtonListener = this;
+        }
+        setupAlert();
+
+        return true;

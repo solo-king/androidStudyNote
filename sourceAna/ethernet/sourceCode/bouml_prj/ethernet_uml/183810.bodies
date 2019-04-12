@@ -1,0 +1,6 @@
+class MyRunnable
+!!!553730.java!!!	MyRunnable(in resultCode : int, inout resultData : Bundle)
+            mResultCode = resultCode;
+            mResultData = resultData;
+!!!553858.java!!!	run() : void
+            onReceiveResult(mResultCode, mResultData);

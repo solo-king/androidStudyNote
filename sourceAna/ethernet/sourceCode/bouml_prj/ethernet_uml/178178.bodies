@@ -1,0 +1,73 @@
+class MemoryFile
+!!!489986.java!!!	MemoryFile(in name : String, in length : int)
+        mLength = length;
+        mFD = native_open(name, length);
+        if (length > 0) {
+            mAddress = native_mmap(mFD, length, PROT_READ | PROT_WRITE);
+        } else {
+            mAddress = 0;
+        }
+!!!490114.java!!!	close() : void
+        deactivate();
+        if (!isClosed()) {
+            native_close(mFD);
+        }
+!!!490242.java!!!	deactivate() : void
+        if (!isDeactivated()) {
+            try {
+                native_munmap(mAddress, mLength);
+                mAddress = 0;
+            } catch (IOException ex) {
+                Log.e(TAG, ex.toString());
+            }
+        }
+!!!490370.java!!!	isDeactivated() : boolean
+        return mAddress == 0;
+!!!490498.java!!!	isClosed() : boolean
+        return !mFD.valid();
+!!!490626.java!!!	finalize() : void
+        if (!isClosed()) {
+            Log.e(TAG, "MemoryFile.finalize() called while ashmem still open");
+            close();
+        }
+!!!490754.java!!!	length() : int
+        return mLength;
+!!!490882.java!!!	isPurgingAllowed() : boolean
+        return mAllowPurging;
+!!!491010.java!!!	allowPurging(inout allowPurging : boolean) : boolean
+        boolean oldValue = mAllowPurging;
+        if (oldValue != allowPurging) {
+            native_pin(mFD, !allowPurging);
+            mAllowPurging = allowPurging;
+        }
+        return oldValue;
+!!!491138.java!!!	getInputStream() : InputStream
+        return new MemoryInputStream();
+!!!491266.java!!!	getOutputStream() : OutputStream
+        return new MemoryOutputStream();
+!!!491394.java!!!	readBytes(inout buffer : byte, in srcOffset : int, in destOffset : int, in count : int) : int
+        if (isDeactivated()) {
+            throw new IOException("Can't read from deactivated memory file.");
+        }
+        if (destOffset < 0 || destOffset > buffer.length || count < 0
+                || count > buffer.length - destOffset
+                || srcOffset < 0 || srcOffset > mLength
+                || count > mLength - srcOffset) {
+            throw new IndexOutOfBoundsException();
+        }
+        return native_read(mFD, mAddress, buffer, srcOffset, destOffset, count, mAllowPurging);
+!!!491522.java!!!	writeBytes(inout buffer : byte, in srcOffset : int, in destOffset : int, in count : int) : void
+        if (isDeactivated()) {
+            throw new IOException("Can't write to deactivated memory file.");
+        }
+        if (srcOffset < 0 || srcOffset > buffer.length || count < 0
+                || count > buffer.length - srcOffset
+                || destOffset < 0 || destOffset > mLength
+                || count > mLength - destOffset) {
+            throw new IndexOutOfBoundsException();
+        }
+        native_write(mFD, mAddress, buffer, srcOffset, destOffset, count, mAllowPurging);
+!!!491650.java!!!	getFileDescriptor() : FileDescriptor
+        return mFD;
+!!!491778.java!!!	getSize(inout fd : FileDescriptor) : int
+        return native_get_size(fd);

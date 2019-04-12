@@ -1,0 +1,12 @@
+class AppStateWriteSettingsBridge
+!!!469250.java!!!	AppStateWriteSettingsBridge(inout context : Context, inout appState : ApplicationsState, inout callback : AppStateBaseBridge::Callback)
+        super(context, appState, callback, APP_OPS_OP_CODE, PM_PERMISSIONS);
+!!!469378.java!!!	updateExtraInfo(inout app : AppEntry, in pkg : String, in uid : int) : void
+        app.extraInfo = getWriteSettingsInfo(pkg, uid);
+!!!469506.java!!!	getWriteSettingsInfo(in pkg : String, in uid : int) : AppStateWriteSettingsBridge::WriteSettingsState
+        PermissionState permissionState = super.getPermissionInfo(pkg, uid);
+        return new WriteSettingsState(permissionState);
+!!!469634.java!!!	getNumberOfPackagesWithPermission() : int
+        return super.getNumPackagesDeclaredPermission();
+!!!469762.java!!!	getNumberOfPackagesCanWriteSettings() : int
+        return super.getNumPackagesAllowedByAppOps();

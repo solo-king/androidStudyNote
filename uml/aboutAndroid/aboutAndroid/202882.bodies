@@ -1,0 +1,42 @@
+class AppListAdapter
+!!!451970.java!!!	AppListAdapter(inout context : Context, inout state : AppOpsState, inout userControlled : boolean)
+            mResources = context.getResources();
+            mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mState = state;
+            mUserControlled = userControlled;
+!!!452098.java!!!	setData(inout data : List<AppOpEntry>) : void
+            mList = data;
+            notifyDataSetChanged();
+!!!452226.java!!!	getCount() : int
+            return mList != null ? mList.size() : 0;
+!!!452354.java!!!	getItem(in position : int) : AppOpsState::AppOpEntry
+            return mList.get(position);
+!!!452482.java!!!	getItemId(in position : int) : long
+            return position;
+!!!452610.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            View view;
+
+            if (convertView == null) {
+                view = mInflater.inflate(R.layout.app_ops_item, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            AppOpEntry item = getItem(position);
+            ((ImageView)view.findViewById(R.id.app_icon)).setImageDrawable(
+                    item.getAppEntry().getIcon());
+            ((TextView)view.findViewById(R.id.app_name)).setText(item.getAppEntry().getLabel());
+            if (mUserControlled) {
+                ((TextView) view.findViewById(R.id.op_name)).setText(
+                        item.getTimeText(mResources, false));
+                view.findViewById(R.id.op_time).setVisibility(View.GONE);
+                ((Switch) view.findViewById(R.id.op_switch)).setChecked(
+                        item.getPrimaryOpMode() == AppOpsManager.MODE_ALLOWED);
+            } else {
+                ((TextView) view.findViewById(R.id.op_name)).setText(item.getSummaryText(mState));
+                ((TextView) view.findViewById(R.id.op_time)).setText(
+                        item.getTimeText(mResources, false));
+                view.findViewById(R.id.op_switch).setVisibility(View.GONE);
+            }
+
+            return view;

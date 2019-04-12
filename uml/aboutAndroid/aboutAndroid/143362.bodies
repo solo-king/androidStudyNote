@@ -1,0 +1,39 @@
+class SaveAndFinishWorker
+!!!195586.java!!!	start(inout utils : LockPatternUtils, inout credentialRequired : boolean, inout hasChallenge : boolean, in challenge : long, inout chosenPattern : List<LockPatternView.Cell>, in currentPattern : String, in userId : int) : void
+            prepare(utils, credentialRequired, hasChallenge, challenge, userId);
+
+            mCurrentPattern = currentPattern;
+            mChosenPattern = chosenPattern;
+            mUserId = userId;
+
+            mLockVirgin = !mUtils.isPatternEverChosen(mUserId);
+
+            start();
+!!!195714.java!!!	saveAndVerifyInBackground() : Intent
+            Intent result = null;
+            final int userId = mUserId;
+            mUtils.saveLockPattern(mChosenPattern, mCurrentPattern, userId);
+
+            if (mHasChallenge) {
+                byte[] token;
+                try {
+                    token = mUtils.verifyPattern(mChosenPattern, mChallenge, userId);
+                } catch (RequestThrottledException e) {
+                    token = null;
+                }
+
+                if (token == null) {
+                    Log.e(TAG, "critical: no token returned for known good pattern");
+                }
+
+                result = new Intent();
+                result.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, token);
+            }
+
+            return result;
+!!!195842.java!!!	finish(inout resultData : Intent) : void
+            if (mLockVirgin) {
+                mUtils.setVisiblePatternEnabled(true, mUserId);
+            }
+
+            super.finish(resultData);

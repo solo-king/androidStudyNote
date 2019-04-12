@@ -1,0 +1,12 @@
+class FakeUsageStatsManagerWrapper
+!!!1049858.java!!!	FakeUsageStatsManagerWrapper(inout context : Context)
+            super(context);
+            mActivePackages = new HashSet<>();
+!!!1049986.java!!!	setAppInactive(in packageName : String, inout isInactive : boolean) : void
+            if (!isInactive) {
+                mActivePackages.add(packageName);
+            } else {
+                mActivePackages.remove(packageName);
+            }
+!!!1050114.java!!!	isAppInactive(in packageName : String) : boolean
+            return !mActivePackages.contains(packageName);

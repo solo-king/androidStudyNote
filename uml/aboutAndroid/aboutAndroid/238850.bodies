@@ -1,0 +1,17 @@
+class SummaryProvider
+!!!663170.java!!!	SummaryProvider(inout context : Context, inout loader : SummaryLoader)
+            mContext = context;
+            mLoader = loader;
+!!!663298.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                updateSummary();
+            }
+!!!663426.java!!!	updateSummary() : void
+            // TODO: Register listener.
+            final StorageManager storageManager = mContext.getSystemService(StorageManager.class);
+            PrivateStorageInfo info = PrivateStorageInfo.getPrivateStorageInfo(
+                    new StorageManagerVolumeProvider(storageManager));
+            long privateUsedBytes = info.totalBytes - info.freeBytes;
+            mLoader.setSummary(this, mContext.getString(R.string.storage_summary,
+                    Formatter.formatFileSize(mContext, privateUsedBytes),
+                    Formatter.formatFileSize(mContext, info.totalBytes)));

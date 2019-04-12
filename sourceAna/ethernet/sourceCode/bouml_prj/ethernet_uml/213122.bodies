@@ -1,0 +1,15 @@
+class Instrumentation
+!!!833282.java!!!	Instrumentation(in args : PackageParser::ParsePackageItemArgs, in _info : InstrumentationInfo)
+            super(args, _info);
+            info = _info;
+!!!833410.java!!!	setPackageName(in packageName : String) : void
+            super.setPackageName(packageName);
+            info.packageName = packageName;
+!!!833538.java!!!	toString() : String
+            StringBuilder sb = new StringBuilder(128);
+            sb.append("Instrumentation{");
+            sb.append(Integer.toHexString(System.identityHashCode(this)));
+            sb.append(' ');
+            appendComponentShortName(sb);
+            sb.append('}');
+            return sb.toString();

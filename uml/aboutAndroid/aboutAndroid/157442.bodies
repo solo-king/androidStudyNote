@@ -1,0 +1,19 @@
+class HelpTrampoline
+!!!281474.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        try {
+            final String name = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            final int id = getResources().getIdentifier(name, "string", getPackageName());
+            final String value = getResources().getString(id);
+
+            final Intent intent = HelpUtils.getHelpIntent(this, value, null);
+            if (intent != null) {
+                startActivity(intent);
+            }
+
+        } catch (Resources.NotFoundException | ActivityNotFoundException e) {
+            Log.w(TAG, "Failed to resolve help", e);
+        }
+
+        finish();

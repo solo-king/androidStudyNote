@@ -1,0 +1,33 @@
+class StatFs
+!!!559234.java!!!	StatFs(in path : String)
+        mStat = doStat(path);
+!!!559362.java!!!	doStat(in path : String) : StructStatVfs
+        try {
+            return Libcore.os.statvfs(path);
+        } catch (ErrnoException e) {
+            throw new IllegalArgumentException("Invalid path: " + path, e);
+        }
+!!!559490.java!!!	restat(in path : String) : void
+        mStat = doStat(path);
+!!!559618.java!!!	getBlockSize() : int
+        return (int) mStat.f_bsize;
+!!!559746.java!!!	getBlockSizeLong() : long
+        return mStat.f_bsize;
+!!!559874.java!!!	getBlockCount() : int
+        return (int) mStat.f_blocks;
+!!!560002.java!!!	getBlockCountLong() : long
+        return mStat.f_blocks;
+!!!560130.java!!!	getFreeBlocks() : int
+        return (int) mStat.f_bfree;
+!!!560258.java!!!	getFreeBlocksLong() : long
+        return mStat.f_bfree;
+!!!560386.java!!!	getFreeBytes() : long
+        return mStat.f_bfree * mStat.f_bsize;
+!!!560514.java!!!	getAvailableBlocks() : int
+        return (int) mStat.f_bavail;
+!!!560642.java!!!	getAvailableBlocksLong() : long
+        return mStat.f_bavail;
+!!!560770.java!!!	getAvailableBytes() : long
+        return mStat.f_bavail * mStat.f_bsize;
+!!!560898.java!!!	getTotalBytes() : long
+        return mStat.f_blocks * mStat.f_bsize;

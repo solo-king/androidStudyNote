@@ -1,0 +1,4 @@
+class PasswordRequirementViewHolder
+!!!854914.java!!!	PasswordRequirementViewHolder(inout itemView : View)
+            super(itemView);
+            mDescriptionText = (TextView) itemView;

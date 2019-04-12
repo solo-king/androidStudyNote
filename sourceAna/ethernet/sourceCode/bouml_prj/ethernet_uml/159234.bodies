@@ -1,0 +1,47 @@
+class NsdServiceInfo
+!!!383490.java!!!	NsdServiceInfo(in sn : String, in rt : String, inout tr : DnsSdTxtRecord)
+        mServiceName = sn;
+        mServiceType = rt;
+        mTxtRecord = tr;
+!!!383618.java!!!	getServiceName() : String
+        return mServiceName;
+!!!383746.java!!!	setServiceName(in s : String) : void
+        mServiceName = s;
+!!!383874.java!!!	getServiceType() : String
+        return mServiceType;
+!!!384002.java!!!	setServiceType(in s : String) : void
+        mServiceType = s;
+!!!384130.java!!!	getTxtRecord() : DnsSdTxtRecord
+        return mTxtRecord;
+!!!384258.java!!!	setTxtRecord(inout t : DnsSdTxtRecord) : void
+        mTxtRecord = new DnsSdTxtRecord(t);
+!!!384386.java!!!	getHost() : InetAddress
+        return mHost;
+!!!384514.java!!!	setHost(inout s : InetAddress) : void
+        mHost = s;
+!!!384642.java!!!	getPort() : int
+        return mPort;
+!!!384770.java!!!	setPort(in p : int) : void
+        mPort = p;
+!!!384898.java!!!	toString() : String
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("name: ").append(mServiceName).
+            append("type: ").append(mServiceType).
+            append("host: ").append(mHost).
+            append("port: ").append(mPort).
+            append("txtRecord: ").append(mTxtRecord);
+        return sb.toString();
+!!!385026.java!!!	describeContents() : int
+        return 0;
+!!!385154.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeString(mServiceName);
+        dest.writeString(mServiceType);
+        dest.writeParcelable(mTxtRecord, flags);
+        if (mHost != null) {
+            dest.writeByte((byte)1);
+            dest.writeByteArray(mHost.getAddress());
+        } else {
+            dest.writeByte((byte)0);
+        }
+        dest.writeInt(mPort);

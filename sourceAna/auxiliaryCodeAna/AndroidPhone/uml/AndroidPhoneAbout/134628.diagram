@@ -1,0 +1,26 @@
+format 221
+
+classinstance 128100 class_ref 135780 // PhoneFactory
+  name ""   xyz 164 12 2005 life_line_z 2000
+classinstance 128612 class_ref 135396 // GsmCdmaPhone
+  name ""   xyz 434 4 2005 life_line_z 2000
+durationcanvas 128228 classinstance_ref 128100 // :PhoneFactory
+  xyzwh 212 89 2010 11 73
+end
+durationcanvas 128740 classinstance_ref 128612 // :GsmCdmaPhone
+  xyzwh 493 123 2010 11 26
+end
+lostfoundmsgsupport 128356 xyz 91 91 2015
+msg 128484 found_synchronous
+  from lostfoundmsgsupport_ref 128356
+  to durationcanvas_ref 128228
+  yz 89 2015 msg operation_ref 155492 // "makeDefaultPhones(inout context : Context) : void"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 85 70
+msg 128868 synchronous
+  from durationcanvas_ref 128228
+  to durationcanvas_ref 128740
+  yz 123 2015 explicitmsg "A1.GsmCdmaPhone()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 287 110
+end

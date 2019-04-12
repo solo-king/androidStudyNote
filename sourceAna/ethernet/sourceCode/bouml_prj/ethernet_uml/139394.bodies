@@ -1,0 +1,414 @@
+class ConnectivityManager
+!!!172802.java!!!	isNetworkTypeValid(in networkType : int) : boolean
+        return networkType >= 0 && networkType <= MAX_NETWORK_TYPE;
+!!!172930.java!!!	getNetworkTypeName(in type : int) : String
+        switch (type) {
+            case TYPE_MOBILE:
+                return "MOBILE";
+            case TYPE_WIFI:
+                return "WIFI";
+            case TYPE_MOBILE_MMS:
+                return "MOBILE_MMS";
+            case TYPE_MOBILE_SUPL:
+                return "MOBILE_SUPL";
+            case TYPE_MOBILE_DUN:
+                return "MOBILE_DUN";
+            case TYPE_MOBILE_HIPRI:
+                return "MOBILE_HIPRI";
+            case TYPE_WIMAX:
+                return "WIMAX";
+            case TYPE_BLUETOOTH:
+                return "BLUETOOTH";
+            case TYPE_DUMMY:
+                return "DUMMY";
+            case TYPE_ETHERNET:
+                return "ETHERNET";
+            case TYPE_MOBILE_FOTA:
+                return "MOBILE_FOTA";
+            case TYPE_MOBILE_IMS:
+                return "MOBILE_IMS";
+            case TYPE_MOBILE_CBS:
+                return "MOBILE_CBS";
+            case TYPE_WIFI_P2P:
+                return "WIFI_P2P";
+            case TYPE_MOBILE_IA:
+                return "MOBILE_IA";
+            default:
+                return Integer.toString(type);
+        }
+!!!173058.java!!!	isNetworkTypeMobile(in networkType : int) : boolean
+        switch (networkType) {
+            case TYPE_MOBILE:
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_DUN:
+            case TYPE_MOBILE_HIPRI:
+            case TYPE_MOBILE_FOTA:
+            case TYPE_MOBILE_IMS:
+            case TYPE_MOBILE_CBS:
+            case TYPE_MOBILE_IA:
+                return true;
+            default:
+                return false;
+        }
+!!!173186.java!!!	isNetworkTypeWifi(in networkType : int) : boolean
+        switch (networkType) {
+            case TYPE_WIFI:
+            case TYPE_WIFI_P2P:
+                return true;
+            default:
+                return false;
+        }
+!!!173314.java!!!	isNetworkTypeExempt(in networkType : int) : boolean
+        switch (networkType) {
+            case TYPE_MOBILE_MMS:
+            case TYPE_MOBILE_SUPL:
+            case TYPE_MOBILE_HIPRI:
+            case TYPE_MOBILE_IA:
+                return true;
+            default:
+                return false;
+        }
+!!!173442.java!!!	setNetworkPreference(in preference : int) : void
+        try {
+            mService.setNetworkPreference(preference);
+        } catch (RemoteException e) {
+        }
+!!!173570.java!!!	getNetworkPreference() : int
+        try {
+            return mService.getNetworkPreference();
+        } catch (RemoteException e) {
+            return -1;
+        }
+!!!173698.java!!!	getActiveNetworkInfo() : NetworkInfo
+        try {
+            return mService.getActiveNetworkInfo();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!173826.java!!!	getActiveNetworkInfoForUid(in uid : int) : NetworkInfo
+        try {
+            return mService.getActiveNetworkInfoForUid(uid);
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!173954.java!!!	getNetworkInfo(in networkType : int) : NetworkInfo
+        try {
+            return mService.getNetworkInfo(networkType);
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174082.java!!!	getNetworkInfoForSubscription(in networkType : int, in subId : int) : NetworkInfo
+        try {
+            return mService.getNetworkInfoForSubscription(networkType, subId);
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174210.java!!!	getAllNetworkInfo() : NetworkInfo
+        try {
+            return mService.getAllNetworkInfo();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174338.java!!!	getProvisioningOrActiveNetworkInfo() : NetworkInfo
+        try {
+            return mService.getProvisioningOrActiveNetworkInfo();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174466.java!!!	getActiveLinkProperties() : LinkProperties
+        try {
+            return mService.getActiveLinkProperties();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174594.java!!!	getLinkProperties(in networkType : int) : LinkProperties
+        try {
+            return mService.getLinkProperties(networkType);
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!174722.java!!!	setRadios(inout turnOn : boolean) : boolean
+        try {
+            return mService.setRadios(turnOn);
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!174850.java!!!	setRadio(in networkType : int, inout turnOn : boolean) : boolean
+        try {
+            return mService.setRadio(networkType, turnOn);
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!174978.java!!!	startUsingNetworkFeature(in networkType : int, in feature : String) : int
+        try {
+            return mService.startUsingNetworkFeature(networkType, feature,
+                    new Binder());
+        } catch (RemoteException e) {
+            return -1;
+        }
+!!!175106.java!!!	startUsingNetworkFeatureForSubscription(in networkType : int, in feature : String, in subId : int) : int
+        try {
+            return mService.startUsingNetworkFeatureForSubscription(networkType, feature, subId, new Binder());
+        } catch (RemoteException e) {
+            return -1;
+        }
+!!!175234.java!!!	stopUsingNetworkFeature(in networkType : int, in feature : String) : int
+        try {
+            return mService.stopUsingNetworkFeature(networkType, feature);
+        } catch (RemoteException e) {
+            return -1;
+        }
+!!!175362.java!!!	stopUsingNetworkFeatureForSubscription(in networkType : int, in feature : String, in subId : int) : int
+        try {
+            return mService.stopUsingNetworkFeatureForSubscription(networkType, feature, subId);
+        } catch (RemoteException e) {
+            return -1;
+        }
+!!!175490.java!!!	requestRouteToHost(in networkType : int, in hostAddress : int) : boolean
+        InetAddress inetAddress = NetworkUtils.intToInetAddress(hostAddress);
+
+        if (inetAddress == null) {
+            return false;
+        }
+
+        return requestRouteToHostAddress(networkType, inetAddress);
+!!!175618.java!!!	requestRouteToHostAddress(in networkType : int, inout hostAddress : InetAddress) : boolean
+        byte[] address = hostAddress.getAddress();
+        try {
+            return mService.requestRouteToHostAddress(networkType, address, mPackageName);
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!175746.java!!!	getBackgroundDataSetting() : boolean
+        // assume that background data is allowed; final authority is
+        // NetworkInfo which may be blocked.
+        return true;
+!!!175874.java!!!	setBackgroundDataSetting(inout allowBackgroundData : boolean) : void
+        // ignored
+!!!176002.java!!!	getActiveNetworkQuotaInfo() : NetworkQuotaInfo
+        try {
+            return mService.getActiveNetworkQuotaInfo();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!176130.java!!!	getMobileDataEnabled() : boolean
+        try {
+            return mService.getMobileDataEnabled();
+        } catch (RemoteException e) {
+            return true;
+        }
+!!!176258.java!!!	getMobileDataEnabledOnSubscription(in subId : int) : boolean
+        try {
+            return mService.getMobileDataEnabledOnSubscription(subId);
+        } catch (RemoteException e) {
+            return true;
+        }
+!!!176386.java!!!	setMobileDataEnabled(inout enabled : boolean) : void
+        try {
+            mService.setMobileDataEnabled(ActivityThread.currentPackageName(), enabled);
+        } catch (RemoteException e) {
+        }
+!!!176514.java!!!	setMobileDataEnabledOnSubscription(inout enabled : boolean, in subId : int) : void
+                    try {
+                        mService.setMobileDataEnabledOnSubscription(ActivityThread.currentPackageName(), enabled, subId);
+                    } catch (RemoteException e) {
+                    }
+!!!176642.java!!!	ConnectivityManager(inout service : IConnectivityManager, in packageName : String)
+        mService = checkNotNull(service, "missing IConnectivityManager");
+        mPackageName = checkNotNull(packageName, "missing package name");
+!!!176770.java!!!	from(inout context : Context) : ConnectivityManager
+        return (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+!!!176898.java!!!	getTetherableIfaces() : String
+        try {
+            return mService.getTetherableIfaces();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!177026.java!!!	getTetheredIfaces() : String
+        try {
+            return mService.getTetheredIfaces();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!177154.java!!!	getTetheringErroredIfaces() : String
+        try {
+            return mService.getTetheringErroredIfaces();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!177282.java!!!	tether(in iface : String) : int
+        try {
+            return mService.tether(iface);
+        } catch (RemoteException e) {
+            return TETHER_ERROR_SERVICE_UNAVAIL;
+        }
+!!!177410.java!!!	untether(in iface : String) : int
+        try {
+            return mService.untether(iface);
+        } catch (RemoteException e) {
+            return TETHER_ERROR_SERVICE_UNAVAIL;
+        }
+!!!177538.java!!!	isTetheringSupported() : boolean
+        try {
+            return mService.isTetheringSupported();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!177666.java!!!	getTetherableUsbRegexs() : String
+        try {
+            return mService.getTetherableUsbRegexs();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!177794.java!!!	getTetherableWifiRegexs() : String
+        try {
+            return mService.getTetherableWifiRegexs();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!177922.java!!!	getTetherableBluetoothRegexs() : String
+        try {
+            return mService.getTetherableBluetoothRegexs();
+        } catch (RemoteException e) {
+            return new String[0];
+        }
+!!!178050.java!!!	setUsbTethering(inout enable : boolean) : int
+        try {
+            return mService.setUsbTethering(enable);
+        } catch (RemoteException e) {
+            return TETHER_ERROR_SERVICE_UNAVAIL;
+        }
+!!!178178.java!!!	getTetherConnectedSta() : List<WifiDevice>
+        try {
+            return mService.getTetherConnectedSta();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!178306.java!!!	getLastTetherError(in iface : String) : int
+        try {
+            return mService.getLastTetherError(iface);
+        } catch (RemoteException e) {
+            return TETHER_ERROR_SERVICE_UNAVAIL;
+        }
+!!!178434.java!!!	requestNetworkTransitionWakelock(in forWhom : String) : boolean
+        try {
+            mService.requestNetworkTransitionWakelock(forWhom);
+            return true;
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!178562.java!!!	reportInetCondition(in networkType : int, in percentage : int) : void
+        try {
+            mService.reportInetCondition(networkType, percentage);
+        } catch (RemoteException e) {
+        }
+!!!178690.java!!!	setGlobalProxy(inout p : ProxyProperties) : void
+        try {
+            mService.setGlobalProxy(p);
+        } catch (RemoteException e) {
+        }
+!!!178818.java!!!	getGlobalProxy() : ProxyProperties
+        try {
+            return mService.getGlobalProxy();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!178946.java!!!	getProxy() : ProxyProperties
+        try {
+            return mService.getProxy();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!179074.java!!!	setDataDependency(in networkType : int, inout met : boolean) : void
+        try {
+            mService.setDataDependency(networkType, met);
+        } catch (RemoteException e) {
+        }
+!!!179202.java!!!	isNetworkSupported(in networkType : int) : boolean
+        try {
+            return mService.isNetworkSupported(networkType);
+        } catch (RemoteException e) {}
+        return false;
+!!!179330.java!!!	isActiveNetworkMetered() : boolean
+        try {
+            return mService.isActiveNetworkMetered();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!179458.java!!!	updateLockdownVpn() : boolean
+        try {
+            return mService.updateLockdownVpn();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!179586.java!!!	captivePortalCheckComplete(inout info : NetworkInfo) : void
+        try {
+            mService.captivePortalCheckComplete(info);
+        } catch (RemoteException e) {
+        }
+!!!179714.java!!!	captivePortalCheckCompleted(inout info : NetworkInfo, inout isCaptivePortal : boolean) : void
+        try {
+            mService.captivePortalCheckCompleted(info, isCaptivePortal);
+        } catch (RemoteException e) {
+        }
+!!!179842.java!!!	supplyMessenger(in networkType : int, inout messenger : Messenger) : void
+        try {
+            mService.supplyMessenger(networkType, messenger);
+        } catch (RemoteException e) {
+        }
+!!!179970.java!!!	supplyMessengerForSubscription(in networkType : int, inout messenger : Messenger, in subId : int) : void
+        try {
+            mService.supplyMessengerForSubscription(networkType, messenger, subId);
+        } catch (RemoteException e) {
+        }
+!!!180098.java!!!	checkMobileProvisioning(in suggestedTimeOutMs : int) : int
+        int timeOutMs = -1;
+        try {
+            timeOutMs = mService.checkMobileProvisioning(suggestedTimeOutMs);
+        } catch (RemoteException e) {
+        }
+        return timeOutMs;
+!!!180226.java!!!	getMobileProvisioningUrl() : String
+        try {
+            return mService.getMobileProvisioningUrl();
+        } catch (RemoteException e) {
+        }
+        return null;
+!!!180354.java!!!	getMobileRedirectedProvisioningUrl() : String
+        try {
+            return mService.getMobileRedirectedProvisioningUrl();
+        } catch (RemoteException e) {
+        }
+        return null;
+!!!180482.java!!!	getLinkQualityInfo(in networkType : int) : LinkQualityInfo
+        try {
+            LinkQualityInfo li = mService.getLinkQualityInfo(networkType);
+            return li;
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!180610.java!!!	getActiveLinkQualityInfo() : LinkQualityInfo
+        try {
+            LinkQualityInfo li = mService.getActiveLinkQualityInfo();
+            return li;
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!180738.java!!!	getAllLinkQualityInfo() : LinkQualityInfo
+        try {
+            LinkQualityInfo[] li = mService.getAllLinkQualityInfo();
+            return li;
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!180866.java!!!	setProvisioningNotificationVisible(inout visible : boolean, in networkType : int, in extraInfo : String, in url : String) : void
+        try {
+            mService.setProvisioningNotificationVisible(visible, networkType, extraInfo, url);
+        } catch (RemoteException e) {
+        }
+!!!180994.java!!!	setAirplaneMode(inout enable : boolean) : void
+        try {
+            mService.setAirplaneMode(enable);
+        } catch (RemoteException e) {
+        }

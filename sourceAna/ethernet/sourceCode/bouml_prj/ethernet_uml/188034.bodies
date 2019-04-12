@@ -1,0 +1,3 @@
+class State
+!!!576770.java!!!	State(in state : String)
+            sStates.put(state, this);

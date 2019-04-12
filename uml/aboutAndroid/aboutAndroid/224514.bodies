@@ -1,0 +1,13 @@
+class ConditionLoader
+!!!582530.java!!!	doInBackground(inout  : Void...params) : Condition
+            ArrayList<Condition> conditions = new ArrayList<>();
+            mXmlFile = new File(mContext.getFilesDir(), FILE_NAME);
+            if (mXmlFile.exists()) {
+                readFromXml(mXmlFile, conditions);
+            }
+            addMissingConditions(conditions);
+            return conditions;
+!!!582658.java!!!	onPostExecute(inout conditions : ArrayList<Condition>) : void
+            mConditions.clear();
+            mConditions.addAll(conditions);
+            refreshAll();

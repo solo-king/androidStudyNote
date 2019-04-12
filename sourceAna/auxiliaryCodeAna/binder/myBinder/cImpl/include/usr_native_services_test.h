@@ -1,0 +1,6 @@
+#ifndef		USR_NATIVE_SERVICES_TEST_H
+#define		USR_NATIVE_SERVICES_TEST_H
+
+#define		OPR_CMD_COUNT		2
+
+#endif

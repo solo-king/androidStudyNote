@@ -1,0 +1,5 @@
+class SendIntentException
+!!!754306.java!!!	SendIntentException(in name : String)
+            super(name);
+!!!754434.java!!!	SendIntentException(inout cause : Exception)
+            super(cause);

@@ -1,0 +1,172 @@
+format 221
+
+classinstance 128100 class_ref 137188 // SystemServer
+  name ""   xyz 113 4 2005 life_line_z 2000
+classinstance 129892 class_ref 129380 // NetworkTimeUpdateService
+  name ""   xyz 576 4 2005 life_line_z 2000
+note 130532 "mPollingIntervalMs =   com.android.internal.R.integer.config_ntpPollingInterva    mPollingIntervalShorterMs = com.android.internal.R.integer.config_ntpPollingIntervalShorter
+mTryAgainTimesMax =  com.android.internal.R.integer.config_ntpRetry
+mTimeErrorThresholdMs = com.android.internal.R.integer.config_ntpThreshold"
+  xyzwh 343 46 2000 643 95
+note 131684 "intentFilter.addAction(TelephonyIntents.ACTION_NETWORK_SET_TIME);"
+  xyzwh 481 591 2000 521 37
+note 132580 "new IntentFilter(ACTION_POLL)"
+  xyzwh 299 665 2000 233 39
+note 132836 "ConnectivityManager.CONNECTIVITY_ACTION"
+  xyzwh 223 727 2000 347 35
+classinstance 133348 class_ref 129764 // MyHandler
+  name ""   xyz 1068 757 2005 life_line_z 2000
+durationcanvas 128228 classinstance_ref 128100 // :SystemServer
+  xyzwh 161 75 2010 11 712
+  overlappingdurationcanvas 128612
+    xyzwh 167 113 2020 11 668
+    overlappingdurationcanvas 128868
+      xyzwh 173 149 2030 11 623
+      overlappingdurationcanvas 129124
+	xyzwh 179 194 2040 11 25
+      end
+      overlappingdurationcanvas 129380
+	xyzwh 179 251 2040 11 25
+      end
+      overlappingdurationcanvas 129636
+	xyzwh 179 305 2040 11 176
+      end
+      overlappingdurationcanvas 130916
+	xyzwh 179 591 2040 11 107
+      end
+    end
+  end
+end
+durationcanvas 130020 classinstance_ref 129892 // :NetworkTimeUpdateService
+  xyzwh 670 341 2010 11 26
+end
+durationcanvas 130276 classinstance_ref 129892 // :NetworkTimeUpdateService
+  xyzwh 670 391 2010 11 26
+end
+durationcanvas 130660 classinstance_ref 129892 // :NetworkTimeUpdateService
+  xyzwh 670 450 2010 11 25
+end
+durationcanvas 131172 classinstance_ref 129892 // :NetworkTimeUpdateService
+  xyzwh 670 651 2010 11 357
+  overlappingdurationcanvas 131428
+    xyzwh 676 684 2020 11 25
+  end
+  overlappingdurationcanvas 132068
+    xyzwh 676 739 2020 11 25
+  end
+  overlappingdurationcanvas 132324
+    xyzwh 676 790 2020 11 25
+  end
+  overlappingdurationcanvas 133988
+    xyzwh 676 951 2020 11 25
+  end
+end
+durationcanvas 133476 classinstance_ref 133348 // :MyHandler
+  xyzwh 1106 893 2010 11 25
+end
+durationcanvas 133732 classinstance_ref 133348 // :MyHandler
+  xyzwh 1106 853 2010 11 25
+end
+lostfoundmsgsupport 128356 xyz 99 77 2015
+msg 128484 found_synchronous
+  from lostfoundmsgsupport_ref 128356
+  to durationcanvas_ref 128228
+  yz 75 2015 msg operation_ref 158948 // "main(inout args : String [[]]) : void"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 113 56
+reflexivemsg 128740 synchronous
+  to durationcanvas_ref 128612
+  yz 113 2025 explicitmsg "A1.new SystemServer().run();"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 90 94
+reflexivemsg 128996 synchronous
+  to durationcanvas_ref 128868
+  yz 149 2035 explicitmsg "B1.startOtherServices()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 121 130
+reflexivemsg 129252 synchronous
+  to durationcanvas_ref 129124
+  yz 194 2045 explicitmsg "C1.disableNetwork = SystemProperties.getBoolean(\"config.disable_network\", false);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 58 175
+reflexivemsg 129508 synchronous
+  to durationcanvas_ref 129380
+  yz 251 2045 explicitmsg "C2.disableNetworkTime = SystemProperties.getBoolean(\"config.disable_networktime\", false)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 55 228
+reflexivemsg 129764 synchronous
+  to durationcanvas_ref 129636
+  yz 305 2045 explicitmsg "C3.networkTimeUpdater = new NetworkTimeUpdateService(context);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 55 281
+msg 130148 synchronous
+  from durationcanvas_ref 129636
+  to durationcanvas_ref 130020
+  yz 343 2045 explicitmsg "D1.mAlarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 200 323
+msg 130404 synchronous
+  from durationcanvas_ref 129636
+  to durationcanvas_ref 130276
+  yz 393 2045 explicitmsg "D2.mPendingPollIntent = PendingIntent.getBroadcast(mContext, POLL_REQUEST, pollIntent, 0);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 197 374
+msg 130788 synchronous
+  from durationcanvas_ref 129636
+  to durationcanvas_ref 130660
+  yz 451 2045 explicitmsg "D3.get configurations from framework-res.apk"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 284 432
+reflexivemsg 131044 synchronous
+  to durationcanvas_ref 130916
+  yz 591 2045 explicitmsg "C4.mActivityManagerService.systemReady(new Runnable())->run()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 62 567
+msg 131300 synchronous
+  from durationcanvas_ref 130916
+  to durationcanvas_ref 131172
+  yz 651 2045 explicitmsg "D1.systemReady()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 291 632
+reflexivemsg 131556 synchronous
+  to durationcanvas_ref 131428
+  yz 684 2025 explicitmsg "E1.registerForTelephonyIntents()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 588 665
+reflexivemsg 132196 synchronous
+  to durationcanvas_ref 132068
+  yz 739 2025 explicitmsg "E2.registerForAlarms()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 588 719
+reflexivemsg 132452 synchronous
+  to durationcanvas_ref 132324
+  yz 790 2025 explicitmsg "E3.registerForConnectivityIntents()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 583 771
+msg 133604 synchronous
+  from durationcanvas_ref 131172
+  to durationcanvas_ref 133476
+  yz 895 2015 explicitmsg "E5.onPollNetworkTime(msg.what);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  args "EVENT_POLL_NETWORK_TIME"
+  label_xy 715 872
+msg 133860 asynchronous
+  from durationcanvas_ref 131172
+  to durationcanvas_ref 133732
+  yz 856 2015 explicitmsg "E4.mHandler = new MyHandler(thread.getLooper());"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 588 833
+reflexivemsg 134116 synchronous
+  to durationcanvas_ref 133988
+  yz 951 2025 explicitmsg "E6.mSettingsObserver = new SettingsObserver(mHandler, EVENT_AUTO_TIME_CHANGED);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 441 929
+line 131812 -_-_
+  from ref 131428 z 2021 to ref 131684
+line 131940 -_-_
+  from ref 130788 z 2046 to ref 130532
+line 132708 -_-_
+  from ref 132196 z 2026 to ref 132580
+line 132964 -_-_
+  from ref 132452 z 2026 to ref 132836
+end

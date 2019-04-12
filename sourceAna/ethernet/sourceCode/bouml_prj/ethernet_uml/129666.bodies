@@ -1,0 +1,100 @@
+class EthernetManager
+!!!135426.java!!!	EthernetManager(inout service : IEthernetManager, inout handler : Handler)
+        Slog.i(TAG, "Init Ethernet Manager");
+        mService = service;
+        mHandler = handler;
+!!!135554.java!!!	isEthConfigured() : boolean
+        try {
+            return mService.isEthConfigured();
+        } catch (RemoteException e) {
+            Slog.i(TAG, "Can not check eth config state");
+        }
+        return false;
+!!!135682.java!!!	getSavedEthConfig() : EthernetDevInfo
+        try {
+            return mService.getSavedEthConfig();
+        } catch (RemoteException e) {
+            Slog.i(TAG, "Can not get eth config");
+        }
+        return null;
+!!!135810.java!!!	updateEthDevInfo(inout info : EthernetDevInfo) : void
+        try {
+            mService.UpdateEthDevInfo(info);
+        } catch (RemoteException e) {
+            Slog.i(TAG, "Can not update ethernet device info");
+        }
+!!!135938.java!!!	getDeviceNameList() : String
+        try {
+            return mService.getDeviceNameList();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!136066.java!!!	setEthEnabled(inout enable : boolean) : void
+        try {
+            mService.setEthState(enable ? ETH_STATE_ENABLED:ETH_STATE_DISABLED);
+        } catch (RemoteException e) {
+            Slog.i(TAG,"Can not set new state");
+        }
+!!!136194.java!!!	getEthState() : int
+        try {
+            return mService.getEthState();
+        } catch (RemoteException e) {
+            return 0;
+        }
+!!!136322.java!!!	ethConfigured() : boolean
+        try {
+            return mService.isEthConfigured();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!136450.java!!!	getDhcpInfo() : DhcpInfo
+        try {
+            return mService.getDhcpInfo();
+        } catch (RemoteException e) {
+            return null;
+        }
+!!!136578.java!!!	getTotalInterface() : int
+        try {
+            return mService.getTotalInterface();
+        } catch (RemoteException e) {
+            return 0;
+        }
+!!!136706.java!!!	ethSetDefaultConf() : void
+        try {
+            mService.setEthMode(EthernetDevInfo.ETH_CONN_MODE_DHCP);
+        } catch (RemoteException e) {
+        }
+!!!136834.java!!!	isEthDeviceUp() : boolean
+        try {
+            return mService.isEthDeviceUp();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!136962.java!!!	isEthDeviceAdded() : boolean
+        try {
+            return mService.isEthDeviceAdded();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!137090.java!!!	ctrlLanFunc(inout isChecked : boolean) : int
+
+
+        setEthEnabled(isChecked);
+        return 0;
+
+!!!137218.java!!!	getmEthDevMode() : String
+        try {
+            return mService.getmEthDevMode();
+
+        } catch (java.lang.Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+
+!!!137346.java!!!	persistEthDevMode(in ethDevMode : String) : void
+        try {
+            mService.persistEthDevMode(ethDevMode);
+
+        } catch (java.lang.Exception exception) {
+            exception.printStackTrace();
+        }

@@ -1,0 +1,40 @@
+class ProgressCategory
+!!!300930.java!!!	ProgressCategory(inout context : Context)
+        this(context, null);
+!!!301058.java!!!	ProgressCategory(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs, 0);
+!!!301186.java!!!	ProgressCategory(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        this(context, attrs, defStyleAttr, 0);
+!!!301314.java!!!	ProgressCategory(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+        setLayoutResource(R.layout.preference_progress_category);
+!!!301442.java!!!	setEmptyTextRes(in emptyTextRes : int) : void
+        mEmptyTextRes = emptyTextRes;
+!!!301570.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        final View progressBar = view.findViewById(R.id.scanning_progress);
+
+        boolean noDeviceFound = (getPreferenceCount() == 0 ||
+                (getPreferenceCount() == 1 && getPreference(0) == mNoDeviceFoundPreference));
+        progressBar.setVisibility(mProgress ? View.VISIBLE : View.GONE);
+
+        if (mProgress || !noDeviceFound) {
+            if (mNoDeviceFoundAdded) {
+                removePreference(mNoDeviceFoundPreference);
+                mNoDeviceFoundAdded = false;
+            }
+        } else {
+            if (!mNoDeviceFoundAdded) {
+                if (mNoDeviceFoundPreference == null) {
+                    mNoDeviceFoundPreference = new Preference(getPreferenceManager().getContext());
+                    mNoDeviceFoundPreference.setLayoutResource(R.layout.preference_empty_list);
+                    mNoDeviceFoundPreference.setTitle(mEmptyTextRes);
+                    mNoDeviceFoundPreference.setSelectable(false);
+                }
+                addPreference(mNoDeviceFoundPreference);
+                mNoDeviceFoundAdded = true;
+            }
+        }
+!!!301698.java!!!	setProgress(inout progressOn : boolean) : void
+        mProgress = progressOn;
+        notifyChanged();

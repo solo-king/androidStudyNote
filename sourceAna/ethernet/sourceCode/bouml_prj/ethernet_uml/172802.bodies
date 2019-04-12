@@ -1,0 +1,5 @@
+class RemoteException
+!!!456834.java!!!	RemoteException()
+        super();
+!!!456962.java!!!	RemoteException(in message : String)
+        super(message);

@@ -1,0 +1,23 @@
+class SetupFingerprintEnrollEnrolling
+!!!709250.java!!!	getFinishIntent() : Intent
+        final Intent intent = new Intent(this, SetupFingerprintEnrollFinish.class);
+        SetupWizardUtils.copySetupExtras(getIntent(), intent);
+        return intent;
+!!!709378.java!!!	onApplyThemeResource(inout theme : Resources.Theme, in resid : int, inout first : boolean) : void
+        resid = SetupWizardUtils.getTheme(getIntent());
+        super.onApplyThemeResource(theme, resid, first);
+!!!709506.java!!!	initViews() : void
+        super.initViews();
+        final Button skipButton = (Button) findViewById(R.id.skip_button);
+        skipButton.setVisibility(View.VISIBLE);
+        skipButton.setOnClickListener(this);
+!!!709634.java!!!	onClick(inout v : View) : void
+        switch (v.getId()) {
+            case R.id.skip_button:
+                new SkipDialog().show(getFragmentManager(), TAG_DIALOG);
+                break;
+            default:
+                super.onClick(v);
+        }
+!!!709762.java!!!	getMetricsCategory() : int
+        return MetricsEvent.FINGERPRINT_ENROLLING_SETUP;

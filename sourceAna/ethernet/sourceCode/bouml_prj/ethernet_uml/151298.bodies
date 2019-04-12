@@ -1,0 +1,156 @@
+class UrlQuerySanitizer
+!!!315010.java!!!	getUnregisteredParameterValueSanitizer() : UrlQuerySanitizer::ValueSanitizer
+        return mUnregisteredParameterValueSanitizer;
+!!!315138.java!!!	setUnregisteredParameterValueSanitizer(inout sanitizer : UrlQuerySanitizer::ValueSanitizer) : void
+        mUnregisteredParameterValueSanitizer = sanitizer;
+!!!315266.java!!!	getAllIllegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAllIllegal;
+!!!315394.java!!!	getAllButNulLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAllButNulLegal;
+!!!315522.java!!!	getAllButWhitespaceLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAllButWhitespaceLegal;
+!!!315650.java!!!	getUrlLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sURLLegal;
+!!!315778.java!!!	getUrlAndSpaceLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sUrlAndSpaceLegal;
+!!!315906.java!!!	getAmpLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAmpLegal;
+!!!316034.java!!!	getAmpAndSpaceLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAmpAndSpaceLegal;
+!!!316162.java!!!	getSpaceLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sSpaceLegal;
+!!!316290.java!!!	getAllButNulAndAngleBracketsLegal() : UrlQuerySanitizer::ValueSanitizer
+        return sAllButNulAndAngleBracketsLegal;
+!!!316546.java!!!	UrlQuerySanitizer(in url : String)
+        setAllowUnregisteredParamaters(true);
+        parseUrl(url);
+!!!316674.java!!!	parseUrl(in url : String) : void
+        int queryIndex = url.indexOf('?');
+        String query;
+        if (queryIndex >= 0) {
+            query = url.substring(queryIndex + 1);
+        }
+        else {
+            query = "";
+        }
+        parseQuery(query);
+!!!316802.java!!!	parseQuery(in query : String) : void
+        clear();
+        // Split by '&'
+        StringTokenizer tokenizer = new StringTokenizer(query, "&");
+        while(tokenizer.hasMoreElements()) {
+            String attributeValuePair = tokenizer.nextToken();
+            if (attributeValuePair.length() > 0) {
+                int assignmentIndex = attributeValuePair.indexOf('=');
+                if (assignmentIndex < 0) {
+                    // No assignment found, treat as if empty value
+                    parseEntry(attributeValuePair, "");
+                }
+                else {
+                    parseEntry(attributeValuePair.substring(0, assignmentIndex),
+                            attributeValuePair.substring(assignmentIndex + 1));
+                }
+            }
+        }
+!!!316930.java!!!	getParameterSet() : Set<String>
+        return mEntries.keySet();
+!!!317058.java!!!	getParameterList() : UrlQuerySanitizer::ParameterValuePair
+        return mEntriesList;
+!!!317186.java!!!	hasParameter(in parameter : String) : boolean
+        return mEntries.containsKey(parameter);
+!!!317314.java!!!	getValue(in parameter : String) : String
+        return mEntries.get(parameter);
+!!!317442.java!!!	registerParameter(in parameter : String, inout valueSanitizer : UrlQuerySanitizer::ValueSanitizer) : void
+        if (valueSanitizer == null) {
+            mSanitizers.remove(parameter);
+        }
+        mSanitizers.put(parameter, valueSanitizer);
+!!!317570.java!!!	registerParameters(inout parameters : String, inout valueSanitizer : UrlQuerySanitizer::ValueSanitizer) : void
+        int length = parameters.length;
+        for(int i = 0; i < length; i++) {
+            mSanitizers.put(parameters[i], valueSanitizer);
+        }
+!!!317698.java!!!	setAllowUnregisteredParamaters(inout allowUnregisteredParamaters : boolean) : void
+        mAllowUnregisteredParamaters = allowUnregisteredParamaters;
+!!!317826.java!!!	getAllowUnregisteredParamaters() : boolean
+        return mAllowUnregisteredParamaters;
+!!!317954.java!!!	setPreferFirstRepeatedParameter(inout preferFirstRepeatedParameter : boolean) : void
+        mPreferFirstRepeatedParameter = preferFirstRepeatedParameter;
+!!!318082.java!!!	getPreferFirstRepeatedParameter() : boolean
+        return mPreferFirstRepeatedParameter;
+!!!318210.java!!!	parseEntry(in parameter : String, in value : String) : void
+        String unescapedParameter = unescape(parameter);
+         ValueSanitizer valueSanitizer =
+            getEffectiveValueSanitizer(unescapedParameter);
+
+        if (valueSanitizer == null) {
+            return;
+        }
+        String unescapedValue = unescape(value);
+        String sanitizedValue = valueSanitizer.sanitize(unescapedValue);
+        addSanitizedEntry(unescapedParameter, sanitizedValue);
+!!!318338.java!!!	addSanitizedEntry(in parameter : String, in value : String) : void
+        mEntriesList.add(
+                new ParameterValuePair(parameter, value));
+        if (mPreferFirstRepeatedParameter) {
+            if (mEntries.containsKey(parameter)) {
+                return;
+            }
+        }
+        mEntries.put(parameter, value);
+!!!318466.java!!!	getValueSanitizer(in parameter : String) : UrlQuerySanitizer::ValueSanitizer
+        return mSanitizers.get(parameter);
+!!!318594.java!!!	getEffectiveValueSanitizer(in parameter : String) : UrlQuerySanitizer::ValueSanitizer
+        ValueSanitizer sanitizer = getValueSanitizer(parameter);
+        if (sanitizer == null && mAllowUnregisteredParamaters) {
+            sanitizer = getUnregisteredParameterValueSanitizer();
+        }
+        return sanitizer;
+!!!318722.java!!!	unescape(in string : String) : String
+        // Early exit if no escaped characters.
+        int firstEscape = string.indexOf('%');
+        if ( firstEscape < 0) {
+            firstEscape = string.indexOf('+');
+            if (firstEscape < 0) {
+                return string;
+            }
+        }
+
+        int length = string.length();
+
+        StringBuilder stringBuilder = new StringBuilder(length);
+        stringBuilder.append(string.substring(0, firstEscape));
+        for (int i = firstEscape; i < length; i++) {
+            char c = string.charAt(i);
+            if (c == '+') {
+                c = ' ';
+            }
+            else if ( c == '%' && i + 2 < length) {
+                char c1 = string.charAt(i + 1);
+                char c2 = string.charAt(i + 2);
+                if (isHexDigit(c1) && isHexDigit(c2)) {
+                    c = (char) (decodeHexDigit(c1) * 16 + decodeHexDigit(c2));
+                    i += 2;
+                }
+            }
+            stringBuilder.append(c);
+        }
+        return stringBuilder.toString();
+!!!318850.java!!!	isHexDigit(in c : char) : boolean
+        return decodeHexDigit(c) >= 0;
+!!!318978.java!!!	decodeHexDigit(in c : char) : int
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        else if (c >= 'A' && c <= 'F') {
+            return c - 'A' + 10;
+        }
+        else if (c >= 'a' && c <= 'f') {
+            return c - 'a' + 10;
+        }
+        else {
+            return -1;
+        }
+!!!319106.java!!!	clear() : void
+        mEntries.clear();
+        mEntriesList.clear();

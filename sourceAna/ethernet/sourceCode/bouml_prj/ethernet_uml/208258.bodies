@@ -1,0 +1,7 @@
+class UndoOwner
+!!!790914.java!!!	UndoOwner(in tag : String)
+        mTag = tag;
+!!!791042.java!!!	getTag() : String
+        return mTag;
+!!!791170.java!!!	getData() : Object
+        return mData;

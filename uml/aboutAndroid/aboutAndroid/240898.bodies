@@ -1,0 +1,28 @@
+class StorageWizardReady
+!!!669570.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        if (mDisk == null) {
+            finish();
+            return;
+        }
+        setContentView(R.layout.storage_wizard_generic);
+
+        setHeaderText(R.string.storage_wizard_ready_title, mDisk.getDescription());
+
+        // TODO: handle mixed partition cases instead of just guessing based on
+        // first volume type we encounter
+        final VolumeInfo publicVol = findFirstVolume(VolumeInfo.TYPE_PUBLIC);
+        final VolumeInfo privateVol = findFirstVolume(VolumeInfo.TYPE_PRIVATE);
+        if (publicVol != null) {
+            setIllustrationType(ILLUSTRATION_PORTABLE);
+            setBodyText(R.string.storage_wizard_ready_external_body,
+                    mDisk.getDescription());
+        } else if (privateVol != null) {
+            setIllustrationType(ILLUSTRATION_INTERNAL);
+            setBodyText(R.string.storage_wizard_ready_internal_body,
+                    mDisk.getDescription());
+        }
+
+        getNextButton().setText(R.string.done);
+!!!669698.java!!!	onNavigateNext() : void
+        finishAffinity();

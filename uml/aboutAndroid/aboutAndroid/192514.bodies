@@ -1,0 +1,17 @@
+class CredentialAdapter
+!!!382338.java!!!	CredentialAdapter(inout context : Context, in resource : int, inout objects : UserCredentialsSettings::Credential)
+            super(context, resource, objects);
+!!!382466.java!!!	getView(in position : int, inout view : View, inout parent : ViewGroup) : View
+            if (view == null) {
+                view = LayoutInflater.from(getContext())
+                        .inflate(R.layout.user_credential, parent, false);
+            }
+            Credential item = getItem(position);
+            ((TextView) view.findViewById(R.id.alias)).setText(item.alias);
+            view.findViewById(R.id.contents_userkey).setVisibility(
+                    item.storedTypes.contains(Credential.Type.USER_PRIVATE_KEY) ? VISIBLE : GONE);
+            view.findViewById(R.id.contents_usercrt).setVisibility(
+                    item.storedTypes.contains(Credential.Type.USER_CERTIFICATE) ? VISIBLE : GONE);
+            view.findViewById(R.id.contents_cacrt).setVisibility(
+                    item.storedTypes.contains(Credential.Type.CA_CERTIFICATE) ? VISIBLE : GONE);
+            return view;

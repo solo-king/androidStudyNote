@@ -1,0 +1,6 @@
+class Receiver
+!!!602242.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+            if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(intent.getAction())) {
+                ConditionManager.get(context).getCondition(AirplaneModeCondition.class)
+                        .refreshState();
+            }

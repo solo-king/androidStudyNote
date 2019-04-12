@@ -1,0 +1,300 @@
+class IccLockSettings
+!!!283906.java!!!	isIccLockEnabled() : boolean
+        return PhoneFactory.getDefaultPhone().getIccCard().getIccLockEnabled();
+!!!284034.java!!!	getSummary(inout context : Context) : String
+        Resources res = context.getResources();
+        String summary = isIccLockEnabled()
+                ? res.getString(R.string.sim_lock_on)
+                : res.getString(R.string.sim_lock_off);
+        return summary;
+!!!284162.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        if (Utils.isMonkeyRunning()) {
+            finish();
+            return;
+        }
+
+        addPreferencesFromResource(R.xml.sim_lock_settings);
+
+        mPinDialog = (EditPinPreference) findPreference(PIN_DIALOG);
+        mPinToggle = (SwitchPreference) findPreference(PIN_TOGGLE);
+        if (savedInstanceState != null && savedInstanceState.containsKey(DIALOG_STATE)) {
+            mDialogState = savedInstanceState.getInt(DIALOG_STATE);
+            mPin = savedInstanceState.getString(DIALOG_PIN);
+            mError = savedInstanceState.getString(DIALOG_ERROR);
+            mToState = savedInstanceState.getBoolean(ENABLE_TO_STATE);
+
+            // Restore inputted PIN code
+            switch (mDialogState) {
+                case ICC_NEW_MODE:
+                    mOldPin = savedInstanceState.getString(OLD_PINCODE);
+                    break;
+
+                case ICC_REENTER_MODE:
+                    mOldPin = savedInstanceState.getString(OLD_PINCODE);
+                    mNewPin = savedInstanceState.getString(NEW_PINCODE);
+                    break;
+
+                case ICC_LOCK_MODE:
+                case ICC_OLD_MODE:
+                default:
+                    break;
+            }
+        }
+
+        mPinDialog.setOnPinEnteredListener(this);
+
+        // Don't need any changes to be remembered
+        getPreferenceScreen().setPersistent(false);
+
+        mRes = getResources();
+!!!284290.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+
+        final TelephonyManager tm =
+                (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        final int numSims = tm.getSimCount();
+        if (numSims > 1) {
+            View view = inflater.inflate(R.layout.icc_lock_tabs, container, false);
+            final ViewGroup prefs_container = (ViewGroup) view.findViewById(R.id.prefs_container);
+            Utils.prepareCustomPreferencesList(container, view, prefs_container, false);
+            View prefs = super.onCreateView(inflater, prefs_container, savedInstanceState);
+            prefs_container.addView(prefs);
+
+            mTabHost = (TabHost) view.findViewById(android.R.id.tabhost);
+            mTabWidget = (TabWidget) view.findViewById(android.R.id.tabs);
+            mListView = (ListView) view.findViewById(android.R.id.list);
+
+            mTabHost.setup();
+            mTabHost.setOnTabChangedListener(mTabListener);
+            mTabHost.clearAllTabs();
+
+            SubscriptionManager sm = SubscriptionManager.from(getContext());
+            for (int i = 0; i < numSims; ++i) {
+                final SubscriptionInfo subInfo = sm.getActiveSubscriptionInfoForSimSlotIndex(i);
+                mTabHost.addTab(buildTabSpec(String.valueOf(i),
+                        String.valueOf(subInfo == null
+                            ? getContext().getString(R.string.sim_editor_title, i + 1)
+                            : subInfo.getDisplayName())));
+            }
+            final SubscriptionInfo sir = sm.getActiveSubscriptionInfoForSimSlotIndex(0);
+
+            mPhone = (sir == null) ? null
+                : PhoneFactory.getPhone(SubscriptionManager.getPhoneId(sir.getSubscriptionId()));
+            return view;
+        } else {
+            mPhone = PhoneFactory.getDefaultPhone();
+            return super.onCreateView(inflater, container, savedInstanceState);
+        }
+!!!284418.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+        updatePreferences();
+!!!284546.java!!!	updatePreferences() : void
+        mPinDialog.setEnabled(mPhone != null);
+        mPinToggle.setEnabled(mPhone != null);
+
+        if (mPhone != null) {
+            mPinToggle.setChecked(mPhone.getIccCard().getIccLockEnabled());
+        }
+!!!284674.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ICC_LOCK;
+!!!284802.java!!!	onResume() : void
+        super.onResume();
+
+        // ACTION_SIM_STATE_CHANGED is sticky, so we'll receive current state after this call,
+        // which will call updatePreferences().
+        final IntentFilter filter = new IntentFilter(TelephonyIntents.ACTION_SIM_STATE_CHANGED);
+        getContext().registerReceiver(mSimStateReceiver, filter);
+
+        if (mDialogState != OFF_MODE) {
+            showPinDialog();
+        } else {
+            // Prep for standard click on "Change PIN"
+            resetDialogState();
+        }
+!!!284930.java!!!	onPause() : void
+        super.onPause();
+        getContext().unregisterReceiver(mSimStateReceiver);
+!!!285058.java!!!	onSaveInstanceState(inout out : Bundle) : void
+        // Need to store this state for slider open/close
+        // There is one case where the dialog is popped up by the preference
+        // framework. In that case, let the preference framework store the
+        // dialog state. In other cases, where this activity manually launches
+        // the dialog, store the state of the dialog.
+        if (mPinDialog.isDialogOpen()) {
+            out.putInt(DIALOG_STATE, mDialogState);
+            out.putString(DIALOG_PIN, mPinDialog.getEditText().getText().toString());
+            out.putString(DIALOG_ERROR, mError);
+            out.putBoolean(ENABLE_TO_STATE, mToState);
+
+            // Save inputted PIN code
+            switch (mDialogState) {
+                case ICC_NEW_MODE:
+                    out.putString(OLD_PINCODE, mOldPin);
+                    break;
+
+                case ICC_REENTER_MODE:
+                    out.putString(OLD_PINCODE, mOldPin);
+                    out.putString(NEW_PINCODE, mNewPin);
+                    break;
+
+                case ICC_LOCK_MODE:
+                case ICC_OLD_MODE:
+                default:
+                    break;
+            }
+        } else {
+            super.onSaveInstanceState(out);
+        }
+!!!285186.java!!!	showPinDialog() : void
+        if (mDialogState == OFF_MODE) {
+            return;
+        }
+        setDialogValues();
+
+        mPinDialog.showPinDialog();
+!!!285314.java!!!	setDialogValues() : void
+        mPinDialog.setText(mPin);
+        String message = "";
+        switch (mDialogState) {
+            case ICC_LOCK_MODE:
+                message = mRes.getString(R.string.sim_enter_pin);
+                mPinDialog.setDialogTitle(mToState
+                        ? mRes.getString(R.string.sim_enable_sim_lock)
+                        : mRes.getString(R.string.sim_disable_sim_lock));
+                break;
+            case ICC_OLD_MODE:
+                message = mRes.getString(R.string.sim_enter_old);
+                mPinDialog.setDialogTitle(mRes.getString(R.string.sim_change_pin));
+                break;
+            case ICC_NEW_MODE:
+                message = mRes.getString(R.string.sim_enter_new);
+                mPinDialog.setDialogTitle(mRes.getString(R.string.sim_change_pin));
+                break;
+            case ICC_REENTER_MODE:
+                message = mRes.getString(R.string.sim_reenter_new);
+                mPinDialog.setDialogTitle(mRes.getString(R.string.sim_change_pin));
+                break;
+        }
+        if (mError != null) {
+            message = mError + "\n" + message;
+            mError = null;
+        }
+        mPinDialog.setDialogMessage(message);
+!!!285442.java!!!	onPinEntered(inout preference : EditPinPreference, inout positiveResult : boolean) : void
+        if (!positiveResult) {
+            resetDialogState();
+            return;
+        }
+
+        mPin = preference.getText();
+        if (!reasonablePin(mPin)) {
+            // inject error message and display dialog again
+            mError = mRes.getString(R.string.sim_bad_pin);
+            showPinDialog();
+            return;
+        }
+        switch (mDialogState) {
+            case ICC_LOCK_MODE:
+                tryChangeIccLockState();
+                break;
+            case ICC_OLD_MODE:
+                mOldPin = mPin;
+                mDialogState = ICC_NEW_MODE;
+                mError = null;
+                mPin = null;
+                showPinDialog();
+                break;
+            case ICC_NEW_MODE:
+                mNewPin = mPin;
+                mDialogState = ICC_REENTER_MODE;
+                mPin = null;
+                showPinDialog();
+                break;
+            case ICC_REENTER_MODE:
+                if (!mPin.equals(mNewPin)) {
+                    mError = mRes.getString(R.string.sim_pins_dont_match);
+                    mDialogState = ICC_NEW_MODE;
+                    mPin = null;
+                    showPinDialog();
+                } else {
+                    mError = null;
+                    tryChangePin();
+                }
+                break;
+        }
+!!!285570.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        if (preference == mPinToggle) {
+            // Get the new, preferred state
+            mToState = mPinToggle.isChecked();
+            // Flip it back and pop up pin dialog
+            mPinToggle.setChecked(!mToState);
+            mDialogState = ICC_LOCK_MODE;
+            showPinDialog();
+        } else if (preference == mPinDialog) {
+            mDialogState = ICC_OLD_MODE;
+            return false;
+        }
+        return true;
+!!!285698.java!!!	tryChangeIccLockState() : void
+        // Try to change icc lock. If it succeeds, toggle the lock state and
+        // reset dialog state. Else inject error message and show dialog again.
+        Message callback = Message.obtain(mHandler, MSG_ENABLE_ICC_PIN_COMPLETE);
+        mPhone.getIccCard().setIccLockEnabled(mToState, mPin, callback);
+        // Disable the setting till the response is received.
+        mPinToggle.setEnabled(false);
+!!!285826.java!!!	iccLockChanged(inout success : boolean, in attemptsRemaining : int) : void
+        if (success) {
+            mPinToggle.setChecked(mToState);
+        } else {
+            Toast.makeText(getContext(), getPinPasswordErrorMessage(attemptsRemaining),
+                    Toast.LENGTH_LONG).show();
+        }
+        mPinToggle.setEnabled(true);
+        resetDialogState();
+!!!285954.java!!!	iccPinChanged(inout success : boolean, in attemptsRemaining : int) : void
+        if (!success) {
+            Toast.makeText(getContext(), getPinPasswordErrorMessage(attemptsRemaining),
+                    Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            Toast.makeText(getContext(), mRes.getString(R.string.sim_change_succeeded),
+                    Toast.LENGTH_SHORT)
+                    .show();
+
+        }
+        resetDialogState();
+!!!286082.java!!!	tryChangePin() : void
+        Message callback = Message.obtain(mHandler, MSG_CHANGE_ICC_PIN_COMPLETE);
+        mPhone.getIccCard().changeIccLockPassword(mOldPin,
+                mNewPin, callback);
+!!!286210.java!!!	getPinPasswordErrorMessage(in attemptsRemaining : int) : String
+        String displayMessage;
+
+        if (attemptsRemaining == 0) {
+            displayMessage = mRes.getString(R.string.wrong_pin_code_pukked);
+        } else if (attemptsRemaining > 0) {
+            displayMessage = mRes
+                    .getQuantityString(R.plurals.wrong_pin_code, attemptsRemaining,
+                            attemptsRemaining);
+        } else {
+            displayMessage = mRes.getString(R.string.pin_failed);
+        }
+        if (DBG) Log.d(TAG, "getPinPasswordErrorMessage:"
+                + " attemptsRemaining=" + attemptsRemaining + " displayMessage=" + displayMessage);
+        return displayMessage;
+!!!286338.java!!!	reasonablePin(in pin : String) : boolean
+        if (pin == null || pin.length() < MIN_PIN_LENGTH || pin.length() > MAX_PIN_LENGTH) {
+            return false;
+        } else {
+            return true;
+        }
+!!!286466.java!!!	resetDialogState() : void
+        mError = null;
+        mDialogState = ICC_OLD_MODE; // Default for when Change PIN is clicked
+        mPin = "";
+        setDialogValues();
+        mDialogState = OFF_MODE;
+!!!286594.java!!!	buildTabSpec(in tag : String, in title : String) : TabSpec
+        return mTabHost.newTabSpec(tag).setIndicator(title).setContent(
+                mEmptyTabContent);

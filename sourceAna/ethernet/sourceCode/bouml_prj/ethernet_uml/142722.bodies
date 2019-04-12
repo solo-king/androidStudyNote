@@ -1,0 +1,147 @@
+class RouteInfo
+!!!274562.java!!!	RouteInfo(inout destination : LinkAddress, inout gateway : InetAddress, in iface : String)
+        if (destination == null) {
+            if (gateway != null) {
+                if (gateway instanceof Inet4Address) {
+                    destination = new LinkAddress(Inet4Address.ANY, 0);
+                } else {
+                    destination = new LinkAddress(Inet6Address.ANY, 0);
+                }
+            } else {
+                // no destination, no gateway. invalid.
+                throw new IllegalArgumentException("Invalid arguments passed in: " + gateway + "," +
+                                                   destination);
+            }
+        }
+        if (gateway == null) {
+            if (destination.getAddress() instanceof Inet4Address) {
+                gateway = Inet4Address.ANY;
+            } else {
+                gateway = Inet6Address.ANY;
+            }
+        }
+        mHasGateway = (!gateway.isAnyLocalAddress());
+
+        mDestination = new LinkAddress(NetworkUtils.getNetworkPart(destination.getAddress(),
+                destination.getNetworkPrefixLength()), destination.getNetworkPrefixLength());
+        mGateway = gateway;
+        mInterface = iface;
+        mIsDefault = isDefault();
+        mIsHost = isHost();
+!!!274690.java!!!	RouteInfo(inout destination : LinkAddress, inout gateway : InetAddress)
+        this(destination, gateway, null);
+!!!274818.java!!!	RouteInfo(inout gateway : InetAddress)
+        this(null, gateway, null);
+!!!274946.java!!!	RouteInfo(inout host : LinkAddress)
+        this(host, null, null);
+!!!275074.java!!!	makeHostRoute(inout host : InetAddress, in iface : String) : RouteInfo
+        return makeHostRoute(host, null, iface);
+!!!275202.java!!!	makeHostRoute(inout host : InetAddress, inout gateway : InetAddress, in iface : String) : RouteInfo
+        if (host == null) return null;
+
+        if (host instanceof Inet4Address) {
+            return new RouteInfo(new LinkAddress(host, 32), gateway, iface);
+        } else {
+            return new RouteInfo(new LinkAddress(host, 128), gateway, iface);
+        }
+!!!275330.java!!!	isHost() : boolean
+        return (mDestination.getAddress() instanceof Inet4Address &&
+                mDestination.getNetworkPrefixLength() == 32) ||
+               (mDestination.getAddress() instanceof Inet6Address &&
+                mDestination.getNetworkPrefixLength() == 128);
+!!!275458.java!!!	isDefault() : boolean
+        boolean val = false;
+        if (mGateway != null) {
+            if (mGateway instanceof Inet4Address) {
+                val = (mDestination == null || mDestination.getNetworkPrefixLength() == 0);
+            } else {
+                val = (mDestination == null || mDestination.getNetworkPrefixLength() == 0);
+            }
+        }
+        return val;
+!!!275586.java!!!	getDestination() : LinkAddress
+        return mDestination;
+!!!275714.java!!!	getGateway() : InetAddress
+        return mGateway;
+!!!275842.java!!!	getInterface() : String
+        return mInterface;
+!!!275970.java!!!	isDefaultRoute() : boolean
+        return mIsDefault;
+!!!276098.java!!!	isHostRoute() : boolean
+        return mIsHost;
+!!!276226.java!!!	hasGateway() : boolean
+        return mHasGateway;
+!!!276354.java!!!	toString() : String
+        String val = "";
+        if (mDestination != null) val = mDestination.toString();
+        if (mGateway != null) val += " -> " + mGateway.getHostAddress();
+        return val;
+!!!276482.java!!!	describeContents() : int
+        return 0;
+!!!276610.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        if (mDestination == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeByteArray(mDestination.getAddress().getAddress());
+            dest.writeInt(mDestination.getNetworkPrefixLength());
+        }
+
+        if (mGateway == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeByteArray(mGateway.getAddress());
+        }
+
+        dest.writeString(mInterface);
+!!!276738.java!!!	equals(inout obj : Object) : boolean
+        if (this == obj) return true;
+
+        if (!(obj instanceof RouteInfo)) return false;
+
+        RouteInfo target = (RouteInfo) obj;
+
+        boolean sameDestination = ( mDestination == null) ?
+                target.getDestination() == null
+                : mDestination.equals(target.getDestination());
+
+        boolean sameAddress = (mGateway == null) ?
+                target.getGateway() == null
+                : mGateway.equals(target.getGateway());
+
+        boolean sameInterface = (mInterface == null) ?
+                target.getInterface() == null
+                : mInterface.equals(target.getInterface());
+
+        return sameDestination && sameAddress && sameInterface
+            && mIsDefault == target.mIsDefault;
+!!!276866.java!!!	hashCode() : int
+        return (mDestination == null ? 0 : mDestination.hashCode() * 41)
+            + (mGateway == null ? 0 :mGateway.hashCode() * 47)
+            + (mInterface == null ? 0 :mInterface.hashCode() * 67)
+            + (mIsDefault ? 3 : 7);
+!!!276994.java!!!	matches(inout destination : InetAddress) : boolean
+        if (destination == null) return false;
+
+        // match the route destination and destination with prefix length
+        InetAddress dstNet = NetworkUtils.getNetworkPart(destination,
+                mDestination.getNetworkPrefixLength());
+
+        return mDestination.getAddress().equals(dstNet);
+!!!277122.java!!!	selectBestRoute(inout routes : Collection<RouteInfo>, inout dest : InetAddress) : RouteInfo
+        if ((routes == null) || (dest == null)) return null;
+
+        RouteInfo bestRoute = null;
+        // pick a longest prefix match under same address type
+        for (RouteInfo route : routes) {
+            if (NetworkUtils.addressTypeMatches(route.mDestination.getAddress(), dest)) {
+                if ((bestRoute != null) &&
+                        (bestRoute.mDestination.getNetworkPrefixLength() >=
+                        route.mDestination.getNetworkPrefixLength())) {
+                    continue;
+                }
+                if (route.matches(dest)) bestRoute = route;
+            }
+        }
+        return bestRoute;

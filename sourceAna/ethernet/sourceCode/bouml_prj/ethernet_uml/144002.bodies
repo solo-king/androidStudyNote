@@ -1,0 +1,107 @@
+class LocalSocket
+!!!215426.java!!!	LocalSocket()
+        this(SOCKET_STREAM);
+!!!215554.java!!!	LocalSocket(in sockType : int)
+        this(new LocalSocketImpl(), sockType);
+        isBound = false;
+        isConnected = false;
+!!!215682.java!!!	LocalSocket(inout fd : FileDescriptor)
+        this(new LocalSocketImpl(fd), SOCKET_UNKNOWN);
+        isBound = true;
+        isConnected = true;
+!!!215810.java!!!	LocalSocket(inout impl : LocalSocketImpl, in sockType : int)
+        this.impl = impl;
+        this.sockType = sockType;
+        this.isConnected = false;
+        this.isBound = false;
+!!!215938.java!!!	toString() : String
+        return super.toString() + " impl:" + impl;
+!!!216066.java!!!	implCreateIfNeeded() : void
+        if (!implCreated) {
+            synchronized (this) {
+                if (!implCreated) {
+                    try {
+                        impl.create(sockType);
+                    } finally {
+                        implCreated = true;
+                    }
+                }
+            }
+        }
+!!!216194.java!!!	connect(inout endpoint : LocalSocketAddress) : void
+        synchronized (this) {
+            if (isConnected) {
+                throw new IOException("already connected");
+            }
+
+            implCreateIfNeeded();
+            impl.connect(endpoint, 0);
+            isConnected = true;
+            isBound = true;
+        }
+!!!216322.java!!!	bind(inout bindpoint : LocalSocketAddress) : void
+        implCreateIfNeeded();
+
+        synchronized (this) {
+            if (isBound) {
+                throw new IOException("already bound");
+            }
+
+            localAddress = bindpoint;
+            impl.bind(localAddress);
+            isBound = true;
+        }
+!!!216450.java!!!	getLocalSocketAddress() : LocalSocketAddress
+        return localAddress;
+!!!216578.java!!!	getInputStream() : InputStream
+        implCreateIfNeeded();
+        return impl.getInputStream();
+!!!216706.java!!!	getOutputStream() : OutputStream
+        implCreateIfNeeded();
+        return impl.getOutputStream();
+!!!216834.java!!!	closeExternalFd() : void
+        implCreateIfNeeded();
+        impl.closeExternalFd();
+!!!216962.java!!!	close() : void
+        implCreateIfNeeded();
+        impl.close();
+!!!217090.java!!!	shutdownInput() : void
+        implCreateIfNeeded();
+        impl.shutdownInput();
+!!!217218.java!!!	shutdownOutput() : void
+        implCreateIfNeeded();
+        impl.shutdownOutput();
+!!!217346.java!!!	setReceiveBufferSize(in size : int) : void
+        impl.setOption(SocketOptions.SO_RCVBUF, Integer.valueOf(size));
+!!!217474.java!!!	getReceiveBufferSize() : int
+        return ((Integer) impl.getOption(SocketOptions.SO_RCVBUF)).intValue();
+!!!217602.java!!!	setSoTimeout(in n : int) : void
+        impl.setOption(SocketOptions.SO_TIMEOUT, Integer.valueOf(n));
+!!!217730.java!!!	getSoTimeout() : int
+        return ((Integer) impl.getOption(SocketOptions.SO_TIMEOUT)).intValue();
+!!!217858.java!!!	setSendBufferSize(in n : int) : void
+        impl.setOption(SocketOptions.SO_SNDBUF, Integer.valueOf(n));
+!!!217986.java!!!	getSendBufferSize() : int
+        return ((Integer) impl.getOption(SocketOptions.SO_SNDBUF)).intValue();
+!!!218114.java!!!	getRemoteSocketAddress() : LocalSocketAddress
+        throw new UnsupportedOperationException();
+!!!218242.java!!!	isConnected() : boolean
+        return isConnected;
+!!!218370.java!!!	isClosed() : boolean
+        throw new UnsupportedOperationException();
+!!!218498.java!!!	isBound() : boolean
+        return isBound;
+!!!218626.java!!!	isOutputShutdown() : boolean
+        throw new UnsupportedOperationException();
+!!!218754.java!!!	isInputShutdown() : boolean
+        throw new UnsupportedOperationException();
+!!!218882.java!!!	connect(inout endpoint : LocalSocketAddress, in timeout : int) : void
+        throw new UnsupportedOperationException();
+!!!219010.java!!!	setFileDescriptorsForSend(inout fds : FileDescriptor) : void
+        impl.setFileDescriptorsForSend(fds);
+!!!219138.java!!!	getAncillaryFileDescriptors() : FileDescriptor
+        return impl.getAncillaryFileDescriptors();
+!!!219266.java!!!	getPeerCredentials() : Credentials
+        return impl.getPeerCredentials();
+!!!219394.java!!!	getFileDescriptor() : FileDescriptor
+        return impl.getFileDescriptor();

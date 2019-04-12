@@ -1,0 +1,66 @@
+class SpellCheckerPreference
+!!!769154.java!!!	SpellCheckerPreference(in context : Context, in scis : SpellCheckerInfo)
+        super(context, null);
+        mScis = scis;
+        setWidgetLayoutResource(R.layout.preference_widget_settings);
+        CharSequence[] labels = new CharSequence[scis.length];
+        CharSequence[] values = new CharSequence[scis.length];
+        for (int i = 0 ; i < scis.length; i++) {
+            labels[i] = scis[i].loadLabel(context.getPackageManager());
+            // Use values as indexing since ListPreference doesn't support generic objects.
+            values[i] = String.valueOf(i);
+        }
+        setEntries(labels);
+        setEntryValues(values);
+!!!769282.java!!!	onPrepareDialogBuilder(inout builder : Builder, inout listener : DialogInterface.OnClickListener) : void
+        builder.setTitle(R.string.choose_spell_checker);
+        builder.setSingleChoiceItems(getEntries(), findIndexOfValue(getValue()), listener);
+!!!769410.java!!!	setSelected(inout currentSci : SpellCheckerInfo) : void
+        if (currentSci == null) {
+            setValue(null);
+            return;
+        }
+        for (int i = 0; i < mScis.length; i++) {
+            if (mScis[i].getId().equals(currentSci.getId())) {
+                setValueIndex(i);
+                return;
+            }
+        }
+!!!769538.java!!!	setValue(in value : String) : void
+        super.setValue(value);
+        int index = value != null ? Integer.parseInt(value) : -1;
+        if (index == -1) {
+            mIntent = null;
+            return;
+        }
+        SpellCheckerInfo sci = mScis[index];
+        final String settingsActivity = sci.getSettingsActivity();
+        if (TextUtils.isEmpty(settingsActivity)) {
+            mIntent = null;
+        } else {
+            mIntent = new Intent(Intent.ACTION_MAIN);
+            mIntent.setClassName(sci.getPackageName(), settingsActivity);
+        }
+!!!769666.java!!!	callChangeListener(inout newValue : Object) : boolean
+        newValue = newValue != null ? mScis[Integer.parseInt((String) newValue)] : null;
+        return super.callChangeListener(newValue);
+!!!769794.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        View settingsButton = view.findViewById(R.id.settings_button);
+        settingsButton.setVisibility(mIntent != null ? View.VISIBLE : View.INVISIBLE);
+        settingsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSettingsButtonClicked();
+            }
+        });
+!!!769922.java!!!	onSettingsButtonClicked() : void
+        final Context context = getContext();
+        try {
+            final Intent intent = mIntent;
+            if (intent != null) {
+                // Invoke a settings activity of an spell checker.
+                context.startActivity(intent);
+            }
+        } catch (final ActivityNotFoundException e) {
+        }

@@ -1,0 +1,78 @@
+class PowerManager
+!!!537090.java!!!	PowerManager(inout context : Context, inout service : IPowerManager, inout handler : Handler)
+        mContext = context;
+        mService = service;
+        mHandler = handler;
+!!!537218.java!!!	getMinimumScreenBrightnessSetting() : int
+        return mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessSettingMinimum);
+!!!537346.java!!!	getMaximumScreenBrightnessSetting() : int
+        return mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessSettingMaximum);
+!!!537474.java!!!	getDefaultScreenBrightnessSetting() : int
+        return mContext.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessSettingDefault);
+!!!537602.java!!!	useScreenAutoBrightnessAdjustmentFeature() : boolean
+        return SystemProperties.getBoolean("persist.power.useautobrightadj", false);
+!!!537730.java!!!	useTwilightAdjustmentFeature() : boolean
+        return SystemProperties.getBoolean("persist.power.usetwilightadj", false);
+!!!537858.java!!!	newWakeLock(in levelAndFlags : int, in tag : String) : PowerManager::WakeLock
+        validateWakeLockParameters(levelAndFlags, tag);
+        return new WakeLock(levelAndFlags, tag, mContext.getOpPackageName());
+!!!537986.java!!!	validateWakeLockParameters(in levelAndFlags : int, in tag : String) : void
+        switch (levelAndFlags & WAKE_LOCK_LEVEL_MASK) {
+            case PARTIAL_WAKE_LOCK:
+            case SCREEN_DIM_WAKE_LOCK:
+            case SCREEN_BRIGHT_WAKE_LOCK:
+            case FULL_WAKE_LOCK:
+            case PROXIMITY_SCREEN_OFF_WAKE_LOCK:
+                break;
+            default:
+                throw new IllegalArgumentException("Must specify a valid wake lock level.");
+        }
+        if (tag == null) {
+            throw new IllegalArgumentException("The tag must not be null.");
+        }
+!!!538114.java!!!	userActivity(in when : long, inout noChangeLights : boolean) : void
+        try {
+            mService.userActivity(when, USER_ACTIVITY_EVENT_OTHER,
+                    noChangeLights ? USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS : 0);
+        } catch (RemoteException e) {
+        }
+!!!538242.java!!!	goToSleep(in time : long) : void
+        try {
+            mService.goToSleep(time, GO_TO_SLEEP_REASON_USER);
+        } catch (RemoteException e) {
+        }
+!!!538370.java!!!	wakeUp(in time : long) : void
+        try {
+            mService.wakeUp(time);
+        } catch (RemoteException e) {
+        }
+!!!538498.java!!!	nap(in time : long) : void
+        try {
+            mService.nap(time);
+        } catch (RemoteException e) {
+        }
+!!!538626.java!!!	setBacklightBrightness(in brightness : int) : void
+        try {
+            mService.setTemporaryScreenBrightnessSettingOverride(brightness);
+        } catch (RemoteException e) {
+        }
+!!!538754.java!!!	isWakeLockLevelSupported(in level : int) : boolean
+        try {
+            return mService.isWakeLockLevelSupported(level);
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!538882.java!!!	isScreenOn() : boolean
+        try {
+            return mService.isScreenOn();
+        } catch (RemoteException e) {
+            return false;
+        }
+!!!539010.java!!!	reboot(in reason : String) : void
+        try {
+            mService.reboot(false, reason, true);
+        } catch (RemoteException e) {
+        }

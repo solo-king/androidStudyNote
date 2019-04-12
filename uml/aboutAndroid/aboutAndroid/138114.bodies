@@ -1,0 +1,27 @@
+class CheckableLinearLayout
+!!!172162.java!!!	CheckableLinearLayout(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        TypedValue alpha = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.disabledAlpha, alpha, true);
+        mDisabledAlpha = alpha.getFloat();
+!!!172290.java!!!	setEnabled(inout enabled : boolean) : void
+        super.setEnabled(enabled);
+        final int N = getChildCount();
+        for (int i = 0; i < N; i++) {
+            getChildAt(i).setAlpha(enabled ? 1 : mDisabledAlpha);
+        }
+!!!172418.java!!!	setChecked(inout checked : boolean) : void
+        mChecked = checked;
+        updateChecked();
+!!!172546.java!!!	isChecked() : boolean
+        return mChecked;
+!!!172674.java!!!	toggle() : void
+        setChecked(!mChecked);
+!!!172802.java!!!	updateChecked() : void
+        final int N = getChildCount();
+        for (int i = 0; i < N; i++) {
+            View child = getChildAt(i);
+            if (child instanceof Checkable) {
+                ((Checkable) child).setChecked(mChecked);
+            }
+        }

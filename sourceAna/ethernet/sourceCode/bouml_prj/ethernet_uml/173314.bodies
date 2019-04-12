@@ -1,0 +1,43 @@
+class BinderProxy
+!!!431874.java!!!	queryLocalInterface(in descriptor : String) : IInterface
+        return null;
+!!!432514.java!!!	dump(inout fd : FileDescriptor, inout args : String) : void
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeFileDescriptor(fd);
+        data.writeStringArray(args);
+        try {
+            transact(DUMP_TRANSACTION, data, reply, 0);
+            reply.readException();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+!!!432642.java!!!	dumpAsync(inout fd : FileDescriptor, inout args : String) : void
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeFileDescriptor(fd);
+        data.writeStringArray(args);
+        try {
+            transact(DUMP_TRANSACTION, data, reply, FLAG_ONEWAY);
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
+!!!432770.java!!!	BinderProxy()
+        mSelf = new WeakReference(this);
+!!!432898.java!!!	finalize() : void
+        try {
+            destroy();
+        } finally {
+            super.finalize();
+        }
+!!!433154.java!!!	sendDeathNotice(inout recipient : IBinder::DeathRecipient) : void
+        if (false) Log.v("JavaBinder", "sendDeathNotice to " + recipient);
+        try {
+            recipient.binderDied();
+        }
+        catch (RuntimeException exc) {
+            Log.w("BinderNative", "Uncaught exception from death notification",
+                    exc);
+        }

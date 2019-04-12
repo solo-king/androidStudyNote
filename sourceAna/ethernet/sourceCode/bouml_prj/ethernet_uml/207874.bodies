@@ -1,0 +1,126 @@
+class Builder
+!!!776450.java!!!	syncOnce() : SyncRequest::Builder
+            if (mSyncType != SYNC_TYPE_UNKNOWN) {
+                throw new IllegalArgumentException("Sync type has already been defined.");
+            }
+            mSyncType = SYNC_TYPE_ONCE;
+            setupInterval(0, 0);
+            return this;
+!!!776578.java!!!	syncPeriodic(in pollFrequency : long, in beforeSeconds : long) : SyncRequest::Builder
+            if (mSyncType != SYNC_TYPE_UNKNOWN) {
+                throw new IllegalArgumentException("Sync type has already been defined.");
+            }
+            mSyncType = SYNC_TYPE_PERIODIC;
+            setupInterval(pollFrequency, beforeSeconds);
+            return this;
+!!!776706.java!!!	setupInterval(in at : long, in before : long) : void
+            if (before > at) {
+                throw new IllegalArgumentException("Specified run time for the sync must be" +
+                    " after the specified flex time.");
+            }
+            mSyncRunTimeSecs = at;
+            mSyncFlexTimeSecs = before;
+!!!776834.java!!!	setTransferSize(in rxBytes : long, in txBytes : long) : SyncRequest::Builder
+            mRxBytes = rxBytes;
+            mTxBytes = txBytes;
+            return this;
+!!!776962.java!!!	setDisallowMetered(inout disallow : boolean) : SyncRequest::Builder
+            mDisallowMetered = disallow;
+            return this;
+!!!777090.java!!!	setSyncAdapter(inout account : Account, in authority : String) : SyncRequest::Builder
+            if (mSyncTarget != SYNC_TARGET_UNKNOWN) {
+                throw new IllegalArgumentException("Sync target has already been defined.");
+            }
+            if (authority != null && authority.length() == 0) {
+                throw new IllegalArgumentException("Authority must be non-empty");
+            }
+            mSyncTarget = SYNC_TARGET_ADAPTER;
+            mAccount = account;
+            mAuthority = authority;
+            mComponentName = null;
+            return this;
+!!!777218.java!!!	setExtras(inout bundle : Bundle) : SyncRequest::Builder
+            mCustomExtras = bundle;
+            return this;
+!!!777346.java!!!	setNoRetry(inout noRetry : boolean) : SyncRequest::Builder
+            mNoRetry = noRetry;
+            return this;
+!!!777474.java!!!	setIgnoreSettings(inout ignoreSettings : boolean) : SyncRequest::Builder
+            mIgnoreSettings = ignoreSettings;
+            return this;
+!!!777602.java!!!	setIgnoreBackoff(inout ignoreBackoff : boolean) : SyncRequest::Builder
+            mIgnoreBackoff = ignoreBackoff;
+            return this;
+!!!777730.java!!!	setManual(inout isManual : boolean) : SyncRequest::Builder
+            mIsManual = isManual;
+            return this;
+!!!777858.java!!!	setExpedited(inout expedited : boolean) : SyncRequest::Builder
+            mExpedited = expedited;
+            return this;
+!!!777986.java!!!	setPriority(in priority : int) : SyncRequest::Builder
+            if (priority < -2 || priority > 2) {
+                throw new IllegalArgumentException("Priority must be within range [-2, 2]");
+            }
+            mPriority = priority;
+            return this;
+!!!778114.java!!!	build() : SyncRequest
+            if (mCustomExtras == null) {
+                mCustomExtras = new Bundle();
+            }
+            // Validate the extras bundle
+            ContentResolver.validateSyncExtrasBundle(mCustomExtras);
+            // Combine builder extra flags into the config bundle.
+            mSyncConfigExtras = new Bundle();
+            if (mIgnoreBackoff) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, true);
+            }
+            if (mDisallowMetered) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_DISALLOW_METERED, true);
+            }
+            if (mIgnoreSettings) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, true);
+            }
+            if (mNoRetry) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, true);
+            }
+            if (mExpedited) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+            }
+            if (mIsManual) {
+                mSyncConfigExtras.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+            }
+            mSyncConfigExtras.putLong(ContentResolver.SYNC_EXTRAS_EXPECTED_UPLOAD, mTxBytes);
+            mSyncConfigExtras.putLong(ContentResolver.SYNC_EXTRAS_EXPECTED_DOWNLOAD, mRxBytes);
+            mSyncConfigExtras.putInt(ContentResolver.SYNC_EXTRAS_PRIORITY, mPriority);
+            if (mSyncType == SYNC_TYPE_PERIODIC) {
+                // If this is a periodic sync ensure than invalid extras were not set.
+                validatePeriodicExtras(mCustomExtras);
+                validatePeriodicExtras(mSyncConfigExtras);
+                // Verify that account and provider are not null.
+                if (mAccount == null) {
+                    throw new IllegalArgumentException("Account must not be null for periodic"
+                            + " sync.");
+                }
+                if (mAuthority == null) {
+                    throw new IllegalArgumentException("Authority must not be null for periodic"
+                            + " sync.");
+                }
+            } else if (mSyncType == SYNC_TYPE_UNKNOWN) {
+                throw new IllegalArgumentException("Must call either syncOnce() or syncPeriodic()");
+            }
+            // Ensure that a target for the sync has been set.
+            if (mSyncTarget == SYNC_TARGET_UNKNOWN) {
+                throw new IllegalArgumentException("Must specify an adapter with "
+                        + "setSyncAdapter(Account, String");
+            }
+            return new SyncRequest(this);
+!!!778242.java!!!	validatePeriodicExtras(inout extras : Bundle) : void
+            if (extras.getBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_DO_NOT_RETRY, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_BACKOFF, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_IGNORE_SETTINGS, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_INITIALIZE, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_FORCE, false)
+                    || extras.getBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, false)) {
+                throw new IllegalArgumentException("Illegal extras were set");
+            }

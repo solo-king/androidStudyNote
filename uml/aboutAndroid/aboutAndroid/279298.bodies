@@ -1,0 +1,113 @@
+class UserDetailsSettings
+!!!908162.java!!!	getMetricsCategory() : int
+        return MetricsEvent.USER_DETAILS;
+!!!908290.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        final Context context = getActivity();
+        mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+
+        addPreferencesFromResource(R.xml.user_details_settings);
+        mPhonePref = (SwitchPreference) findPreference(KEY_ENABLE_TELEPHONY);
+        mRemoveUserPref = findPreference(KEY_REMOVE_USER);
+
+        mGuestUser = getArguments().getBoolean(EXTRA_USER_GUEST, false);
+
+        if (!mGuestUser) {
+            // Regular user. Get the user id from the caller.
+            final int userId = getArguments().getInt(EXTRA_USER_ID, -1);
+            if (userId == -1) {
+                throw new RuntimeException("Arguments to this fragment must contain the user id");
+            }
+            mUserInfo = mUserManager.getUserInfo(userId);
+            mPhonePref.setChecked(!mUserManager.hasUserRestriction(
+                    UserManager.DISALLOW_OUTGOING_CALLS, new UserHandle(userId)));
+            mRemoveUserPref.setOnPreferenceClickListener(this);
+        } else {
+            // These are not for an existing user, just general Guest settings.
+            removePreference(KEY_REMOVE_USER);
+            // Default title is for calling and SMS. Change to calling-only here
+            mPhonePref.setTitle(R.string.user_enable_calling);
+            mDefaultGuestRestrictions = mUserManager.getDefaultGuestRestrictions();
+            mPhonePref.setChecked(
+                    !mDefaultGuestRestrictions.getBoolean(UserManager.DISALLOW_OUTGOING_CALLS));
+        }
+        if (RestrictedLockUtils.hasBaseUserRestriction(context,
+                UserManager.DISALLOW_REMOVE_USER, UserHandle.myUserId())) {
+            removePreference(KEY_REMOVE_USER);
+        }
+        mPhonePref.setOnPreferenceChangeListener(this);
+!!!908418.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        if (preference == mRemoveUserPref) {
+            if (!mUserManager.isAdminUser()) {
+                throw new RuntimeException("Only admins can remove a user");
+            }
+            showDialog(DIALOG_CONFIRM_REMOVE);
+            return true;
+        }
+        return false;
+!!!908546.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (Boolean.TRUE.equals(newValue)) {
+            showDialog(mGuestUser ? DIALOG_CONFIRM_ENABLE_CALLING
+                    : DIALOG_CONFIRM_ENABLE_CALLING_AND_SMS);
+            return false;
+        }
+        enableCallsAndSms(false);
+        return true;
+!!!908674.java!!!	enableCallsAndSms(inout enabled : boolean) : void
+        mPhonePref.setChecked(enabled);
+        if (mGuestUser) {
+            mDefaultGuestRestrictions.putBoolean(UserManager.DISALLOW_OUTGOING_CALLS, !enabled);
+            // SMS is always disabled for guest
+            mDefaultGuestRestrictions.putBoolean(UserManager.DISALLOW_SMS, true);
+            mUserManager.setDefaultGuestRestrictions(mDefaultGuestRestrictions);
+
+            // Update the guest's restrictions, if there is a guest
+            // TODO: Maybe setDefaultGuestRestrictions() can internally just set the restrictions
+            // on any existing guest rather than do it here with multiple Binder calls.
+            List<UserInfo> users = mUserManager.getUsers(true);
+            for (UserInfo user: users) {
+                if (user.isGuest()) {
+                    UserHandle userHandle = UserHandle.of(user.id);
+                    for (String key : mDefaultGuestRestrictions.keySet()) {
+                        mUserManager.setUserRestriction(
+                                key, mDefaultGuestRestrictions.getBoolean(key), userHandle);
+                    }
+                }
+            }
+        } else {
+            UserHandle userHandle = UserHandle.of(mUserInfo.id);
+            mUserManager.setUserRestriction(UserManager.DISALLOW_OUTGOING_CALLS, !enabled,
+                    userHandle);
+            mUserManager.setUserRestriction(UserManager.DISALLOW_SMS, !enabled, userHandle);
+        }
+!!!908802.java!!!	onCreateDialog(in dialogId : int) : Dialog
+        Context context = getActivity();
+        if (context == null) return null;
+        switch (dialogId) {
+            case DIALOG_CONFIRM_REMOVE:
+                return UserDialogs.createRemoveDialog(getActivity(), mUserInfo.id,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                removeUser();
+                            }
+                        });
+            case DIALOG_CONFIRM_ENABLE_CALLING:
+                return UserDialogs.createEnablePhoneCallsDialog(getActivity(),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                enableCallsAndSms(true);
+                            }
+                        });
+            case DIALOG_CONFIRM_ENABLE_CALLING_AND_SMS:
+                return UserDialogs.createEnablePhoneCallsAndSmsDialog(getActivity(),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                enableCallsAndSms(true);
+                            }
+                        });
+        }
+        throw new IllegalArgumentException("Unsupported dialogId " + dialogId);
+!!!908930.java!!!	removeUser() : void
+        mUserManager.removeUser(mUserInfo.id);
+        finishFragment();

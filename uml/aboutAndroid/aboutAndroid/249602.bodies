@@ -1,0 +1,14 @@
+class SettingsObserver
+!!!723842.java!!!	SettingsObserver(inout handler : Handler)
+            super(handler);
+!!!723970.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            if (LOW_POWER_MODE_TRIGGER_LEVEL_URI.equals(uri)) {
+                mTriggerPref.update(mContext);
+            }
+!!!724098.java!!!	setListening(inout listening : boolean) : void
+            final ContentResolver cr = getContentResolver();
+            if (listening) {
+                cr.registerContentObserver(LOW_POWER_MODE_TRIGGER_LEVEL_URI, false, this);
+            } else {
+                cr.unregisterContentObserver(this);
+            }

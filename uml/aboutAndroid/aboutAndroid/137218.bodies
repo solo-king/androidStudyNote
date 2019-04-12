@@ -1,0 +1,15 @@
+class CustomDialogPreference
+!!!168322.java!!!	CustomDialogPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+!!!168450.java!!!	CustomDialogPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        super(context, attrs, defStyleAttr);
+!!!168578.java!!!	CustomDialogPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!168706.java!!!	CustomDialogPreference(inout context : Context)
+        super(context);
+!!!168834.java!!!	isDialogOpen() : boolean
+        return getDialog() != null && getDialog().isShowing();
+!!!168962.java!!!	getDialog() : Dialog
+        return mFragment != null ? mFragment.getDialog() : null;
+!!!169602.java!!!	setFragment(inout fragment : CustomDialogPreference::CustomPreferenceDialogFragment) : void
+        mFragment = fragment;

@@ -1,0 +1,24 @@
+class TrustedCredentialsDialogBuilder
+!!!365698.java!!!	TrustedCredentialsDialogBuilder(inout activity : Activity, inout delegate : TrustedCredentialsDialogBuilder::DelegateInterface)
+        super(activity);
+        mDialogEventHandler = new DialogEventHandler(activity, delegate);
+
+        initDefaultBuilderParams();
+!!!365826.java!!!	setCertHolder(inout certHolder : TrustedCredentialsSettings::CertHolder) : TrustedCredentialsDialogBuilder
+        return setCertHolders(certHolder == null ? new CertHolder[0]
+                : new CertHolder[]{certHolder});
+!!!365954.java!!!	setCertHolders(inout certHolders : TrustedCredentialsSettings::CertHolder) : TrustedCredentialsDialogBuilder
+        mDialogEventHandler.setCertHolders(certHolders);
+        return this;
+!!!366082.java!!!	create() : AlertDialog
+        AlertDialog dialog = super.create();
+        dialog.setOnShowListener(mDialogEventHandler);
+        mDialogEventHandler.setDialog(dialog);
+        return dialog;
+!!!366210.java!!!	initDefaultBuilderParams() : void
+        setTitle(com.android.internal.R.string.ssl_certificate);
+        setView(mDialogEventHandler.mRootContainer);
+
+        // Enable buttons here. The actual labels and listeners are configured in nextOrDismiss
+        setPositiveButton(R.string.trusted_credentials_trust_label, null);
+        setNegativeButton(android.R.string.ok, null);

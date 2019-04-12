@@ -1,0 +1,4 @@
+class RightButtonMode
+!!!193410.java!!!	RightButtonMode(in text : int, inout enabled : boolean)
+                this.text = text;
+                this.enabled = enabled;

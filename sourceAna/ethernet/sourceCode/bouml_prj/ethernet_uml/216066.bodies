@@ -1,0 +1,46 @@
+class ResourcesKey
+!!!885762.java!!!	ResourcesKey(in resDir : String, in displayId : int, inout overrideConfiguration : Configuration, in scale : float, inout token : IBinder)
+        mResDir = resDir;
+        mDisplayId = displayId;
+        if (overrideConfiguration != null) {
+            mOverrideConfiguration.setTo(overrideConfiguration);
+        }
+        mScale = scale;
+        mToken = token;
+
+        int hash = 17;
+        hash = 31 * hash + (mResDir == null ? 0 : mResDir.hashCode());
+        hash = 31 * hash + mDisplayId;
+        hash = 31 * hash + (mOverrideConfiguration != null
+                ? mOverrideConfiguration.hashCode() : 0);
+        hash = 31 * hash + Float.floatToIntBits(mScale);
+        mHash = hash;
+!!!885890.java!!!	hasOverrideConfiguration() : boolean
+        return !Configuration.EMPTY.equals(mOverrideConfiguration);
+!!!886018.java!!!	hashCode() : int
+        return mHash;
+!!!886146.java!!!	equals(inout obj : Object) : boolean
+        if (!(obj instanceof ResourcesKey)) {
+            return false;
+        }
+        ResourcesKey peer = (ResourcesKey) obj;
+        if (!mResDir.equals(peer.mResDir)) {
+            return false;
+        }
+        if (mDisplayId != peer.mDisplayId) {
+            return false;
+        }
+        if (mOverrideConfiguration != peer.mOverrideConfiguration) {
+            if (mOverrideConfiguration == null || peer.mOverrideConfiguration == null) {
+                return false;
+            }
+            if (!mOverrideConfiguration.equals(peer.mOverrideConfiguration)) {
+                return false;
+            }
+        }
+        if (mScale != peer.mScale) {
+            return false;
+        }
+        return true;
+!!!886274.java!!!	toString() : String
+        return Integer.toHexString(mHash);

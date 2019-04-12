@@ -1,0 +1,202 @@
+class Environment
+!!!474114.java!!!	getPrimaryVolume() : StorageVolume
+        if (SystemProperties.getBoolean("config.disable_storage", false)) {
+            return null;
+        }
+
+        if (sPrimaryVolume == null) {
+            synchronized (sLock) {
+                if (sPrimaryVolume == null) {
+                    try {
+                        IMountService mountService = IMountService.Stub.asInterface(ServiceManager
+                                .getService("mount"));
+                        final StorageVolume[] volumes = mountService.getVolumeList();
+                        sPrimaryVolume = StorageManager.getPrimaryVolume(volumes);
+                    } catch (Exception e) {
+                        Log.e(TAG, "couldn't talk to MountService", e);
+                    }
+                }
+            }
+        }
+        return sPrimaryVolume;
+!!!474242.java!!!	getNoEmulatedVolume() : StorageVolume
+        if (sNoEmulatedVolume == null) {
+            synchronized (sLock) {
+                if (sNoEmulatedVolume == null) {
+                    try {
+                        IMountService mountService = IMountService.Stub.asInterface(ServiceManager
+                                .getService("mount"));
+                        final StorageVolume[] volumes = mountService.getVolumeList();
+                        sNoEmulatedVolume = StorageManager.getNoEmulatedVolume(volumes);
+                    } catch (Exception e) {
+                        Log.e(TAG, "couldn't talk to MountService", e);
+                    }
+                }
+            }
+        }
+        return sNoEmulatedVolume;
+!!!474370.java!!!	initForCurrentUser() : void
+        final int userId = UserHandle.myUserId();
+        sCurrentUser = new UserEnvironment(userId);
+
+        synchronized (sLock) {
+            sPrimaryVolume = null;
+        }
+!!!476802.java!!!	getRootDirectory() : File
+        return DIR_ANDROID_ROOT;
+!!!476930.java!!!	getSystemSecureDirectory() : File
+        if (isEncryptedFilesystemEnabled()) {
+            return new File(SECURE_DATA_DIRECTORY, "system");
+        } else {
+            return new File(DATA_DIRECTORY, "system");
+        }
+!!!477058.java!!!	getSecureDataDirectory() : File
+        if (isEncryptedFilesystemEnabled()) {
+            return SECURE_DATA_DIRECTORY;
+        } else {
+            return DATA_DIRECTORY;
+        }
+!!!477186.java!!!	getMediaStorageDirectory() : File
+        throwIfUserRequired();
+        return sCurrentUser.getMediaDir();
+!!!477314.java!!!	getUserSystemDirectory(in userId : int) : File
+        return new File(new File(getSystemSecureDirectory(), "users"), Integer.toString(userId));
+!!!477442.java!!!	isEncryptedFilesystemEnabled() : boolean
+        return SystemProperties.getBoolean(SYSTEM_PROPERTY_EFS_ENABLED, false);
+!!!477570.java!!!	getDataDirectory() : File
+        return DATA_DIRECTORY;
+!!!477698.java!!!	getExternalStorageDirectory() : File
+        throwIfUserRequired();
+        return sCurrentUser.getExternalDirsForApp()[0];
+!!!477826.java!!!	getSecondaryStorageDirectory() : File
+        throwIfUserRequired();
+        return sCurrentUser.getExternalDirsForApp()[1];
+!!!477954.java!!!	getLegacyExternalStorageDirectory() : File
+        return new File(System.getenv(ENV_EXTERNAL_STORAGE));
+!!!478082.java!!!	getLegacyExternalStorageObbDirectory() : File
+        return buildPath(getLegacyExternalStorageDirectory(), DIR_ANDROID, DIR_OBB);
+!!!478210.java!!!	getEmulatedStorageSource(in userId : int) : File
+        // /mnt/shell/emulated/0
+        return new File(System.getenv(ENV_EMULATED_STORAGE_SOURCE), String.valueOf(userId));
+!!!478338.java!!!	getEmulatedStorageObbSource() : File
+        // /mnt/shell/emulated/obb
+        return new File(System.getenv(ENV_EMULATED_STORAGE_SOURCE), DIR_OBB);
+!!!478466.java!!!	getExternalStoragePublicDirectory(in type : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStoragePublicDirs(type)[0];
+!!!478594.java!!!	buildExternalStorageAndroidDataDirs() : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAndroidDataDirs();
+!!!478722.java!!!	buildExternalStorageAppDataDirs(in packageName : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAppDataDirs(packageName);
+!!!478850.java!!!	buildExternalStorageAppMediaDirs(in packageName : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAppMediaDirs(packageName);
+!!!478978.java!!!	buildExternalStorageAppObbDirs(in packageName : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAppObbDirs(packageName);
+!!!479106.java!!!	buildExternalStorageAppFilesDirs(in packageName : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAppFilesDirs(packageName);
+!!!479234.java!!!	buildExternalStorageAppCacheDirs(in packageName : String) : File
+        throwIfUserRequired();
+        return sCurrentUser.buildExternalStorageAppCacheDirs(packageName);
+!!!479362.java!!!	getDownloadCacheDirectory() : File
+        return DOWNLOAD_CACHE_DIRECTORY;
+!!!479490.java!!!	getExternalStorageState() : String
+        final File externalDir = sCurrentUser.getExternalDirsForApp()[0];
+        return getStorageState(externalDir);
+!!!479618.java!!!	getSecondaryStorageState() : String
+        final File externalDir = sCurrentUser.getExternalDirsForApp()[1];
+        return getStorageState(externalDir);
+!!!479746.java!!!	getStorageState(inout path : File) : String
+        final String rawPath;
+        try {
+            rawPath = path.getCanonicalPath();
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to resolve target path: " + e);
+            return Environment.MEDIA_UNKNOWN;
+        }
+
+        try {
+            final IMountService mountService = IMountService.Stub.asInterface(
+                    ServiceManager.getService("mount"));
+            final StorageVolume[] volumes = mountService.getVolumeList();
+            for (StorageVolume volume : volumes) {
+                if (rawPath.startsWith(volume.getPath())) {
+                    return mountService.getVolumeState(volume.getPath());
+                }
+            }
+        } catch (RemoteException e) {
+            Log.w(TAG, "Failed to find external storage state: " + e);
+        }
+        return Environment.MEDIA_UNKNOWN;
+!!!479874.java!!!	isExternalStorageRemovable() : boolean
+        final StorageVolume primary = getPrimaryVolume();
+        return (primary != null && primary.isRemovable());
+!!!480002.java!!!	isNoEmulatedStorageExist() : boolean
+        final StorageVolume volume = getNoEmulatedVolume();
+        return (volume != null);
+!!!480130.java!!!	isExternalStorageEmulated() : boolean
+        final StorageVolume primary = getPrimaryVolume();
+        return (primary != null && primary.isEmulated());
+!!!480258.java!!!	getDirectory(in variableName : String, in defaultPath : String) : File
+        String path = System.getenv(variableName);
+        return path == null ? new File(defaultPath) : new File(path);
+!!!480386.java!!!	getCanonicalPathOrNull(in variableName : String) : String
+        String path = System.getenv(variableName);
+        if (path == null) {
+            return null;
+        }
+        try {
+            return new File(path).getCanonicalPath();
+        } catch (IOException e) {
+            Log.w(TAG, "Unable to resolve canonical path for " + path);
+            return null;
+        }
+!!!480514.java!!!	setUserRequired(inout userRequired : boolean) : void
+        sUserRequired = userRequired;
+!!!480642.java!!!	throwIfUserRequired() : void
+        if (sUserRequired) {
+            Log.wtf(TAG, "Path requests must specify a user by using UserEnvironment",
+                    new Throwable());
+        }
+!!!480770.java!!!	buildPaths(inout base : File, inout  : String...segments) : File
+        File[] result = new File[base.length];
+        for (int i = 0; i < base.length; i++) {
+            result[i] = buildPath(base[i], segments);
+        }
+        return result;
+!!!480898.java!!!	buildPath(inout base : File, inout  : String...segments) : File
+        File cur = base;
+        for (String segment : segments) {
+            if (cur == null) {
+                cur = new File(segment);
+            } else {
+                cur = new File(cur, segment);
+            }
+        }
+        return cur;
+!!!481026.java!!!	maybeTranslateEmulatedPathToInternal(inout path : File) : File
+        // Fast return if not emulated, or missing variables
+        if (!Environment.isExternalStorageEmulated()
+                || CANONCIAL_EMULATED_STORAGE_TARGET == null) {
+            return path;
+        }
+
+        try {
+            final String rawPath = path.getCanonicalPath();
+            if (rawPath.startsWith(CANONCIAL_EMULATED_STORAGE_TARGET)) {
+                final File internalPath = new File(DIR_MEDIA_STORAGE,
+                        rawPath.substring(CANONCIAL_EMULATED_STORAGE_TARGET.length()));
+                if (internalPath.exists()) {
+                    return internalPath;
+                }
+            }
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to resolve canonical path for " + path);
+        }
+
+        // Unable to translate to internal path; use original
+        return path;

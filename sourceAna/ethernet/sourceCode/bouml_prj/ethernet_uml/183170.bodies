@@ -1,0 +1,3 @@
+class RemoteCallbackProxy
+!!!550530.java!!!	RemoteCallbackProxy(inout target : IRemoteCallback)
+            super(target);

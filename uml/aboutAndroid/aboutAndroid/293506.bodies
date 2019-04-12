@@ -1,0 +1,31 @@
+class WifiSkipDialog
+!!!1025794.java!!!	newInstance(in messageRes : int) : WifiSetupActivity::WifiSkipDialog
+            final Bundle args = new Bundle();
+            args.putInt("messageRes", messageRes);
+            final WifiSkipDialog dialog = new WifiSkipDialog();
+            dialog.setArguments(args);
+            return dialog;
+!!!1025922.java!!!	WifiSkipDialog()
+            // no-arg constructor for fragment
+!!!1026050.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            int messageRes = getArguments().getInt("messageRes");
+            final AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                    .setMessage(messageRes)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.wifi_skip_anyway,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    WifiSetupActivity activity = (WifiSetupActivity) getActivity();
+                                    activity.finish(RESULT_SKIP);
+                                }
+                            })
+                    .setNegativeButton(R.string.wifi_dont_skip,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            })
+                    .create();
+            SetupWizardUtils.applyImmersiveFlags(dialog);
+            return dialog;

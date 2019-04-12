@@ -1,0 +1,51 @@
+class EthernetDevInfo
+!!!133250.java!!!	EthernetDevInfo()
+		dev_name = null;
+		ipaddr = null;
+		dns = null;
+		route = null;
+		netmask = null;
+		mode = ETH_CONN_MODE_DHCP;
+		devMode = ETH_DEV_MODE_WAN;
+!!!133378.java!!!	setIfName(in ifname : String) : void
+		this.dev_name = ifname;
+!!!133506.java!!!	getIfName() : String
+		return this.dev_name;
+!!!133634.java!!!	setIpAddress(in ip : String) : void
+		this.ipaddr = ip;
+!!!133762.java!!!	getIpAddress() : String
+		return this.ipaddr;
+!!!133890.java!!!	setNetMask(in ip : String) : void
+		this.netmask = ip;
+!!!134018.java!!!	getNetMask() : String
+		return this.netmask;
+!!!134146.java!!!	setRouteAddr(in route : String) : void
+		this.route = route;
+!!!134274.java!!!	getRouteAddr() : String
+		return this.route;
+!!!134402.java!!!	setDnsAddr(in dns : String) : void
+		this.dns = dns;
+!!!134530.java!!!	getDnsAddr() : String
+		return this.dns;
+!!!134658.java!!!	getDevMode() : String
+		return devMode;
+!!!134786.java!!!	setDevMode(in devMode : String) : void
+		this.devMode = devMode;
+!!!134914.java!!!	setConnectMode(in mode : String) : boolean
+		if (mode.equals(ETH_CONN_MODE_DHCP) || mode.equals(ETH_CONN_MODE_MANUAL)) {
+			this.mode = mode;
+			return true;
+		}
+		return false;
+!!!135042.java!!!	getConnectMode() : String
+		return this.mode;
+!!!135170.java!!!	describeContents() : int
+		// TODO Auto-generated method stub
+		return 0;
+!!!135298.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+		dest.writeString(this.dev_name);
+		dest.writeString(this.ipaddr);
+		dest.writeString(this.netmask);
+		dest.writeString(this.route);
+		dest.writeString(this.dns);
+		dest.writeString(this.mode);

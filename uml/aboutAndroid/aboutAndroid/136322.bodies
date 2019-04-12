@@ -1,0 +1,15 @@
+class TintablePreference
+!!!165378.java!!!	TintablePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!165506.java!!!	setTint(in color : int) : void
+        mTintColor = color;
+        notifyChanged();
+!!!165634.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        if (mTintColor != 0) {
+            ((ImageView) view.findViewById(android.R.id.icon)).setImageTintList(
+                    ColorStateList.valueOf(mTintColor));
+        } else {
+            ((ImageView) view.findViewById(android.R.id.icon)).setImageTintList(null);
+        }

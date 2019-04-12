@@ -1,0 +1,63 @@
+format 221
+"myuml" // myuml
+  revision 1
+  modified_by 100 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  classview 134628 "GsmCdmaPhoneInit"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    sequencediagram 134628 "GsmCdmaPhoneInitQueue"
+      sequencediagramsettings end
+      overlapping_bars size E
+    end
+
+    classdiagram 134756 "GsmCdmaPhoneInitClasses"
+      classdiagramsettings draw_all_relations no member_max_width 0 end
+      size E
+    end
+  end
+end

@@ -1,0 +1,23 @@
+{
+	"folders": [
+        {
+            "path": "/media/chenqigan/GANYE_SSD/EPC400_Deving/source/epc400_test_android7.1/kernel/drivers/android"
+        },
+        {
+            "path": "/media/chenqigan/GANYE_SSD/EPC400_Deving/source/epc400_test_android7.1/frameworks/native/cmds/servicemanager"
+        },
+        {
+            "path": "/media/chenqigan/GANYE_SSD/androidStudyNote/sourceAna/auxiliaryCodeAna/binder/myBinder/cImpl"
+        },
+        {
+            "path": "/media/chenqigan/GANYE_SSD/androidStudyNote/sourceAna/auxiliaryCodeAna/binder/myBinder/cppImpl"
+        }
+    ],
+    "settings": {
+        "workbench.colorCustomizations": {
+            "activityBar.background": "#0D3501",
+            "titleBar.activeBackground": "#124B02",
+            "titleBar.activeForeground": "#EDFFE8"
+        }
+    }
+}

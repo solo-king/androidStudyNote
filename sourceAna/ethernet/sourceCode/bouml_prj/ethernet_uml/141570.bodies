@@ -1,0 +1,68 @@
+class DummyDataStateTracker
+!!!188290.java!!!	DummyDataStateTracker(in netType : int, in tag : String)
+        mNetworkInfo = new NetworkInfo(netType);
+!!!188418.java!!!	startMonitoring(inout context : Context, inout target : Handler) : void
+        mTarget = target;
+        mContext = context;
+!!!188546.java!!!	isPrivateDnsRouteSet() : boolean
+        return mPrivateDnsRouteSet;
+!!!188674.java!!!	privateDnsRouteSet(inout enabled : boolean) : void
+        mPrivateDnsRouteSet = enabled;
+!!!188802.java!!!	getNetworkInfo() : NetworkInfo
+        return mNetworkInfo;
+!!!188930.java!!!	isDefaultRouteSet() : boolean
+        return mDefaultRouteSet;
+!!!189058.java!!!	defaultRouteSet(inout enabled : boolean) : void
+        mDefaultRouteSet = enabled;
+!!!189314.java!!!	isAvailable() : boolean
+        return true;
+!!!189442.java!!!	getTcpBufferSizesPropName() : String
+        return "net.tcp.buffersize.unknown";
+!!!189570.java!!!	teardown() : boolean
+        setDetailedState(NetworkInfo.DetailedState.DISCONNECTING, "disabled", null);
+        setDetailedState(NetworkInfo.DetailedState.DISCONNECTED, "disabled", null);
+        return true;
+!!!189698.java!!!	captivePortalCheckComplete() : void
+        // not implemented
+!!!189826.java!!!	captivePortalCheckCompleted(inout isCaptivePortal : boolean) : void
+        // not implemented
+!!!189954.java!!!	setDetailedState(inout state : NetworkInfo::DetailedState, in reason : String, in extraInfo : String) : void
+        if (DBG) log("setDetailed state, old ="
+                + mNetworkInfo.getDetailedState() + " and new state=" + state);
+        mNetworkInfo.setDetailedState(state, reason, extraInfo);
+        Message msg = mTarget.obtainMessage(EVENT_STATE_CHANGED, mNetworkInfo);
+        msg.sendToTarget();
+!!!190082.java!!!	setTeardownRequested(inout isRequested : boolean) : void
+        mTeardownRequested = isRequested;
+!!!190210.java!!!	isTeardownRequested() : boolean
+        return mTeardownRequested;
+!!!190338.java!!!	reconnect() : boolean
+        setDetailedState(NetworkInfo.DetailedState.CONNECTING, "enabled", null);
+        setDetailedState(NetworkInfo.DetailedState.CONNECTED, "enabled", null);
+        setTeardownRequested(false);
+        return true;
+!!!190466.java!!!	setRadio(inout turnOn : boolean) : boolean
+        return true;
+!!!190594.java!!!	setUserDataEnable(inout enabled : boolean) : void
+        // ignored
+!!!190722.java!!!	setPolicyDataEnable(inout enabled : boolean) : void
+        // ignored
+!!!190850.java!!!	toString() : String
+        StringBuffer sb = new StringBuffer("Dummy data state: none, dummy!");
+        return sb.toString();
+!!!190978.java!!!	getLinkProperties() : LinkProperties
+        return new LinkProperties(mLinkProperties);
+!!!191106.java!!!	getLinkCapabilities() : LinkCapabilities
+        return new LinkCapabilities(mLinkCapabilities);
+!!!191234.java!!!	setDependencyMet(inout met : boolean) : void
+        // not supported on this network
+!!!191362.java!!!	addStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.addStackedLink(link);
+!!!191490.java!!!	removeStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.removeStackedLink(link);
+!!!191618.java!!!	supplyMessenger(inout messenger : Messenger) : void
+        // not supported on this network
+!!!191746.java!!!	log(in s : String) : void
+        Slog.d(TAG, s);
+!!!191874.java!!!	loge(in s : String) : void
+        Slog.e(TAG, s);

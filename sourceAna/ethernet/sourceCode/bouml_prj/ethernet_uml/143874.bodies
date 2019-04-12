@@ -1,0 +1,10 @@
+class LocalSocketAddress
+!!!219778.java!!!	LocalSocketAddress(in name : String, inout namespace : LocalSocketAddress::Namespace)
+        this.name = name;
+        this.namespace = namespace;
+!!!219906.java!!!	LocalSocketAddress(in name : String)
+        this(name,Namespace.ABSTRACT);
+!!!220034.java!!!	getName() : String
+        return name;
+!!!220162.java!!!	getNamespace() : LocalSocketAddress::Namespace
+        return namespace;

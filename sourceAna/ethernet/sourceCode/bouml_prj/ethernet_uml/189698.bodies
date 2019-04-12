@@ -1,0 +1,523 @@
+class Proxy
+!!!599938.java!!!	Proxy(inout remote : IBinder)
+                mRemote = remote;
+!!!600066.java!!!	asBinder() : IBinder
+                return mRemote;
+!!!600194.java!!!	getInterfaceDescriptor() : String
+                return DESCRIPTOR;
+!!!600322.java!!!	registerListener(inout listener : IMountServiceListener) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeStrongBinder((listener != null ? listener.asBinder() : null));
+                    mRemote.transact(Stub.TRANSACTION_registerListener, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!600450.java!!!	unregisterListener(inout listener : IMountServiceListener) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeStrongBinder((listener != null ? listener.asBinder() : null));
+                    mRemote.transact(Stub.TRANSACTION_unregisterListener, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!600578.java!!!	isUsbMassStorageConnected() : boolean
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                boolean _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_isUsbMassStorageConnected, _data, _reply, 0);
+                    _reply.readException();
+                    _result = 0 != _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!600706.java!!!	setUsbMassStorageEnabled(inout enable : boolean) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeInt((enable ? 1 : 0));
+                    mRemote.transact(Stub.TRANSACTION_setUsbMassStorageEnabled, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!600834.java!!!	isUsbMassStorageEnabled() : boolean
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                boolean _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_isUsbMassStorageEnabled, _data, _reply, 0);
+                    _reply.readException();
+                    _result = 0 != _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!600962.java!!!	mountVolume(in mountPoint : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(mountPoint);
+                    mRemote.transact(Stub.TRANSACTION_mountVolume, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601090.java!!!	unmountVolume(in mountPoint : String, inout force : boolean, inout removeEncryption : boolean) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(mountPoint);
+                    _data.writeInt((force ? 1 : 0));
+                    _data.writeInt((removeEncryption ? 1 : 0));
+                    mRemote.transact(Stub.TRANSACTION_unmountVolume, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!601218.java!!!	formatVolume(in mountPoint : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(mountPoint);
+                    mRemote.transact(Stub.TRANSACTION_formatVolume, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601346.java!!!	getStorageUsers(in path : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int[] _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(path);
+                    mRemote.transact(Stub.TRANSACTION_getStorageUsers, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.createIntArray();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601474.java!!!	getVolumeState(in mountPoint : String) : String
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(mountPoint);
+                    mRemote.transact(Stub.TRANSACTION_getVolumeState, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readString();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601602.java!!!	createSecureContainer(in id : String, in sizeMb : int, in fstype : String, in key : String, in ownerUid : int, inout external : boolean) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeInt(sizeMb);
+                    _data.writeString(fstype);
+                    _data.writeString(key);
+                    _data.writeInt(ownerUid);
+                    _data.writeInt(external ? 1 : 0);
+                    mRemote.transact(Stub.TRANSACTION_createSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601730.java!!!	destroySecureContainer(in id : String, inout force : boolean) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeInt((force ? 1 : 0));
+                    mRemote.transact(Stub.TRANSACTION_destroySecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601858.java!!!	finalizeSecureContainer(in id : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    mRemote.transact(Stub.TRANSACTION_finalizeSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!601986.java!!!	mountSecureContainer(in id : String, in key : String, in ownerUid : int) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeString(key);
+                    _data.writeInt(ownerUid);
+                    mRemote.transact(Stub.TRANSACTION_mountSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602114.java!!!	unmountSecureContainer(in id : String, inout force : boolean) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeInt((force ? 1 : 0));
+                    mRemote.transact(Stub.TRANSACTION_unmountSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602242.java!!!	isSecureContainerMounted(in id : String) : boolean
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                boolean _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    mRemote.transact(Stub.TRANSACTION_isSecureContainerMounted, _data, _reply, 0);
+                    _reply.readException();
+                    _result = 0 != _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602370.java!!!	renameSecureContainer(in oldId : String, in newId : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(oldId);
+                    _data.writeString(newId);
+                    mRemote.transact(Stub.TRANSACTION_renameSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602498.java!!!	getSecureContainerPath(in id : String) : String
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    mRemote.transact(Stub.TRANSACTION_getSecureContainerPath, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readString();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602626.java!!!	getSecureContainerList() : String
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String[] _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getSecureContainerList, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.createStringArray();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!602754.java!!!	shutdown(inout observer : IMountShutdownObserver) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeStrongBinder((observer != null ? observer.asBinder() : null));
+                    mRemote.transact(Stub.TRANSACTION_shutdown, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!602882.java!!!	finishMediaUpdate() : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_finishMediaUpdate, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!603010.java!!!	mountObb(in rawPath : String, in canonicalPath : String, in key : String, inout token : IObbActionListener, in nonce : int) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(rawPath);
+                    _data.writeString(canonicalPath);
+                    _data.writeString(key);
+                    _data.writeStrongBinder((token != null ? token.asBinder() : null));
+                    _data.writeInt(nonce);
+                    mRemote.transact(Stub.TRANSACTION_mountObb, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!603138.java!!!	unmountObb(in rawPath : String, inout force : boolean, inout token : IObbActionListener, in nonce : int) : void
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(rawPath);
+                    _data.writeInt((force ? 1 : 0));
+                    _data.writeStrongBinder((token != null ? token.asBinder() : null));
+                    _data.writeInt(nonce);
+                    mRemote.transact(Stub.TRANSACTION_unmountObb, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+!!!603266.java!!!	isObbMounted(in rawPath : String) : boolean
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                boolean _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(rawPath);
+                    mRemote.transact(Stub.TRANSACTION_isObbMounted, _data, _reply, 0);
+                    _reply.readException();
+                    _result = 0 != _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!603394.java!!!	getMountedObbPath(in rawPath : String) : String
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(rawPath);
+                    mRemote.transact(Stub.TRANSACTION_getMountedObbPath, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readString();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!603522.java!!!	isExternalStorageEmulated() : boolean
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                boolean _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_isExternalStorageEmulated, _data, _reply, 0);
+                    _reply.readException();
+                    _result = 0 != _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!603650.java!!!	getEncryptionState() : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getEncryptionState, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!603778.java!!!	decryptStorage(in password : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(password);
+                    mRemote.transact(Stub.TRANSACTION_decryptStorage, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!603906.java!!!	encryptStorage(in password : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(password);
+                    mRemote.transact(Stub.TRANSACTION_encryptStorage, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604034.java!!!	changeEncryptionPassword(in password : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(password);
+                    mRemote.transact(Stub.TRANSACTION_changeEncryptionPassword, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604162.java!!!	verifyEncryptionPassword(in password : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(password);
+                    mRemote.transact(Stub.TRANSACTION_verifyEncryptionPassword, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604290.java!!!	getVolumeList() : StorageVolume
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                StorageVolume[] _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getVolumeList, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.createTypedArray(StorageVolume.CREATOR);
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604418.java!!!	getSecureContainerFilesystemPath(in id : String) : String
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    mRemote.transact(Stub.TRANSACTION_getSecureContainerFilesystemPath, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readString();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604546.java!!!	fixPermissionsSecureContainer(in id : String, in gid : int, in filename : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeInt(gid);
+                    _data.writeString(filename);
+                    mRemote.transact(Stub.TRANSACTION_fixPermissionsSecureContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+!!!604674.java!!!	mkdirs(in callingPkg : String, in path : String) : int
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(callingPkg);
+                    _data.writeString(path);
+                    mRemote.transact(Stub.TRANSACTION_mkdirs, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;

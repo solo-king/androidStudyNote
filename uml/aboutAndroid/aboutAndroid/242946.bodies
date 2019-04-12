@@ -1,0 +1,71 @@
+class NightDisplayPreference
+!!!683778.java!!!	NightDisplayPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+
+        mController = new NightDisplayController(context);
+        mTimeFormatter = android.text.format.DateFormat.getTimeFormat(context);
+        mTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+!!!683906.java!!!	onAttached() : void
+        super.onAttached();
+
+        // Listen for changes only while attached.
+        mController.setListener(this);
+
+        // Update the summary since the state may have changed while not attached.
+        updateSummary();
+!!!684034.java!!!	onDetached() : void
+        super.onDetached();
+
+        // Stop listening for state changes.
+        mController.setListener(null);
+!!!684162.java!!!	getFormattedTimeString(inout localTime : NightDisplayController.LocalTime) : String
+        final Calendar c = Calendar.getInstance();
+        c.setTimeZone(mTimeFormatter.getTimeZone());
+        c.set(Calendar.HOUR_OF_DAY, localTime.hourOfDay);
+        c.set(Calendar.MINUTE, localTime.minute);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        return mTimeFormatter.format(c.getTime());
+!!!684290.java!!!	updateSummary() : void
+        final Context context = getContext();
+
+        final boolean isActivated = mController.isActivated();
+        final int autoMode = mController.getAutoMode();
+
+        final String autoModeSummary;
+        switch (autoMode) {
+            default:
+            case NightDisplayController.AUTO_MODE_DISABLED:
+                autoModeSummary = context.getString(isActivated
+                        ? R.string.night_display_summary_on_auto_mode_never
+                        : R.string.night_display_summary_off_auto_mode_never);
+                break;
+            case NightDisplayController.AUTO_MODE_CUSTOM:
+                if (isActivated) {
+                    autoModeSummary = context.getString(
+                            R.string.night_display_summary_on_auto_mode_custom,
+                            getFormattedTimeString(mController.getCustomEndTime()));
+                } else {
+                    autoModeSummary = context.getString(
+                            R.string.night_display_summary_off_auto_mode_custom,
+                            getFormattedTimeString(mController.getCustomStartTime()));
+                }
+                break;
+            case NightDisplayController.AUTO_MODE_TWILIGHT:
+                autoModeSummary = context.getString(isActivated
+                        ? R.string.night_display_summary_on_auto_mode_twilight
+                        : R.string.night_display_summary_off_auto_mode_twilight);
+                break;
+        }
+
+        final int summaryFormatResId = isActivated ? R.string.night_display_summary_on
+                : R.string.night_display_summary_off;
+        setSummary(context.getString(summaryFormatResId, autoModeSummary));
+!!!684418.java!!!	onActivated(inout activated : boolean) : void
+        updateSummary();
+!!!684546.java!!!	onAutoModeChanged(in autoMode : int) : void
+        updateSummary();
+!!!684674.java!!!	onCustomStartTimeChanged(inout startTime : NightDisplayController.LocalTime) : void
+        updateSummary();
+!!!684802.java!!!	onCustomEndTimeChanged(inout endTime : NightDisplayController.LocalTime) : void
+        updateSummary();

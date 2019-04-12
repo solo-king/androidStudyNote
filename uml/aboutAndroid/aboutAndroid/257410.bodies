@@ -1,0 +1,215 @@
+class LocaleDragAndDropAdapter
+!!!777858.java!!!	LocaleDragAndDropAdapter(inout context : Context, inout feedItemList : List<LocaleStore.LocaleInfo>)
+        this.mFeedItemList = feedItemList;
+
+        this.mContext = context;
+
+        final float dragElevation = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                context.getResources().getDisplayMetrics());
+
+        this.mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0 /* no swipe */) {
+
+            @Override
+            public boolean onMove(RecyclerView view, RecyclerView.ViewHolder source,
+                    RecyclerView.ViewHolder target) {
+                onItemMove(source.getAdapterPosition(), target.getAdapterPosition());
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int i) {
+                // Swipe is disabled, this is intentionally empty.
+            }
+
+            private static final int SELECTION_GAINED = 1;
+            private static final int SELECTION_LOST = 0;
+            private static final int SELECTION_UNCHANGED = -1;
+            private int mSelectionStatus = SELECTION_UNCHANGED;
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView,
+                    RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                    int actionState, boolean isCurrentlyActive) {
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY,
+                        actionState, isCurrentlyActive);
+                // We change the elevation if selection changed
+                if (mSelectionStatus != SELECTION_UNCHANGED) {
+                    viewHolder.itemView.setElevation(
+                            mSelectionStatus == SELECTION_GAINED ? dragElevation : 0);
+                    mSelectionStatus = SELECTION_UNCHANGED;
+                }
+            }
+
+            @Override
+            public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    mSelectionStatus = SELECTION_GAINED;
+                } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+                    mSelectionStatus = SELECTION_LOST;
+                }
+            }
+        });
+!!!777986.java!!!	setRecyclerView(inout rv : RecyclerView) : void
+        mParentView = rv;
+        mItemTouchHelper.attachToRecyclerView(rv);
+!!!778114.java!!!	onCreateViewHolder(inout viewGroup : ViewGroup, in i : int) : LocaleDragAndDropAdapter::CustomViewHolder
+        final LocaleDragCell item = (LocaleDragCell) LayoutInflater.from(mContext)
+                .inflate(R.layout.locale_drag_cell, viewGroup, false);
+        return new CustomViewHolder(item);
+!!!778242.java!!!	onBindViewHolder(in holder : LocaleDragAndDropAdapter::CustomViewHolder, in i : int) : void
+        final LocaleStore.LocaleInfo feedItem = mFeedItemList.get(i);
+        final LocaleDragCell dragCell = holder.getLocaleDragCell();
+        final String label = feedItem.getFullNameNative();
+        final String description = feedItem.getFullNameInUiLanguage();
+        dragCell.setLabelAndDescription(label, description);
+        dragCell.setLocalized(feedItem.isTranslated());
+        dragCell.setMiniLabel(mNumberFormatter.format(i + 1));
+        dragCell.setShowCheckbox(mRemoveMode);
+        dragCell.setShowMiniLabel(!mRemoveMode);
+        dragCell.setShowHandle(!mRemoveMode && mDragEnabled);
+        dragCell.setChecked(mRemoveMode ? feedItem.getChecked() : false);
+        dragCell.setTag(feedItem);
+        dragCell.getCheckbox()
+                .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        LocaleStore.LocaleInfo feedItem =
+                                (LocaleStore.LocaleInfo) dragCell.getTag();
+                        feedItem.setChecked(isChecked);
+                    }
+                });
+!!!778370.java!!!	getItemCount() : int
+        int itemCount = (null != mFeedItemList ? mFeedItemList.size() : 0);
+        if (itemCount < 2 || mRemoveMode) {
+            setDragEnabled(false);
+        } else {
+            setDragEnabled(true);
+        }
+        return itemCount;
+!!!778498.java!!!	onItemMove(in fromPosition : int, in toPosition : int) : void
+        if (fromPosition >= 0 && toPosition >= 0) {
+            final LocaleStore.LocaleInfo saved = mFeedItemList.get(fromPosition);
+            mFeedItemList.remove(fromPosition);
+            mFeedItemList.add(toPosition, saved);
+        } else {
+            // TODO: It looks like sometimes the RecycleView tries to swap item -1
+            // I did not see it in a while, but if it happens, investigate and file a bug.
+            Log.e(TAG, String.format(Locale.US,
+                    "Negative position in onItemMove %d -> %d", fromPosition, toPosition));
+        }
+        notifyItemChanged(fromPosition); // to update the numbers
+        notifyItemChanged(toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        // We don't call doTheUpdate() here because this method is called for each item swap.
+        // So if we drag something across several positions it will be called several times.
+!!!778626.java!!!	setRemoveMode(inout removeMode : boolean) : void
+        mRemoveMode = removeMode;
+        int itemCount = mFeedItemList.size();
+        for (int i = 0; i < itemCount; i++) {
+            mFeedItemList.get(i).setChecked(false);
+            notifyItemChanged(i);
+        }
+!!!778754.java!!!	isRemoveMode() : boolean
+        return mRemoveMode;
+!!!778882.java!!!	removeItem(in position : int) : void
+        int itemCount = mFeedItemList.size();
+        if (itemCount <= 1) {
+            return;
+        }
+        if (position < 0 || position >= itemCount) {
+            return;
+        }
+        mFeedItemList.remove(position);
+        notifyDataSetChanged();
+!!!779010.java!!!	removeChecked() : void
+        int itemCount = mFeedItemList.size();
+        for (int i = itemCount - 1; i >= 0; i--) {
+            if (mFeedItemList.get(i).getChecked()) {
+                mFeedItemList.remove(i);
+            }
+        }
+        notifyDataSetChanged();
+        doTheUpdate();
+!!!779138.java!!!	getCheckedCount() : int
+        int result = 0;
+        for (LocaleStore.LocaleInfo li : mFeedItemList) {
+            if (li.getChecked()) {
+                result++;
+            }
+        }
+        return result;
+!!!779266.java!!!	getFirstChecked() : LocaleStore.LocaleInfo
+        for (LocaleStore.LocaleInfo li : mFeedItemList) {
+            if (li.getChecked()) {
+                return li;
+            }
+        }
+        return null;
+!!!779394.java!!!	addLocale(inout li : LocaleStore.LocaleInfo) : void
+        mFeedItemList.add(li);
+        notifyItemInserted(mFeedItemList.size() - 1);
+        doTheUpdate();
+!!!779522.java!!!	doTheUpdate() : void
+        int count = mFeedItemList.size();
+        final Locale[] newList = new Locale[count];
+
+        for (int i = 0; i < count; i++) {
+            final LocaleStore.LocaleInfo li = mFeedItemList.get(i);
+            newList[i] = li.getLocale();
+        }
+
+        final LocaleList ll = new LocaleList(newList);
+        updateLocalesWhenAnimationStops(ll);
+!!!779650.java!!!	updateLocalesWhenAnimationStops(in localeList : LocaleList) : void
+        if (localeList.equals(mLocalesToSetNext)) {
+            return;
+        }
+
+        // This will only update the Settings application to make things feel more responsive,
+        // the system will be updated later, when animation stopped.
+        LocaleList.setDefault(localeList);
+
+        mLocalesToSetNext = localeList;
+        final RecyclerView.ItemAnimator itemAnimator = mParentView.getItemAnimator();
+        itemAnimator.isRunning(new RecyclerView.ItemAnimator.ItemAnimatorFinishedListener() {
+            @Override
+            public void onAnimationsFinished() {
+                if (mLocalesToSetNext == null || mLocalesToSetNext.equals(mLocalesSetLast)) {
+                    // All animations finished, but the locale list did not change
+                    return;
+                }
+
+                LocalePicker.updateLocales(mLocalesToSetNext);
+                mLocalesSetLast = mLocalesToSetNext;
+                mLocalesToSetNext = null;
+
+                mNumberFormatter = NumberFormat.getNumberInstance(Locale.getDefault());
+            }
+        });
+!!!779778.java!!!	setDragEnabled(inout enabled : boolean) : void
+        mDragEnabled = enabled;
+!!!779906.java!!!	saveState(inout outInstanceState : Bundle) : void
+        if (outInstanceState != null) {
+            final ArrayList<String> selectedLocales = new ArrayList<>();
+            for (LocaleStore.LocaleInfo li : mFeedItemList) {
+                if (li.getChecked()) {
+                    selectedLocales.add(li.getId());
+                }
+            }
+            outInstanceState.putStringArrayList(CFGKEY_SELECTED_LOCALES, selectedLocales);
+        }
+!!!780034.java!!!	restoreState(inout savedInstanceState : Bundle) : void
+        if (savedInstanceState != null && mRemoveMode) {
+            final ArrayList<String> selectedLocales =
+                    savedInstanceState.getStringArrayList(CFGKEY_SELECTED_LOCALES);
+            if (selectedLocales == null || selectedLocales.isEmpty()) {
+                return;
+            }
+            for (LocaleStore.LocaleInfo li : mFeedItemList) {
+                li.setChecked(selectedLocales.contains(li.getId()));
+            }
+            notifyItemRangeChanged(0, mFeedItemList.size());
+        }

@@ -1,0 +1,150 @@
+class Proxy
+!!!270210.java!!!	getProxy(inout ctx : Context, in url : String) : java.net.Proxy
+        String host = "";
+        if (url != null) {
+            URI uri = URI.create(url);
+            host = uri.getHost();
+        }
+
+        if (!isLocalHost(host)) {
+            if (sConnectivityManager == null) {
+                sConnectivityManager = (ConnectivityManager)ctx.getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+            }
+            if (sConnectivityManager == null) return java.net.Proxy.NO_PROXY;
+
+            ProxyProperties proxyProperties = sConnectivityManager.getProxy();
+
+            if (proxyProperties != null) {
+                if (!proxyProperties.isExcluded(host)) {
+                    return proxyProperties.makeProxy();
+                }
+            }
+        }
+        return java.net.Proxy.NO_PROXY;
+!!!270338.java!!!	getHost(inout ctx : Context) : String
+        java.net.Proxy proxy = getProxy(ctx, null);
+        if (proxy == java.net.Proxy.NO_PROXY) return null;
+        try {
+            return ((InetSocketAddress)(proxy.address())).getHostName();
+        } catch (Exception e) {
+            return null;
+        }
+!!!270466.java!!!	getPort(inout ctx : Context) : int
+        java.net.Proxy proxy = getProxy(ctx, null);
+        if (proxy == java.net.Proxy.NO_PROXY) return -1;
+        try {
+            return ((InetSocketAddress)(proxy.address())).getPort();
+        } catch (Exception e) {
+            return -1;
+        }
+!!!270594.java!!!	getDefaultHost() : String
+        String host = System.getProperty("http.proxyHost");
+        if (TextUtils.isEmpty(host)) return null;
+        return host;
+!!!270722.java!!!	getDefaultPort() : int
+        if (getDefaultHost() == null) return -1;
+        try {
+            return Integer.parseInt(System.getProperty("http.proxyPort"));
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+!!!270850.java!!!	getPreferredHttpHost(inout context : Context, in url : String) : HttpHost
+        java.net.Proxy prefProxy = getProxy(context, url);
+        if (prefProxy.equals(java.net.Proxy.NO_PROXY)) {
+            return null;
+        } else {
+            InetSocketAddress sa = (InetSocketAddress)prefProxy.address();
+            return new HttpHost(sa.getHostName(), sa.getPort(), "http");
+        }
+!!!270978.java!!!	isLocalHost(in host : String) : boolean
+        if (host == null) {
+            return false;
+        }
+        try {
+            if (host != null) {
+                if (host.equalsIgnoreCase("localhost")) {
+                    return true;
+                }
+                if (NetworkUtils.numericToInetAddress(host).isLoopbackAddress()) {
+                    return true;
+                }
+            }
+        } catch (IllegalArgumentException iex) {
+        }
+        return false;
+!!!271106.java!!!	validate(in hostname : String, in port : String, in exclList : String) : void
+        Matcher match = HOSTNAME_PATTERN.matcher(hostname);
+        Matcher listMatch = EXCLLIST_PATTERN.matcher(exclList);
+
+        if (!match.matches()) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!listMatch.matches()) {
+            throw new IllegalArgumentException();
+        }
+
+        if (hostname.length() > 0 && port.length() == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (port.length() > 0) {
+            if (hostname.length() == 0) {
+                throw new IllegalArgumentException();
+            }
+            int portVal = -1;
+            try {
+                portVal = Integer.parseInt(port);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException();
+            }
+            if (portVal <= 0 || portVal > 0xFFFF) {
+                throw new IllegalArgumentException();
+            }
+        }
+!!!271746.java!!!	getAndroidProxySelectorRoutePlanner(inout context : Context) : HttpRoutePlanner
+        AndroidProxySelectorRoutePlanner ret = new AndroidProxySelectorRoutePlanner(
+                new SchemeRegistry(), ProxySelector.getDefault(), context);
+        return ret;
+!!!271874.java!!!	setHttpProxySystemProperty(inout p : ProxyProperties) : void
+        String host = null;
+        String port = null;
+        String exclList = null;
+        String pacFileUrl = null;
+        if (p != null) {
+            host = p.getHost();
+            port = Integer.toString(p.getPort());
+            exclList = p.getExclusionList();
+            pacFileUrl = p.getPacFileUrl();
+        }
+        setHttpProxySystemProperty(host, port, exclList, pacFileUrl);
+!!!272002.java!!!	setHttpProxySystemProperty(in host : String, in port : String, in exclList : String, in pacFileUrl : String) : void
+        if (exclList != null) exclList = exclList.replace(",", "|");
+        if (false) Log.d(TAG, "setHttpProxySystemProperty :"+host+":"+port+" - "+exclList);
+        if (host != null) {
+            System.setProperty("http.proxyHost", host);
+            System.setProperty("https.proxyHost", host);
+        } else {
+            System.clearProperty("http.proxyHost");
+            System.clearProperty("https.proxyHost");
+        }
+        if (port != null) {
+            System.setProperty("http.proxyPort", port);
+            System.setProperty("https.proxyPort", port);
+        } else {
+            System.clearProperty("http.proxyPort");
+            System.clearProperty("https.proxyPort");
+        }
+        if (exclList != null) {
+            System.setProperty("http.nonProxyHosts", exclList);
+            System.setProperty("https.nonProxyHosts", exclList);
+        } else {
+            System.clearProperty("http.nonProxyHosts");
+            System.clearProperty("https.nonProxyHosts");
+        }
+        if (!TextUtils.isEmpty(pacFileUrl)) {
+            ProxySelector.setDefault(new PacProxySelector());
+        } else {
+            ProxySelector.setDefault(sDefaultProxySelector);
+        }

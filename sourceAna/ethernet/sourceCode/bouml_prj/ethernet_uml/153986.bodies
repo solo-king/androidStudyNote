@@ -1,0 +1,272 @@
+class AndroidHttpClient
+!!!334338.java!!!	newInstance(in userAgent : String, inout context : Context) : AndroidHttpClient
+        HttpParams params = new BasicHttpParams();
+
+        // Turn off stale checking.  Our connections break all the time anyway,
+        // and it's not worth it to pay the penalty of checking every time.
+        HttpConnectionParams.setStaleCheckingEnabled(params, false);
+
+        HttpConnectionParams.setConnectionTimeout(params, SOCKET_OPERATION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(params, SOCKET_OPERATION_TIMEOUT);
+        HttpConnectionParams.setSocketBufferSize(params, 8192);
+
+        // Don't handle redirects -- return them to the caller.  Our code
+        // often wants to re-POST after a redirect, which we must do ourselves.
+        HttpClientParams.setRedirecting(params, false);
+
+        // Use a session cache for SSL sockets
+        SSLSessionCache sessionCache = context == null ? null : new SSLSessionCache(context);
+
+        // Set the specified user agent and register standard protocols.
+        HttpProtocolParams.setUserAgent(params, userAgent);
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http",
+                PlainSocketFactory.getSocketFactory(), 80));
+        schemeRegistry.register(new Scheme("https",
+                SSLCertificateSocketFactory.getHttpSocketFactory(
+                SOCKET_OPERATION_TIMEOUT, sessionCache), 443));
+
+        ClientConnectionManager manager =
+                new ThreadSafeClientConnManager(params, schemeRegistry);
+
+        // We use a factory method to modify superclass initialization
+        // parameters without the funny call-a-static-method dance.
+        return new AndroidHttpClient(manager, params);
+!!!334466.java!!!	newInstance(in userAgent : String) : AndroidHttpClient
+        return newInstance(userAgent, null /* session cache */);
+!!!334594.java!!!	AndroidHttpClient(inout ccm : ClientConnectionManager, inout params : HttpParams)
+        this.delegate = new DefaultHttpClient(ccm, params) {
+            @Override
+            protected BasicHttpProcessor createHttpProcessor() {
+                // Add interceptor to prevent making requests from main thread.
+                BasicHttpProcessor processor = super.createHttpProcessor();
+                processor.addRequestInterceptor(sThreadCheckInterceptor);
+                processor.addRequestInterceptor(new CurlLogger());
+
+                return processor;
+            }
+
+            @Override
+            protected HttpContext createHttpContext() {
+                // Same as DefaultHttpClient.createHttpContext() minus the
+                // cookie store.
+                HttpContext context = new BasicHttpContext();
+                context.setAttribute(
+                        ClientContext.AUTHSCHEME_REGISTRY,
+                        getAuthSchemes());
+                context.setAttribute(
+                        ClientContext.COOKIESPEC_REGISTRY,
+                        getCookieSpecs());
+                context.setAttribute(
+                        ClientContext.CREDS_PROVIDER,
+                        getCredentialsProvider());
+                return context;
+            }
+        };
+!!!334722.java!!!	finalize() : void
+        super.finalize();
+        if (mLeakedException != null) {
+            Log.e(TAG, "Leak found", mLeakedException);
+            mLeakedException = null;
+        }
+!!!334850.java!!!	modifyRequestToAcceptGzipResponse(inout request : HttpRequest) : void
+        request.addHeader("Accept-Encoding", "gzip");
+!!!334978.java!!!	getUngzippedContent(inout entity : HttpEntity) : InputStream
+        InputStream responseStream = entity.getContent();
+        if (responseStream == null) return responseStream;
+        Header header = entity.getContentEncoding();
+        if (header == null) return responseStream;
+        String contentEncoding = header.getValue();
+        if (contentEncoding == null) return responseStream;
+        if (contentEncoding.contains("gzip")) responseStream
+                = new GZIPInputStream(responseStream);
+        return responseStream;
+!!!335106.java!!!	close() : void
+        if (mLeakedException != null) {
+            getConnectionManager().shutdown();
+            mLeakedException = null;
+        }
+!!!335234.java!!!	getParams() : HttpParams
+        return delegate.getParams();
+!!!335362.java!!!	getConnectionManager() : ClientConnectionManager
+        return delegate.getConnectionManager();
+!!!335490.java!!!	isMmsRequest() : boolean
+        if (delegate != null) {
+            HttpParams httpParams = delegate.getParams();
+            if (httpParams != null) {
+                Object parameter = httpParams.getParameter(CoreProtocolPNames.USER_AGENT);
+                if (parameter != null && parameter.toString().contains("Android-Mms")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+!!!335618.java!!!	checkMmsOps() : boolean
+        AppOpsManager appOps = (AppOpsManager) ActivityThread.currentApplication().getSystemService(Context.APP_OPS_SERVICE);
+        int callingUid = Binder.getCallingUid();
+        String callingPackage= ActivityThread.currentPackageName();
+
+        if (appOps.noteOp(AppOpsManager.OP_SEND_MMS, callingUid, callingPackage) !=
+                AppOpsManager.MODE_ALLOWED)
+                return false;
+
+        return true;
+!!!335746.java!!!	getMethod(inout request : HttpUriRequest) : String
+        if(request != null)
+            return request.getMethod();
+        return null;
+!!!335874.java!!!	getMethod(inout request : HttpRequest) : String
+        if(request != null)
+            if(request.getRequestLine() != null)
+                return request.getRequestLine().getMethod();
+        return null;
+!!!336002.java!!!	checkMmsSendPermission(in method : String) : boolean
+        if(isMmsRequest() && method.equals("POST"))
+            return checkMmsOps();
+        return true;
+!!!336130.java!!!	execute(inout request : HttpUriRequest) : HttpResponse
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(request);
+!!!336258.java!!!	execute(inout request : HttpUriRequest, inout context : HttpContext) : HttpResponse
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(request, context);
+!!!336386.java!!!	execute(inout target : HttpHost, inout request : HttpRequest) : HttpResponse
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(target, request);
+!!!336514.java!!!	execute(inout target : HttpHost, inout request : HttpRequest, inout context : HttpContext) : HttpResponse
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(target, request, context);
+!!!336642.java!!!	execute(inout request : HttpUriRequest, inout responseHandler : ResponseHandler<? extends T>) : T
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(request, responseHandler);
+!!!336770.java!!!	execute(inout request : HttpUriRequest, inout responseHandler : ResponseHandler<? extends T>, inout context : HttpContext) : T
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(request, responseHandler, context);
+!!!336898.java!!!	execute(inout target : HttpHost, inout request : HttpRequest, inout responseHandler : ResponseHandler<? extends T>) : T
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(target, request, responseHandler);
+!!!337026.java!!!	execute(inout target : HttpHost, inout request : HttpRequest, inout responseHandler : ResponseHandler<? extends T>, inout context : HttpContext) : T
+        if(!checkMmsSendPermission(getMethod(request)))
+            throw new IOException("Permission denied");
+        return delegate.execute(target, request, responseHandler, context);
+!!!337154.java!!!	getCompressedEntity(inout data : byte, inout resolver : ContentResolver) : AbstractHttpEntity
+        AbstractHttpEntity entity;
+        if (data.length < getMinGzipSize(resolver)) {
+            entity = new ByteArrayEntity(data);
+        } else {
+            ByteArrayOutputStream arr = new ByteArrayOutputStream();
+            OutputStream zipper = new GZIPOutputStream(arr);
+            zipper.write(data);
+            zipper.close();
+            entity = new ByteArrayEntity(arr.toByteArray());
+            entity.setContentEncoding("gzip");
+        }
+        return entity;
+!!!337282.java!!!	getMinGzipSize(inout resolver : ContentResolver) : long
+        return DEFAULT_SYNC_MIN_GZIP_BYTES;  // For now, this is just a constant.
+!!!337794.java!!!	enableCurlLogging(in name : String, in level : int) : void
+        if (name == null) {
+            throw new NullPointerException("name");
+        }
+        if (level < Log.VERBOSE || level > Log.ASSERT) {
+            throw new IllegalArgumentException("Level is out of range ["
+                + Log.VERBOSE + ".." + Log.ASSERT + "]");
+        }
+
+        curlConfiguration = new LoggingConfiguration(name, level);
+!!!337922.java!!!	disableCurlLogging() : void
+        curlConfiguration = null;
+!!!338178.java!!!	toCurl(inout request : HttpUriRequest, inout logAuthToken : boolean) : String
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("curl ");
+
+        // add in the method
+        builder.append("-X ");
+        builder.append(request.getMethod());
+        builder.append(" ");
+
+        for (Header header: request.getAllHeaders()) {
+            if (!logAuthToken
+                    && (header.getName().equals("Authorization") ||
+                        header.getName().equals("Cookie"))) {
+                continue;
+            }
+            builder.append("--header \"");
+            builder.append(header.toString().trim());
+            builder.append("\" ");
+        }
+
+        URI uri = request.getURI();
+
+        // If this is a wrapped request, use the URI from the original
+        // request instead. getURI() on the wrapper seems to return a
+        // relative URI. We want an absolute URI.
+        if (request instanceof RequestWrapper) {
+            HttpRequest original = ((RequestWrapper) request).getOriginal();
+            if (original instanceof HttpUriRequest) {
+                uri = ((HttpUriRequest) original).getURI();
+            }
+        }
+
+        builder.append("\"");
+        builder.append(uri);
+        builder.append("\"");
+
+        if (request instanceof HttpEntityEnclosingRequest) {
+            HttpEntityEnclosingRequest entityRequest =
+                    (HttpEntityEnclosingRequest) request;
+            HttpEntity entity = entityRequest.getEntity();
+            if (entity != null && entity.isRepeatable()) {
+                if (entity.getContentLength() < 1024) {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    entity.writeTo(stream);
+
+                    if (isBinaryContent(request)) {
+                        String base64 = Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP);
+                        builder.insert(0, "echo '" + base64 + "' | base64 -d > /tmp/$$.bin; ");
+                        builder.append(" --data-binary @/tmp/$$.bin");
+                    } else {
+                        String entityString = stream.toString();
+                        builder.append(" --data-ascii \"")
+                                .append(entityString)
+                                .append("\"");
+                    }
+                } else {
+                    builder.append(" [TOO MUCH DATA TO INCLUDE]");
+                }
+            }
+        }
+
+        return builder.toString();
+!!!338306.java!!!	isBinaryContent(inout request : HttpUriRequest) : boolean
+        Header[] headers;
+        headers = request.getHeaders(Headers.CONTENT_ENCODING);
+        if (headers != null) {
+            for (Header header : headers) {
+                if ("gzip".equalsIgnoreCase(header.getValue())) {
+                    return true;
+                }
+            }
+        }
+
+        headers = request.getHeaders(Headers.CONTENT_TYPE);
+        if (headers != null) {
+            for (Header header : headers) {
+                for (String contentType : textContentTypes) {
+                    if (header.getValue().startsWith(contentType)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+!!!338434.java!!!	parseDate(in dateString : String) : long
+        return HttpDateTime.parse(dateString);

@@ -1,0 +1,100 @@
+class HierarchicalUri
+!!!303234.java!!!	HierarchicalUri(in scheme : String, inout authority : Uri::Part, inout path : Uri::PathPart, inout query : Uri::Part, inout fragment : Uri::Part)
+            this.scheme = scheme;
+            this.authority = Part.nonNull(authority);
+            this.path = path == null ? PathPart.NULL : path;
+            this.query = Part.nonNull(query);
+            this.fragment = Part.nonNull(fragment);
+!!!303362.java!!!	readFrom(inout parcel : Parcel) : Uri
+            return new HierarchicalUri(
+                parcel.readString(),
+                Part.readFrom(parcel),
+                PathPart.readFrom(parcel),
+                Part.readFrom(parcel),
+                Part.readFrom(parcel)
+            );
+!!!303490.java!!!	describeContents() : int
+            return 0;
+!!!303618.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+            parcel.writeInt(TYPE_ID);
+            parcel.writeString(scheme);
+            authority.writeTo(parcel);
+            path.writeTo(parcel);
+            query.writeTo(parcel);
+            fragment.writeTo(parcel);
+!!!303746.java!!!	isHierarchical() : boolean
+            return true;
+!!!303874.java!!!	isRelative() : boolean
+            return scheme == null;
+!!!304002.java!!!	getScheme() : String
+            return scheme;
+!!!304130.java!!!	getSsp() : Uri::Part
+            return ssp == null
+                    ? ssp = Part.fromEncoded(makeSchemeSpecificPart()) : ssp;
+!!!304258.java!!!	getEncodedSchemeSpecificPart() : String
+            return getSsp().getEncoded();
+!!!304386.java!!!	getSchemeSpecificPart() : String
+            return getSsp().getDecoded();
+!!!304514.java!!!	makeSchemeSpecificPart() : String
+            StringBuilder builder = new StringBuilder();
+            appendSspTo(builder);
+            return builder.toString();
+!!!304642.java!!!	appendSspTo(inout builder : StringBuilder) : void
+            String encodedAuthority = authority.getEncoded();
+            if (encodedAuthority != null) {
+                // Even if the authority is "", we still want to append "//".
+                builder.append("//").append(encodedAuthority);
+            }
+
+            String encodedPath = path.getEncoded();
+            if (encodedPath != null) {
+                builder.append(encodedPath);
+            }
+
+            if (!query.isEmpty()) {
+                builder.append('?').append(query.getEncoded());
+            }
+!!!304770.java!!!	getAuthority() : String
+            return this.authority.getDecoded();
+!!!304898.java!!!	getEncodedAuthority() : String
+            return this.authority.getEncoded();
+!!!305026.java!!!	getEncodedPath() : String
+            return this.path.getEncoded();
+!!!305154.java!!!	getPath() : String
+            return this.path.getDecoded();
+!!!305282.java!!!	getQuery() : String
+            return this.query.getDecoded();
+!!!305410.java!!!	getEncodedQuery() : String
+            return this.query.getEncoded();
+!!!305538.java!!!	getFragment() : String
+            return this.fragment.getDecoded();
+!!!305666.java!!!	getEncodedFragment() : String
+            return this.fragment.getEncoded();
+!!!305794.java!!!	getPathSegments() : List<String>
+            return this.path.getPathSegments();
+!!!305922.java!!!	toString() : String
+            @SuppressWarnings("StringEquality")
+            boolean cached = (uriString != NOT_CACHED);
+            return cached ? uriString
+                    : (uriString = makeUriString());
+!!!306050.java!!!	makeUriString() : String
+            StringBuilder builder = new StringBuilder();
+
+            if (scheme != null) {
+                builder.append(scheme).append(':');
+            }
+
+            appendSspTo(builder);
+
+            if (!fragment.isEmpty()) {
+                builder.append('#').append(fragment.getEncoded());
+            }
+
+            return builder.toString();
+!!!306178.java!!!	buildUpon() : Uri::Builder
+            return new Builder()
+                    .scheme(scheme)
+                    .authority(authority)
+                    .path(path)
+                    .query(query)
+                    .fragment(fragment);

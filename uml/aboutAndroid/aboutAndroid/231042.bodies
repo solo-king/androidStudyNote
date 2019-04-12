@@ -1,0 +1,35 @@
+class AppDataUsageActivity
+!!!616066.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        final Intent intent = getIntent();
+        final String packageName = intent.getData().getSchemeSpecificPart();
+        final PackageManager pm = getPackageManager();
+        final int uid;
+        try {
+            uid = pm.getPackageUid(packageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "invalid package: " + packageName);
+            try {
+                // Activity lifecycle still requires calling onCreate()
+                super.onCreate(savedInstanceState);
+            } catch (Exception e2) {
+                // Ignore - most likely caused by SettingsActivity because of invalid fragment
+                if (DEBUG) Log.d(TAG, "onCreate() exception", e);
+            } finally {
+                finish();
+            }
+            return;
+        }
+        if (DEBUG) Log.d(TAG, "Package: " + packageName + " UID: " + uid);
+
+        final Bundle args = new Bundle();
+        final AppItem appItem = new AppItem(uid);
+        appItem.addUid(uid);
+        args.putParcelable(AppDataUsage.ARG_APP_ITEM, appItem);
+        intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, args);
+        intent.putExtra(EXTRA_SHOW_FRAGMENT, AppDataUsage.class.getName());
+        intent.putExtra(EXTRA_SHOW_FRAGMENT_TITLE_RESID, R.string.app_data_usage);
+
+        super.onCreate(savedInstanceState);
+!!!616194.java!!!	isValidFragment(in fragmentName : String) : boolean
+        return super.isValidFragment(fragmentName)
+                || AppDataUsage.class.getName().equals(fragmentName);

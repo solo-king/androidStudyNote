@@ -1,0 +1,113 @@
+class GroupAdapter
+!!!370690.java!!!	GroupAdapter(inout tab : TrustedCredentialsSettings::Tab)
+            mData = new AdapterData(tab, this);
+            load();
+!!!370818.java!!!	getGroupCount() : int
+            return mData.mCertHoldersByUserId.size();
+!!!370946.java!!!	getChildrenCount(in groupPosition : int) : int
+            List<CertHolder> certHolders = mData.mCertHoldersByUserId.valueAt(groupPosition);
+            if (certHolders != null) {
+                return certHolders.size();
+            }
+            return 0;
+!!!371074.java!!!	getGroup(in groupPosition : int) : UserHandle
+            return new UserHandle(mData.mCertHoldersByUserId.keyAt(groupPosition));
+!!!371202.java!!!	getChild(in groupPosition : int, in childPosition : int) : TrustedCredentialsSettings::CertHolder
+            return mData.mCertHoldersByUserId.get(getUserIdByGroup(groupPosition)).get(
+                    childPosition);
+!!!371330.java!!!	getGroupId(in groupPosition : int) : long
+            return getUserIdByGroup(groupPosition);
+!!!371458.java!!!	getUserIdByGroup(in groupPosition : int) : int
+            return mData.mCertHoldersByUserId.keyAt(groupPosition);
+!!!371586.java!!!	getUserInfoByGroup(in groupPosition : int) : UserInfo
+            return mUserManager.getUserInfo(getUserIdByGroup(groupPosition));
+!!!371714.java!!!	getChildId(in groupPosition : int, in childPosition : int) : long
+            return childPosition;
+!!!371842.java!!!	hasStableIds() : boolean
+            return false;
+!!!371970.java!!!	getGroupView(in groupPosition : int, inout isExpanded : boolean, inout convertView : View, inout parent : ViewGroup) : View
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) getActivity()
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = Utils.inflateCategoryHeader(inflater, parent);
+            }
+
+            final TextView title = (TextView) convertView.findViewById(android.R.id.title);
+            if (getUserInfoByGroup(groupPosition).isManagedProfile()) {
+                title.setText(R.string.category_work);
+            } else {
+                title.setText(R.string.category_personal);
+            }
+            title.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+
+            return convertView;
+!!!372098.java!!!	getChildView(in groupPosition : int, in childPosition : int, inout isLastChild : boolean, inout convertView : View, inout parent : ViewGroup) : View
+            return getViewForCertificate(getChild(groupPosition, childPosition), mData.mTab,
+                    convertView, parent);
+!!!372226.java!!!	isChildSelectable(in groupPosition : int, in childPosition : int) : boolean
+            return true;
+!!!372354.java!!!	onChildClick(inout expandableListView : ExpandableListView, inout view : View, in groupPosition : int, in childPosition : int, in id : long) : boolean
+            showCertDialog(getChild(groupPosition, childPosition));
+            return true;
+!!!372482.java!!!	onGroupClick(inout expandableListView : ExpandableListView, inout view : View, in groupPosition : int, in id : long) : boolean
+            return !checkGroupExpandableAndStartWarningActivity(groupPosition);
+!!!372610.java!!!	load() : void
+            mData.new AliasLoader().execute();
+!!!372738.java!!!	remove(inout certHolder : TrustedCredentialsSettings::CertHolder) : void
+            mData.remove(certHolder);
+!!!372866.java!!!	setExpandableListView(inout lv : ExpandableListView) : void
+            lv.setAdapter(this);
+            lv.setOnGroupClickListener(this);
+            lv.setOnChildClickListener(this);
+            lv.setVisibility(View.VISIBLE);
+!!!372994.java!!!	getChildAdapter(in groupPosition : int) : TrustedCredentialsSettings::ChildAdapter
+            return new ChildAdapter(this, groupPosition);
+!!!373122.java!!!	checkGroupExpandableAndStartWarningActivity(in groupPosition : int) : boolean
+            return checkGroupExpandableAndStartWarningActivity(groupPosition, true);
+!!!373250.java!!!	checkGroupExpandableAndStartWarningActivity(in groupPosition : int, inout startActivity : boolean) : boolean
+            final UserHandle groupUser = getGroup(groupPosition);
+            final int groupUserId = groupUser.getIdentifier();
+            if (mUserManager.isQuietModeEnabled(groupUser)) {
+                final Intent intent = UnlaunchableAppActivity.createInQuietModeDialogIntent(
+                        groupUserId);
+                if (startActivity) {
+                    getActivity().startActivity(intent);
+                }
+                return false;
+            } else if (!mUserManager.isUserUnlocked(groupUser)) {
+                final LockPatternUtils lockPatternUtils = new LockPatternUtils(
+                        getActivity());
+                if (lockPatternUtils.isSeparateProfileChallengeEnabled(groupUserId)) {
+                    if (startActivity) {
+                        startConfirmCredential(groupUserId);
+                    }
+                    return false;
+                }
+            }
+            return true;
+!!!373378.java!!!	getViewForCertificate(inout certHolder : TrustedCredentialsSettings::CertHolder, inout mTab : TrustedCredentialsSettings::Tab, inout convertView : View, inout parent : ViewGroup) : View
+            ViewHolder holder;
+            if (convertView == null) {
+                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                convertView = inflater.inflate(R.layout.trusted_credential, parent, false);
+                holder = new ViewHolder();
+                holder.mSubjectPrimaryView = (TextView)
+                        convertView.findViewById(R.id.trusted_credential_subject_primary);
+                holder.mSubjectSecondaryView = (TextView)
+                        convertView.findViewById(R.id.trusted_credential_subject_secondary);
+                holder.mSwitch = (Switch) convertView.findViewById(
+                        R.id.trusted_credential_status);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.mSubjectPrimaryView.setText(certHolder.mSubjectPrimary);
+            holder.mSubjectSecondaryView.setText(certHolder.mSubjectSecondary);
+            if (mTab.mSwitch) {
+                holder.mSwitch.setChecked(!certHolder.mDeleted);
+                holder.mSwitch.setEnabled(!mUserManager.hasUserRestriction(
+                        UserManager.DISALLOW_CONFIG_CREDENTIALS,
+                        new UserHandle(certHolder.mProfileId)));
+                holder.mSwitch.setVisibility(View.VISIBLE);
+            }
+            return convertView;

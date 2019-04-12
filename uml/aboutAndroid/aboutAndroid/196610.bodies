@@ -1,0 +1,81 @@
+class ColorPreference
+!!!412674.java!!!	ColorPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+
+        setDialogLayoutResource(R.layout.grid_picker_dialog);
+        setListItemLayoutResource(R.layout.color_picker_item);
+!!!412802.java!!!	setPreviewEnabled(inout enabled : boolean) : void
+        if (mPreviewEnabled != enabled) {
+            mPreviewEnabled = enabled;
+
+            if (enabled) {
+                setWidgetLayoutResource(R.layout.preference_color);
+            } else {
+                setWidgetLayoutResource(0);
+            }
+        }
+!!!412930.java!!!	shouldDisableDependents() : boolean
+        return Color.alpha(getValue()) == 0 || super.shouldDisableDependents();
+!!!413058.java!!!	getTitleAt(in index : int) : CharSequence
+        final CharSequence title = super.getTitleAt(index);
+        if (title != null) {
+            return title;
+        }
+
+        // If no title was supplied, format title using RGB values.
+        final int value = getValueAt(index);
+        final int r = Color.red(value);
+        final int g = Color.green(value);
+        final int b = Color.blue(value);
+        return getContext().getString(R.string.color_custom, r, g, b);
+!!!413186.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        if (mPreviewEnabled) {
+            final ImageView previewImage = (ImageView) view.findViewById(R.id.color_preview);
+            final int argb = getValue();
+            if (Color.alpha(argb) < 255) {
+                previewImage.setBackgroundResource(R.drawable.transparency_tileable);
+            } else {
+                previewImage.setBackground(null);
+            }
+
+            if (mPreviewColor == null) {
+                mPreviewColor = new ColorDrawable(argb);
+                previewImage.setImageDrawable(mPreviewColor);
+            } else {
+                mPreviewColor.setColor(argb);
+            }
+
+            final CharSequence summary = getSummary();
+            if (!TextUtils.isEmpty(summary)) {
+                previewImage.setContentDescription(summary);
+            } else {
+                previewImage.setContentDescription(null);
+            }
+
+            previewImage.setAlpha(isEnabled() ? 1f : 0.2f);
+        }
+!!!413314.java!!!	onBindListItem(inout view : View, in index : int) : void
+        final int argb = getValueAt(index);
+        final int alpha = Color.alpha(argb);
+
+        final ImageView swatch = (ImageView) view.findViewById(R.id.color_swatch);
+        if (alpha < 255) {
+            swatch.setBackgroundResource(R.drawable.transparency_tileable);
+        } else {
+            swatch.setBackground(null);
+        }
+
+        final Drawable foreground = swatch.getDrawable();
+        if (foreground instanceof ColorDrawable) {
+            ((ColorDrawable) foreground).setColor(argb);
+        } else {
+            swatch.setImageDrawable(new ColorDrawable(argb));
+        }
+
+        final CharSequence title = getTitleAt(index);
+        if (title != null) {
+            final TextView summary = (TextView) view.findViewById(R.id.summary);
+            summary.setText(title);
+        }

@@ -1,0 +1,405 @@
+class AccessibilitySettings
+!!!401538.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY;
+!!!401666.java!!!	getHelpResource() : int
+        return R.string.help_uri_accessibility;
+!!!401794.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        addPreferencesFromResource(R.xml.accessibility_settings);
+        initializeAllPreferences();
+        mDpm = (DevicePolicyManager) (getActivity()
+                .getSystemService(Context.DEVICE_POLICY_SERVICE));
+!!!401922.java!!!	onResume() : void
+        super.onResume();
+        updateAllPreferences();
+
+        mSettingsPackageMonitor.register(getActivity(), getActivity().getMainLooper(), false);
+        mSettingsContentObserver.register(getContentResolver());
+        if (RotationPolicy.isRotationSupported(getActivity())) {
+            RotationPolicy.registerRotationPolicyListener(getActivity(),
+                    mRotationPolicyListener);
+        }
+!!!402050.java!!!	onPause() : void
+        mSettingsPackageMonitor.unregister();
+        mSettingsContentObserver.unregister(getContentResolver());
+        if (RotationPolicy.isRotationSupported(getActivity())) {
+            RotationPolicy.unregisterRotationPolicyListener(getActivity(),
+                    mRotationPolicyListener);
+        }
+        super.onPause();
+!!!402178.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (mSelectLongPressTimeoutPreference == preference) {
+            handleLongPressTimeoutPreferenceChange((String) newValue);
+            return true;
+        } else if (mToggleInversionPreference == preference) {
+            handleToggleInversionPreferenceChange((Boolean) newValue);
+            return true;
+        }
+        return false;
+!!!402306.java!!!	handleLongPressTimeoutPreferenceChange(in stringValue : String) : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.LONG_PRESS_TIMEOUT, Integer.parseInt(stringValue));
+        mSelectLongPressTimeoutPreference.setSummary(
+                mLongPressTimeoutValuetoTitleMap.get(stringValue));
+!!!402434.java!!!	handleToggleInversionPreferenceChange(inout checked : boolean) : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED, (checked ? 1 : 0));
+!!!402562.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        if (mToggleHighTextContrastPreference == preference) {
+            handleToggleTextContrastPreferenceClick();
+            return true;
+        } else if (mTogglePowerButtonEndsCallPreference == preference) {
+            handleTogglePowerButtonEndsCallPreferenceClick();
+            return true;
+        } else if (mToggleLockScreenRotationPreference == preference) {
+            handleLockScreenRotationPreferenceClick();
+            return true;
+        } else if (mToggleSpeakPasswordPreference == preference) {
+            handleToggleSpeakPasswordPreferenceClick();
+            return true;
+        } else if (mToggleLargePointerIconPreference == preference) {
+            handleToggleLargePointerIconPreferenceClick();
+            return true;
+        } else if (mToggleMasterMonoPreference == preference) {
+            handleToggleMasterMonoPreferenceClick();
+            return true;
+        } else if (mGlobalGesturePreferenceScreen == preference) {
+            handleToggleEnableAccessibilityGesturePreferenceClick();
+            return true;
+        } else if (mDisplayMagnificationPreferenceScreen == preference) {
+            handleDisplayMagnificationPreferenceScreenClick();
+            return true;
+        }
+        return super.onPreferenceTreeClick(preference);
+!!!402690.java!!!	handleToggleTextContrastPreferenceClick() : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED,
+                (mToggleHighTextContrastPreference.isChecked() ? 1 : 0));
+!!!402818.java!!!	handleTogglePowerButtonEndsCallPreferenceClick() : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR,
+                (mTogglePowerButtonEndsCallPreference.isChecked()
+                        ? Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_HANGUP
+                        : Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_SCREEN_OFF));
+!!!402946.java!!!	handleLockScreenRotationPreferenceClick() : void
+        RotationPolicy.setRotationLockForAccessibility(getActivity(),
+                !mToggleLockScreenRotationPreference.isChecked());
+!!!403074.java!!!	handleToggleSpeakPasswordPreferenceClick() : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD,
+                mToggleSpeakPasswordPreference.isChecked() ? 1 : 0);
+!!!403202.java!!!	handleToggleLargePointerIconPreferenceClick() : void
+        Settings.Secure.putInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_LARGE_POINTER_ICON,
+                mToggleLargePointerIconPreference.isChecked() ? 1 : 0);
+!!!403330.java!!!	handleToggleMasterMonoPreferenceClick() : void
+        Settings.System.putIntForUser(getContentResolver(), Settings.System.MASTER_MONO,
+                mToggleMasterMonoPreference.isChecked() ? 1 : 0, UserHandle.USER_CURRENT);
+!!!403458.java!!!	handleToggleEnableAccessibilityGesturePreferenceClick() : void
+        Bundle extras = mGlobalGesturePreferenceScreen.getExtras();
+        extras.putString(EXTRA_TITLE, getString(
+                R.string.accessibility_global_gesture_preference_title));
+        extras.putString(EXTRA_SUMMARY, getString(
+                R.string.accessibility_global_gesture_preference_description));
+        extras.putBoolean(EXTRA_CHECKED, Settings.Global.getInt(getContentResolver(),
+                Settings.Global.ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, 0) == 1);
+        super.onPreferenceTreeClick(mGlobalGesturePreferenceScreen);
+!!!403586.java!!!	handleDisplayMagnificationPreferenceScreenClick() : void
+        Bundle extras = mDisplayMagnificationPreferenceScreen.getExtras();
+        extras.putString(EXTRA_TITLE, getString(
+                R.string.accessibility_screen_magnification_title));
+        extras.putCharSequence(EXTRA_SUMMARY, getActivity().getResources().getText(
+                R.string.accessibility_screen_magnification_summary));
+        extras.putBoolean(EXTRA_CHECKED, Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED, 0) == 1);
+        super.onPreferenceTreeClick(mDisplayMagnificationPreferenceScreen);
+!!!403714.java!!!	initializeAllPreferences() : void
+        mServicesCategory = (PreferenceCategory) findPreference(SERVICES_CATEGORY);
+        mSystemsCategory = (PreferenceCategory) findPreference(SYSTEM_CATEGORY);
+
+        // Text contrast.
+        mToggleHighTextContrastPreference =
+                (SwitchPreference) findPreference(TOGGLE_HIGH_TEXT_CONTRAST_PREFERENCE);
+
+        // Display inversion.
+        mToggleInversionPreference = (SwitchPreference) findPreference(TOGGLE_INVERSION_PREFERENCE);
+        mToggleInversionPreference.setOnPreferenceChangeListener(this);
+
+        // Power button ends calls.
+        mTogglePowerButtonEndsCallPreference =
+                (SwitchPreference) findPreference(TOGGLE_POWER_BUTTON_ENDS_CALL_PREFERENCE);
+        if (!KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_POWER)
+                || !Utils.isVoiceCapable(getActivity())) {
+            mSystemsCategory.removePreference(mTogglePowerButtonEndsCallPreference);
+        }
+
+        // Lock screen rotation.
+        mToggleLockScreenRotationPreference =
+                (SwitchPreference) findPreference(TOGGLE_LOCK_SCREEN_ROTATION_PREFERENCE);
+        if (!RotationPolicy.isRotationSupported(getActivity())) {
+            mSystemsCategory.removePreference(mToggleLockScreenRotationPreference);
+        }
+
+        // Speak passwords.
+        mToggleSpeakPasswordPreference =
+                (SwitchPreference) findPreference(TOGGLE_SPEAK_PASSWORD_PREFERENCE);
+
+        // Large pointer icon.
+        mToggleLargePointerIconPreference =
+                (SwitchPreference) findPreference(TOGGLE_LARGE_POINTER_ICON);
+
+        // Master Mono
+        mToggleMasterMonoPreference =
+                (SwitchPreference) findPreference(TOGGLE_MASTER_MONO);
+
+        // Long press timeout.
+        mSelectLongPressTimeoutPreference =
+                (ListPreference) findPreference(SELECT_LONG_PRESS_TIMEOUT_PREFERENCE);
+        mSelectLongPressTimeoutPreference.setOnPreferenceChangeListener(this);
+        if (mLongPressTimeoutValuetoTitleMap.size() == 0) {
+            String[] timeoutValues = getResources().getStringArray(
+                    R.array.long_press_timeout_selector_values);
+            mLongPressTimeoutDefault = Integer.parseInt(timeoutValues[0]);
+            String[] timeoutTitles = getResources().getStringArray(
+                    R.array.long_press_timeout_selector_titles);
+            final int timeoutValueCount = timeoutValues.length;
+            for (int i = 0; i < timeoutValueCount; i++) {
+                mLongPressTimeoutValuetoTitleMap.put(timeoutValues[i], timeoutTitles[i]);
+            }
+        }
+
+        // Captioning.
+        mCaptioningPreferenceScreen = (PreferenceScreen) findPreference(
+                CAPTIONING_PREFERENCE_SCREEN);
+
+        // Display magnification.
+        mDisplayMagnificationPreferenceScreen = (PreferenceScreen) findPreference(
+                DISPLAY_MAGNIFICATION_PREFERENCE_SCREEN);
+
+        // Font size.
+        mFontSizePreferenceScreen = (PreferenceScreen) findPreference(
+                FONT_SIZE_PREFERENCE_SCREEN);
+
+        // Autoclick after pointer stops.
+        mAutoclickPreferenceScreen = (PreferenceScreen) findPreference(
+                AUTOCLICK_PREFERENCE_SCREEN);
+
+        // Display color adjustments.
+        mDisplayDaltonizerPreferenceScreen = (PreferenceScreen) findPreference(
+                DISPLAY_DALTONIZER_PREFERENCE_SCREEN);
+
+        // Global gesture.
+        mGlobalGesturePreferenceScreen =
+                (PreferenceScreen) findPreference(ENABLE_ACCESSIBILITY_GESTURE_PREFERENCE_SCREEN);
+        final int longPressOnPowerBehavior = getActivity().getResources().getInteger(
+                com.android.internal.R.integer.config_longPressOnPowerBehavior);
+        final int LONG_PRESS_POWER_GLOBAL_ACTIONS = 1;
+        if (!KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_POWER)
+                || longPressOnPowerBehavior != LONG_PRESS_POWER_GLOBAL_ACTIONS) {
+            // Remove accessibility shortcut if power key is not present
+            // nor long press power does not show global actions menu.
+            mSystemsCategory.removePreference(mGlobalGesturePreferenceScreen);
+        }
+!!!403842.java!!!	updateAllPreferences() : void
+        updateServicesPreferences();
+        updateSystemPreferences();
+!!!403970.java!!!	updateServicesPreferences() : void
+        // Since services category is auto generated we have to do a pass
+        // to generate it since services can come and go and then based on
+        // the global accessibility state to decided whether it is enabled.
+
+        // Generate.
+        mServicesCategory.removeAll();
+
+        AccessibilityManager accessibilityManager = AccessibilityManager.getInstance(getActivity());
+
+        List<AccessibilityServiceInfo> installedServices =
+                accessibilityManager.getInstalledAccessibilityServiceList();
+        Set<ComponentName> enabledServices = AccessibilityUtils.getEnabledServicesFromSettings(
+                getActivity());
+        List<String> permittedServices = mDpm.getPermittedAccessibilityServices(
+                UserHandle.myUserId());
+        final boolean accessibilityEnabled = Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_ENABLED, 0) == 1;
+
+        for (int i = 0, count = installedServices.size(); i < count; ++i) {
+            AccessibilityServiceInfo info = installedServices.get(i);
+
+            RestrictedPreference preference = new RestrictedPreference(getActivity());
+            String title = info.getResolveInfo().loadLabel(getPackageManager()).toString();
+
+            ServiceInfo serviceInfo = info.getResolveInfo().serviceInfo;
+            ComponentName componentName = new ComponentName(serviceInfo.packageName,
+                    serviceInfo.name);
+
+            preference.setKey(componentName.flattenToString());
+
+            preference.setTitle(title);
+            final boolean serviceEnabled = accessibilityEnabled
+                    && enabledServices.contains(componentName);
+            String serviceEnabledString;
+            if (serviceEnabled) {
+                serviceEnabledString = getString(R.string.accessibility_feature_state_on);
+            } else {
+                serviceEnabledString = getString(R.string.accessibility_feature_state_off);
+            }
+
+            // Disable all accessibility services that are not permitted.
+            String packageName = serviceInfo.packageName;
+            boolean serviceAllowed =
+                    permittedServices == null || permittedServices.contains(packageName);
+            if (!serviceAllowed && !serviceEnabled) {
+                EnforcedAdmin admin = RestrictedLockUtils.checkIfAccessibilityServiceDisallowed(
+                        getActivity(), serviceInfo.packageName, UserHandle.myUserId());
+                if (admin != null) {
+                    preference.setDisabledByAdmin(admin);
+                } else {
+                    preference.setEnabled(false);
+                }
+            } else {
+                preference.setEnabled(true);
+            }
+
+            preference.setSummary(serviceEnabledString);
+
+            preference.setOrder(i);
+            preference.setFragment(ToggleAccessibilityServicePreferenceFragment.class.getName());
+            preference.setPersistent(true);
+
+            Bundle extras = preference.getExtras();
+            extras.putString(EXTRA_PREFERENCE_KEY, preference.getKey());
+            extras.putBoolean(EXTRA_CHECKED, serviceEnabled);
+            extras.putString(EXTRA_TITLE, title);
+
+            String description = info.loadDescription(getPackageManager());
+            if (TextUtils.isEmpty(description)) {
+                description = getString(R.string.accessibility_service_default_description);
+            }
+            extras.putString(EXTRA_SUMMARY, description);
+
+            String settingsClassName = info.getSettingsActivityName();
+            if (!TextUtils.isEmpty(settingsClassName)) {
+                extras.putString(EXTRA_SETTINGS_TITLE,
+                        getString(R.string.accessibility_menu_item_settings));
+                extras.putString(EXTRA_SETTINGS_COMPONENT_NAME,
+                        new ComponentName(info.getResolveInfo().serviceInfo.packageName,
+                                settingsClassName).flattenToString());
+            }
+
+            extras.putParcelable(EXTRA_COMPONENT_NAME, componentName);
+
+            mServicesCategory.addPreference(preference);
+        }
+
+        if (mServicesCategory.getPreferenceCount() == 0) {
+            if (mNoServicesMessagePreference == null) {
+                mNoServicesMessagePreference = new Preference(getPrefContext());
+                mNoServicesMessagePreference.setPersistent(false);
+                mNoServicesMessagePreference.setLayoutResource(
+                        R.layout.text_description_preference);
+                mNoServicesMessagePreference.setSelectable(false);
+                mNoServicesMessagePreference.setSummary(
+                        getString(R.string.accessibility_no_services_installed));
+            }
+            mServicesCategory.addPreference(mNoServicesMessagePreference);
+        }
+!!!404098.java!!!	updateSystemPreferences() : void
+        // Text contrast.
+        mToggleHighTextContrastPreference.setChecked(
+                Settings.Secure.getInt(getContentResolver(),
+                        Settings.Secure.ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED, 0) == 1);
+
+        // If the quick setting is enabled, the preference MUST be enabled.
+        mToggleInversionPreference.setChecked(Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED, 0) == 1);
+
+        // Power button ends calls.
+        if (KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_POWER)
+                && Utils.isVoiceCapable(getActivity())) {
+            final int incallPowerBehavior = Settings.Secure.getInt(getContentResolver(),
+                    Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR,
+                    Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT);
+            final boolean powerButtonEndsCall =
+                    (incallPowerBehavior == Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR_HANGUP);
+            mTogglePowerButtonEndsCallPreference.setChecked(powerButtonEndsCall);
+        }
+
+        // Auto-rotate screen
+        updateLockScreenRotationCheckbox();
+
+        // Speak passwords.
+        final boolean speakPasswordEnabled = Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD, 0) != 0;
+        mToggleSpeakPasswordPreference.setChecked(speakPasswordEnabled);
+
+        // Large pointer icon.
+        mToggleLargePointerIconPreference.setChecked(Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_LARGE_POINTER_ICON, 0) != 0);
+
+        // Master mono
+        updateMasterMono();
+
+        // Long press timeout.
+        final int longPressTimeout = Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.LONG_PRESS_TIMEOUT, mLongPressTimeoutDefault);
+        String value = String.valueOf(longPressTimeout);
+        mSelectLongPressTimeoutPreference.setValue(value);
+        mSelectLongPressTimeoutPreference.setSummary(mLongPressTimeoutValuetoTitleMap.get(value));
+
+        updateFeatureSummary(Settings.Secure.ACCESSIBILITY_CAPTIONING_ENABLED,
+                mCaptioningPreferenceScreen);
+        updateFeatureSummary(Settings.Secure.ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED,
+                mDisplayMagnificationPreferenceScreen);
+        updateFeatureSummary(Settings.Secure.ACCESSIBILITY_DISPLAY_DALTONIZER_ENABLED,
+                mDisplayDaltonizerPreferenceScreen);
+
+        updateFontSizeSummary(mFontSizePreferenceScreen);
+
+        updateAutoclickSummary(mAutoclickPreferenceScreen);
+
+        // Global gesture
+        final boolean globalGestureEnabled = Settings.Global.getInt(getContentResolver(),
+                Settings.Global.ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED, 0) == 1;
+        if (globalGestureEnabled) {
+            mGlobalGesturePreferenceScreen.setSummary(
+                    R.string.accessibility_global_gesture_preference_summary_on);
+        } else {
+            mGlobalGesturePreferenceScreen.setSummary(
+                    R.string.accessibility_global_gesture_preference_summary_off);
+        }
+!!!404226.java!!!	updateFeatureSummary(in prefKey : String, inout pref : Preference) : void
+        final boolean enabled = Settings.Secure.getInt(getContentResolver(), prefKey, 0) == 1;
+        pref.setSummary(enabled ? R.string.accessibility_feature_state_on
+                : R.string.accessibility_feature_state_off);
+!!!404354.java!!!	updateAutoclickSummary(inout pref : Preference) : void
+        final boolean enabled = Settings.Secure.getInt(
+                getContentResolver(), Settings.Secure.ACCESSIBILITY_AUTOCLICK_ENABLED, 0) == 1;
+        if (!enabled) {
+            pref.setSummary(R.string.accessibility_feature_state_off);
+            return;
+        }
+        int delay = Settings.Secure.getInt(
+                getContentResolver(), Settings.Secure.ACCESSIBILITY_AUTOCLICK_DELAY,
+                AccessibilityManager.AUTOCLICK_DELAY_DEFAULT);
+        pref.setSummary(ToggleAutoclickPreferenceFragment.getAutoclickPreferenceSummary(
+                getResources(), delay));
+!!!404482.java!!!	updateFontSizeSummary(inout pref : Preference) : void
+        final float currentScale = Settings.System.getFloat(getContext().getContentResolver(),
+                Settings.System.FONT_SCALE, 1.0f);
+        final Resources res = getContext().getResources();
+        final String[] entries = res.getStringArray(R.array.entries_font_size);
+        final String[] strEntryValues = res.getStringArray(R.array.entryvalues_font_size);
+        final int index = ToggleFontSizePreferenceFragment.fontSizeValueToIndex(currentScale,
+                strEntryValues);
+        pref.setSummary(entries[index]);
+!!!404610.java!!!	updateLockScreenRotationCheckbox() : void
+        Context context = getActivity();
+        if (context != null) {
+            mToggleLockScreenRotationPreference.setChecked(
+                    !RotationPolicy.isRotationLocked(context));
+        }
+!!!404738.java!!!	updateMasterMono() : void
+        final boolean masterMono = Settings.System.getIntForUser(
+                getContentResolver(), Settings.System.MASTER_MONO,
+                0 /* default */, UserHandle.USER_CURRENT) == 1;
+        mToggleMasterMonoPreference.setChecked(masterMono);

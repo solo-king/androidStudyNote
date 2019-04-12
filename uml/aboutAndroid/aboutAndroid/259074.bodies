@@ -1,0 +1,22 @@
+class RadioButtonPreference
+!!!785922.java!!!	RadioButtonPreference(inout context : Context, inout attrs : AttributeSet, in defStyle : int)
+        super(context, attrs, defStyle);
+        setWidgetLayoutResource(R.layout.preference_widget_radiobutton);
+!!!786050.java!!!	RadioButtonPreference(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, com.android.internal.R.attr.checkBoxPreferenceStyle);
+!!!786178.java!!!	RadioButtonPreference(inout context : Context)
+        this(context, null);
+!!!786306.java!!!	setOnClickListener(inout listener : RadioButtonPreference::OnClickListener) : void
+        mListener = listener;
+!!!786434.java!!!	onClick() : void
+        if (mListener != null) {
+            mListener.onRadioButtonClicked(this);
+        }
+!!!786562.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        TextView title = (TextView) view.findViewById(android.R.id.title);
+        if (title != null) {
+            title.setSingleLine(false);
+            title.setMaxLines(3);
+        }

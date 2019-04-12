@@ -1,0 +1,143 @@
+class HomeSettings
+!!!281730.java!!!	HomeSettings()
+        mHomeFilter = new IntentFilter(Intent.ACTION_MAIN);
+        mHomeFilter.addCategory(Intent.CATEGORY_HOME);
+        mHomeFilter.addCategory(Intent.CATEGORY_DEFAULT);
+!!!281858.java!!!	makeCurrentHome(inout newHome : HomeSettings::HomeAppPreference) : void
+        if (mCurrentHome != null) {
+            mCurrentHome.setChecked(false);
+        }
+        newHome.setChecked(true);
+        mCurrentHome = newHome;
+
+        mPm.replacePreferredActivity(mHomeFilter, IntentFilter.MATCH_CATEGORY_EMPTY,
+                mHomeComponentSet, newHome.activityName);
+
+        getActivity().setResult(Activity.RESULT_OK);
+!!!281986.java!!!	uninstallApp(inout pref : HomeSettings::HomeAppPreference) : void
+        // Uninstallation is done by asking the OS to do it
+       Uri packageURI = Uri.parse("package:" + pref.uninstallTarget);
+       Intent uninstallIntent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE, packageURI);
+       uninstallIntent.putExtra(Intent.EXTRA_UNINSTALL_ALL_USERS, false);
+       int requestCode = REQUESTING_UNINSTALL + (pref.isChecked ? 1 : 0);
+       startActivityForResult(uninstallIntent, requestCode);
+!!!282114.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Rebuild the list now that we might have nuked something
+        buildHomeActivitiesList();
+
+        // if the previous home app is now gone, fall back to the system one
+        if (requestCode > REQUESTING_UNINSTALL) {
+            // if mCurrentHome has gone null, it means we didn't find the previously-
+            // default home app when rebuilding the list, i.e. it was the one we
+            // just uninstalled.  When that happens we make the system-bundled
+            // home app the active default.
+            if (mCurrentHome == null) {
+                for (int i = 0; i < mPrefs.size(); i++) {
+                    HomeAppPreference pref = mPrefs.get(i);
+                    if (pref.isSystem) {
+                        makeCurrentHome(pref);
+                        break;
+                    }
+                }
+            }
+        }
+!!!282242.java!!!	buildHomeActivitiesList() : void
+        ArrayList<ResolveInfo> homeActivities = new ArrayList<ResolveInfo>();
+        ComponentName currentDefaultHome  = mPm.getHomeActivities(homeActivities);
+
+        Context context = getPrefContext();
+        mCurrentHome = null;
+        mPrefGroup.removeAll();
+        mPrefs = new ArrayList<HomeAppPreference>();
+        mHomeComponentSet = new ComponentName[homeActivities.size()];
+        int prefIndex = 0;
+        boolean supportManagedProfilesExtra =
+                getActivity().getIntent().getBooleanExtra(EXTRA_SUPPORT_MANAGED_PROFILES, false);
+        boolean mustSupportManagedProfile = hasManagedProfile()
+                || supportManagedProfilesExtra;
+        for (int i = 0; i < homeActivities.size(); i++) {
+            final ResolveInfo candidate = homeActivities.get(i);
+            final ActivityInfo info = candidate.activityInfo;
+            ComponentName activityName = new ComponentName(info.packageName, info.name);
+            mHomeComponentSet[i] = activityName;
+            try {
+                Drawable icon = info.loadIcon(mPm);
+                CharSequence name = info.loadLabel(mPm);
+                HomeAppPreference pref;
+
+                if (mustSupportManagedProfile && !launcherHasManagedProfilesFeature(candidate)) {
+                    pref = new HomeAppPreference(context, activityName, prefIndex,
+                            icon, name, this, info, false /* not enabled */,
+                            getResources().getString(R.string.home_work_profile_not_supported));
+                } else  {
+                    pref = new HomeAppPreference(context, activityName, prefIndex,
+                            icon, name, this, info, true /* enabled */, null);
+                }
+
+                mPrefs.add(pref);
+                mPrefGroup.addPreference(pref);
+                if (activityName.equals(currentDefaultHome)) {
+                    mCurrentHome = pref;
+                }
+                prefIndex++;
+            } catch (Exception e) {
+                Log.v(TAG, "Problem dealing with activity " + activityName, e);
+            }
+        }
+
+        if (mCurrentHome != null) {
+            if (mCurrentHome.isEnabled()) {
+                getActivity().setResult(Activity.RESULT_OK);
+            }
+
+            new Handler().post(new Runnable() {
+               public void run() {
+                   mCurrentHome.setChecked(true);
+               }
+            });
+        }
+!!!282370.java!!!	hasManagedProfile() : boolean
+        Context context = getActivity();
+        UserManager userManager = (UserManager) getSystemService(Context.USER_SERVICE);
+        List<UserInfo> profiles = userManager.getProfiles(context.getUserId());
+        for (UserInfo userInfo : profiles) {
+            if (userInfo.isManagedProfile()) return true;
+        }
+        return false;
+!!!282498.java!!!	launcherHasManagedProfilesFeature(inout resolveInfo : ResolveInfo) : boolean
+        try {
+            ApplicationInfo appInfo = getPackageManager().getApplicationInfo(
+                    resolveInfo.activityInfo.packageName, 0 /* default flags */);
+            return versionNumberAtLeastL(appInfo.targetSdkVersion);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+!!!282626.java!!!	versionNumberAtLeastL(in versionNumber : int) : boolean
+        return versionNumber >= Build.VERSION_CODES.LOLLIPOP;
+!!!282754.java!!!	getMetricsCategory() : int
+        return MetricsEvent.HOME;
+!!!282882.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.home_selection);
+
+        mPm = getPackageManager();
+        mPrefGroup = (PreferenceGroup) findPreference("home");
+
+        Bundle args = getArguments();
+        mShowNotice = (args != null) && args.getBoolean(HOME_SHOW_NOTICE, false);
+!!!283010.java!!!	onResume() : void
+        super.onResume();
+
+        final IntentFilter filter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        filter.addDataScheme("package");
+        getActivity().registerReceiver(mHomePackageReceiver, filter);
+
+        buildHomeActivitiesList();
+!!!283138.java!!!	onPause() : void
+        super.onPause();
+        getActivity().unregisterReceiver(mHomePackageReceiver);

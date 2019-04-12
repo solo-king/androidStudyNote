@@ -1,0 +1,526 @@
+[BEGIN] 2018/4/15 22:35:52
+D/SettingsEthEnabler( 4414): setEthEnabled true
+D/SettingsEthEnabler( 4414): setEthEnabled true
+D/EthernetService(  747): setEthState:getPersistedDevMode() = wan
+D/EthernetService(  747): setEthState:getPersistedDevMode() = wan
+I/EthernetService(  747): setEthState from 1 to 2
+I/EthernetService(  747): setEthState from 1 to 2
+D/EthernetService(  747): 4
+V/EthernetService(  747): Set ethernet mode [Ljava.lang.String;@41c9b770 -> dhcp
+D/EthernetService(  747): 4
+V/EthernetService(  747): Set ethernet mode [Ljava.lang.String;@41c9b770 -> dhcp
+D/EthernetService(  747): 5
+D/EthernetService(  747): 5
+I/EthernetService(  747): $$ setEthState() start thread to resetInterface()
+I/EthernetService(  747): $$ setEthState() start thread to resetInterface()
+D/NetUtils(  747): android_net_utils_resetConnections in env=0x59e26d00 clazz=0x20700001 iface=eth0 mask=0x3
+D/EthernetService(  747): 6
+I/EthernetStateTracker(  747): reset device eth0
+D/NetUtils(  747): android_net_utils_resetConnections in env=0x59e26d00 clazz=0x20700001 iface=eth0 mask=0x3
+D/EthernetService(  747): 6
+I/EthernetStateTracker(  747): reset device eth0
+I/EthernetStateTracker(  747): Force the connection disconnected before configuration
+D/EthernetStateTracker(  747): setEthState state=false->false event=4
+I/EthernetStateTracker(  747): Force the connection disconnected before configuration
+D/EthernetStateTracker(  747): setEthState state=false->false event=4
+D/EthernetStateTracker(  747): devMode = wan
+D/EthernetStateTracker(  747): devMode = wan
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+I/EthernetStateTracker(  747): trigger dhcp for device eth0
+I/EthernetStateTracker(  747): trigger dhcp for device eth0
+D/EthernetStateTracker(  747): DhcpHandler: DHCP request started
+D/EthernetStateTracker(  747): setEthState state=false->false event=0
+D/EthernetStateTracker(  747): DhcpHandler: DHCP request started
+D/EthernetStateTracker(  747): setEthState state=false->false event=0
+D/EthernetStateTracker(  747): devMode = wan
+D/EthernetStateTracker(  747): devMode = wan
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 600600 Iface linkstate eth0 down
+I/ethernet(  747): event: NEWLINK(16), flags=0X1003
+I/ethernet(  747): flags: UP BC MC
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 600600 Iface linkstate eth0 down
+I/ethernet(  747): event: NEWLINK(16), flags=0X1003
+I/ethernet(  747): flags: UP BC MC
+I/ethernet(  747): poll state :eth0:17:
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+V/EthernetStateTracker(  747): report new state DISCONNECTED on dev eth0 current=eth0
+D/EthernetStateTracker(  747): devMode = wan
+V/EthernetStateTracker(  747): update network state tracker
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=false msg.what is 4
+I/EthernetStateTracker(  747): [EVENT: ether is removed]
+D/EthernetStateTracker(  747): setEthState state=false->false event=4
+D/EthernetStateTracker(  747): devMode = wan
+I/ethernet(  747): poll state :eth0:17:
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+V/EthernetStateTracker(  747): report new state DISCONNECTED on dev eth0 current=eth0
+D/EthernetStateTracker(  747): devMode = wan
+V/EthernetStateTracker(  747): update network state tracker
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=false msg.what is 4
+I/EthernetStateTracker(  747): [EVENT: ether is removed]
+D/EthernetStateTracker(  747): setEthState state=false->false event=4
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): New status, stackConnected=false HWConnected=false
+I/EthernetStateTracker(  747): New status, stackConnected=false HWConnected=false
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_GET_BEST_AVAILABLE_POSITION_REQ_V02
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 600600 Iface linkstate eth0 up
+I/PPPOEService(  747): NetdCallbackReceiver [  674.653118] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+onEvent 600600 Iface linkstate eth0 up
+I/ethernet(  747): event[  674.667239] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+: NEWLINK(16), flags=0X11043
+I/ethernet(  747): event: NEWLINK([  674.681158] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+16), flags=0X11043
+I/ethernet(  747): flags: UP BC RUNNING MC L[  674.695070] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+INK_UP
+I/ethernet(  747): flags: UP BC RUNNING MC LINK_UP
+I/et[  674.709691] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+[  674.723176] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+[  674.731676] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+[  674.740148] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+[  674.748614] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+hernet(  747): poll state :eth0:16:
+I/ethernet(  747): poll sta[  674.757873] netlink: 16 bytes leftover after parsing attributes in process `ConnectivitySer'.
+te :eth0:16:
+I/EthernetStateTracker(  747): report interface is up for eth0
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): report interface is up for eth0
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=false msg.what is 5
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): [EVENT: Ether is up]
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=false msg.what is 5
+D/EthernetService(  747): isEthDeviceAdded : devMode = wan
+I/EthernetStateTracker(  747): [EVENT: Ether is up]
+D/EthernetService(  747): isEthDeviceAdded : devMode = wan
+D/ethernet(  747): eth0: flags = 0x11043, IFF_LOWER_UP
+D/EthernetService(  747): EthernetNative.isEthDeviceAdded(eth0) return true
+D/EthernetStateTracker(  747): setEthState state=false->false event=5
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): New status, stackConnected=false HWConnected=true
+D/ethernet(  747): eth0: flags = 0x11043, IFF_LOWER_UP
+D/EthernetService(  747): EthernetNative.isEthDeviceAdded(eth0) return true
+D/EthernetStateTracker(  747): setEthState state=false->false event=5
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): New status, stackConnected=false HWConnected=true
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = UNKNOWN/(info.getDetailedState()) = IDLE info.getDetailedState() = IDLE
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 614614 Address updated fe80::280:fff:fe11:7000/64 eth0 128 253
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 614614 Address updated fe80::280:fff:fe11:7000/64 eth0 128 253
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 614614 Address updated 192.168.2.246/24 eth0 128 0
+I/PPPOEService(  747): NetdCallbackReceiver onEvent 614614 Address updated 192.168.2.246/24 eth0 128 0
+I/ethernet(  747): Event from LOOP interface, ignore it
+I/ethernet(  747): Event from LOOP interface, ignore it
+D/EthernetStateTracker(  747): DhcpHandler: DHCP request succeeded: 
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=true msg.what is 1
+I/EthernetStateTracker(  747): [EVENT_INTERFACE_CONFIGURATION_SUCCEEDED]
+D/EthernetStateTracker(  747): DhcpHandler: DHCP request succeeded: 
+I/EthernetStateTracker(  747): Old status stackConnected=false HWConnected=true msg.what is 1
+I/EthernetStateTracker(  747): [EVENT_INTERFACE_CONFIGURATION_SUCCEEDED]
+D/EthernetService(  747): isEthDeviceAdded : devMode = wan
+D/EthernetService(  747): isEthDeviceAdded : devMode = wan
+D/ethernet(  747): eth0: flags = 0x11043, IFF_LOWER_UP
+D/EthernetService(  747): EthernetNative.isEthDeviceAdded(eth0) return true
+I/EthernetStateTracker(  747): Ether is added
+D/EthernetStateTracker(  747): setEthState state=false->true event=1
+D/EthernetStateTracker(  747): ++++isConnected: false
+D/EthernetStateTracker(  747): ***isConnected: true
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): New status, stackConnected=true HWConnected=true
+D/ConnectivityService(  747): handleConnectivityChange: netType=9 doReset=false resetMask=0
+D/ethernet(  747): eth0: flags = 0x11043, IFF_LOWER_UP
+D/EthernetService(  747): EthernetNative.isEthDeviceAdded(eth0) return true
+I/EthernetStateTracker(  747): Ether is added
+D/EthernetStateTracker(  747): setEthState state=false->true event=1
+D/EthernetStateTracker(  747): ++++isConnected: false
+D/EthernetStateTracker(  747): ***isConnected: true
+D/EthernetStateTracker(  747): devMode = wan
+I/EthernetStateTracker(  747): New status, stackConnected=true HWConnected=true
+D/ConnectivityService(  747): handleConnectivityChange: netType=9 doReset=false resetMask=0
+D/ConnectivityService(  747): handleConnectivityChange: changed linkProperty[9]: doReset=false resetMask=0
+D/ConnectivityService(  747):    curLp=null
+D/ConnectivityService(  747):    newLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747): handleConnectivityChange: changed linkProperty[9]: doReset=false resetMask=0
+D/ConnectivityService(  747):    curLp=null
+D/ConnectivityService(  747):    newLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747): Adding 192.168.2.0/24 -> 0.0.0.0 for interface eth0
+D/ConnectivityService(  747): Adding 192.168.2.0/24 -> 0.0.0.0 for interface eth0
+D/ConnectivityService(  747): Adding 192.168.2.1/32 -> 0.0.0.0 for interface eth0
+D/ConnectivityService(  747): Adding 192.168.2.1/32 -> 0.0.0.0 for interface eth0
+D/ConnectivityService(  747): Adding 0.0.0.0/0 -> 192.168.2.1 for interface eth0
+D/ConnectivityService(  747): Adding 0.0.0.0/0 -> 192.168.2.1 for interface eth0
+D/ConnectivityService(  747): handleConnectivityChange: resetting
+D/ConnectivityService(  747): handleConnectivityChange: resetting
+D/Nat464Xlat(  747): requiresClat: netType=9, hasIPv4Address=true
+D/Nat464Xlat(  747): requiresClat: netType=9, hasIPv4Address=true
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = CONNECTED/(info.getDetailedState()) = CONNECTED info.getDetailedState() = CONNECTED
+D/ConnectivityService(  747): ConnectivityChange for ethernet: state = CONNECTED/(info.getDetailedState()) = CONNECTED info.getDetailedState() = CONNECTED
+D/ConnectivityService(  747): handleConnect: E newNetType=9 thisIface=eth0 isFailoverfalse
+D/ConnectivityService(  747): handleConnect: E newNetType=9 thisIface=eth0 isFailoverfalse
+D/ConnectivityService(  747): Setting TCP values: [4096,87380,524288,4096,16384,110208] which comes from [net.tcp.buffersize.default]
+D/ConnectivityService(  747): Setting TCP values: [4096,87380,524288,4096,16384,110208] which comes from [net.tcp.buffersize.default]
+E/ConnectivityService(  747): net.tcp.usercfg.default not found in system properties. Using defaults
+E/ConnectivityService(  747): net.tcp.usercfg.default not found in system properties. Using defaults
+E/ConnectivityService(  747): net.tcp.delack.default not found in system properties. Using defaults
+E/ConnectivityService(  747): net.tcp.delack.default not found in system properties. Using defaults
+E/ConnectivityService(  747): Unexpected mtu value: android.net.ethernet.EthernetStateTracker@41ab2570
+E/ConnectivityService(  747): Unexpected mtu value: android.net.ethernet.EthernetStateTracker@41ab2570
+D/ConnectivityService(  747): handleConnectivityChange: netType=9 doReset=false resetMask=0
+D/ConnectivityService(  747): handleConnectivityChange: netType=9 doReset=false resetMask=0
+D/dalvikvm(  747): GC_CONCURRENT freed 891K, 14% free 6421K/7408K, paused 5ms+7ms, total 73ms
+D/dalvikvm(  747): GC_CONCURRENT freed 891K, 14% free 6421K/7408K, paused 5ms+7ms, total 73ms
+D/dalvikvm(  747): WAIT_FOR_CONCURRENT_GC blocked 14ms
+D/ConnectivityService(  747): handleConnectivityChange: changed linkProperty[9]: doReset=false resetMask=0
+D/ConnectivityService(  747):    curLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747):    newLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747): handleConnectivityChange: address are the same reset per doReset linkProperty[9]: resetMask=0
+D/Nat464Xlat(  747): requiresClat: netType=9, hasIPv4Address=true
+D/ConnectivityService(  747): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE
+V/NetworkStats(  747): updateIfacesLocked()
+V/NetworkStats(  747): performPollLocked(flags=0x1)
+D/ConnectivityService(  747): sendStickyBroadcastDelayed: delayMs=3000, action=android.net.conn.CONNECTIVITY_CHANGE
+V/NetworkStats(  747): performPollLocked() took 26ms
+D/dalvikvm(  747): WAIT_FOR_CONCURRENT_GC blocked 14ms
+D/ConnectivityService(  747): handleConnectivityChange: changed linkProperty[9]: doReset=false resetMask=0
+D/ConnectivityService(  747):    curLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747):    newLp={InterfaceName: eth0 LinkAddresses: [192.168.2.246/24,]  Routes: [192.168.2.0/24 -> 0.0.0.0,0.0.0.0/0 -> 192.168.2.1,] DnsAddresses: [192.168.2.1,] Domains: lanMTU: 0}
+D/ConnectivityService(  747): handleConnectivityChange: address are the same reset per doReset linkProperty[9]: resetMask=0
+D/Nat464Xlat(  747): requiresClat: netType=9, hasIPv4Address=true
+D/ConnectivityService(  747): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE
+V/NetworkStats(  747): updateIfacesLocked()
+V/NetworkStats(  747): performPollLocked(flags=0x1)
+D/ConnectivityService(  747): sendStickyBroadcastDelayed: delayMs=3000, action=android.net.conn.CONNECTIVITY_CHANGE
+V/NetworkStats(  747): performPollLocked() took 26ms
+V/NetworkStats(  747): advisePersistThreshold() given 9223372036854775, clamped to 2097152
+V/NetworkStats(  747): advisePersistThreshold() given 9223372036854775, clamped to 2097152
+D/Tethering(  747): MasterInitialState.processMessage what=3
+D/CaptivePortalTracker(  747): NoActiveNetworkState{ when=-2ms what=1 obj=NetworkInfo: type: ethernet[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: (none), roaming: false, failover: false, isAvailable: true, isConnectedToProvisioningNetwork: false, subscription: 0 target=com.android.internal.util.StateMachine$SmHandler }
+D/Tethering(  747): MasterInitialState.processMessage what=3
+D/CaptivePortalTracker(  747): NoActiveNetworkState{ when=-2ms what=1 obj=NetworkInfo: type: ethernet[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: (none), roaming: false, failover: false, isAvailable: true, isConnectedToProvisioningNetwork: false, subscription: 0 target=com.android.internal.util.StateMachine$SmHandler }
+D/CaptivePortalTracker(  747): NoActiveNetworkState not a wifi connectivity change, ignore
+D/ConnectivityService(  747): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE
+D/CaptivePortalTracker(  747): NoActiveNetworkState not a wifi connectivity change, ignore
+D/ConnectivityService(  747): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE
+D/        (  747): Setting time of day to sec=1523802966
+D/        (  747): Setting time of day to sec=1523802966
+W/        (  747): Unable to set rtc to 1523802966: Invalid argument
+W/        (  747): Unable to set rtc to 1523802966: Invalid argument
+D/StatusBar.MSimNetworkController( 2874): updateDataIcon dataSub =0
+D/StatusBar.MSimNetworkController( 2874): updateDataIcon dataSub =0
+D/StatusBar.MSimNetworkController( 2874): updateTelephonySignalStrength: subscription =0
+D/StatusBar.MSimNetworkController( 2874): updateTelephonySignalStrength: subscription =0
+D/StatusBar.NetworkController( 2874): updateWifiIcons, mWifiIconId = (null) mQSWifiIconId = (null)
+I/ActivityManager(  747): Start proc android.process.media for broadcast com.android.providers.downloads/.DownloadReceiver: pid=5580 uid=10005 gids={50005, 1028, 1015, 1023, 1024, 2001, 3003, 3007}
+D/StatusBar.MSimNetworkController( 2874): updateDataIcon dataSub =0
+D/StatusBar.MSimNetworkController( 2874): updateTelephonySignalStrength: subscription =1
+D/StatusBar.NetworkController( 2874): updateWifiIcons, mWifiIconId = (null) mQSWifiIconId = (null)
+I/ActivityManager(  747): Start proc android.process.media for broadcast com.android.providers.downloads/.DownloadReceiver: pid=5580 uid=10005 gids={50005, 1028, 1015, 1023, 1024, 2001, 3003, 3007}
+D/StatusBar.MSimNetworkController( 2874): updateDataIcon dataSub =0
+D/StatusBar.MSimNetworkController( 2874): updateTelephonySignalStrength: subscription =1
+D/TelephonyProvider( 3118): Column apn id key is 'apn_id0'
+D/TelephonyProvider( 3118): Column apn id key is 'apn_id0'
+D/ActivityThread( 5580): handleBindApplication:android.process.media
+D/ActivityThread( 5580): handleBindApplication:android.process.media
+D/ActivityThread( 5580): setTargetHeapUtilization:0.75
+D/ActivityThread( 5580): setTargetHeapUtilization:0.75
+D/ActivityThread( 5580): setTargetHeapMinFree:524288
+D/ActivityThread( 5580): setTargetHeapMinFree:524288
+D/GpsLocationProvider(  747): NTP server returned: 1523802964119 (Sun Apr 15 22:36:04 GMT+08:00 2018) reference: 679248 certainty: 194 system time offset: -2572
+D/GpsLocationProvider(  747): NTP server returned: 1523802964119 (Sun Apr 15 22:36:04 GMT+08:00 2018) reference: 679248 certainty: 194 system time offset: -2572
+E/LocSvc_eng(  747): I/===> int loc_eng_inject_time(loc_eng_data_s_type&, GpsUtcTime, int64_t, int) line 1893 
+E/LocSvc_eng(  747): I/===> int loc_eng_inject_time(loc_eng_data_s_type&, GpsUtcTime, int64_t, int) line 1893 
+E/GpsXtraDownloader(  747): No XTRA servers were specified in the GPS configuration
+E/GpsXtraDownloader(  747): No XTRA servers were specified in the GPS configuration
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_UTC_TIME_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalEventCb(locClientHandleType, uint32_t, locClientEventIndUnionType, void*) line 81 QMI_LOC_EVENT_INJECT_PREDICTED_ORBITS_REQ_IND_V02
+E/LocSvc_eng(  747): I/<=== report_xtra_server_cb line 969 http://xtrapath1.izatcloud.net/xtra3grc.bin
+E/LocSvc_eng(  747): I/<=== report_xtra_server_cb line 969 http://xtrapath1.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747): reportXtraServer 
+D/LocSvc_java(  747):  server1=http://xtrapath1.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747):  server2=http://xtrapath2.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747):  server3=http://xtrapath3.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747): reportXtraServer 
+D/LocSvc_java(  747):  server1=http://xtrapath1.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747):  server2=http://xtrapath2.izatcloud.net/xtra3grc.bin
+D/LocSvc_java(  747):  server3=http://xtrapath3.izatcloud.net/xtra3grc.bin
+E/LocSvc_eng(  747): I/<=== download_request_cb line 1254 0x566fd2a8
+E/LocSvc_eng(  747): I/<=== download_request_cb line 1254 0x566fd2a8
+D/ConnectivityService(  747): getMobileDataEnabled returning false
+D/ConnectivityService(  747): getMobileDataEnabled returning false
+I/ActivityManager(  747): Start proc com.qualcomm.datamonitor for broadcast com.qualcomm.datamonitor/.DataWidget: pid=5604 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+I/ActivityManager(  747): Start proc com.qualcomm.datamonitor for broadcast com.qualcomm.datamonitor/.DataWidget: pid=5604 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+D/ActivityThread( 5604): handleBindApplication:com.qualcomm.datamonitor
+D/ActivityThread( 5604): handleBindApplication:com.qualcomm.datamonitor
+D/ActivityThread( 5604): setTargetHeapUtilization:0.75
+D/ActivityThread( 5604): setTargetHeapUtilization:0.75
+D/ActivityThread( 5604): setTargetHeapMinFree:524288
+D/ActivityThread( 5604): setTargetHeapMinFree:524288
+D/DataWidget( 5604): [onReceive] Action=android.net.conn.CONNECTIVITY_CHANGE Context=android.app.ReceiverRestrictedContext@41882cc0
+D/DataWidget( 5604): [onReceive] Action=android.net.conn.CONNECTIVITY_CHANGE Context=android.app.ReceiverRestrictedContext@41882cc0
+I/ActivityManager(  747): Start proc com.android.timerswitch for broadcast com.android.timerswitch/.TimerSwitchInitReceiver: pid=5617 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+I/ActivityManager(  747): Start proc com.android.timerswitch for broadcast com.android.timerswitch/.TimerSwitchInitReceiver: pid=5617 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+I/ActivityManager(  747): Killing 3968:com.android.calendar/u0a18 (adj 15): empty #9
+I/ActivityManager(  747): Killing 3968:com.android.calendar/u0a18 (adj 15): empty #9
+D/ActivityThread( 5617): handleBindApplication:com.android.timerswitch
+D/ActivityThread( 5617): handleBindApplication:com.android.timerswitch
+D/ActivityThread( 5617): setTargetHeapUtilization:0.75
+D/ActivityThread( 5617): setTargetHeapUtilization:0.75
+D/ActivityThread( 5617): setTargetHeapMinFree:524288
+D/ActivityThread( 5617): setTargetHeapMinFree:524288
+V/TimerSwitch( 5617): AlarmInitReceiver android.intent.action.TIME_SET
+V/TimerSwitch( 5617): AlarmInitReceiver android.intent.action.TIME_SET
+D/TimerSwitch( 5617): initReceiver:android.intent.action.TIME_SET
+D/TimerSwitch( 5617): initReceiver:android.intent.action.TIME_SET
+D/dalvikvm( 5617): GC_CONCURRENT freed 341K, 13% free 2936K/3364K, paused 1ms+4ms, total 16ms
+D/dalvikvm( 5617): GC_CONCURRENT freed 341K, 13% free 2936K/3364K, paused 1ms+4ms, total 16ms
+D/dalvikvm( 5617): WAIT_FOR_CONCURRENT_GC blocked 1ms
+D/dalvikvm( 5617): WAIT_FOR_CONCURRENT_GC blocked 1ms
+V/TimerSwitch( 5617): AlarmInitReceiver finished
+V/TimerSwitch( 5617): AlarmInitReceiver finished
+V/AlarmClock( 4398): AlarmInitReceiver android.intent.action.TIME_SET
+V/AlarmClock( 4398): AlarmInitReceiver android.intent.action.TIME_SET
+D/dalvikvm(  747): GC_FOR_ALLOC freed 361K, 14% free 6442K/7408K, paused 37ms, total 37ms
+D/dalvikvm(  747): GC_FOR_ALLOC freed 361K, 14% free 6442K/7408K, paused 37ms, total 37ms
+I/dalvikvm-heap(  747): Grow heap (frag case) to 6.942MB for 65944-byte allocation
+I/dalvikvm-heap(  747): Grow heap (frag case) to 6.942MB for 65944-byte allocation
+D/dalvikvm(  747): GC_FOR_ALLOC freed 74K, 14% free 6480K/7476K, paused 32ms, total 32ms
+D/dalvikvm(  747): GC_FOR_ALLOC freed 74K, 14% free 6480K/7476K, paused 32ms, total 32ms
+I/dalvikvm-heap(  747): Grow heap (frag case) to 7.010MB for 98912-byte allocation
+I/dalvikvm-heap(  747): Grow heap (frag case) to 7.010MB for 98912-byte allocation
+I/AlarmClock( 4398): Displaying next alarm time: ''
+I/AlarmClock( 4398): Displaying next alarm time: ''
+V/AlarmClock( 4398): AlarmInitReceiver finished
+V/AlarmClock( 4398): AlarmInitReceiver finished
+I/ActivityManager(  747): Start proc com.android.calendar for broadcast com.android.calendar/.widget.CalendarAppWidgetService$CalendarFactory: pid=5633 uid=10018 gids={50018, 1028, 3003}
+I/ActivityManager(  747): Start proc com.android.calendar for broadcast com.android.calendar/.widget.CalendarAppWidgetService$CalendarFactory: pid=5633 uid=10018 gids={50018, 1028, 3003}
+I/ActivityManager(  747): Killing 4434:com.android.providers.calendar/u0a1 (adj 15): empty #9
+I/ActivityManager(  747): Killing 4434:com.android.providers.calendar/u0a1 (adj 15): empty #9
+D/ActivityThread( 5633): handleBindApplication:com.android.calendar
+D/ActivityThread( 5633): handleBindApplication:com.android.calendar
+D/ActivityThread( 5633): setTargetHeapUtilization:0.75
+D/ActivityThread( 5633): setTargetHeapUtilization:0.75
+D/ActivityThread( 5633): setTargetHeapMinFree:524288
+D/ActivityThread( 5633): setTargetHeapMinFree:524288
+D/ExtensionsFactory( 5633): No custom extensions.
+D/ExtensionsFactory( 5633): No custom extensions.
+I/ActivityManager(  747): Start proc com.qualcomm.qti.calendarwidget for broadcast com.qualcomm.qti.calendarwidget/.CalendarWidget: pid=5651 uid=10020 gids={50020}
+I/ActivityManager(  747): Start proc com.qualcomm.qti.calendarwidget for broadcast com.qualcomm.qti.calendarwidget/.CalendarWidget: pid=5651 uid=10020 gids={50020}
+I/ActivityManager(  747): Killing 5077:com.android.musicfx/u0a10 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5077:com.android.musicfx/u0a10 (adj 15): empty #9
+D/ActivityThread( 5651): handleBindApplication:com.qualcomm.qti.calendarwidget
+D/ActivityThread( 5651): handleBindApplication:com.qualcomm.qti.calendarwidget
+D/ActivityThread( 5651): setTargetHeapUtilization:0.75
+D/ActivityThread( 5651): setTargetHeapUtilization:0.75
+D/ActivityThread( 5651): setTargetHeapMinFree:524288
+D/ActivityThread( 5651): setTargetHeapMinFree:524288
+W/ContextImpl( 5651): Implicit intents with startService are not safe: Intent { act=com.android.lunar.ILunarService } android.content.ContextWrapper.bindService:517 com.qualcomm.qti.calendarwidget.LunarLoader.<init>:116 com.qualcomm.qti.calendarwidget.DateViews.<init>:187 
+W/ContextImpl( 5651): Implicit intents with startService are not safe: Intent { act=com.android.lunar.ILunarService } android.content.ContextWrapper.bindService:517 com.qualcomm.qti.calendarwidget.LunarLoader.<init>:116 com.qualcomm.qti.calendarwidget.DateViews.<init>:187 
+I/ActivityManager(  747): Start proc com.android.lunar for service com.android.lunar/.LunarService: pid=5665 uid=10037 gids={50037}
+I/ActivityManager(  747): Start proc com.android.lunar for service com.android.lunar/.LunarService: pid=5665 uid=10037 gids={50037}
+W/LunarLoader( 5651): We will try to load the lunar info after 100 milliseconds, and the total retry times is:1
+W/LunarLoader( 5651): We will try to load the lunar info after 100 milliseconds, and the total retry times is:1
+I/ActivityManager(  747): Start proc com.android.providers.calendar for content provider com.android.providers.calendar/.CalendarProvider2: pid=5679 uid=10001 gids={50001, 3003, 1028, 1015}
+I/ActivityManager(  747): Start proc com.android.providers.calendar for content provider com.android.providers.calendar/.CalendarProvider2: pid=5679 uid=10001 gids={50001, 3003, 1028, 1015}
+D/dalvikvm(  235): GC_EXPLICIT freed 44K, 18% free 2765K/3352K, paused 2ms+3ms, total 23ms
+D/dalvikvm(  235): GC_EXPLICIT freed 44K, 18% free 2765K/3352K, paused 2ms+3ms, total 23ms
+D/ActivityThread( 5665): handleBindApplication:com.android.lunar
+D/ActivityThread( 5665): handleBindApplication:com.android.lunar
+D/ActivityThread( 5665): setTargetHeapUtilization:0.75
+D/ActivityThread( 5665): setTargetHeapUtilization:0.75
+D/ActivityThread( 5665): setTargetHeapMinFree:524288
+D/ActivityThread( 5665): setTargetHeapMinFree:524288
+W/LunarLoader( 5651): We will try to load the lunar info after 100 milliseconds, and the total retry times is:2
+W/LunarLoader( 5651): We will try to load the lunar info after 100 milliseconds, and the total retry times is:2
+D/dalvikvm(  235): GC_EXPLICIT freed <1K, 18% free 2765K/3352K, paused 2ms+1ms, total 19ms
+D/dalvikvm(  235): GC_EXPLICIT freed <1K, 18% free 2765K/3352K, paused 2ms+1ms, total 19ms
+D/dalvikvm(  235): GC_EXPLICIT freed <1K, 18% free 2765K/3352K, paused 1ms+1ms, total 14ms
+D/dalvikvm(  235): GC_EXPLICIT freed <1K, 18% free 2765K/3352K, paused 1ms+1ms, total 14ms
+I/ActivityManager(  747): Start proc com.qualcomm.timeservice for broadcast com.qualcomm.timeservice/.TimeServiceBroadcastReceiver: pid=5692 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+I/ActivityManager(  747): Start proc com.qualcomm.timeservice for broadcast com.qualcomm.timeservice/.TimeServiceBroadcastReceiver: pid=5692 uid=1000 gids={41000, 3001, 3002, 1028, 1015, 3003, 1023, 1021, 3004, 3005, 1000, 3009, 1010, 3006}
+I/ActivityManager(  747): Killing 5090:com.android.music/u0a39 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5090:com.android.music/u0a39 (adj 15): empty #9
+D/ActivityThread( 5679): handleBindApplication:com.android.providers.calendar
+D/ActivityThread( 5679): handleBindApplication:com.android.providers.calendar
+D/ActivityThread( 5679): setTargetHeapUtilization:0.75
+D/ActivityThread( 5679): setTargetHeapUtilization:0.75
+D/ActivityThread( 5679): setTargetHeapMinFree:524288
+D/ActivityThread( 5679): setTargetHeapMinFree:524288
+I/ActivityManager(  747): Killing 5296:android.process.acore/u0a3 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5296:android.process.acore/u0a3 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5580:android.process.media/u0a5 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5580:android.process.media/u0a5 (adj 15): empty #9
+D/ActivityThread( 5692): handleBindApplication:com.qualcomm.timeservice
+D/ActivityThread( 5692): handleBindApplication:com.qualcomm.timeservice
+D/ActivityThread( 5692): setTargetHeapUtilization:0.75
+D/ActivityThread( 5692): setTargetHeapUtilization:0.75
+D/ActivityThread( 5692): setTargetHeapMinFree:524288
+D/ActivityThread( 5692): setTargetHeapMinFree:524288
+I/CalendarProvider2( 5679): Created com.android.providers.calendar.CalendarAlarmManager@418993b0(com.android.providers.calendar.CalendarProvider2@4188fcb0)
+I/CalendarProvider2( 5679): Created com.android.providers.calendar.CalendarAlarmManager@418993b0(com.android.providers.calendar.CalendarProvider2@4188fcb0)
+D/dalvikvm( 5692): No JNI_OnLoad found in /vendor/lib/libTimeService.so 0x41878fc0, skipping init
+D/TimeService( 5692): Receivedandroid.intent.action.TIME_SET intent. Current Time is 1523802967745
+D/        ( 5692): TimeServiceNative: User Time to be set is 1523802967746
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->base = 2
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->operation = 0
+D/dalvikvm( 5692): No JNI_OnLoad found in /vendor/lib/libTimeService.so 0x41878fc0, skipping init
+D/TimeService( 5692): Receivedandroid.intent.action.TIME_SET intent. Current Time is 1523802967745
+D/        ( 5692): TimeServiceNative: User Time to be set is 1523802967746
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->base = 2
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->operation = 0
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->ts_val = 1523802967746
+D/QC-time-services( 5692): Lib:time_genoff_operation: pargs->ts_val = 1523802967746
+D/QC-time-services(  338): Daemon: Connection accepted:time_genoff
+D/QC-time-services( 5692): Lib:time_genoff_operation: Send to server  passed!!
+D/QC-time-services(  338): Daemon:Received base = 2, unit = 1, operation = 0,value = 1523802967746
+D/QC-time-services(  338): Daemon: Connection accepted:time_genoff
+D/QC-time-services( 5692): Lib:time_genoff_operation: Send to server  passed!!
+D/QC-time-services(  338): Daemon:Received base = 2, unit = 1, operation = 0,value = 1523802967746
+D/QC-time-services(  338): Daemon:genoff_opr: Base = 2, val = 1523802967746, operation = 0
+D/QC-time-services(  338): Daemon:genoff_opr: Base = 2, val = 1523802967746, operation = 0
+D/QC-time-services(  338): Daemon:rtc_get: Time read from RTC -- MM/DD/YY HH:MM:SS1/6/70 9:57:55
+D/QC-time-services(  338): Daemon:rtc_get: Time read from RTC -- MM/DD/YY HH:MM:SS1/6/70 9:57:55
+D/QC-time-services(  338): Daemon:Value read from RTC seconds = 3146275000
+D/QC-time-services(  338): Daemon:Value read from RTC seconds = 3146275000
+D/QC-time-services(  338): Daemon:new time 1523802967746 
+D/QC-time-services(  338): Daemon: delta 1520656692746 genoff 1520656692746 
+D/QC-time-services(  338): Daemon:genoff_persistent_update: Writing genoff = 1520656692746 to memory
+D/QC-time-services(  338): Daemon:Opening File: /data/time/ats_2
+D/QC-time-services(  338): Daemon:time_persistent_memory_opr:Genoff write operation 
+D/QC-time-services(  338): Updating the TOD offset
+D/QC-time-services(  338): Daemon:genoff_persistent_update: Writing genoff = 1520656692746 to memory
+D/QC-time-services(  338): Daemon:Opening File: /data/time/ats_1
+D/QC-time-services(  338): Daemon:time_persistent_memory_opr:Genoff write operation 
+E/QC-time-services(  338): Daemon:Update to modem bit set
+D/QC-time-services(  338): Daemon:genoff_send_modem: Sending data to MODEM !
+D/QC-time-services(  338): Daemon: Base = 2, Value being sent to MODEM = 1204691892746
+E/QC-time-services( 5692): Receive Passed == base = 2, unit = 1, operation = 0, result = 0
+E/QC-time-services(  338): Daemon:tod_update_ind_cb: Got Update from modem msg_id 40
+E/QC-time-services(  338): Daemon: Time-services: Waiting to acceptconnection
+D/ConnectivityService(  747): Sampling interval elapsed, updating statistics ..
+D/QC-time-services(  338): Daemon:new time 1523802967746 
+D/QC-time-services(  338): Daemon: delta 1520656692746 genoff 1520656692746 
+D/QC-time-services(  338): Daemon:genoff_persistent_update: Writing genoff = 1520656692746 to memory
+D/QC-time-services(  338): Daemon:Opening File: /data/time/ats_2
+D/QC-time-services(  338): Daemon:time_persistent_memory_opr:Genoff write operation 
+D/QC-time-services(  338): Updating the TOD offset
+D/QC-time-services(  338): Daemon:genoff_persistent_update: Writing genoff = 1520656692746 to memory
+D/QC-time-services(  338): Daemon:Opening File: /data/time/ats_1
+D/QC-time-services(  338): Daemon:time_persistent_memory_opr:Genoff write operation 
+E/QC-time-services(  338): Daemon:Update to modem bit set
+D/QC-time-services(  338): Daemon:genoff_send_modem: Sending data to MODEM !
+D/QC-time-services(  338): Daemon: Base = 2, Value being sent to MODEM = 1204691892746
+E/QC-time-services( 5692): Receive Passed == base = 2, unit = 1, operation = 0, result = 0
+E/QC-time-services(  338): Daemon:tod_update_ind_cb: Got Update from modem msg_id 40
+E/QC-time-services(  338): Daemon: Time-services: Waiting to acceptconnection
+D/ConnectivityService(  747): Sampling interval elapsed, updating statistics ..
+W/EventLoader( 5651): get the event cursor is null or it's count is 0
+D/ConnectivityService(  747): Done.
+D/ConnectivityService(  747): Setting timer for 30seconds
+W/EventLoader( 5651): get the event cursor is null or it's count is 0
+D/ConnectivityService(  747): Done.
+D/ConnectivityService(  747): Setting timer for 30seconds
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_INJECT_PREDICTED_ORBITS_DATA_REQ_V02
+W/ProcessCpuTracker(  747): Skipping unknown process pid 5710
+W/ProcessCpuTracker(  747): Skipping unknown process pid 5710
+W/ProcessCpuTracker(  747): Skipping unknown process pid 5711
+W/ProcessCpuTracker(  747): Skipping unknown process pid 5711
+I/CalendarProvider2( 5679): Sending notification intent: Intent { act=android.intent.action.PROVIDER_CHANGED dat=content://com.android.calendar }
+I/CalendarProvider2( 5679): Sending notification intent: Intent { act=android.intent.action.PROVIDER_CHANGED dat=content://com.android.calendar }
+W/ContentResolver( 5679): Failed to get type for: content://com.android.calendar (Unknown URL content://com.android.calendar)
+W/ContentResolver( 5679): Failed to get type for: content://com.android.calendar (Unknown URL content://com.android.calendar)
+E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_GET_BEST_AVAILABLE_POSITION_REQ_V02
+D/AlertReceiver( 5633): onReceive: a=android.intent.action.PROVIDER_CHANGED Intent { act=android.intent.action.PROVIDER_CHANGED dat=content://com.android.calendar flg=0x10 cmp=com.android.calendar/.alerts.AlertReceiver }
+D/AlertReceiver( 5633): onReceive: a=android.intent.action.PROVIDER_CHANGED Intent { act=android.intent.action.PROVIDER_CHANGED dat=content://com.android.calendar flg=0x10 cmp=com.android.calendar/.alerts.AlertReceiver }
+D/AlertService( 5633): 0 Action = android.intent.action.PROVIDER_CHANGED
+D/AlertService( 5633): 0 Action = android.intent.action.PROVIDER_CHANGED
+D/dalvikvm(  747): GC_FOR_ALLOC freed 301K, 14% free 6518K/7564K, paused 53ms, total 54ms
+D/dalvikvm(  747): GC_FOR_ALLOC freed 301K, 14% free 6518K/7564K, paused 53ms, total 54ms
+I/dalvikvm-heap(  747): Grow heap (frag case) to 7.028MB for 78124-byte allocation
+I/dalvikvm-heap(  747): Grow heap (frag case) to 7.028MB for 78124-byte allocation
+
+shell@msm8909_512:/ # 
+shell@msm8909_512:/ # D/dalvikvm( 4218): GC_EXPLICIT freed 227K, 14% free 2887K/3352K, paused 4ms+4ms, total 34ms
+D/dalvikvm( 4218): GC_EXPLICIT freed 227K, 14% free 2887K/3352K, paused 4ms+4ms, total 34ms
+
+shell@msm8909_512:/ # I/GlobalDismissManager( 5633): no sender configured
+I/GlobalDismissManager( 5633): no sender configured
+D/AlertService( 5633): Beginning updateAlertNotification
+D/AlertService( 5633): Beginning updateAlertNotification
+D/AlertService( 5633): No fired or scheduled alerts
+D/AlertService( 5633): No fired or scheduled alerts
+D/AlertService( 5633): Scheduling next alarm with AlarmScheduler. sEventReminderReceived: null
+D/AlertService( 5633): Scheduling next alarm with AlarmScheduler. sEventReminderReceived: null
+D/AlarmScheduler( 5633): No events found starting within 1 week.
+D/AlarmScheduler( 5633): No events found starting within 1 week.
+I/ActivityManager(  747): Killing 5604:com.qualcomm.datamonitor/1000 (adj 15): empty #9
+I/ActivityManager(  747): Killing 5604:com.qualcomm.datamonitor/1000 (adj 15): empty #9
+shell@msm8909_512:/ #                                                          
+shell@msm8909_512:/ # 
+shell@msm8909_512:/ # busybox E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_GET_BEST_AVAILABLE_POSITION_REQ_V02
+ifconfig
+eth0      Link encap:Ethernet  HWaddr 00:80:0F:11:70:00  
+          inet addr:192.168.2.246  Bcast:192.168.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::280:fff:fe11:7000/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:40 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:36541 (35.6 KiB)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+rmnet0    Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          UP RUNNING  MTU:2000  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+shell@msm8909_512:/ # ping www.baidu.com
+PING www.a.shifen.com (115.239.210.27) 56(84) bytes of data.
+64 bytes from 115.239.210.27: icmp_seq=1 ttl=51 time=45.4 ms
+^C
+--- www.a.shifen.com ping statistics ---
+2 packets transmitted, 1 received, 50% packet loss, time 1003ms
+rtt min/avg/max/mdev = 45.414/45.414/45.414/0.000 ms
+shell@msm8909_512:/ # E/LocSvc_ApiV02(  747): I/<--- void globalRespCb(locClientHandleType, uint32_t, locClientRespIndUnionType, void*) line 106 QMI_LOC_GET_BEST_AVAILABLE_POSITION_REQ_V02
+
+[END] 2018/4/15 22:36:29

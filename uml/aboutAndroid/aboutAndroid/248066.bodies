@@ -1,0 +1,41 @@
+class BatteryFlagParser
+!!!716418.java!!!	BatteryFlagParser(in accent : int, inout state2 : boolean, in flag : int)
+        mAccentColor = accent;
+        mFlag = flag;
+        mState2 = state2;
+!!!716546.java!!!	isSet(inout record : HistoryItem) : boolean
+        return ((mState2 ? record.states2 : record.states) & mFlag) != 0;
+!!!716674.java!!!	onParsingStarted(in startTime : long, in endTime : long) : void
+        mLength = endTime - startTime;
+!!!716802.java!!!	onDataPoint(in time : long, inout record : HistoryItem) : void
+        boolean isSet = isSet(record);
+        if (isSet != mLastSet) {
+            mData.put((int) time, isSet);
+            mLastSet = isSet;
+        }
+        mLastTime = time;
+!!!716930.java!!!	onDataGap() : void
+        if (mLastSet) {
+            mData.put((int) mLastTime, false);
+            mLastSet = false;
+        }
+!!!717058.java!!!	onParsingDone() : void
+        if (mLastSet) {
+            mData.put((int) mLastTime, false);
+            mLastSet = false;
+        }
+!!!717186.java!!!	getPeriod() : long
+        return mLength;
+!!!717314.java!!!	hasData() : boolean
+        return mData.size() > 1;
+!!!717442.java!!!	getColorArray() : SparseIntArray
+        SparseIntArray ret = new SparseIntArray();
+        for (int i = 0; i < mData.size(); i++) {
+            ret.put(mData.keyAt(i), getColor(mData.valueAt(i)));
+        }
+        return ret;
+!!!717570.java!!!	getColor(inout b : boolean) : int
+        if (b) {
+            return mAccentColor;
+        }
+        return 0;

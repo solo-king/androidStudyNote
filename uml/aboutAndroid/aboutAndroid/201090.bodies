@@ -1,0 +1,35 @@
+class AdvancedAppSettings
+!!!443266.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        addPreferencesFromResource(R.xml.advanced_apps);
+
+        Preference permissions = getPreferenceScreen().findPreference(KEY_APP_PERM);
+        permissions.setIntent(new Intent(Intent.ACTION_MANAGE_PERMISSIONS));
+
+        ApplicationsState applicationsState = ApplicationsState.getInstance(
+                getActivity().getApplication());
+        mSession = applicationsState.newSession(this);
+
+        mAppPermsPreference = findPreference(KEY_APP_PERM);
+        mAppDomainURLsPreference = findPreference(KEY_APP_DOMAIN_URLS);
+        mHighPowerPreference = findPreference(KEY_HIGH_POWER_APPS);
+        mSystemAlertWindowPreference = findPreference(KEY_SYSTEM_ALERT_WINDOW);
+        mWriteSettingsPreference = findPreference(KEY_WRITE_SETTINGS_APPS);
+!!!443394.java!!!	getMetricsCategory() : int
+        return MetricsEvent.APPLICATIONS_ADVANCED;
+!!!443522.java!!!	onRunningStateChanged(inout running : boolean) : void
+        // No-op.
+!!!443650.java!!!	onPackageListChanged() : void
+        // No-op.
+!!!443778.java!!!	onRebuildComplete(inout apps : ArrayList<AppEntry>) : void
+        // No-op.
+!!!443906.java!!!	onPackageIconChanged() : void
+        // No-op.
+!!!444034.java!!!	onPackageSizeChanged(in packageName : String) : void
+        // No-op.
+!!!444162.java!!!	onAllSizesComputed() : void
+        // No-op.
+!!!444290.java!!!	onLauncherInfoChanged() : void
+        // No-op.
+!!!444418.java!!!	onLoadEntriesCompleted() : void
+        // No-op.

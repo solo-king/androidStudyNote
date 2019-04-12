@@ -1,0 +1,23 @@
+class TestContextWrapper
+!!!1048706.java!!!	TestContextWrapper(inout base : Context)
+            super(base);
+!!!1048834.java!!!	getResources() : Resources
+            return mResources;
+!!!1048962.java!!!	getSharedPreferences(in name : String, in mode : int) : SharedPreferences
+            // Stub out prefs to control the persisted tether type list.
+            if (name == "tetherPrefs") {
+                return mPrefs;
+            }
+            return super.getSharedPreferences(name, mode);
+!!!1049090.java!!!	getPackageManager() : PackageManager
+            return mPackageManager;
+!!!1049218.java!!!	getSystemService(in name : String) : Object
+            if (ALARM_SERVICE.equals(name)) {
+                return mAlarmManager;
+            } else if (CONNECTIVITY_SERVICE.equals(name)) {
+                return mConnectivityManager;
+            } else if (WIFI_SERVICE.equals(name)) {
+                return mWifiManager;
+            }
+
+            return super.getSystemService(name);

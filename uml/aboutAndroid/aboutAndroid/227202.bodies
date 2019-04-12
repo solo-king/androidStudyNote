@@ -1,0 +1,9 @@
+class SupportData
+!!!596866.java!!!	SupportData(inout builder : SupportItemAdapter::SupportData::Builder)
+            this.type = builder.mType;
+            this.icon = builder.mIcon;
+            this.tileTitle = builder.mTileTitle;
+            this.tileTitleDescription = builder.mTileTitleDescription;
+            this.tileSummary = builder.mTileSummary;
+            this.intent = builder.mIntent;
+            this.metricsEvent = builder.mMetricsEvent;

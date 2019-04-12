@@ -1,0 +1,5 @@
+class EthernetMonitor
+!!!137474.java!!!	EthernetMonitor(inout tracker : EthernetStateTracker)
+        mTracker = tracker;
+!!!137602.java!!!	startMonitoring() : void
+        new MonitorThread().start();

@@ -1,0 +1,15 @@
+class CustomViewHolder
+!!!777474.java!!!	CustomViewHolder(inout view : LocaleDragCell)
+            super(view);
+            mLocaleDragCell = view;
+            mLocaleDragCell.getDragHandle().setOnTouchListener(this);
+!!!777602.java!!!	getLocaleDragCell() : LocaleDragCell
+            return mLocaleDragCell;
+!!!777730.java!!!	onTouch(inout v : View, inout event : MotionEvent) : boolean
+            if (mDragEnabled) {
+                switch (MotionEventCompat.getActionMasked(event)) {
+                    case MotionEvent.ACTION_DOWN:
+                        mItemTouchHelper.startDrag(this);
+                }
+            }
+            return false;

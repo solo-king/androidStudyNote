@@ -1,0 +1,7 @@
+class UsageState
+!!!469122.java!!!	UsageState(inout permissionState : AppStateAppOpsBridge::PermissionState)
+            super(permissionState.packageName, permissionState.userHandle);
+            this.packageInfo = permissionState.packageInfo;
+            this.appOpMode = permissionState.appOpMode;
+            this.permissionDeclared = permissionState.permissionDeclared;
+            this.staticPermissionGranted = permissionState.staticPermissionGranted;

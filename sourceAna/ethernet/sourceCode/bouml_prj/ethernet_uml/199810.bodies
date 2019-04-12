@@ -1,0 +1,71 @@
+class PeriodicSync
+!!!758274.java!!!	PeriodicSync(inout account : Account, in authority : String, inout extras : Bundle, in periodInSeconds : long)
+        this.account = account;
+        this.authority = authority;
+        if (extras == null) {
+            this.extras = new Bundle();
+        } else {
+            this.extras = new Bundle(extras);
+        }
+        this.period = periodInSeconds;
+        // Initialise to a sane value.
+        this.flexTime = 0L;
+!!!758402.java!!!	PeriodicSync(inout other : PeriodicSync)
+        this.account = other.account;
+        this.authority = other.authority;
+        this.extras = new Bundle(other.extras);
+        this.period = other.period;
+        this.flexTime = other.flexTime;
+!!!758530.java!!!	PeriodicSync(inout account : Account, in authority : String, inout extras : Bundle, in period : long, in flexTime : long)
+        this.account = account;
+        this.authority = authority;
+        this.extras = new Bundle(extras);
+        this.period = period;
+        this.flexTime = flexTime;
+!!!758658.java!!!	PeriodicSync(inout in : Parcel)
+        this.account = in.readParcelable(null);
+        this.authority = in.readString();
+        this.extras = in.readBundle();
+        this.period = in.readLong();
+        this.flexTime = in.readLong();
+!!!758786.java!!!	describeContents() : int
+        return 0;
+!!!758914.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeParcelable(account, flags);
+        dest.writeString(authority);
+        dest.writeBundle(extras);
+        dest.writeLong(period);
+        dest.writeLong(flexTime);
+!!!759042.java!!!	equals(inout o : Object) : boolean
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof PeriodicSync)) {
+            return false;
+        }
+        final PeriodicSync other = (PeriodicSync) o;
+        return account.equals(other.account)
+            && authority.equals(other.authority)
+            && period == other.period
+            && syncExtrasEquals(extras, other.extras);
+!!!759170.java!!!	syncExtrasEquals(inout b1 : Bundle, inout b2 : Bundle) : boolean
+        if (b1.size() != b2.size()) {
+            return false;
+        }
+        if (b1.isEmpty()) {
+            return true;
+        }
+        for (String key : b1.keySet()) {
+            if (!b2.containsKey(key)) {
+                return false;
+            }
+            if (!b1.get(key).equals(b2.get(key))) {
+                return false;
+            }
+        }
+        return true;
+!!!759298.java!!!	toString() : String
+        return "account: " + account +
+               ", authority: " + authority +
+               ". period: " + period + "s " +
+               ", flex: " + flexTime;

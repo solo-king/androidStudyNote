@@ -1,0 +1,69 @@
+class PrintersLoader
+!!!861314.java!!!	PrintersLoader(inout context : Context)
+            super(context);
+!!!861442.java!!!	deliverResult(inout printers : List<PrinterInfo>) : void
+            if (isStarted()) {
+                super.deliverResult(printers);
+            }
+!!!861570.java!!!	onStartLoading() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onStartLoading()");
+            }
+            // The contract is that if we already have a valid,
+            // result the we have to deliver it immediately.
+            if (!mPrinters.isEmpty()) {
+                deliverResult(new ArrayList<PrinterInfo>(mPrinters.values()));
+            }
+            // We want to start discovery at this point.
+            onForceLoad();
+!!!861698.java!!!	onStopLoading() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onStopLoading()");
+            }
+            onCancelLoad();
+!!!861826.java!!!	onForceLoad() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onForceLoad()");
+            }
+            loadInternal();
+!!!861954.java!!!	onCancelLoad() : boolean
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onCancelLoad()");
+            }
+            return cancelInternal();
+!!!862082.java!!!	onReset() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onReset()");
+            }
+            onStopLoading();
+            mPrinters.clear();
+            if (mDiscoverySession != null) {
+                mDiscoverySession.destroy();
+                mDiscoverySession = null;
+            }
+!!!862210.java!!!	onAbandon() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onAbandon()");
+            }
+            onStopLoading();
+!!!862338.java!!!	cancelInternal() : boolean
+            if (mDiscoverySession != null
+                    && mDiscoverySession.isPrinterDiscoveryStarted()) {
+                mDiscoverySession.stopPrinterDiscovery();
+                return true;
+            }
+            return false;
+!!!862466.java!!!	loadInternal() : void
+            if (mDiscoverySession == null) {
+                PrintManager printManager = (PrintManager) getContext()
+                        .getSystemService(Context.PRINT_SERVICE);
+                mDiscoverySession = printManager.createPrinterDiscoverySession();
+                mDiscoverySession.setOnPrintersChangeListener(new OnPrintersChangeListener() {
+                    @Override
+                    public void onPrintersChanged() {
+                        deliverResult(new ArrayList<PrinterInfo>(
+                                mDiscoverySession.getPrinters()));
+                    }
+                });
+            }
+            mDiscoverySession.startPrinterDiscovery(null);

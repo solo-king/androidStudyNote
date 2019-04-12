@@ -1,0 +1,94 @@
+class AppNotificationSettings
+!!!803458.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        if (mAppRow == null) return;
+        AppHeader.createAppHeader(this, mAppRow.icon, mAppRow.label, mAppRow.pkg, mAppRow.uid,
+                mAppRow.settingsIntent);
+!!!803586.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NOTIFICATION_APP_NOTIFICATION;
+!!!803714.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.app_notification_settings);
+        mImportance = (ImportanceSeekBarPreference) findPreference(KEY_IMPORTANCE);
+        mPriority =
+                (RestrictedSwitchPreference) getPreferenceScreen().findPreference(KEY_BYPASS_DND);
+        mVisibilityOverride =
+                (RestrictedDropDownPreference) getPreferenceScreen().findPreference(
+                        KEY_VISIBILITY_OVERRIDE);
+        mBlock = (RestrictedSwitchPreference) getPreferenceScreen().findPreference(KEY_BLOCK);
+        mSilent = (RestrictedSwitchPreference) getPreferenceScreen().findPreference(KEY_SILENT);
+
+        if (mPkgInfo != null) {
+            mAppRow = mBackend.loadAppRow(mContext, mPm, mPkgInfo);
+
+            NotificationManager.Policy policy =
+                    NotificationManager.from(mContext).getNotificationPolicy();
+            mDndVisualEffectsSuppressed = policy == null ? false : policy.suppressedVisualEffects != 0;
+
+            // load settings intent
+            ArrayMap<String, AppRow> rows = new ArrayMap<String, AppRow>();
+            rows.put(mAppRow.pkg, mAppRow);
+            collectConfigActivities(rows);
+
+            setupImportancePrefs(mAppRow.cantBlock, mAppRow.cantSilence,
+                    mAppRow.appImportance, mAppRow.banned);
+            setupPriorityPref(mAppRow.appBypassDnd);
+            setupVisOverridePref(mAppRow.appVisOverride);
+            updateDependents(mAppRow.appImportance);
+        }
+!!!803842.java!!!	updateDependents(in importance : int) : void
+        LockPatternUtils utils = new LockPatternUtils(getActivity());
+        boolean lockscreenSecure = utils.isSecure(UserHandle.myUserId());
+        UserInfo parentUser = mUm.getProfileParent(UserHandle.myUserId());
+        if (parentUser != null){
+            lockscreenSecure |= utils.isSecure(parentUser.id);
+        }
+
+        if (getPreferenceScreen().findPreference(mBlock.getKey()) != null) {
+            setVisible(mSilent, checkCanBeVisible(Ranking.IMPORTANCE_MIN, importance));
+            mSilent.setChecked(importance == Ranking.IMPORTANCE_LOW);
+        }
+        setVisible(mPriority, checkCanBeVisible(Ranking.IMPORTANCE_DEFAULT, importance)
+                || (checkCanBeVisible(Ranking.IMPORTANCE_LOW, importance)
+                        && mDndVisualEffectsSuppressed));
+        setVisible(mVisibilityOverride,
+                checkCanBeVisible(Ranking.IMPORTANCE_MIN, importance) && lockscreenSecure);
+!!!803970.java!!!	checkCanBeVisible(in minImportanceVisible : int, in importance : int) : boolean
+        if (importance == Ranking.IMPORTANCE_UNSPECIFIED) {
+            return true;
+        }
+        return importance >= minImportanceVisible;
+!!!804098.java!!!	queryNotificationConfigActivities() : List<ResolveInfo>
+        if (DEBUG) Log.d(TAG, "APP_NOTIFICATION_PREFS_CATEGORY_INTENT is "
+                + APP_NOTIFICATION_PREFS_CATEGORY_INTENT);
+        final List<ResolveInfo> resolveInfos = mPm.queryIntentActivities(
+                APP_NOTIFICATION_PREFS_CATEGORY_INTENT,
+                0 //PackageManager.MATCH_DEFAULT_ONLY
+        );
+        return resolveInfos;
+!!!804226.java!!!	collectConfigActivities(inout rows : ArrayMap<String, AppRow>) : void
+        final List<ResolveInfo> resolveInfos = queryNotificationConfigActivities();
+        applyConfigActivities(rows, resolveInfos);
+!!!804354.java!!!	applyConfigActivities(inout rows : ArrayMap<String, AppRow>, inout resolveInfos : List<ResolveInfo>) : void
+        if (DEBUG) Log.d(TAG, "Found " + resolveInfos.size() + " preference activities"
+                + (resolveInfos.size() == 0 ? " ;_;" : ""));
+        for (ResolveInfo ri : resolveInfos) {
+            final ActivityInfo activityInfo = ri.activityInfo;
+            final ApplicationInfo appInfo = activityInfo.applicationInfo;
+            final AppRow row = rows.get(appInfo.packageName);
+            if (row == null) {
+                if (DEBUG) Log.v(TAG, "Ignoring notification preference activity ("
+                        + activityInfo.name + ") for unknown package "
+                        + activityInfo.packageName);
+                continue;
+            }
+            if (row.settingsIntent != null) {
+                if (DEBUG) Log.v(TAG, "Ignoring duplicate notification preference activity ("
+                        + activityInfo.name + ") for package "
+                        + activityInfo.packageName);
+                continue;
+            }
+            row.settingsIntent = new Intent(APP_NOTIFICATION_PREFS_CATEGORY_INTENT)
+                    .setClassName(activityInfo.packageName, activityInfo.name);
+        }

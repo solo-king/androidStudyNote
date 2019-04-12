@@ -1,0 +1,160 @@
+class AppOpsState
+!!!454658.java!!!	AppOpsState(inout context : Context)
+        mContext = context;
+        mAppOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
+        mPm = context.getPackageManager();
+        mOpSummaries = context.getResources().getTextArray(R.array.app_ops_summaries);
+        mOpLabels = context.getResources().getTextArray(R.array.app_ops_labels);
+!!!458626.java!!!	addOp(inout entries : List<AppOpEntry>, inout pkgOps : AppOpsManager.PackageOps, inout appEntry : AppOpsState::AppEntry, inout opEntry : AppOpsManager.OpEntry, inout allowMerge : boolean, in switchOrder : int) : void
+        if (allowMerge && entries.size() > 0) {
+            AppOpEntry last = entries.get(entries.size()-1);
+            if (last.getAppEntry() == appEntry) {
+                boolean lastExe = last.getTime() != 0;
+                boolean entryExe = opEntry.getTime() != 0;
+                if (lastExe == entryExe) {
+                    if (DEBUG) Log.d(TAG, "Add op " + opEntry.getOp() + " to package "
+                            + pkgOps.getPackageName() + ": append to " + last);
+                    last.addOp(opEntry);
+                    return;
+                }
+            }
+        }
+        AppOpEntry entry = appEntry.getOpSwitch(opEntry.getOp());
+        if (entry != null) {
+            entry.addOp(opEntry);
+            return;
+        }
+        entry = new AppOpEntry(pkgOps, opEntry, appEntry, switchOrder);
+        if (DEBUG) Log.d(TAG, "Add op " + opEntry.getOp() + " to package "
+                + pkgOps.getPackageName() + ": making new " + entry);
+        entries.add(entry);
+!!!458754.java!!!	getAppOpsManager() : AppOpsManager
+        return mAppOps;
+!!!458882.java!!!	buildState(inout tpl : AppOpsState::OpsTemplate) : AppOpsState::AppOpEntry
+        return buildState(tpl, 0, null, RECENCY_COMPARATOR);
+!!!459010.java!!!	getAppEntry(in context : Context, in appEntries : HashMap<String, AppEntry>, in packageName : String, inout appInfo : ApplicationInfo) : AppOpsState::AppEntry
+        AppEntry appEntry = appEntries.get(packageName);
+        if (appEntry == null) {
+            if (appInfo == null) {
+                try {
+                    appInfo = mPm.getApplicationInfo(packageName,
+                            PackageManager.GET_DISABLED_COMPONENTS
+                            | PackageManager.GET_UNINSTALLED_PACKAGES);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.w(TAG, "Unable to find info for package " + packageName);
+                    return null;
+                }
+            }
+            appEntry = new AppEntry(this, appInfo);
+            appEntry.loadLabel(context);
+            appEntries.put(packageName, appEntry);
+        }
+        return appEntry;
+!!!459138.java!!!	buildState(inout tpl : AppOpsState::OpsTemplate, in uid : int, in packageName : String) : AppOpsState::AppOpEntry
+        return buildState(tpl, uid, packageName, RECENCY_COMPARATOR);
+!!!459266.java!!!	buildState(inout tpl : AppOpsState::OpsTemplate, in uid : int, in packageName : String, inout comparator : Comparator<AppOpEntry>) : AppOpsState::AppOpEntry
+        final Context context = mContext;
+
+        final HashMap<String, AppEntry> appEntries = new HashMap<String, AppEntry>();
+        final List<AppOpEntry> entries = new ArrayList<AppOpEntry>();
+
+        final ArrayList<String> perms = new ArrayList<String>();
+        final ArrayList<Integer> permOps = new ArrayList<Integer>();
+        final int[] opToOrder = new int[AppOpsManager._NUM_OP];
+        for (int i=0; i<tpl.ops.length; i++) {
+            if (tpl.showPerms[i]) {
+                String perm = AppOpsManager.opToPermission(tpl.ops[i]);
+                if (perm != null && !perms.contains(perm)) {
+                    perms.add(perm);
+                    permOps.add(tpl.ops[i]);
+                    opToOrder[tpl.ops[i]] = i;
+                }
+            }
+        }
+
+        List<AppOpsManager.PackageOps> pkgs;
+        if (packageName != null) {
+            pkgs = mAppOps.getOpsForPackage(uid, packageName, tpl.ops);
+        } else {
+            pkgs = mAppOps.getPackagesForOps(tpl.ops);
+        }
+
+        if (pkgs != null) {
+            for (int i=0; i<pkgs.size(); i++) {
+                AppOpsManager.PackageOps pkgOps = pkgs.get(i);
+                AppEntry appEntry = getAppEntry(context, appEntries, pkgOps.getPackageName(), null);
+                if (appEntry == null) {
+                    continue;
+                }
+                for (int j=0; j<pkgOps.getOps().size(); j++) {
+                    AppOpsManager.OpEntry opEntry = pkgOps.getOps().get(j);
+                    addOp(entries, pkgOps, appEntry, opEntry, packageName == null,
+                            packageName == null ? 0 : opToOrder[opEntry.getOp()]);
+                }
+            }
+        }
+
+        List<PackageInfo> apps;
+        if (packageName != null) {
+            apps = new ArrayList<PackageInfo>();
+            try {
+                PackageInfo pi = mPm.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS);
+                apps.add(pi);
+            } catch (NameNotFoundException e) {
+            }
+        } else {
+            String[] permsArray = new String[perms.size()];
+            perms.toArray(permsArray);
+            apps = mPm.getPackagesHoldingPermissions(permsArray, 0);
+        }
+        for (int i=0; i<apps.size(); i++) {
+            PackageInfo appInfo = apps.get(i);
+            AppEntry appEntry = getAppEntry(context, appEntries, appInfo.packageName,
+                    appInfo.applicationInfo);
+            if (appEntry == null) {
+                continue;
+            }
+            List<AppOpsManager.OpEntry> dummyOps = null;
+            AppOpsManager.PackageOps pkgOps = null;
+            if (appInfo.requestedPermissions != null) {
+                for (int j=0; j<appInfo.requestedPermissions.length; j++) {
+                    if (appInfo.requestedPermissionsFlags != null) {
+                        if ((appInfo.requestedPermissionsFlags[j]
+                                & PackageInfo.REQUESTED_PERMISSION_GRANTED) == 0) {
+                            if (DEBUG) Log.d(TAG, "Pkg " + appInfo.packageName + " perm "
+                                    + appInfo.requestedPermissions[j] + " not granted; skipping");
+                            continue;
+                        }
+                    }
+                    if (DEBUG) Log.d(TAG, "Pkg " + appInfo.packageName + ": requested perm "
+                            + appInfo.requestedPermissions[j]);
+                    for (int k=0; k<perms.size(); k++) {
+                        if (!perms.get(k).equals(appInfo.requestedPermissions[j])) {
+                            continue;
+                        }
+                        if (DEBUG) Log.d(TAG, "Pkg " + appInfo.packageName + " perm " + perms.get(k)
+                                + " has op " + permOps.get(k) + ": " + appEntry.hasOp(permOps.get(k)));
+                        if (appEntry.hasOp(permOps.get(k))) {
+                            continue;
+                        }
+                        if (dummyOps == null) {
+                            dummyOps = new ArrayList<AppOpsManager.OpEntry>();
+                            pkgOps = new AppOpsManager.PackageOps(
+                                    appInfo.packageName, appInfo.applicationInfo.uid, dummyOps);
+
+                        }
+                        AppOpsManager.OpEntry opEntry = new AppOpsManager.OpEntry(
+                                permOps.get(k), AppOpsManager.MODE_ALLOWED, 0, 0, 0, -1, null);
+                        dummyOps.add(opEntry);
+                        addOp(entries, pkgOps, appEntry, opEntry, packageName == null,
+                                packageName == null ? 0 : opToOrder[opEntry.getOp()]);
+                    }
+                }
+            }
+        }
+
+        // Sort the list.
+        Collections.sort(entries, comparator);
+
+        // Done!
+        return entries;

@@ -1,0 +1,66 @@
+class RemoteBugreportActivity
+!!!309250.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        final int notificationType = getIntent().getIntExtra(
+                DevicePolicyManager.EXTRA_BUGREPORT_NOTIFICATION_TYPE, -1);
+
+        if (notificationType == DevicePolicyManager.NOTIFICATION_BUGREPORT_ACCEPTED_NOT_FINISHED) {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setMessage(R.string.sharing_remote_bugreport_dialog_message)
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .create();
+            dialog.show();
+        } else if (notificationType == DevicePolicyManager.NOTIFICATION_BUGREPORT_STARTED
+                || notificationType
+                        == DevicePolicyManager.NOTIFICATION_BUGREPORT_FINISHED_NOT_ACCEPTED) {
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.share_remote_bugreport_dialog_title)
+                    .setMessage(notificationType
+                                    == DevicePolicyManager.NOTIFICATION_BUGREPORT_STARTED
+                            ? R.string.share_remote_bugreport_dialog_message
+                            : R.string.share_remote_bugreport_dialog_message_finished)
+                    .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(R.string.decline_remote_bugreport_action,
+                            new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(
+                                    DevicePolicyManager.ACTION_BUGREPORT_SHARING_DECLINED);
+                            RemoteBugreportActivity.this.sendBroadcastAsUser(intent,
+                                    UserHandle.SYSTEM, android.Manifest.permission.DUMP);
+                            finish();
+                        }
+                    })
+                    .setPositiveButton(R.string.share_remote_bugreport_action,
+                            new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent = new Intent(
+                                    DevicePolicyManager.ACTION_BUGREPORT_SHARING_ACCEPTED);
+                            RemoteBugreportActivity.this.sendBroadcastAsUser(intent,
+                                    UserHandle.SYSTEM, android.Manifest.permission.DUMP);
+                            finish();
+                        }
+                    })
+                    .create();
+            dialog.show();
+        } else {
+            Log.e(TAG, "Incorrect dialog type, no dialog shown. Received: " + notificationType);
+        }

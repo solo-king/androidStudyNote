@@ -1,0 +1,49 @@
+class DelayedCaptiveCheckState
+!!!171522.java!!!	enter() : void
+            Message message = obtainMessage(CMD_DELAYED_CAPTIVE_CHECK, ++mDelayedCheckToken, 0);
+            if (mDeviceProvisioned) {
+                sendMessageDelayed(message, DELAYED_CHECK_INTERVAL_MS);
+            } else {
+                sendMessage(message);
+            }
+!!!171650.java!!!	processMessage(inout message : Message) : boolean
+            if (DBG) log(getName() + message.toString());
+            switch (message.what) {
+                case CMD_DELAYED_CAPTIVE_CHECK:
+                    setNotificationOff();
+
+                    if (message.arg1 == mDelayedCheckToken) {
+                        InetAddress server = lookupHost(mServer);
+                        boolean captive = server != null && isCaptivePortal(server);
+                        if (captive) {
+                            if (DBG) log("Captive network " + mNetworkInfo);
+                        } else {
+                            if (DBG) log("Not captive network " + mNetworkInfo);
+                        }
+                        notifyPortalCheckCompleted(mNetworkInfo, captive);
+                        if (mDeviceProvisioned) {
+                            if (captive) {
+                                // Setup Wizard will assist the user in connecting to a captive
+                                // portal, so make the notification visible unless during setup
+                                try {
+                                    mConnService.setProvisioningNotificationVisible(true,
+                                        mNetworkInfo.getType(), mNetworkInfo.getExtraInfo(), mUrl);
+                                } catch(RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            Intent intent = new Intent(
+                                    ConnectivityManager.ACTION_CAPTIVE_PORTAL_TEST_COMPLETED);
+                            intent.putExtra(ConnectivityManager.EXTRA_IS_CAPTIVE_PORTAL, captive);
+                            intent.setPackage(SETUP_WIZARD_PACKAGE);
+                            mContext.sendBroadcast(intent);
+                        }
+
+                        transitionTo(mActiveNetworkState);
+                    }
+                    break;
+                default:
+                    return NOT_HANDLED;
+            }
+            return HANDLED;

@@ -1,0 +1,159 @@
+class TrafficStats
+!!!284290.java!!!	getStatsService() : INetworkStatsService
+        if (sStatsService == null) {
+            sStatsService = INetworkStatsService.Stub.asInterface(
+                    ServiceManager.getService(Context.NETWORK_STATS_SERVICE));
+        }
+        return sStatsService;
+!!!284418.java!!!	setThreadStatsTag(in tag : int) : void
+        NetworkManagementSocketTagger.setThreadSocketStatsTag(tag);
+!!!284546.java!!!	getThreadStatsTag() : int
+        return NetworkManagementSocketTagger.getThreadSocketStatsTag();
+!!!284674.java!!!	clearThreadStatsTag() : void
+        NetworkManagementSocketTagger.setThreadSocketStatsTag(-1);
+!!!284802.java!!!	setThreadStatsUid(in uid : int) : void
+        NetworkManagementSocketTagger.setThreadSocketStatsUid(uid);
+!!!284930.java!!!	clearThreadStatsUid() : void
+        NetworkManagementSocketTagger.setThreadSocketStatsUid(-1);
+!!!285058.java!!!	tagSocket(inout socket : Socket) : void
+        SocketTagger.get().tag(socket);
+!!!285186.java!!!	untagSocket(inout socket : Socket) : void
+        SocketTagger.get().untag(socket);
+!!!285314.java!!!	startDataProfiling(inout context : Context) : void
+        synchronized (sProfilingLock) {
+            if (sActiveProfilingStart != null) {
+                throw new IllegalStateException("already profiling data");
+            }
+
+            // take snapshot in time; we calculate delta later
+            sActiveProfilingStart = getDataLayerSnapshotForUid(context);
+        }
+!!!285442.java!!!	stopDataProfiling(inout context : Context) : NetworkStats
+        synchronized (sProfilingLock) {
+            if (sActiveProfilingStart == null) {
+                throw new IllegalStateException("not profiling data");
+            }
+
+            // subtract starting values and return delta
+            final NetworkStats profilingStop = getDataLayerSnapshotForUid(context);
+            final NetworkStats profilingDelta = NetworkStats.subtract(
+                    profilingStop, sActiveProfilingStart, null, null);
+            sActiveProfilingStart = null;
+            return profilingDelta;
+        }
+!!!285570.java!!!	incrementOperationCount(in operationCount : int) : void
+        final int tag = getThreadStatsTag();
+        incrementOperationCount(tag, operationCount);
+!!!285698.java!!!	incrementOperationCount(in tag : int, in operationCount : int) : void
+        final int uid = android.os.Process.myUid();
+        try {
+            getStatsService().incrementOperationCount(uid, tag, operationCount);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+!!!285826.java!!!	closeQuietly(inout session : INetworkStatsSession) : void
+        // TODO: move to NetworkStatsService once it exists
+        if (session != null) {
+            try {
+                session.close();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
+            } catch (Exception ignored) {
+            }
+        }
+!!!285954.java!!!	getMobileTxPackets() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            total += getTxPackets(iface);
+        }
+        return total;
+!!!286082.java!!!	getMobileRxPackets() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            total += getRxPackets(iface);
+        }
+        return total;
+!!!286210.java!!!	getMobileTxBytes() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            total += getTxBytes(iface);
+        }
+        return total;
+!!!286338.java!!!	getMobileRxBytes() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            total += getRxBytes(iface);
+        }
+        return total;
+!!!286466.java!!!	getMobileTcpRxPackets() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            final long stat = nativeGetIfaceStat(iface, TYPE_TCP_RX_PACKETS);
+            if (stat != UNSUPPORTED) {
+                total += stat;
+            }
+        }
+        return total;
+!!!286594.java!!!	getMobileTcpTxPackets() : long
+        long total = 0;
+        for (String iface : getMobileIfaces()) {
+            final long stat = nativeGetIfaceStat(iface, TYPE_TCP_TX_PACKETS);
+            if (stat != UNSUPPORTED) {
+                total += stat;
+            }
+        }
+        return total;
+!!!286722.java!!!	getTxPackets(in iface : String) : long
+        return nativeGetIfaceStat(iface, TYPE_TX_PACKETS);
+!!!286850.java!!!	getRxPackets(in iface : String) : long
+        return nativeGetIfaceStat(iface, TYPE_RX_PACKETS);
+!!!286978.java!!!	getTxBytes(in iface : String) : long
+        return nativeGetIfaceStat(iface, TYPE_TX_BYTES);
+!!!287106.java!!!	getRxBytes(in iface : String) : long
+        return nativeGetIfaceStat(iface, TYPE_RX_BYTES);
+!!!287234.java!!!	getTotalTxPackets() : long
+        return nativeGetTotalStat(TYPE_TX_PACKETS);
+!!!287362.java!!!	getTotalRxPackets() : long
+        return nativeGetTotalStat(TYPE_RX_PACKETS);
+!!!287490.java!!!	getTotalTxBytes() : long
+        return nativeGetTotalStat(TYPE_TX_BYTES);
+!!!287618.java!!!	getTotalRxBytes() : long
+        return nativeGetTotalStat(TYPE_RX_BYTES);
+!!!287746.java!!!	getUidTxBytes(in uid : int) : long
+        return nativeGetUidStat(uid, TYPE_TX_BYTES);
+!!!287874.java!!!	getUidRxBytes(in uid : int) : long
+        return nativeGetUidStat(uid, TYPE_RX_BYTES);
+!!!288002.java!!!	getUidTxPackets(in uid : int) : long
+        return nativeGetUidStat(uid, TYPE_TX_PACKETS);
+!!!288130.java!!!	getUidRxPackets(in uid : int) : long
+        return nativeGetUidStat(uid, TYPE_RX_PACKETS);
+!!!288258.java!!!	getUidTcpTxBytes(in uid : int) : long
+        return UNSUPPORTED;
+!!!288386.java!!!	getUidTcpRxBytes(in uid : int) : long
+        return UNSUPPORTED;
+!!!288514.java!!!	getUidUdpTxBytes(in uid : int) : long
+        return UNSUPPORTED;
+!!!288642.java!!!	getUidUdpRxBytes(in uid : int) : long
+        return UNSUPPORTED;
+!!!288770.java!!!	getUidTcpTxSegments(in uid : int) : long
+        return UNSUPPORTED;
+!!!288898.java!!!	getUidTcpRxSegments(in uid : int) : long
+        return UNSUPPORTED;
+!!!289026.java!!!	getUidUdpTxPackets(in uid : int) : long
+        return UNSUPPORTED;
+!!!289154.java!!!	getUidUdpRxPackets(in uid : int) : long
+        return UNSUPPORTED;
+!!!289282.java!!!	getDataLayerSnapshotForUid(inout context : Context) : NetworkStats
+        // TODO: take snapshot locally, since proc file is now visible
+        final int uid = android.os.Process.myUid();
+        try {
+            return getStatsService().getDataLayerSnapshotForUid(uid);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+!!!289410.java!!!	getMobileIfaces() : String
+        try {
+            return getStatsService().getMobileIfaces();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }

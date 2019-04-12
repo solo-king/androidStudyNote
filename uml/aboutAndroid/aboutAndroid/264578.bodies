@@ -1,0 +1,16 @@
+class ReselectionSpinner
+!!!819970.java!!!	ReselectionSpinner(inout context : Context, inout attrs : AttributeSet)
+            super(context, attrs);
+!!!820098.java!!!	setPreference(inout pref : RestrictedDropDownPreference) : void
+            this.pref = pref;
+!!!820226.java!!!	setSelection(in position : int) : void
+            int previousSelectedPosition = getSelectedItemPosition();
+            super.setSelection(position);
+            if (position == previousSelectedPosition && pref.isUserClicked()) {
+                pref.setUserClicked(false);
+                RestrictedItem item = pref.getRestrictedItemForPosition(position);
+                if (item != null) {
+                    RestrictedLockUtils.sendShowAdminSupportDetailsIntent(getContext(),
+                            item.enforcedAdmin);
+                }
+            }

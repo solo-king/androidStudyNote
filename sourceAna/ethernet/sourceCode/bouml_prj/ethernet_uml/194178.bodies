@@ -1,0 +1,196 @@
+class ContentValues
+!!!685186.java!!!	ContentValues()
+        // Choosing a default size of 8 based on analysis of typical
+        // consumption by applications.
+        mValues = new HashMap<String, Object>(8);
+!!!685314.java!!!	ContentValues(in size : int)
+        mValues = new HashMap<String, Object>(size, 1.0f);
+!!!685442.java!!!	ContentValues(inout from : ContentValues)
+        mValues = new HashMap<String, Object>(from.mValues);
+!!!685570.java!!!	ContentValues(inout values : HashMap<String, Object>)
+        mValues = values;
+!!!685698.java!!!	equals(inout object : Object) : boolean
+        if (!(object instanceof ContentValues)) {
+            return false;
+        }
+        return mValues.equals(((ContentValues) object).mValues);
+!!!685826.java!!!	hashCode() : int
+        return mValues.hashCode();
+!!!685954.java!!!	put(in key : String, in value : String) : void
+        mValues.put(key, value);
+!!!686082.java!!!	putAll(inout other : ContentValues) : void
+        mValues.putAll(other.mValues);
+!!!686210.java!!!	put(in key : String, inout value : Byte) : void
+        mValues.put(key, value);
+!!!686338.java!!!	put(in key : String, inout value : Short) : void
+        mValues.put(key, value);
+!!!686466.java!!!	put(in key : String, inout value : Integer) : void
+        mValues.put(key, value);
+!!!686594.java!!!	put(in key : String, inout value : Long) : void
+        mValues.put(key, value);
+!!!686722.java!!!	put(in key : String, inout value : Float) : void
+        mValues.put(key, value);
+!!!686850.java!!!	put(in key : String, inout value : Double) : void
+        mValues.put(key, value);
+!!!686978.java!!!	put(in key : String, inout value : Boolean) : void
+        mValues.put(key, value);
+!!!687106.java!!!	put(in key : String, inout value : byte) : void
+        mValues.put(key, value);
+!!!687234.java!!!	putNull(in key : String) : void
+        mValues.put(key, null);
+!!!687362.java!!!	size() : int
+        return mValues.size();
+!!!687490.java!!!	remove(in key : String) : void
+        mValues.remove(key);
+!!!687618.java!!!	clear() : void
+        mValues.clear();
+!!!687746.java!!!	containsKey(in key : String) : boolean
+        return mValues.containsKey(key);
+!!!687874.java!!!	get(in key : String) : Object
+        return mValues.get(key);
+!!!688002.java!!!	getAsString(in key : String) : String
+        Object value = mValues.get(key);
+        return value != null ? value.toString() : null;
+!!!688130.java!!!	getAsLong(in key : String) : Long
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).longValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Long.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Long value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Long: " + value, e);
+                return null;
+            }
+        }
+!!!688258.java!!!	getAsInteger(in key : String) : Integer
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).intValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Integer.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Integer value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Integer: " + value, e);
+                return null;
+            }
+        }
+!!!688386.java!!!	getAsShort(in key : String) : Short
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).shortValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Short.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Short value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Short: " + value, e);
+                return null;
+            }
+        }
+!!!688514.java!!!	getAsByte(in key : String) : Byte
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).byteValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Byte.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Byte value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Byte: " + value, e);
+                return null;
+            }
+        }
+!!!688642.java!!!	getAsDouble(in key : String) : Double
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).doubleValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Double.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Double value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Double: " + value, e);
+                return null;
+            }
+        }
+!!!688770.java!!!	getAsFloat(in key : String) : Float
+        Object value = mValues.get(key);
+        try {
+            return value != null ? ((Number) value).floatValue() : null;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                try {
+                    return Float.valueOf(value.toString());
+                } catch (NumberFormatException e2) {
+                    Log.e(TAG, "Cannot parse Float value for " + value + " at key " + key);
+                    return null;
+                }
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Float: " + value, e);
+                return null;
+            }
+        }
+!!!688898.java!!!	getAsBoolean(in key : String) : Boolean
+        Object value = mValues.get(key);
+        try {
+            return (Boolean) value;
+        } catch (ClassCastException e) {
+            if (value instanceof CharSequence) {
+                return Boolean.valueOf(value.toString());
+            } else if (value instanceof Number) {
+                return ((Number) value).intValue() != 0;
+            } else {
+                Log.e(TAG, "Cannot cast value for " + key + " to a Boolean: " + value, e);
+                return null;
+            }
+        }
+!!!689026.java!!!	getAsByteArray(in key : String) : byte
+        Object value = mValues.get(key);
+        if (value instanceof byte[]) {
+            return (byte[]) value;
+        } else {
+            return null;
+        }
+!!!689154.java!!!	valueSet() : Set<Map.Entry<String, Object>>
+        return mValues.entrySet();
+!!!689282.java!!!	keySet() : Set<String>
+        return mValues.keySet();
+!!!689410.java!!!	describeContents() : int
+        return 0;
+!!!689538.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+        parcel.writeMap(mValues);
+!!!689666.java!!!	putStringArrayList(in key : String, inout value : ArrayList<String>) : void
+        mValues.put(key, value);
+!!!689794.java!!!	getStringArrayList(in key : String) : ArrayList<String>
+        return (ArrayList<String>) mValues.get(key);
+!!!689922.java!!!	toString() : String
+        StringBuilder sb = new StringBuilder();
+        for (String name : mValues.keySet()) {
+            String value = getAsString(name);
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(name + "=" + value);
+        }
+        return sb.toString();

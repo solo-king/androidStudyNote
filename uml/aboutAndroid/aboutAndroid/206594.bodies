@@ -1,0 +1,29 @@
+class AppStateSmsPremBridge
+!!!467842.java!!!	AppStateSmsPremBridge(inout context : Context, inout appState : ApplicationsState, inout callback : AppStateBaseBridge::Callback)
+        super(appState, callback);
+        mContext = context;
+        mSmsManager = ISms.Stub.asInterface(ServiceManager.getService("isms"));
+!!!467970.java!!!	loadAllExtraInfo() : void
+        ArrayList<AppEntry> apps = mAppSession.getAllApps();
+        final int N = apps.size();
+        for (int i = 0; i < N; i++) {
+            AppEntry app = apps.get(i);
+            updateExtraInfo(app, app.info.packageName, app.info.uid);
+        }
+!!!468098.java!!!	updateExtraInfo(inout app : AppEntry, in pkg : String, in uid : int) : void
+        app.extraInfo = getState(pkg);
+!!!468226.java!!!	getState(in pkg : String) : AppStateSmsPremBridge::SmsState
+        final SmsState state = new SmsState();
+        state.smsState = getSmsState(pkg);
+        return state;
+!!!468354.java!!!	getSmsState(in pkg : String) : int
+        try {
+            return mSmsManager.getPremiumSmsPermission(pkg);
+        } catch (RemoteException e) {
+            return SmsUsageMonitor.PREMIUM_SMS_PERMISSION_UNKNOWN;
+        }
+!!!468482.java!!!	setSmsState(in pkg : String, in state : int) : void
+        try {
+            mSmsManager.setPremiumSmsPermission(pkg, state);
+        } catch (RemoteException e) {
+        }

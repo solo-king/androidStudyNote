@@ -1,0 +1,26 @@
+class SupportPhone
+!!!887938.java!!!	SupportPhone(in config : String)
+        // Config follows this format: language:[tollfree|tolled]:number
+        final String[] tokens = config.split(":");
+        if (tokens.length != 3) {
+            throw new ParseException("Phone config is invalid " + config, 0);
+        }
+        language = tokens[0];
+        isTollFree = TextUtils.equals(tokens[1], "tollfree");
+        number = tokens[2];
+!!!888066.java!!!	SupportPhone(inout in : Parcel)
+        language = in.readString();
+        number = in.readString();
+        isTollFree = in.readInt() != 0;
+!!!888194.java!!!	getDialIntent() : Intent
+        return new Intent(Intent.ACTION_DIAL)
+                .setData(new Uri.Builder()
+                        .scheme("tel")
+                        .appendPath(number)
+                        .build());
+!!!888322.java!!!	describeContents() : int
+        return 0;
+!!!888450.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeString(language);
+        dest.writeString(number);
+        dest.writeInt(isTollFree ? 1 : 0);

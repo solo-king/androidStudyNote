@@ -1,0 +1,37 @@
+class MemoryUpdater
+!!!490370.java!!!	doInBackground(inout  : Void...params) : ProcStatsPackageEntry
+            if (getActivity() == null) {
+                return null;
+            }
+            if (mPackageInfo == null) {
+                return null;
+            }
+            if (mStatsManager == null) {
+                mStatsManager = new ProcStatsData(getActivity(), false);
+                mStatsManager.setDuration(ProcessStatsBase.sDurations[0]);
+            }
+            mStatsManager.refreshStats(true);
+            for (ProcStatsPackageEntry pkgEntry : mStatsManager.getEntries()) {
+                for (ProcStatsEntry entry : pkgEntry.mEntries) {
+                    if (entry.mUid == mPackageInfo.applicationInfo.uid) {
+                        pkgEntry.updateMetrics();
+                        return pkgEntry;
+                    }
+                }
+            }
+            return null;
+!!!490498.java!!!	onPostExecute(inout entry : ProcStatsPackageEntry) : void
+            if (getActivity() == null) {
+                return;
+            }
+            if (entry != null) {
+                mStats = entry;
+                mMemoryPreference.setEnabled(true);
+                double amount = Math.max(entry.mRunWeight, entry.mBgWeight)
+                        * mStatsManager.getMemInfo().weightToRam;
+                mMemoryPreference.setSummary(getString(R.string.memory_use_summary,
+                        Formatter.formatShortFileSize(getContext(), (long) amount)));
+            } else {
+                mMemoryPreference.setEnabled(false);
+                mMemoryPreference.setSummary(getString(R.string.no_memory_use_summary));
+            }

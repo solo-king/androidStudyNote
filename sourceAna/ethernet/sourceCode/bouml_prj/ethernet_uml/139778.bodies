@@ -1,0 +1,11 @@
+class Credentials
+!!!181122.java!!!	Credentials(in pid : int, in uid : int, in gid : int)
+        this.pid = pid;
+        this.uid = uid;
+        this.gid = gid;
+!!!181250.java!!!	getPid() : int
+        return pid;
+!!!181378.java!!!	getUid() : int
+        return uid;
+!!!181506.java!!!	getGid() : int
+        return gid;

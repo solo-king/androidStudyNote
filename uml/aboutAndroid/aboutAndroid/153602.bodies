@@ -1,0 +1,24 @@
+class DimmableIconPreference
+!!!264706.java!!!	DimmableIconPreference(inout context : Context)
+        this(context, (AttributeSet) null);
+!!!264834.java!!!	DimmableIconPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        mContentDescription = null;
+        useAdminDisabledSummary(true);
+!!!264962.java!!!	DimmableIconPreference(inout context : Context, inout contentDescription : CharSequence)
+        super(context);
+        mContentDescription = contentDescription;
+        useAdminDisabledSummary(true);
+!!!265090.java!!!	dimIcon(inout dimmed : boolean) : void
+        Drawable icon = getIcon();
+        if (icon != null) {
+            icon.mutate().setAlpha(dimmed ? ICON_ALPHA_DISABLED : ICON_ALPHA_ENABLED);
+            setIcon(icon);
+        }
+!!!265218.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        if (!TextUtils.isEmpty(mContentDescription)) {
+            final TextView titleView = (TextView) view.findViewById(android.R.id.title);
+            titleView.setContentDescription(mContentDescription);
+        }
+        dimIcon(!isEnabled());

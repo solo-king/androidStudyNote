@@ -1,0 +1,12 @@
+class SetupChooseLockGeneric
+!!!338818.java!!!	isValidFragment(in fragmentName : String) : boolean
+        return SetupChooseLockGenericFragment.class.getName().equals(fragmentName);
+!!!338946.java!!!	getFragmentClass() : Class<? extends PreferenceFragment>
+        return SetupChooseLockGenericFragment.class;
+!!!339074.java!!!	onApplyThemeResource(inout theme : Resources.Theme, in resid : int, inout first : boolean) : void
+        resid = SetupWizardUtils.getTheme(getIntent());
+        super.onApplyThemeResource(theme, resid, first);
+!!!339202.java!!!	onCreate(inout savedInstance : Bundle) : void
+        super.onCreate(savedInstance);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.content_parent);
+        layout.setFitsSystemWindows(false);

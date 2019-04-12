@@ -1,0 +1,34 @@
+class OtherInfoFragment
+!!!653314.java!!!	show(inout parent : Fragment, in title : String, inout sharedVol : VolumeInfo, in userId : int) : void
+            if (!parent.isAdded()) return;
+
+            final OtherInfoFragment dialog = new OtherInfoFragment();
+            dialog.setTargetFragment(parent, 0);
+            final Bundle args = new Bundle();
+            args.putString(Intent.EXTRA_TITLE, title);
+
+            final Intent intent = sharedVol.buildBrowseIntent();
+            intent.putExtra(Intent.EXTRA_USER_ID, userId);
+            args.putParcelable(Intent.EXTRA_INTENT, intent);
+            dialog.setArguments(args);
+            dialog.show(parent.getFragmentManager(), TAG_OTHER_INFO);
+!!!653442.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final Context context = getActivity();
+
+            final String title = getArguments().getString(Intent.EXTRA_TITLE);
+            final Intent intent = getArguments().getParcelable(Intent.EXTRA_INTENT);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(
+                    TextUtils.expandTemplate(getText(R.string.storage_detail_dialog_other), title));
+
+            builder.setPositiveButton(R.string.storage_menu_explore,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            launchIntent(OtherInfoFragment.this, intent);
+                        }
+                    });
+            builder.setNegativeButton(android.R.string.cancel, null);
+
+            return builder.create();

@@ -1,0 +1,72 @@
+class AppListAdapter
+!!!351362.java!!!	AppListAdapter()
+            mItems = getItems();
+            int selected = getSelectedIndex();
+            // Move selected up to the top so it is easy to find
+            if (selected > 0) {
+                Item item = mItems.remove(selected);
+                mItems.add(0, item);
+                selected = 0;
+            }
+            mSelectedIndex = selected;
+!!!351490.java!!!	getCount() : int
+            return mItems != null ? mItems.size() : 0;
+!!!351618.java!!!	getItem(in position : int) : Object
+            return mItems != null && position < mItems.size() ? mItems.get(position) : null;
+!!!351746.java!!!	getItemId(in position : int) : long
+            return position;
+!!!351874.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            Item item = ((Item) getItem(position));
+            LayoutInflater inflater = getLayoutInflater();
+            View view = inflater.inflate(R.layout.app_preference_item, parent, false);
+            TextView textView = (TextView) view.findViewById(android.R.id.title);
+            textView.setText(item.label);
+            if (position == mSelectedIndex) {
+                view.findViewById(R.id.default_label).setVisibility(View.VISIBLE);
+            } else {
+                view.findViewById(R.id.default_label).setVisibility(View.GONE);
+            }
+            ImageView imageView = (ImageView)view.findViewById(android.R.id.icon);
+            imageView.setImageDrawable(item.icon);
+            return view;
+!!!352002.java!!!	getPackageName(in position : int) : String
+            Item item = (Item) getItem(position);
+            if (item != null) {
+                return item.packgeName;
+            }
+            return null;
+!!!352130.java!!!	isSelected(in position : int) : boolean
+            return position == mSelectedIndex;
+!!!352258.java!!!	getItems() : SmsDefaultDialog::AppListAdapter::Item
+            PackageManager pm = getPackageManager();
+            List<Item> items = new ArrayList<>();
+            for (SmsApplication.SmsApplicationData app :
+                    SmsApplication.getApplicationCollection(SmsDefaultDialog.this)) {
+                try {
+                    String packageName = app.mPackageName;
+                    ApplicationInfo appInfo = pm.getApplicationInfo(packageName, 0/*flags*/);
+                    if (appInfo != null) {
+                        items.add(new Item(
+                                appInfo.loadLabel(pm).toString(),
+                                appInfo.loadIcon(pm),
+                                packageName));
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    // Ignore package can't be found
+                }
+            }
+            return items;
+!!!352386.java!!!	getSelectedIndex() : int
+            ComponentName appName = SmsApplication.getDefaultSmsApplication(
+                    SmsDefaultDialog.this, true);
+            if (appName != null) {
+                String defaultSmsAppPackageName = appName.getPackageName();
+                if (!TextUtils.isEmpty(defaultSmsAppPackageName)) {
+                    for (int i = 0; i < mItems.size(); i++) {
+                        if (TextUtils.equals(mItems.get(i).packgeName, defaultSmsAppPackageName)) {
+                            return i;
+                        }
+                    }
+                }
+            }
+            return -1;

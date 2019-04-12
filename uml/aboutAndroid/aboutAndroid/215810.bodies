@@ -1,0 +1,23 @@
+class UserManagerBroadcastReceiver
+!!!524930.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+            synchronized (mLock) {
+                if (mResumed) {
+                    mHaveData = false;
+                    mBackgroundHandler.removeMessages(MSG_RESET_CONTENTS);
+                    mBackgroundHandler.sendEmptyMessage(MSG_RESET_CONTENTS);
+                    mBackgroundHandler.removeMessages(MSG_UPDATE_CONTENTS);
+                    mBackgroundHandler.sendEmptyMessage(MSG_UPDATE_CONTENTS);
+                } else {
+                    usersChanged = true;
+                }
+            }
+!!!525058.java!!!	checkUsersChangedLocked() : boolean
+            boolean oldValue = usersChanged;
+            usersChanged = false;
+            return oldValue;
+!!!525186.java!!!	register(inout context : Context) : void
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(Intent.ACTION_USER_STOPPED);
+            filter.addAction(Intent.ACTION_USER_STARTED);
+            filter.addAction(Intent.ACTION_USER_INFO_CHANGED);
+            context.registerReceiverAsUser(this, UserHandle.ALL, filter, null, null);

@@ -1,0 +1,15 @@
+class AppStateNotificationBridge
+!!!466306.java!!!	AppStateNotificationBridge(inout context : Context, inout appState : ApplicationsState, inout callback : AppStateBaseBridge::Callback, inout notifBackend : NotificationBackend)
+        super(appState, callback);
+        mContext = context;
+        mPm = mContext.getPackageManager();
+        mNotifBackend = notifBackend;
+!!!466434.java!!!	loadAllExtraInfo() : void
+        ArrayList<AppEntry> apps = mAppSession.getAllApps();
+        final int N = apps.size();
+        for (int i = 0; i < N; i++) {
+            AppEntry app = apps.get(i);
+            app.extraInfo = mNotifBackend.loadAppRow(mContext, mPm, app.info);
+        }
+!!!466562.java!!!	updateExtraInfo(inout app : AppEntry, in pkg : String, in uid : int) : void
+        app.extraInfo = mNotifBackend.loadAppRow(mContext, mPm, app.info);

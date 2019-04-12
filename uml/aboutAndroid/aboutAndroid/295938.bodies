@@ -1,0 +1,4 @@
+class Operator
+!!!1039618.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.operator_main);

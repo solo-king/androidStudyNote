@@ -1,0 +1,12 @@
+class AppStateOverlayBridge
+!!!466690.java!!!	AppStateOverlayBridge(inout context : Context, inout appState : ApplicationsState, inout callback : AppStateBaseBridge::Callback)
+        super(context, appState, callback, APP_OPS_OP_CODE, PM_PERMISSION);
+!!!466818.java!!!	updateExtraInfo(inout app : AppEntry, in pkg : String, in uid : int) : void
+        app.extraInfo = getOverlayInfo(pkg, uid);
+!!!466946.java!!!	getOverlayInfo(in pkg : String, in uid : int) : AppStateOverlayBridge::OverlayState
+        PermissionState permissionState = super.getPermissionInfo(pkg, uid);
+        return new OverlayState(permissionState);
+!!!467074.java!!!	getNumberOfPackagesWithPermission() : int
+        return super.getNumPackagesDeclaredPermission();
+!!!467202.java!!!	getNumberOfPackagesCanDrawOverlay() : int
+        return super.getNumPackagesAllowedByAppOps();

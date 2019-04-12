@@ -1,0 +1,7 @@
+class WallOfTextPreference
+!!!742146.java!!!	WallOfTextPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!742274.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        final TextView summary = (TextView) view.findViewById(android.R.id.summary);
+        summary.setMaxLines(20);

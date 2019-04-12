@@ -1,0 +1,27 @@
+class MeteredPreference
+!!!633730.java!!!	MeteredPreference(inout context : Context, inout template : NetworkTemplate)
+            super(context);
+            mTemplate = template;
+
+            setPersistent(false);
+
+            mBinding = true;
+            final NetworkPolicy policy = mPolicyEditor.getPolicyMaybeUnquoted(template);
+            if (policy != null) {
+                if (policy.limitBytes != LIMIT_DISABLED) {
+                    setChecked(true);
+                    setEnabled(false);
+                } else {
+                    setChecked(policy.metered);
+                }
+            } else {
+                setChecked(false);
+            }
+            mBinding = false;
+!!!633858.java!!!	notifyChanged() : void
+            super.notifyChanged();
+            if (!mBinding) {
+                mPolicyEditor.setPolicyMetered(mTemplate, isChecked());
+                // Stage the backup of the SettingsProvider package which backs this up
+                BackupManager.dataChanged("com.android.providers.settings");
+            }

@@ -1,0 +1,14 @@
+class ShortcutPreference
+!!!537090.java!!!	ShortcutPreference(inout context : Context, inout target : Class, in prefKey : String, in prefTitle : int, in title : int)
+        super(context);
+        mTarget = target;
+        mPrefKey = prefKey;
+        mTitle = title;
+        setTitle(prefTitle);
+        setKey(mPrefKey);
+!!!537218.java!!!	performClick() : void
+        super.performClick();
+        Bundle bundle = new Bundle();
+        bundle.putString(SettingsActivity.EXTRA_FRAGMENT_ARG_KEY, mPrefKey);
+        Utils.startWithFragment(getContext(), mTarget.getName(), bundle, null, 0,
+                mTitle, null);

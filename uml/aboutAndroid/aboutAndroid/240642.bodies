@@ -1,0 +1,40 @@
+class StorageWizardMoveConfirm
+!!!668930.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        if (mVolume == null) {
+            finish();
+            return;
+        }
+        setContentView(R.layout.storage_wizard_generic);
+
+        try {
+            mPackageName = getIntent().getStringExtra(EXTRA_PACKAGE_NAME);
+            mApp = getPackageManager().getApplicationInfo(mPackageName, 0);
+        } catch (NameNotFoundException e) {
+            finish();
+            return;
+        }
+
+        // Sanity check that target volume is candidate
+        Preconditions.checkState(
+                getPackageManager().getPackageCandidateVolumes(mApp).contains(mVolume));
+
+        final String appName = getPackageManager().getApplicationLabel(mApp).toString();
+        final String volumeName = mStorage.getBestVolumeDescription(mVolume);
+
+        setIllustrationType(ILLUSTRATION_INTERNAL);
+        setHeaderText(R.string.storage_wizard_move_confirm_title, appName);
+        setBodyText(R.string.storage_wizard_move_confirm_body, appName, volumeName);
+
+        getNextButton().setText(R.string.move_app);
+!!!669058.java!!!	onNavigateNext() : void
+        // Kick off move before we transition
+        final String appName = getPackageManager().getApplicationLabel(mApp).toString();
+        final int moveId = getPackageManager().movePackage(mPackageName, mVolume);
+
+        final Intent intent = new Intent(this, StorageWizardMoveProgress.class);
+        intent.putExtra(EXTRA_MOVE_ID, moveId);
+        intent.putExtra(EXTRA_TITLE, appName);
+        intent.putExtra(EXTRA_VOLUME_ID, mVolume.getId());
+        startActivity(intent);
+        finishAffinity();

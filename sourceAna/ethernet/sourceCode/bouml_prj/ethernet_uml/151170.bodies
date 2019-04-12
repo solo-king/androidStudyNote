@@ -1,0 +1,5 @@
+class EmptyPart
+!!!312194.java!!!	EmptyPart(in value : String)
+                super(value, value);
+!!!312322.java!!!	isEmpty() : boolean
+                return true;

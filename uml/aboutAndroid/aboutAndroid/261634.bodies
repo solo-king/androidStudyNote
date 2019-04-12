@@ -1,0 +1,47 @@
+class NfcPaymentAdapter
+!!!799106.java!!!	updateApps(inout appInfos : PaymentBackend::PaymentAppInfo, inout currentDefault : PaymentBackend::PaymentAppInfo) : void
+            // Clone app infos, only add those with a banner
+            this.appInfos = appInfos;
+            notifyDataSetChanged();
+!!!799234.java!!!	getCount() : int
+            return appInfos.length;
+!!!799362.java!!!	getItem(in i : int) : PaymentBackend::PaymentAppInfo
+            return appInfos[i];
+!!!799490.java!!!	getItemId(in i : int) : long
+            return appInfos[i].componentName.hashCode();
+!!!799618.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            ViewHolder holder;
+            PaymentAppInfo appInfo = appInfos[position];
+            if (convertView == null) {
+                convertView = mLayoutInflater.inflate(
+                        R.layout.nfc_payment_option, parent, false);
+                holder = new ViewHolder();
+                holder.imageView = (ImageView) convertView.findViewById(R.id.banner);
+                holder.radioButton = (RadioButton) convertView.findViewById(R.id.button);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.imageView.setImageDrawable(appInfo.banner);
+            holder.imageView.setTag(appInfo);
+            holder.imageView.setContentDescription(appInfo.label);
+            holder.imageView.setOnClickListener(this);
+
+            // Prevent checked callback getting called on recycled views
+            holder.radioButton.setOnCheckedChangeListener(null);
+            holder.radioButton.setChecked(appInfo.isDefault);
+            holder.radioButton.setContentDescription(appInfo.label);
+            holder.radioButton.setOnCheckedChangeListener(this);
+            holder.radioButton.setTag(appInfo);
+            return convertView;
+!!!799746.java!!!	onCheckedChanged(inout compoundButton : CompoundButton, inout b : boolean) : void
+            PaymentAppInfo appInfo = (PaymentAppInfo) compoundButton.getTag();
+            makeDefault(appInfo);
+!!!799874.java!!!	onClick(inout view : View) : void
+            PaymentAppInfo appInfo = (PaymentAppInfo) view.getTag();
+            makeDefault(appInfo);
+!!!800002.java!!!	makeDefault(inout appInfo : PaymentBackend::PaymentAppInfo) : void
+            if (!appInfo.isDefault) {
+                mPaymentBackend.setDefaultPaymentApp(appInfo.componentName);
+            }
+            getDialog().dismiss();

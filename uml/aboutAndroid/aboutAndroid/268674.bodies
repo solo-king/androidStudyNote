@@ -1,0 +1,12 @@
+class TimePickerFragment
+!!!843522.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+                final boolean usePref = pref != null && pref.mHourOfDay >= 0 && pref.mMinute >= 0;
+                final Calendar c = Calendar.getInstance();
+                final int hour = usePref ? pref.mHourOfDay : c.get(Calendar.HOUR_OF_DAY);
+                final int minute = usePref ? pref.mMinute : c.get(Calendar.MINUTE);
+                return new TimePickerDialog(getActivity(), this, hour, minute,
+                        DateFormat.is24HourFormat(getActivity()));
+!!!843650.java!!!	onTimeSet(inout view : TimePicker, in hourOfDay : int, in minute : int) : void
+                if (pref != null) {
+                    pref.setTime(hourOfDay, minute);
+                }

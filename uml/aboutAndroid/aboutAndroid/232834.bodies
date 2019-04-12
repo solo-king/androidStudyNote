@@ -1,0 +1,117 @@
+class ChartDataUsagePreference
+!!!624770.java!!!	ChartDataUsagePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setSelectable(false);
+        // TODO: Resource.
+        mLimitColor = 0xfff4511e;
+        TypedArray a = context.getTheme().obtainStyledAttributes(
+                new int[]{android.R.attr.textColorSecondary});
+        mWarningColor = a.getColor(0, 0);
+        setLayoutResource(R.layout.data_usage_graph);
+!!!624898.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        UsageView chart = (UsageView) holder.findViewById(R.id.data_usage);
+        if (mNetwork == null) return;
+
+        int top = getTop();
+        chart.clearPaths();
+        chart.configureGraph(toInt(mEnd - mStart), top, false, false);
+        calcPoints(chart);
+        chart.setBottomLabels(new CharSequence[] {
+                Utils.formatDateRange(getContext(), mStart, mStart),
+                Utils.formatDateRange(getContext(), mEnd, mEnd),
+        });
+
+        bindNetworkPolicy(chart, mPolicy, top);
+!!!625026.java!!!	getTop() : int
+        NetworkStatsHistory.Entry entry = null;
+        long totalData = 0;
+        final int start = mNetwork.getIndexBefore(mStart);
+        final int end = mNetwork.getIndexAfter(mEnd);
+
+        for (int i = start; i <= end; i++) {
+            entry = mNetwork.getValues(i, entry);
+
+            // increment by current bucket total
+            totalData += entry.rxBytes + entry.txBytes;
+        }
+        long policyMax = mPolicy != null ? Math.max(mPolicy.limitBytes, mPolicy.warningBytes) : 0;
+        return (int) (Math.max(totalData, policyMax) / RESOLUTION);
+!!!625154.java!!!	calcPoints(inout chart : UsageView) : void
+        SparseIntArray points = new SparseIntArray();
+        NetworkStatsHistory.Entry entry = null;
+
+        long totalData = 0;
+
+        final int start = mNetwork.getIndexAfter(mStart);
+        final int end = mNetwork.getIndexAfter(mEnd);
+        if (start < 0) return;
+
+        points.put(0, 0);
+        for (int i = start; i <= end; i++) {
+            entry = mNetwork.getValues(i, entry);
+
+            final long startTime = entry.bucketStart;
+            final long endTime = startTime + entry.bucketDuration;
+
+            // increment by current bucket total
+            totalData += entry.rxBytes + entry.txBytes;
+
+            points.put(toInt(startTime - mStart + 1), (int) (totalData / RESOLUTION));
+            points.put(toInt(endTime - mStart), (int) (totalData / RESOLUTION));
+        }
+        if (points.size() > 1) {
+            chart.addPath(points);
+        }
+!!!625282.java!!!	toInt(in l : long) : int
+        // Don't need that much resolution on these times.
+        return (int) (l / (1000 * 60));
+!!!625410.java!!!	bindNetworkPolicy(inout chart : UsageView, inout policy : NetworkPolicy, in top : int) : void
+        CharSequence[] labels = new CharSequence[3];
+        int middleVisibility = 0;
+        int topVisibility = 0;
+        if (policy == null) {
+            return;
+        }
+
+        if (policy.limitBytes != NetworkPolicy.LIMIT_DISABLED) {
+            topVisibility = mLimitColor;
+            labels[2] = getLabel(policy.limitBytes, R.string.data_usage_sweep_limit, mLimitColor);
+        }
+
+        if (policy.warningBytes != NetworkPolicy.WARNING_DISABLED) {
+            chart.setDividerLoc((int) (policy.warningBytes / RESOLUTION));
+            float weight = policy.warningBytes / RESOLUTION / (float) top;
+            float above = 1 - weight;
+            chart.setSideLabelWeights(above, weight);
+            middleVisibility = mWarningColor;
+            labels[1] = getLabel(policy.warningBytes, R.string.data_usage_sweep_warning,
+                    mWarningColor);
+        }
+
+        chart.setSideLabels(labels);
+        chart.setDividerColors(middleVisibility, topVisibility);
+!!!625538.java!!!	getLabel(in bytes : long, in str : int, in mLimitColor : int) : CharSequence
+        Formatter.BytesResult result = Formatter.formatBytes(getContext().getResources(),
+                bytes, Formatter.FLAG_SHORTER);
+        CharSequence label = TextUtils.expandTemplate(getContext().getText(str),
+                result.value, result.units);
+        return new SpannableStringBuilder().append(label, new ForegroundColorSpan(mLimitColor), 0);
+!!!625666.java!!!	setNetworkPolicy(inout policy : NetworkPolicy) : void
+        mPolicy = policy;
+        notifyChanged();
+!!!625794.java!!!	setVisibleRange(in start : long, in end : long) : void
+        mStart = start;
+        mEnd = end;
+        notifyChanged();
+!!!625922.java!!!	getInspectStart() : long
+        return mStart;
+!!!626050.java!!!	getInspectEnd() : long
+        return mEnd;
+!!!626178.java!!!	setNetworkStats(inout network : NetworkStatsHistory) : void
+        mNetwork = network;
+        notifyChanged();
+!!!626306.java!!!	setColors(in seriesColor : int, in secondaryColor : int) : void
+        mSeriesColor = seriesColor;
+        mSecondaryColor = secondaryColor;
+        notifyChanged();

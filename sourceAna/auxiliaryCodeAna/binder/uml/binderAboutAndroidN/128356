@@ -1,0 +1,2209 @@
+format 221
+"sourceCode" // sourceCode
+  revision 1
+  modified_by 100 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  java_dir "/media/chenqigan/GANYE_SSD/androidStudyNote/sourceAna/auxiliaryCodeAna/binder/sourceCode/"
+  java_package "android.os"
+  classview 128100 "sourceCode"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    class 128612 "IUsrLedService"
+      visibility public stereotype "interface"
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}interface ${name}${extends} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      classrelation 128740 // <generalisation>
+	relation 128740 ---|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 128740 // <generalisation>
+	  b parent class_ref 128740 // IInterface
+      end
+
+      class 128868 "Stub"
+	abstract visibility public 
+	cpp_decl ""
+	static java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 128868 // <generalisation>
+	  relation 128868 ---|>
+	    a public
+	      java "${type}"
+	      classrelation_ref 128868 // <generalisation>
+	    b parent class_ref 128996 // Binder
+	end
+
+	classrelation 128996 // <realization>
+	  relation 128996 -_-|>
+	    a public
+	      java "${type}"
+	      classrelation_ref 128996 // <realization>
+	    b parent class_ref 128612 // IUsrLedService
+	end
+
+	attribute 128100 "DESCRIPTOR"
+	  class_attribute const_attribute private explicit_type "java.lang.String"
+	  init_value " \"android.os.IUsrLedService\""
+	  cpp_decl ""
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+
+	operation 128100 "Stub"
+	  public explicit_return_type ""
+	  nparams 0
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  comment " Construct the stub at attach it to the interface. "
+	end
+
+	operation 128228 "asInterface"
+	  class_operation public return_type class_ref 128612 // IUsrLedService
+	  nparams 1
+	    param inout name "obj" explicit_type "android.os.IBinder"
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  comment "Cast an IBinder object into an android.os.IUsrLedService interface,
+generating a proxy if needed.
+"
+	end
+
+	operation 128356 "asBinder"
+	  public explicit_return_type "android.os.IBinder"
+	  nparams 0
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  java_annotation "@Override
+"
+	  
+	  
+	  
+	end
+
+	operation 128484 "onTransact"
+	  public explicit_return_type "boolean"
+	  nparams 4
+	    param in name "code" explicit_type "int"
+	    param inout name "data" explicit_type "android.os.Parcel"
+	    param inout name "reply" explicit_type "android.os.Parcel"
+	    param in name "flags" explicit_type "int"
+	  nexceptions 1
+	    explicit_exception "android.os.RemoteException"
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  java_annotation "@Override
+"
+	  
+	  
+	  
+	end
+
+	class 129124 "Proxy"
+	  visibility private 
+	  cpp_decl ""
+	  static java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	  php_decl ""
+	  python_2_2 python_decl ""
+	  idl_decl ""
+	  explicit_switch_type ""
+	  mysql_decl ""
+	  
+	  classrelation 129124 // <realization>
+	    relation 129124 -_-|>
+	      a public
+		java "${type}"
+		classrelation_ref 129124 // <realization>
+	      b parent class_ref 128612 // IUsrLedService
+	  end
+
+	  attribute 128228 "mRemote"
+	    private explicit_type "android.os.IBinder"
+	    cpp_decl ""
+	    java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    php_decl ""
+	    python_decl ""
+	    idl_decl ""
+	    mysql_decl ""
+	    MysqlColumn
+	  end
+
+	  operation 128612 "Proxy"
+	    package explicit_return_type ""
+	    nparams 1
+	      param inout name "remote" explicit_type "android.os.IBinder"
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    
+	    
+	    
+	  end
+
+	  operation 128740 "asBinder"
+	    public explicit_return_type "android.os.IBinder"
+	    nparams 0
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    java_annotation "@Override
+"
+	    
+	    
+	    
+	  end
+
+	  operation 128868 "getInterfaceDescriptor"
+	    public explicit_return_type "java.lang.String"
+	    nparams 0
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    
+	    
+	    
+	  end
+
+	  operation 128996 "openLedDevices"
+	    public explicit_return_type "int"
+	    nparams 0
+	    nexceptions 1
+	      explicit_exception "android.os.RemoteException"
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    java_annotation "@Override
+"
+	    
+	    
+	    
+	  end
+
+	  operation 129124 "ledCtrl"
+	    public explicit_return_type "int"
+	    nparams 1
+	      param in name "cmd" explicit_type "int"
+	    nexceptions 1
+	      explicit_exception "android.os.RemoteException"
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    java_annotation "@Override
+"
+	    
+	    
+	    
+	  end
+
+	  operation 129252 "signalCtrl"
+	    public explicit_return_type "void"
+	    nparams 1
+	      param in name "level" explicit_type "int"
+	    nexceptions 1
+	      explicit_exception "android.os.RemoteException"
+	    
+	    preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	    java_annotation "@Override
+"
+	    
+	    
+	    
+	  end
+	end
+
+	attribute 128356 "TRANSACTION_openLedDevices"
+	  class_attribute const_attribute package explicit_type "int"
+	  init_value " (android.os.IBinder.FIRST_CALL_TRANSACTION + 0)"
+	  cpp_decl ""
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+
+	attribute 128484 "TRANSACTION_ledCtrl"
+	  class_attribute const_attribute package explicit_type "int"
+	  init_value " (android.os.IBinder.FIRST_CALL_TRANSACTION + 1)"
+	  cpp_decl ""
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+
+	attribute 128612 "TRANSACTION_signalCtrl"
+	  class_attribute const_attribute package explicit_type "int"
+	  init_value " (android.os.IBinder.FIRST_CALL_TRANSACTION + 2)"
+	  cpp_decl ""
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+      end
+
+      operation 129380 "openLedDevices"
+	public explicit_return_type "int"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "android.os.RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 129508 "ledCtrl"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "cmd" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "android.os.RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 129636 "signalCtrl"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "level" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "android.os.RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+    end
+
+    class 128740 "IInterface"
+      visibility public stereotype "interface"
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}interface ${name}${extends} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      comment "Base class for Binder interfaces.  When defining a new interface,
+you must derive it from IInterface.
+"
+      operation 144228 "asBinder"
+	public return_type class_ref 130404 // IBinder
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Retrieve the Binder object associated with this interface.
+You must use this instead of a plain cast, so that proxy objects
+can return the correct result.
+"
+      end
+    end
+
+    class 128996 "Binder"
+      visibility public 
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      comment "Base class for a remotable object, the core part of a lightweight
+remote procedure call mechanism defined by {@link IBinder}.
+This class is an implementation of IBinder that provides
+standard local implementation of such an object.
+
+<p>Most developers will not implement this class directly, instead using the
+<a href=\"{@docRoot}guide/components/aidl.html\">aidl</a> tool to describe the desired
+interface, having it generate the appropriate Binder subclass.  You can,
+however, derive directly from Binder to implement your own custom RPC
+protocol or simply instantiate a raw Binder object directly to use as a
+token that can be shared across processes.
+
+<p>This class is just a basic IPC primitive; it has no impact on an application's
+lifecycle, and is valid only as long as the process that created it continues to run.
+To use this correctly, you must be doing so within the context of a top-level
+application component (a {@link android.app.Service}, {@link android.app.Activity},
+or {@link android.content.ContentProvider}) that lets the system know your process
+should remain running.</p>
+
+<p>You must keep in mind the situations in which your process
+could go away, and thus require that you later re-create a new Binder and re-attach
+it when the process starts again.  For example, if you are using this within an
+{@link android.app.Activity}, your activity's process may be killed any time the
+activity is not started; if the activity is later re-created you will need to
+create a new Binder and hand it back to the correct place again; you need to be
+aware that your process may be started for another reason (for example to receive
+a broadcast) that will not involve re-creating the activity and thus run its code
+to create a new Binder.</p>
+
+@see IBinder
+"
+      classrelation 129892 // <realization>
+	relation 129892 -_-|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 129892 // <realization>
+	  b parent class_ref 130404 // IBinder
+      end
+
+      attribute 132324 "FIND_POTENTIAL_LEAKS"
+	class_attribute const_attribute private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Set this flag to true to detect anonymous, local or member classes
+that extend this Binder class and that are not static. These kind
+of classes can potentially create leaks.
+
+"
+      end
+
+      attribute 132452 "CHECK_PARCEL_SIZE"
+	class_attribute const_attribute private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 132580 "TAG"
+	class_attribute const_attribute package explicit_type "String"
+	init_value " \"Binder\""
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 132708 "LOG_RUNTIME_EXCEPTION"
+	class_attribute public explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment " @hide 
+ DO NOT SUBMIT WITH TRUE"
+      end
+
+      attribute 132836 "sDumpDisabled"
+	class_attribute private explicit_type "String"
+	init_value " null"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Control whether dump() calls are allowed.
+
+"
+      end
+
+      attribute 132964 "sTransactionTracker"
+	class_attribute private explicit_type "TransactionTracker"
+	init_value " null"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Global transaction tracker instance for this process.
+
+"
+      end
+
+      attribute 133092 "sTracingEnabled"
+	class_attribute private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment " Transaction tracking code.
+
+Flag indicating whether we should be tracing transact calls.
+
+
+"
+      end
+
+      operation 137572 "enableTracing"
+	class_operation public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Enable Binder IPC tracing.
+
+@hide
+"
+      end
+
+      operation 137700 "disableTracing"
+	class_operation public explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Disable Binder IPC tracing.
+
+@hide
+"
+      end
+
+      operation 137828 "isTracingEnabled"
+	class_operation public explicit_return_type "boolean"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check if binder transaction tracing is enabled.
+
+@hide
+"
+      end
+
+      operation 137956 "getTransactionTracker"
+	class_operation public explicit_return_type "TransactionTracker"
+	nparams 0
+	
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Get the binder transaction tracker for this process.
+
+@hide
+"
+      end
+
+      attribute 133220 "mObject"
+	private explicit_type "long"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment " mObject is used by native code, do not remove or rename 
+"
+      end
+
+      classrelation 130020 // mOwner (<unidirectional association>)
+	relation 130020 --->
+	  a role_name "mOwner" private
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130020 // mOwner (<unidirectional association>)
+	  b parent class_ref 128740 // IInterface
+      end
+
+      attribute 133348 "mDescriptor"
+	private explicit_type "String"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 138084 "getCallingPid"
+	class_operation public explicit_return_type "int"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Return the ID of the process that sent you the current transaction
+that is being processed.  This pid can be used with higher-level
+system services to determine its identity and check permissions.
+If the current thread is not currently executing an incoming transaction,
+then its own pid is returned.
+"
+      end
+
+      operation 138212 "getCallingUid"
+	class_operation public explicit_return_type "int"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Return the Linux uid assigned to the process that sent you the
+current transaction that is being processed.  This uid can be used with
+higher-level system services to determine its identity and check
+permissions.  If the current thread is not currently executing an
+incoming transaction, then its own uid is returned.
+"
+      end
+
+      operation 138340 "getCallingUserHandle"
+	class_operation public explicit_return_type "UserHandle"
+	nparams 0
+	
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Return the UserHandle assigned to the process that sent you the
+current transaction that is being processed.  This is the user
+of the caller.  It is distinct from {@link #getCallingUid()} in that a
+particular user will have multiple distinct apps running under it each
+with their own uid.  If the current thread is not currently executing an
+incoming transaction, then its own UserHandle is returned.
+"
+      end
+
+      operation 138468 "clearCallingIdentity"
+	class_operation public explicit_return_type "long"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Reset the identity of the incoming IPC on the current thread.  This can
+be useful if, while handling an incoming call, you will be calling
+on interfaces of other objects that may be local to your process and
+need to do permission checks on the calls coming into them (so they
+will check the permission of your own local process, and not whatever
+process originally called you).
+
+@return Returns an opaque token that can be used to restore the
+original calling identity by passing it to
+{@link #restoreCallingIdentity(long)}.
+
+@see #getCallingPid()
+@see #getCallingUid()
+@see #restoreCallingIdentity(long)
+"
+      end
+
+      operation 138596 "restoreCallingIdentity"
+	class_operation public explicit_return_type "void"
+	nparams 1
+	  param in name "token" explicit_type "long"
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+	comment "Restore the identity of the incoming IPC on the current thread
+back to a previously identity that was returned by {@link
+#clearCallingIdentity}.
+
+@param token The opaque token that was previously returned by
+{@link #clearCallingIdentity}.
+
+@see #clearCallingIdentity
+"
+      end
+
+      operation 138724 "setThreadStrictModePolicy"
+	class_operation public explicit_return_type "void"
+	nparams 1
+	  param in name "policyMask" explicit_type "int"
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+	comment "Sets the native thread-local StrictMode policy mask.
+
+<p>The StrictMode settings are kept in two places: a Java-level
+threadlocal for libcore/Dalvik, and a native threadlocal (set
+here) for propagation via Binder calls.  This is a little
+unfortunate, but necessary to break otherwise more unfortunate
+dependencies either of Dalvik on Android, or Android
+native-only code on Dalvik.
+
+@see StrictMode
+@hide
+"
+      end
+
+      operation 138852 "getThreadStrictModePolicy"
+	class_operation public explicit_return_type "int"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Gets the current native thread-local StrictMode policy mask.
+
+@see #setThreadStrictModePolicy
+@hide
+"
+      end
+
+      operation 138980 "flushPendingCommands"
+	class_operation public explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Flush any Binder commands pending in the current thread to the kernel
+driver.  This can be
+useful to call before performing an operation that may block for a long
+time, to ensure that any pending object references have been released
+in order to prevent the process from holding on to objects longer than
+it needs to.
+"
+      end
+
+      operation 139108 "joinThreadPool"
+	class_operation public explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Add the calling thread to the IPC thread pool.  This function does
+not return until the current process is exiting.
+"
+      end
+
+      operation 139236 "isProxy"
+	class_operation public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "iface" type class_ref 128740 // IInterface
+	
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Returns true if the specified interface is a proxy.
+@hide
+"
+      end
+
+      operation 139364 "blockUntilThreadAvailable"
+	class_operation public explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "Call blocks until the number of executing binder threads is less
+than the maximum number of binder threads allowed for this process.
+@hide
+"
+      end
+
+      operation 139492 "Binder"
+	public explicit_return_type ""
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default constructor initializes the object.
+"
+      end
+
+      operation 139620 "attachInterface"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "owner" type class_ref 128740 // IInterface
+	  param in name "descriptor" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Convenience method for associating a specific interface with the Binder.
+After calling, queryLocalInterface() will be implemented for you
+to return the given owner IInterface when the corresponding
+descriptor is requested.
+"
+      end
+
+      operation 139748 "getInterfaceDescriptor"
+	public explicit_return_type "String"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default implementation returns an empty interface name.
+"
+      end
+
+      operation 139876 "pingBinder"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default implementation always returns true -- if you got here,
+the object is alive.
+"
+      end
+
+      operation 140004 "isBinderAlive"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "{@inheritDoc}
+
+Note that if you're calling on a local binder, this always returns true
+because your process is alive if you're calling it.
+"
+      end
+
+      operation 140132 "queryLocalInterface"
+	public return_type class_ref 128740 // IInterface
+	nparams 1
+	  param in name "descriptor" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use information supplied to attachInterface() to return the
+associated IInterface if it matches the requested
+descriptor.
+"
+      end
+
+      operation 140260 "setDumpDisabled"
+	class_operation public explicit_return_type "void"
+	nparams 1
+	  param in name "msg" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Control disabling of dump calls in this process.  This is used by the system
+process watchdog to disable incoming dump calls while it has detecting the system
+is hung and is reporting that back to the activity controller.  This is to
+prevent the controller from getting hung up on bug reports at this point.
+@hide
+
+@param msg The message to show instead of the dump; if null, dumps are
+re-enabled.
+"
+      end
+
+      operation 140388 "onTransact"
+	protected explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param inout name "data" explicit_type "Parcel"
+	  param inout name "reply" explicit_type "Parcel"
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default implementation is a stub that returns false.  You will want
+to override this to do the appropriate unmarshalling of transactions.
+
+<p>If you want to call this, call transact().
+"
+      end
+
+      operation 140516 "dump"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Implemented to call the more convenient version
+{@link #dump(FileDescriptor, PrintWriter, String[])}.
+"
+      end
+
+      operation 140644 "doDump"
+	package explicit_return_type "void"
+	nparams 3
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "pw" explicit_type "PrintWriter"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2}[] ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140772 "dumpAsync"
+	public explicit_return_type "void"
+	nparams 2
+	  param in name "fd" explicit_type "FileDescriptor"
+	  param in name "args" explicit_type "String"
+	multiplicity "[]"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}final ${t0} ${p0}, final ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Like {@link #dump(FileDescriptor, String[])}, but ensures the target
+executes asynchronously.
+"
+      end
+
+      operation 140900 "dump"
+	protected explicit_return_type "void"
+	nparams 3
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "fout" explicit_type "PrintWriter"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2}[] ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Print the object's state into the given stream.
+
+@param fd The raw file descriptor that the dump is being sent to.
+@param fout The file to which you should dump your state.  This will be
+closed for you after you return.
+@param args additional arguments to the dump request.
+"
+      end
+
+      operation 141028 "shellCommand"
+	public explicit_return_type "void"
+	nparams 5
+	  param inout name "in" explicit_type "FileDescriptor"
+	  param inout name "out" explicit_type "FileDescriptor"
+	  param inout name "err" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	  param inout name "resultReceiver" explicit_type "ResultReceiver"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3}[] ${p3}, ${t4} ${p4}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "@param in The raw file descriptor that an input data stream can be read from.
+@param out The raw file descriptor that normal command messages should be written to.
+@param err The raw file descriptor that command error messages should be written to.
+@param args Command-line arguments.
+@param resultReceiver Called when the command has finished executing, with the result code.
+@throws RemoteException
+@hide
+"
+      end
+
+      operation 141156 "onShellCommand"
+	public explicit_return_type "void"
+	nparams 5
+	  param inout name "in" explicit_type "FileDescriptor"
+	  param inout name "out" explicit_type "FileDescriptor"
+	  param inout name "err" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	  param inout name "resultReceiver" explicit_type "ResultReceiver"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3}[] ${p3}, ${t4} ${p4}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Handle a call to {@link #shellCommand}.  The default implementation simply prints
+an error message.  Override and replace with your own.
+<p class=\"caution\">Note: no permission checking is done before calling this method; you must
+apply any security checks as appropriate for the command being executed.
+Consider using {@link ShellCommand} to help in the implementation.</p>
+@hide
+"
+      end
+
+      operation 141284 "transact"
+	public explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param inout name "data" explicit_type "Parcel"
+	  param inout name "reply" explicit_type "Parcel"
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default implementation rewinds the parcels and calls onTransact.  On
+the remote side, transact calls into the binder to do the IPC.
+"
+      end
+
+      operation 141412 "linkToDeath"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Local implementation is a no-op.
+"
+      end
+
+      operation 141540 "unlinkToDeath"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Local implementation is a no-op.
+"
+      end
+
+      operation 141668 "finalize"
+	protected explicit_return_type "void"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "Throwable"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 141796 "checkParcel"
+	class_operation package explicit_return_type "void"
+	nparams 4
+	  param inout name "obj" type class_ref 130404 // IBinder
+	  param in name "code" explicit_type "int"
+	  param inout name "parcel" explicit_type "Parcel"
+	  param in name "msg" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 141924 "init"
+	private explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 142052 "destroy"
+	private explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 142180 "execTransact"
+	private explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param in name "dataObj" explicit_type "long"
+	  param in name "replyObj" explicit_type "long"
+	  param in name "flags" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " Entry point from android_util_Binder.cpp's onTransact"
+      end
+
+      classrelation 130276 // <unidirectional association>
+	relation 130276 --->
+	  a role_name "" private
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130276 // <unidirectional association>
+	  b parent class_ref 128868 // Stub
+      end
+    end
+
+    class 130404 "IBinder"
+      visibility public stereotype "interface"
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}interface ${name}${extends} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      comment "Base interface for a remotable object, the core part of a lightweight
+remote procedure call mechanism designed for high performance when
+performing in-process and cross-process calls.  This
+interface describes the abstract protocol for interacting with a
+remotable object.  Do not implement this interface directly, instead
+extend from {@link Binder}.
+
+<p>The key IBinder API is {@link #transact transact()} matched by
+{@link Binder#onTransact Binder.onTransact()}.  These
+methods allow you to send a call to an IBinder object and receive a
+call coming in to a Binder object, respectively.  This transaction API
+is synchronous, such that a call to {@link #transact transact()} does not
+return until the target has returned from
+{@link Binder#onTransact Binder.onTransact()}; this is the
+expected behavior when calling an object that exists in the local
+process, and the underlying inter-process communication (IPC) mechanism
+ensures that these same semantics apply when going across processes.
+
+<p>The data sent through transact() is a {@link Parcel}, a generic buffer
+of data that also maintains some meta-data about its contents.  The meta
+data is used to manage IBinder object references in the buffer, so that those
+references can be maintained as the buffer moves across processes.  This
+mechanism ensures that when an IBinder is written into a Parcel and sent to
+another process, if that other process sends a reference to that same IBinder
+back to the original process, then the original process will receive the
+same IBinder object back.  These semantics allow IBinder/Binder objects to
+be used as a unique identity (to serve as a token or for other purposes)
+that can be managed across processes.
+
+<p>The system maintains a pool of transaction threads in each process that
+it runs in.  These threads are used to dispatch all
+IPCs coming in from other processes.  For example, when an IPC is made from
+process A to process B, the calling thread in A blocks in transact() as
+it sends the transaction to process B.  The next available pool thread in
+B receives the incoming transaction, calls Binder.onTransact() on the target
+object, and replies with the result Parcel.  Upon receiving its result, the
+thread in process A returns to allow its execution to continue.  In effect,
+other processes appear to use as additional threads that you did not create
+executing in your own process.
+
+<p>The Binder system also supports recursion across processes.  For example
+if process A performs a transaction to process B, and process B while
+handling that transaction calls transact() on an IBinder that is implemented
+in A, then the thread in A that is currently waiting for the original
+transaction to finish will take care of calling Binder.onTransact() on the
+object being called by B.  This ensures that the recursion semantics when
+calling remote binder object are the same as when calling local objects.
+
+<p>When working with remote objects, you often want to find out when they
+are no longer valid.  There are three ways this can be determined:
+<ul>
+<li> The {@link #transact transact()} method will throw a
+{@link RemoteException} exception if you try to call it on an IBinder
+whose process no longer exists.
+<li> The {@link #pingBinder()} method can be called, and will return false
+if the remote process no longer exists.
+<li> The {@link #linkToDeath linkToDeath()} method can be used to register
+a {@link DeathRecipient} with the IBinder, which will be called when its
+containing process goes away.
+</ul>
+
+@see Binder
+"
+      attribute 130916 "FIRST_CALL_TRANSACTION"
+	public explicit_type "int"
+	init_value " 0x00000001"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "The first transaction code available for user commands.
+
+"
+      end
+
+      attribute 131044 "LAST_CALL_TRANSACTION"
+	public explicit_type "int"
+	init_value " 0x00ffffff"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "The last transaction code available for user commands.
+
+"
+      end
+
+      attribute 131172 "PING_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('P'<<16)|('N'<<8)|'G'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: pingBinder().
+
+"
+      end
+
+      attribute 131300 "DUMP_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('D'<<16)|('M'<<8)|'P'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: dump internal state.
+
+"
+      end
+
+      attribute 131428 "SHELL_COMMAND_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('C'<<16)|('M'<<8)|'D'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: execute a shell command.
+@hide
+
+"
+      end
+
+      attribute 131556 "INTERFACE_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('N'<<16)|('T'<<8)|'F'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: interrogate the recipient side
+of the transaction for its canonical interface descriptor.
+
+"
+      end
+
+      attribute 131684 "TWEET_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('T'<<16)|('W'<<8)|'T'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: send a tweet to the target
+object.  The data in the parcel is intended to be delivered to
+a shared messaging service associated with the object; it can be
+anything, as long as it is not more than 130 UTF-8 characters to
+conservatively fit within common messaging services.  As part of
+{@link Build.VERSION_CODES#HONEYCOMB_MR2}, all Binder objects are
+expected to support this protocol for fully integrated tweeting
+across the platform.  To support older code, the default implementation
+logs the tweet to the main log as a simple emulation of broadcasting
+it publicly over the Internet.
+
+<p>Also, upon completing the dispatch, the object must make a cup
+of tea, return it to the caller, and exclaim \"jolly good message
+old boy!\".
+
+"
+      end
+
+      attribute 131812 "LIKE_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('L'<<16)|('I'<<8)|'K'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "IBinder protocol transaction code: tell an app asynchronously that the
+caller likes it.  The app is responsible for incrementing and maintaining
+its own like counter, and may display this value to the user to indicate the
+quality of the app.  This is an optional command that applications do not
+need to handle, so the default implementation is to do nothing.
+
+<p>There is no response returned and nothing about the
+system will be functionally affected by it, but it will improve the
+app's self-esteem.
+
+"
+      end
+
+      attribute 131940 "SYSPROPS_TRANSACTION"
+	public explicit_type "int"
+	init_value " ('_'<<24)|('S'<<16)|('P'<<8)|'R'"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment " @hide 
+"
+      end
+
+      attribute 132068 "FLAG_ONEWAY"
+	public explicit_type "int"
+	init_value " 0x00000001"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Flag to {@link #transact}: this is a one-way call, meaning that the
+caller returns immediately, without waiting for a result from the
+callee. Applies only if the caller and callee are in different
+processes.
+
+"
+      end
+
+      attribute 132196 "MAX_IPC_SIZE"
+	class_attribute const_attribute public explicit_type "int"
+	init_value " 64 * 1024"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "Limit that should be placed on IPC sizes to keep them safely under the
+transaction buffer limit.
+@hide
+
+"
+      end
+
+      operation 136164 "getInterfaceDescriptor"
+	public explicit_return_type "String"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Get the canonical name of the interface supported by this binder.
+"
+      end
+
+      operation 136292 "pingBinder"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check to see if the object still exists.
+
+@return Returns false if the
+hosting process is gone, otherwise the result (always by default
+true) returned by the pingBinder() implementation on the other
+side.
+"
+      end
+
+      operation 136420 "isBinderAlive"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check to see if the process that the binder is in is still alive.
+
+@return false if the process is not alive.  Note that if it returns
+true, the process may have died while the call is returning.
+"
+      end
+
+      operation 136548 "queryLocalInterface"
+	public return_type class_ref 128740 // IInterface
+	nparams 1
+	  param in name "descriptor" explicit_type "String"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Attempt to retrieve a local implementation of an interface
+for this Binder object.  If null is returned, you will need
+to instantiate a proxy class to marshall calls through
+the transact() method.
+"
+      end
+
+      operation 136676 "dump"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Print the object's state into the given stream.
+
+@param fd The raw file descriptor that the dump is being sent to.
+@param args additional arguments to the dump request.
+"
+      end
+
+      operation 136804 "dumpAsync"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Like {@link #dump(FileDescriptor, String[])} but always executes
+asynchronously.  If the object is local, a new thread is created
+to perform the dump.
+
+@param fd The raw file descriptor that the dump is being sent to.
+@param args additional arguments to the dump request.
+"
+      end
+
+      operation 136932 "shellCommand"
+	public explicit_return_type "void"
+	nparams 5
+	  param inout name "in" explicit_type "FileDescriptor"
+	  param inout name "out" explicit_type "FileDescriptor"
+	  param inout name "err" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	  param inout name "resultReceiver" explicit_type "ResultReceiver"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3}[] ${p3}, ${t4} ${p4}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Execute a shell command on this object.  This may be performed asynchrously from the caller;
+the implementation must always call resultReceiver when finished.
+
+@param in The raw file descriptor that an input data stream can be read from.
+@param out The raw file descriptor that normal command messages should be written to.
+@param err The raw file descriptor that command error messages should be written to.
+@param args Command-line arguments.
+@param resultReceiver Called when the command has finished executing, with the result code.
+@hide
+"
+      end
+
+      operation 137060 "transact"
+	public explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param inout name "data" explicit_type "Parcel"
+	  param inout name "reply" explicit_type "Parcel"
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Perform a generic operation with the object.
+
+@param code The action to perform.  This should
+be a number between {@link #FIRST_CALL_TRANSACTION} and
+{@link #LAST_CALL_TRANSACTION}.
+@param data Marshalled data to send to the target.  Must not be null.
+If you are not sending any data, you must create an empty Parcel
+that is given here.
+@param reply Marshalled data to be received from the target.  May be
+null if you are not interested in the return value.
+@param flags Additional operation flags.  Either 0 for a normal
+RPC, or {@link #FLAG_ONEWAY} for a one-way RPC.
+"
+      end
+
+      class 130532 "DeathRecipient"
+	visibility public stereotype "interface"
+	cpp_decl ""
+	java_decl "${comment}${@}${visibility}${static}interface ${name}${extends} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	operation 137188 "binderDied"
+	  public explicit_return_type "void"
+	  nparams 0
+	  
+	  java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	end
+      end
+
+      operation 137316 "linkToDeath"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Register the recipient for a notification if this binder
+goes away.  If this binder object unexpectedly goes away
+(typically because its hosting process has been killed),
+then the given {@link DeathRecipient}'s
+{@link DeathRecipient#binderDied DeathRecipient.binderDied()} method
+will be called.
+
+<p>You will only receive death notifications for remote binders,
+as local binders by definition can't die without you dying as well.
+
+@throws RemoteException if the target IBinder's
+process has already died.
+
+@see #unlinkToDeath
+"
+      end
+
+      operation 137444 "unlinkToDeath"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove a previously registered death notification.
+The recipient will no longer be called if this object
+dies.
+
+@return {@code true} if the <var>recipient</var> is successfully
+unlinked, assuring you that its
+{@link DeathRecipient#binderDied DeathRecipient.binderDied()} method
+will not be called;  {@code false} if the target IBinder has already
+died, meaning the method has been (or soon will be) called.
+
+@throws java.util.NoSuchElementException if the given
+<var>recipient</var> has not been registered with the IBinder, and
+the IBinder is still alive.  Note that if the <var>recipient</var>
+was never registered, but the IBinder has already died, then this
+exception will <em>not</em> be thrown, and you will receive a false
+return value instead.
+"
+      end
+    end
+
+    class 130660 "BinderProxy"
+      visibility package 
+      cpp_decl ""
+      final java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      classrelation 130148 // <realization>
+	relation 130148 -_-|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 130148 // <realization>
+	  b parent class_ref 130404 // IBinder
+      end
+
+      operation 142308 "pingBinder"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 142436 "isBinderAlive"
+	public explicit_return_type "boolean"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 142564 "queryLocalInterface"
+	public return_type class_ref 128740 // IInterface
+	nparams 1
+	  param in name "descriptor" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 142692 "transact"
+	public explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param inout name "data" explicit_type "Parcel"
+	  param inout name "reply" explicit_type "Parcel"
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 142820 "getInterfaceDescriptor"
+	public explicit_return_type "String"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 142948 "transactNative"
+	public explicit_return_type "boolean"
+	nparams 4
+	  param in name "code" explicit_type "int"
+	  param inout name "data" explicit_type "Parcel"
+	  param inout name "reply" explicit_type "Parcel"
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 143076 "linkToDeath"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 143204 "unlinkToDeath"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	  param in name "flags" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 143332 "dump"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 143460 "dumpAsync"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "fd" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1}[] ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 143588 "shellCommand"
+	public explicit_return_type "void"
+	nparams 5
+	  param inout name "in" explicit_type "FileDescriptor"
+	  param inout name "out" explicit_type "FileDescriptor"
+	  param inout name "err" explicit_type "FileDescriptor"
+	  param inout name "args" explicit_type "String"
+	multiplicity "[]"
+	  param inout name "resultReceiver" explicit_type "ResultReceiver"
+	nexceptions 1
+	  explicit_exception "RemoteException"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3}[] ${p3}, ${t4} ${p4}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 143716 "BinderProxy"
+	package explicit_return_type ""
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 143844 "finalize"
+	protected explicit_return_type "void"
+	nparams 0
+	nexceptions 1
+	  explicit_exception "Throwable"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 143972 "destroy"
+	private explicit_return_type "void"
+	nparams 0
+	
+	final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 144100 "sendDeathNotice"
+	class_operation private explicit_return_type "void"
+	nparams 1
+	  param inout name "recipient" type class_ref 130532 // DeathRecipient
+	
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      attribute 133476 "mSelf"
+	const_attribute private explicit_type "WeakReference"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 133604 "mObject"
+	private explicit_type "long"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 133732 "mOrgue"
+	private explicit_type "long"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+    end
+  end
+
+  deploymentview 128100 "sourceCode"
+    //deployment diagram settings
+    deploymentdiagramsettings
+     end
+    artifact 128100 "IUsrLedService"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 128612 // IUsrLedService
+      end
+      comment "This file is auto-generated.  DO NOT MODIFY.
+Original file: frameworks/base/core/java/android/os/IUsrLedService.aidl
+"
+    end
+
+    artifact 128740 "IBinder"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+import java.io.FileDescriptor;
+${definition}"
+      associated_elems
+	class_ref 130404 // IBinder
+      end
+      comment "Copyright (C) 2006 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the \"License\");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an \"AS IS\" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"
+    end
+
+    artifact 128868 "Binder"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+import android.util.Log;
+import android.util.Slog;
+import com.android.internal.util.FastPrintWriter;
+import libcore.io.IoUtils;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Modifier;
+${definition}"
+      associated_elems
+	class_ref 128996 // Binder
+	class_ref 130660 // BinderProxy
+      end
+      comment "Copyright (C) 2006 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the \"License\");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an \"AS IS\" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"
+    end
+
+    artifact 128996 "IInterface"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 128740 // IInterface
+      end
+      comment "Copyright (C) 2006 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the \"License\");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an \"AS IS\" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"
+    end
+  end
+
+  package_ref 128612 // usr
+end

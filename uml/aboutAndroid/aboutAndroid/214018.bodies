@@ -1,0 +1,18 @@
+class ProcessStatsPreference
+!!!515970.java!!!	ProcessStatsPreference(inout context : Context)
+        super(context, null);
+!!!516098.java!!!	init(inout entry : ProcStatsPackageEntry, inout pm : PackageManager, in maxMemory : double, in weightToRam : double, in totalScale : double, inout avg : boolean) : void
+        mEntry = entry;
+        setTitle(TextUtils.isEmpty(entry.mUiLabel) ? entry.mPackage : entry.mUiLabel);
+        if (entry.mUiTargetApp != null) {
+            setIcon(entry.mUiTargetApp.loadIcon(pm));
+        } else {
+            setIcon(new ColorDrawable(0));
+        }
+        boolean statsForeground = entry.mRunWeight > entry.mBgWeight;
+        double amount = avg ? (statsForeground ? entry.mRunWeight : entry.mBgWeight) * weightToRam
+                : (statsForeground ? entry.mMaxRunMem : entry.mMaxBgMem) * totalScale * 1024;
+        setSummary(Formatter.formatShortFileSize(getContext(), (long) amount));
+        setProgress((int) (100 * amount / maxMemory));
+!!!516226.java!!!	getEntry() : ProcStatsPackageEntry
+        return mEntry;

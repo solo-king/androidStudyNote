@@ -1,0 +1,178 @@
+class EthernetDataTracker
+!!!192642.java!!!	EthernetDataTracker()
+        mNetworkInfo = new NetworkInfo(ConnectivityManager.TYPE_ETHERNET, 0, NETWORKTYPE, "");
+        mLinkProperties = new LinkProperties();
+        mLinkCapabilities = new LinkCapabilities();
+!!!192770.java!!!	interfaceAdded(in iface : String) : void
+        if (!iface.matches(sIfaceMatch))
+            return;
+
+        Log.d(TAG, "Adding " + iface);
+
+        synchronized(this) {
+            if(!mIface.isEmpty())
+                return;
+            mIface = iface;
+        }
+
+        // we don't get link status indications unless the iface is up - bring it up
+        try {
+            mNMService.setInterfaceUp(iface);
+        } catch (Exception e) {
+            Log.e(TAG, "Error upping interface " + iface + ": " + e);
+        }
+
+        mNetworkInfo.setIsAvailable(true);
+        Message msg = mCsHandler.obtainMessage(EVENT_CONFIGURATION_CHANGED, mNetworkInfo);
+        msg.sendToTarget();
+!!!192898.java!!!	disconnect() : void
+
+        NetworkUtils.stopDhcp(mIface);
+
+        mLinkProperties.clear();
+        mNetworkInfo.setIsAvailable(false);
+        mNetworkInfo.setDetailedState(DetailedState.DISCONNECTED, null, mHwAddr);
+
+        Message msg = mCsHandler.obtainMessage(EVENT_CONFIGURATION_CHANGED, mNetworkInfo);
+        msg.sendToTarget();
+
+        msg = mCsHandler.obtainMessage(EVENT_STATE_CHANGED, mNetworkInfo);
+        msg.sendToTarget();
+
+        IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
+        INetworkManagementService service = INetworkManagementService.Stub.asInterface(b);
+        try {
+            service.clearInterfaceAddresses(mIface);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to clear addresses or disable ipv6" + e);
+        }
+!!!193026.java!!!	interfaceRemoved(in iface : String) : void
+        if (!iface.equals(mIface))
+            return;
+
+        Log.d(TAG, "Removing " + iface);
+        disconnect();
+        mIface = "";
+!!!193154.java!!!	runDhcp() : void
+        Thread dhcpThread = new Thread(new Runnable() {
+            public void run() {
+                DhcpResults dhcpResults = new DhcpResults();
+                if (!NetworkUtils.runDhcp(mIface, dhcpResults)) {
+                    Log.e(TAG, "DHCP request error:" + NetworkUtils.getDhcpError());
+                    return;
+                }
+                mLinkProperties = dhcpResults.linkProperties;
+
+                mNetworkInfo.setIsAvailable(true);
+                mNetworkInfo.setDetailedState(DetailedState.CONNECTED, null, mHwAddr);
+                Message msg = mCsHandler.obtainMessage(EVENT_STATE_CHANGED, mNetworkInfo);
+                msg.sendToTarget();
+            }
+        });
+        dhcpThread.start();
+!!!193282.java!!!	getInstance() : EthernetDataTracker
+        if (sInstance == null) sInstance = new EthernetDataTracker();
+        return sInstance;
+!!!193410.java!!!	Clone() : Object
+        throw new CloneNotSupportedException();
+!!!193538.java!!!	setTeardownRequested(inout isRequested : boolean) : void
+        mTeardownRequested.set(isRequested);
+!!!193666.java!!!	isTeardownRequested() : boolean
+        return mTeardownRequested.get();
+!!!193794.java!!!	startMonitoring(inout context : Context, inout target : Handler) : void
+        mContext = context;
+        mCsHandler = target;
+
+        // register for notifications from NetworkManagement Service
+        IBinder b = ServiceManager.getService(Context.NETWORKMANAGEMENT_SERVICE);
+        mNMService = INetworkManagementService.Stub.asInterface(b);
+
+        mInterfaceObserver = new InterfaceObserver(this);
+
+        // enable and try to connect to an ethernet interface that
+        // already exists
+        sIfaceMatch = context.getResources().getString(
+            com.android.internal.R.string.config_ethernet_iface_regex);
+        try {
+            final String[] ifaces = mNMService.listInterfaces();
+            for (String iface : ifaces) {
+                if (iface.matches(sIfaceMatch)) {
+                    mIface = iface;
+                    mNMService.setInterfaceUp(iface);
+                    InterfaceConfiguration config = mNMService.getInterfaceConfig(iface);
+                    mLinkUp = config.hasFlag("up");
+                    if (config != null && mHwAddr == null) {
+                        mHwAddr = config.getHardwareAddress();
+                        if (mHwAddr != null) {
+                            mNetworkInfo.setExtraInfo(mHwAddr);
+                        }
+                    }
+
+                    // if a DHCP client had previously been started for this interface, then stop it
+                    NetworkUtils.stopDhcp(mIface);
+
+                    reconnect();
+                    break;
+                }
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Could not get list of interfaces " + e);
+        }
+
+        try {
+            mNMService.registerObserver(mInterfaceObserver);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Could not register InterfaceObserver " + e);
+        }
+!!!193922.java!!!	teardown() : boolean
+        mTeardownRequested.set(true);
+        NetworkUtils.stopDhcp(mIface);
+        return true;
+!!!194050.java!!!	reconnect() : boolean
+        if (mLinkUp) {
+            mTeardownRequested.set(false);
+            runDhcp();
+        }
+        return mLinkUp;
+!!!194178.java!!!	captivePortalCheckComplete() : void
+        // not implemented
+!!!194306.java!!!	captivePortalCheckCompleted(inout isCaptivePortal : boolean) : void
+        // not implemented
+!!!194434.java!!!	setRadio(inout turnOn : boolean) : boolean
+        return true;
+!!!194562.java!!!	isAvailable() : boolean
+        return mNetworkInfo.isAvailable();
+!!!194690.java!!!	startUsingNetworkFeature(in feature : String, in callingPid : int, in callingUid : int) : int
+        return -1;
+!!!194818.java!!!	stopUsingNetworkFeature(in feature : String, in callingPid : int, in callingUid : int) : int
+        return -1;
+!!!194946.java!!!	setUserDataEnable(inout enabled : boolean) : void
+        Log.w(TAG, "ignoring setUserDataEnable(" + enabled + ")");
+!!!195074.java!!!	setPolicyDataEnable(inout enabled : boolean) : void
+        Log.w(TAG, "ignoring setPolicyDataEnable(" + enabled + ")");
+!!!195202.java!!!	isPrivateDnsRouteSet() : boolean
+        return mPrivateDnsRouteSet.get();
+!!!195330.java!!!	privateDnsRouteSet(inout enabled : boolean) : void
+        mPrivateDnsRouteSet.set(enabled);
+!!!195458.java!!!	getNetworkInfo() : NetworkInfo
+        return mNetworkInfo;
+!!!195586.java!!!	getLinkProperties() : LinkProperties
+        return new LinkProperties(mLinkProperties);
+!!!195714.java!!!	getLinkCapabilities() : LinkCapabilities
+        return new LinkCapabilities(mLinkCapabilities);
+!!!195842.java!!!	getDefaultGatewayAddr() : int
+        return mDefaultGatewayAddr.get();
+!!!195970.java!!!	isDefaultRouteSet() : boolean
+        return mDefaultRouteSet.get();
+!!!196098.java!!!	defaultRouteSet(inout enabled : boolean) : void
+        mDefaultRouteSet.set(enabled);
+!!!196226.java!!!	getTcpBufferSizesPropName() : String
+        return "net.tcp.buffersize.wifi";
+!!!196354.java!!!	setDependencyMet(inout met : boolean) : void
+        // not supported on this network
+!!!196482.java!!!	addStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.addStackedLink(link);
+!!!196610.java!!!	removeStackedLink(inout link : LinkProperties) : void
+        mLinkProperties.removeStackedLink(link);
+!!!196738.java!!!	supplyMessenger(inout messenger : Messenger) : void
+        // not supported on this network

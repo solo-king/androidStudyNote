@@ -1,0 +1,20 @@
+class TabChangeListener
+!!!579714.java!!!	TabChangeListener(inout activity : SettingsActivity)
+            mActivity = activity;
+!!!579842.java!!!	onPageScrolled(in position : int, in positionOffset : float, in positionOffsetPixels : int) : void
+            // Do nothing.
+!!!579970.java!!!	onPageScrollStateChanged(in state : int) : void
+            // Do nothing
+!!!580098.java!!!	onPageSelected(in position : int) : void
+            switch (position) {
+                case INDEX_SUMMARY_FRAGMENT:
+                    MetricsLogger.action(
+                            mActivity, MetricsProto.MetricsEvent.ACTION_SELECT_SUMMARY);
+                    mActivity.setDisplaySearchMenu(true);
+                    break;
+                case INDEX_SUPPORT_FRAGMENT:
+                    MetricsLogger.action(
+                            mActivity, MetricsProto.MetricsEvent.ACTION_SELECT_SUPPORT_FRAGMENT);
+                    mActivity.setDisplaySearchMenu(false);
+                    break;
+            }

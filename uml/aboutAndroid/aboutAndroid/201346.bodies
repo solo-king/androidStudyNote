@@ -1,0 +1,36 @@
+class PermissionsSummaryHelper
+!!!508162.java!!!	getPermissionSummary(inout context : Context, in pkg : String, in callback : PermissionsSummaryHelper::PermissionsResultCallback) : void
+        final RuntimePermissionPresenter presenter =
+                RuntimePermissionPresenter.getInstance(context);
+        presenter.getAppPermissions(pkg, new RuntimePermissionPresenter.OnResultCallback() {
+            @Override
+            public void onGetAppPermissions(
+                    @NonNull List<RuntimePermissionPresentationInfo> permissions) {
+                final int permissionCount = permissions.size();
+
+                int grantedStandardCount = 0;
+                int grantedAdditionalCount = 0;
+                int requestedCount = 0;
+                List<CharSequence> grantedStandardLabels = new ArrayList<>();
+
+                for (int i = 0; i < permissionCount; i++) {
+                    RuntimePermissionPresentationInfo permission = permissions.get(i);
+                    requestedCount++;
+                    if (permission.isGranted()) {
+                        if (permission.isStandard()) {
+                            grantedStandardLabels.add(permission.getLabel());
+                            grantedStandardCount++;
+                        } else {
+                            grantedAdditionalCount++;
+                        }
+                    }
+                }
+
+                Collator collator = Collator.getInstance();
+                collator.setStrength(Collator.PRIMARY);
+                Collections.sort(grantedStandardLabels, collator);
+
+                callback.onPermissionSummaryResult(grantedStandardCount, requestedCount,
+                        grantedAdditionalCount, grantedStandardLabels);
+            }
+        }, null);

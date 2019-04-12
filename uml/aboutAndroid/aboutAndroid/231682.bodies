@@ -1,0 +1,30 @@
+class BillingCyclePreference
+!!!618114.java!!!	BillingCyclePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!618242.java!!!	onAttached() : void
+        super.onAttached();
+        mListener.setListener(true, mSubId, getContext());
+!!!618370.java!!!	onDetached() : void
+        mListener.setListener(false, mSubId, getContext());
+        super.onDetached();
+!!!618498.java!!!	setTemplate(inout template : NetworkTemplate, in subId : int, inout services : TemplatePreference::NetworkServices) : void
+        mTemplate = template;
+        mSubId = subId;
+        mServices = services;
+        mPolicy = services.mPolicyEditor.getPolicy(mTemplate);
+        setSummary(getContext().getString(R.string.billing_cycle_fragment_summary,
+                mPolicy != null ? mPolicy.cycleDay : 1));
+        setIntent(getIntent());
+!!!618626.java!!!	updateEnabled() : void
+        try {
+            setEnabled(mPolicy != null && mServices.mNetworkService.isBandwidthControlEnabled()
+                    && mServices.mTelephonyManager.getDataEnabled(mSubId)
+                    && mServices.mUserManager.isAdminUser());
+        } catch (RemoteException e) {
+            setEnabled(false);
+        }
+!!!618754.java!!!	getIntent() : Intent
+        Bundle args = new Bundle();
+        args.putParcelable(DataUsageList.EXTRA_NETWORK_TEMPLATE, mTemplate);
+        return Utils.onBuildStartFragmentIntent(getContext(), BillingCycleSettings.class.getName(),
+                args, null, 0, getTitle(), false);

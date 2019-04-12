@@ -1,0 +1,19 @@
+class FeatureFactory
+!!!848898.java!!!	getFactory(inout context : Context) : FeatureFactory
+        if (sFactory != null) {
+            return sFactory;
+        }
+
+        if (DEBUG) Log.d(LOG_TAG, "getFactory");
+        final String clsName = context.getString(R.string.config_featureFactory);
+        if (TextUtils.isEmpty(clsName)) {
+            throw new UnsupportedOperationException("No feature factory configured");
+        }
+        try {
+            sFactory = (FeatureFactory) context.getClassLoader().loadClass(clsName).newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            throw new FactoryNotFoundException(e);
+        }
+
+        if (DEBUG) Log.d(LOG_TAG, "started " + sFactory.getClass().getSimpleName());
+        return sFactory;

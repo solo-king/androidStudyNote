@@ -1,0 +1,26 @@
+class PowerGaugePreference
+!!!733570.java!!!	PowerGaugePreference(inout context : Context, inout icon : Drawable, inout contentDescription : CharSequence, inout info : BatteryEntry)
+        super(context, null);
+        setIcon(icon != null ? icon : new ColorDrawable(0));
+        setWidgetLayoutResource(R.layout.preference_widget_summary);
+        mInfo = info;
+        mContentDescription = contentDescription;
+        mIconSize = context.getResources().getDimensionPixelSize(R.dimen.app_icon_size);
+!!!733698.java!!!	setContentDescription(in name : String) : void
+        mContentDescription = name;
+        notifyChanged();
+!!!733826.java!!!	setPercent(in percentOfMax : double, in percentOfTotal : double) : void
+        mProgress = Utils.formatPercentage((int) (percentOfTotal + 0.5));
+        notifyChanged();
+!!!733954.java!!!	getInfo() : BatteryEntry
+        return mInfo;
+!!!734082.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        ImageView icon = (ImageView) view.findViewById(android.R.id.icon);
+        icon.setLayoutParams(new LinearLayout.LayoutParams(mIconSize, mIconSize));
+
+        ((TextView) view.findViewById(R.id.widget_summary)).setText(mProgress);
+        if (mContentDescription != null) {
+            final TextView titleView = (TextView) view.findViewById(android.R.id.title);
+            titleView.setContentDescription(mContentDescription);
+        }

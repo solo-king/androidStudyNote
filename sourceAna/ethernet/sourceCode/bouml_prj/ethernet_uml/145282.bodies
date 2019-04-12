@@ -1,0 +1,20 @@
+class MultiSimObserver
+!!!228098.java!!!	MultiSimObserver(inout handler : Handler)
+            super(handler);
+!!!228226.java!!!	onChange(inout selfChange : boolean) : void
+            super.onChange(selfChange);
+            onChange(selfChange,null);
+!!!228354.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            //super.onChange(selfChange, uri);
+            try {
+                log("onChange hit, uri = "+uri);
+                log("onChange hit, new Default DDS = "+Settings .Global
+                        .getInt(mContext.getContentResolver()
+                            , Settings.Global.MULTI_SIM_DEFAULT_DATA_CALL_SUBSCRIPTION));
+                log("onChange hit, new temp DDS = "+Settings.Global
+                        .getInt(mContext.getContentResolver()
+                            , Settings.Global.MULTI_SIM_DATA_CALL_SUBSCRIPTION));
+            } catch (Exception e) {
+                log("Exception = "+e);
+                e.printStackTrace();
+            }

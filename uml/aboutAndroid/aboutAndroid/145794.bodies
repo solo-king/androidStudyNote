@@ -1,0 +1,8 @@
+class ConfirmLockPattern
+!!!210050.java!!!	getIntent() : Intent
+        Intent modIntent = new Intent(super.getIntent());
+        modIntent.putExtra(EXTRA_SHOW_FRAGMENT, ConfirmLockPatternFragment.class.getName());
+        return modIntent;
+!!!210178.java!!!	isValidFragment(in fragmentName : String) : boolean
+        if (ConfirmLockPatternFragment.class.getName().equals(fragmentName)) return true;
+        return false;

@@ -1,0 +1,34 @@
+class ZenRuleNameDialog
+!!!846978.java!!!	ZenRuleNameDialog(inout context : Context, inout ruleName : CharSequence)
+        mIsNew = ruleName == null;
+        mOriginalRuleName = ruleName;
+        final View v = LayoutInflater.from(context).inflate(R.layout.zen_rule_name, null, false);
+        mEditText = (EditText) v.findViewById(R.id.rule_name);
+        if (!mIsNew) {
+            mEditText.setText(ruleName);
+        }
+        mEditText.setSelectAllOnFocus(true);
+
+        mDialog = new AlertDialog.Builder(context)
+                .setTitle(mIsNew ? R.string.zen_mode_add_rule : R.string.zen_mode_rule_name)
+                .setView(v)
+                .setPositiveButton(R.string.okay, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String newName = trimmedText();
+                        if (TextUtils.isEmpty(newName)) {
+                            return;
+                        }
+                        if (!mIsNew && mOriginalRuleName != null
+                                && mOriginalRuleName.equals(newName)) {
+                            return;  // no change to an existing rule, just dismiss
+                        }
+                        onOk(newName);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+!!!847234.java!!!	show() : void
+        mDialog.show();
+!!!847362.java!!!	trimmedText() : String
+        return mEditText.getText() == null ? null : mEditText.getText().toString().trim();

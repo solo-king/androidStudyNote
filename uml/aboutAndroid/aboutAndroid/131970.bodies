@@ -1,0 +1,38 @@
+class LayoutPreference
+!!!491394.java!!!	LayoutPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        final TypedArray a = context.obtainStyledAttributes(
+                attrs, com.android.internal.R.styleable.Preference, 0, 0);
+        int layoutResource = a.getResourceId(com.android.internal.R.styleable.Preference_layout,
+                0);
+        if (layoutResource == 0) {
+            throw new IllegalArgumentException("LayoutPreference requires a layout to be defined");
+        }
+        // Need to create view now so that findViewById can be called immediately.
+        final View view = LayoutInflater.from(getContext())
+                .inflate(layoutResource, null, false);
+        setView(view);
+!!!491522.java!!!	LayoutPreference(inout context : Context, in resource : int)
+        this(context, LayoutInflater.from(context).inflate(resource, null, false));
+!!!491650.java!!!	LayoutPreference(inout context : Context, inout view : View)
+        super(context);
+        setView(view);
+!!!491778.java!!!	setView(inout view : View) : void
+        setLayoutResource(R.layout.layout_preference_frame);
+        setSelectable(false);
+        final ViewGroup allDetails = (ViewGroup) view.findViewById(R.id.all_details);
+        if (allDetails != null) {
+            Utils.forceCustomPadding(allDetails, true /* additive padding */);
+        }
+        mRootView = view;
+        setShouldDisableView(false);
+!!!491906.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        FrameLayout layout = (FrameLayout) view.itemView;
+        layout.removeAllViews();
+        ViewGroup parent = (ViewGroup) mRootView.getParent();
+        if (parent != null) {
+            parent.removeView(mRootView);
+        }
+        layout.addView(mRootView);
+!!!492034.java!!!	findViewById(in id : int) : View
+        return mRootView.findViewById(id);

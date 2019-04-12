@@ -1,0 +1,19 @@
+class HighlightablePreferenceGroupAdapter
+!!!146050.java!!!	HighlightablePreferenceGroupAdapter(inout preferenceGroup : PreferenceGroup)
+            super(preferenceGroup);
+!!!146178.java!!!	highlight(in position : int) : void
+            mHighlightPosition = position;
+            notifyDataSetChanged();
+!!!146306.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder, in position : int) : void
+            super.onBindViewHolder(holder, position);
+            if (position == mHighlightPosition) {
+                View v = holder.itemView;
+                if (v.getBackground() != null) {
+                    final int centerX = v.getWidth() / 2;
+                    final int centerY = v.getHeight() / 2;
+                    v.getBackground().setHotspot(centerX, centerY);
+                }
+                v.setPressed(true);
+                v.setPressed(false);
+                mHighlightPosition = -1;
+            }

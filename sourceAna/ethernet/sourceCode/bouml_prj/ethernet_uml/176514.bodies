@@ -1,0 +1,37 @@
+class InstructionCount
+!!!469762.java!!!	InstructionCount()
+            mCounts = new int[NUM_INSTR];
+!!!469890.java!!!	resetAndStart() : boolean
+            try {
+                VMDebug.startInstructionCounting();
+                VMDebug.resetInstructionCount();
+            } catch (UnsupportedOperationException uoe) {
+                return false;
+            }
+            return true;
+!!!470018.java!!!	collect() : boolean
+            try {
+                VMDebug.stopInstructionCounting();
+                VMDebug.getInstructionCount(mCounts);
+            } catch (UnsupportedOperationException uoe) {
+                return false;
+            }
+            return true;
+!!!470146.java!!!	globalTotal() : int
+            int count = 0;
+
+            for (int i = 0; i < NUM_INSTR; i++) {
+                count += mCounts[i];
+            }
+
+            return count;
+!!!470274.java!!!	globalMethodInvocations() : int
+            int count = 0;
+
+            for (int i = 0; i < NUM_INSTR; i++) {
+                if (OpcodeInfo.isInvoke(i)) {
+                    count += mCounts[i];
+                }
+            }
+
+            return count;

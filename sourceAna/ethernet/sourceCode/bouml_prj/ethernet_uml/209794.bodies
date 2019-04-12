@@ -1,0 +1,5 @@
+class KeySet
+!!!803074.java!!!	KeySet(inout token : Binder)
+        this.token = token;
+!!!803202.java!!!	getToken() : Binder
+        return token;

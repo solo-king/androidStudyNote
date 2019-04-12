@@ -1,0 +1,13 @@
+class DataStateListener
+!!!624130.java!!!	DataStateListener()
+            super(new Handler(Looper.getMainLooper()));
+!!!624258.java!!!	setListener(inout listening : boolean, in subId : int, inout context : Context) : void
+            if (listening) {
+                Uri uri = Global.getUriFor(Global.MOBILE_DATA);
+                if (TelephonyManager.getDefault().getSimCount() != 1) {
+                    uri = Global.getUriFor(Global.MOBILE_DATA + subId);
+                }
+                context.getContentResolver().registerContentObserver(uri, false, this);
+            } else {
+                context.getContentResolver().unregisterContentObserver(this);
+            }

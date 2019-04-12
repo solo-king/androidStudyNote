@@ -1,0 +1,5 @@
+class WorkOnlyCategory
+!!!399106.java!!!	WorkOnlyCategory(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!399234.java!!!	isAvailable(inout context : Context) : boolean
+        return Utils.getManagedProfile(UserManager.get(context)) != null;

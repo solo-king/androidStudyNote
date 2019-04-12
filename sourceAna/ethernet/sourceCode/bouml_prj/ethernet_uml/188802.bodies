@@ -1,0 +1,31 @@
+class UEventObserver
+!!!584066.java!!!	finalize() : void
+        try {
+            stopObserving();
+        } finally {
+            super.finalize();
+        }
+!!!584194.java!!!	getThread() : UEventObserver::UEventThread
+        synchronized (UEventObserver.class) {
+            if (sThread == null) {
+                sThread = new UEventThread();
+                sThread.start();
+            }
+            return sThread;
+        }
+!!!584322.java!!!	peekThread() : UEventObserver::UEventThread
+        synchronized (UEventObserver.class) {
+            return sThread;
+        }
+!!!584450.java!!!	startObserving(in match : String) : void
+        if (match == null || match.isEmpty()) {
+            throw new IllegalArgumentException("match substring must be non-empty");
+        }
+
+        final UEventThread t = getThread();
+        t.addObserver(match, this);
+!!!584578.java!!!	stopObserving() : void
+        final UEventThread t = getThread();
+        if (t != null) {
+            t.removeObserver(this);
+        }

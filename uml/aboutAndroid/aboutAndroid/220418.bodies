@@ -1,0 +1,35 @@
+class SummaryProvider
+!!!560258.java!!!	SummaryProvider(inout context : Context, inout summaryLoader : SummaryLoader)
+            mBluetoothManager = Utils.getLocalBtManager(context);
+            mContext = context;
+            mSummaryLoader = summaryLoader;
+!!!560386.java!!!	setListening(inout listening : boolean) : void
+            BluetoothAdapter defaultAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (defaultAdapter == null) return;
+            if (listening) {
+                mEnabled = defaultAdapter.isEnabled();
+                mConnected =
+                        defaultAdapter.getConnectionState() == BluetoothAdapter.STATE_CONNECTED;
+                mSummaryLoader.setSummary(this, getSummary());
+                mBluetoothManager.getEventManager().registerCallback(this);
+            } else {
+                mBluetoothManager.getEventManager().unregisterCallback(this);
+            }
+!!!560514.java!!!	getSummary() : CharSequence
+            return mContext.getString(!mEnabled ? R.string.bluetooth_disabled
+                    : mConnected ? R.string.bluetooth_connected
+                    : R.string.bluetooth_disconnected);
+!!!560642.java!!!	onBluetoothStateChanged(in bluetoothState : int) : void
+            mEnabled = bluetoothState == BluetoothAdapter.STATE_ON;
+            mSummaryLoader.setSummary(this, getSummary());
+!!!560770.java!!!	onConnectionStateChanged(inout cachedDevice : CachedBluetoothDevice, in state : int) : void
+            mConnected = state == BluetoothAdapter.STATE_CONNECTED;
+            mSummaryLoader.setSummary(this, getSummary());
+!!!560898.java!!!	onScanningStateChanged(inout started : boolean) : void
+
+!!!561026.java!!!	onDeviceAdded(inout cachedDevice : CachedBluetoothDevice) : void
+
+!!!561154.java!!!	onDeviceDeleted(inout cachedDevice : CachedBluetoothDevice) : void
+
+!!!561282.java!!!	onDeviceBondStateChanged(inout cachedDevice : CachedBluetoothDevice, in bondState : int) : void
+

@@ -1,0 +1,9 @@
+class Info
+!!!477186.java!!!	Info(inout component : ComponentName)
+            this.component = component;
+            this.voiceInteractionServiceInfo = null;
+!!!477314.java!!!	Info(inout component : ComponentName, inout voiceInteractionServiceInfo : VoiceInteractionServiceInfo)
+            this.component = component;
+            this.voiceInteractionServiceInfo = voiceInteractionServiceInfo;
+!!!477442.java!!!	isVoiceInteractionService() : boolean
+            return voiceInteractionServiceInfo != null;

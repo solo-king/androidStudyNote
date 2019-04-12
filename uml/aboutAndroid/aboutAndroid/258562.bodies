@@ -1,0 +1,15 @@
+class LocaleRecyclerView
+!!!783618.java!!!	LocaleRecyclerView(inout context : Context)
+        super(context);
+!!!783746.java!!!	LocaleRecyclerView(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!783874.java!!!	LocaleRecyclerView(inout context : Context, inout attrs : AttributeSet, in defStyle : int)
+        super(context, attrs, defStyle);
+!!!784002.java!!!	onTouchEvent(inout e : MotionEvent) : boolean
+        if (e.getAction() == MotionEvent.ACTION_UP) {
+            LocaleDragAndDropAdapter adapter = (LocaleDragAndDropAdapter) this.getAdapter();
+            if (adapter != null) {
+                adapter.doTheUpdate();
+            }
+        }
+        return super.onTouchEvent(e);

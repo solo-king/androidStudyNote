@@ -1,0 +1,63 @@
+class CertHolder
+!!!376834.java!!!	CertHolder(inout service : IKeyChainService, inout adapter : TrustedCredentialsSettings::GroupAdapter, inout tab : TrustedCredentialsSettings::Tab, in alias : String, inout x509Cert : X509Certificate, in profileId : int)
+            mProfileId = profileId;
+            mService = service;
+            mAdapter = adapter;
+            mTab = tab;
+            mAlias = alias;
+            mX509Cert = x509Cert;
+
+            mSslCert = new SslCertificate(x509Cert);
+
+            String cn = mSslCert.getIssuedTo().getCName();
+            String o = mSslCert.getIssuedTo().getOName();
+            String ou = mSslCert.getIssuedTo().getUName();
+            // if we have a O, use O as primary subject, secondary prefer CN over OU
+            // if we don't have an O, use CN as primary, empty secondary
+            // if we don't have O or CN, use DName as primary, empty secondary
+            if (!o.isEmpty()) {
+                if (!cn.isEmpty()) {
+                    mSubjectPrimary = o;
+                    mSubjectSecondary = cn;
+                } else {
+                    mSubjectPrimary = o;
+                    mSubjectSecondary = ou;
+                }
+            } else {
+                if (!cn.isEmpty()) {
+                    mSubjectPrimary = cn;
+                    mSubjectSecondary = "";
+                } else {
+                    mSubjectPrimary = mSslCert.getIssuedTo().getDName();
+                    mSubjectSecondary = "";
+                }
+            }
+            try {
+                mDeleted = mTab.deleted(mService, mAlias);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Remote exception while checking if alias " + mAlias + " is deleted.",
+                        e);
+                mDeleted = false;
+            }
+!!!376962.java!!!	compareTo(inout o : TrustedCredentialsSettings::CertHolder) : int
+            int primary = this.mSubjectPrimary.compareToIgnoreCase(o.mSubjectPrimary);
+            if (primary != 0) {
+                return primary;
+            }
+            return this.mSubjectSecondary.compareToIgnoreCase(o.mSubjectSecondary);
+!!!377090.java!!!	equals(inout o : Object) : boolean
+            if (!(o instanceof CertHolder)) {
+                return false;
+            }
+            CertHolder other = (CertHolder) o;
+            return mAlias.equals(other.mAlias);
+!!!377218.java!!!	hashCode() : int
+            return mAlias.hashCode();
+!!!377346.java!!!	getUserId() : int
+            return mProfileId;
+!!!377474.java!!!	getAlias() : String
+            return mAlias;
+!!!377602.java!!!	isSystemCert() : boolean
+            return mTab == Tab.SYSTEM;
+!!!377730.java!!!	isDeleted() : boolean
+            return mDeleted;

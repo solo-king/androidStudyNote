@@ -1,0 +1,77 @@
+class LocationMode
+!!!786690.java!!!	getMetricsCategory() : int
+        return MetricsEvent.LOCATION_MODE;
+!!!786818.java!!!	onResume() : void
+        super.onResume();
+        createPreferenceHierarchy();
+!!!786946.java!!!	onPause() : void
+        super.onPause();
+!!!787074.java!!!	createPreferenceHierarchy() : PreferenceScreen
+        PreferenceScreen root = getPreferenceScreen();
+        if (root != null) {
+            root.removeAll();
+        }
+        addPreferencesFromResource(R.xml.location_mode);
+        root = getPreferenceScreen();
+
+        mHighAccuracy = (RadioButtonPreference) root.findPreference(KEY_HIGH_ACCURACY);
+        mBatterySaving = (RadioButtonPreference) root.findPreference(KEY_BATTERY_SAVING);
+        mSensorsOnly = (RadioButtonPreference) root.findPreference(KEY_SENSORS_ONLY);
+        mHighAccuracy.setOnClickListener(this);
+        mBatterySaving.setOnClickListener(this);
+        mSensorsOnly.setOnClickListener(this);
+
+        refreshLocationMode();
+        return root;
+!!!787202.java!!!	updateRadioButtons(inout activated : RadioButtonPreference) : void
+        if (activated == null) {
+            mHighAccuracy.setChecked(false);
+            mBatterySaving.setChecked(false);
+            mSensorsOnly.setChecked(false);
+        } else if (activated == mHighAccuracy) {
+            mHighAccuracy.setChecked(true);
+            mBatterySaving.setChecked(false);
+            mSensorsOnly.setChecked(false);
+        } else if (activated == mBatterySaving) {
+            mHighAccuracy.setChecked(false);
+            mBatterySaving.setChecked(true);
+            mSensorsOnly.setChecked(false);
+        } else if (activated == mSensorsOnly) {
+            mHighAccuracy.setChecked(false);
+            mBatterySaving.setChecked(false);
+            mSensorsOnly.setChecked(true);
+        }
+!!!787330.java!!!	onRadioButtonClicked(inout emiter : RadioButtonPreference) : void
+        int mode = Settings.Secure.LOCATION_MODE_OFF;
+        if (emiter == mHighAccuracy) {
+            mode = Settings.Secure.LOCATION_MODE_HIGH_ACCURACY;
+        } else if (emiter == mBatterySaving) {
+            mode = Settings.Secure.LOCATION_MODE_BATTERY_SAVING;
+        } else if (emiter == mSensorsOnly) {
+            mode = Settings.Secure.LOCATION_MODE_SENSORS_ONLY;
+        }
+        setLocationMode(mode);
+!!!787458.java!!!	onModeChanged(in mode : int, inout restricted : boolean) : void
+        switch (mode) {
+            case Settings.Secure.LOCATION_MODE_OFF:
+                updateRadioButtons(null);
+                break;
+            case Settings.Secure.LOCATION_MODE_SENSORS_ONLY:
+                updateRadioButtons(mSensorsOnly);
+                break;
+            case Settings.Secure.LOCATION_MODE_BATTERY_SAVING:
+                updateRadioButtons(mBatterySaving);
+                break;
+            case Settings.Secure.LOCATION_MODE_HIGH_ACCURACY:
+                updateRadioButtons(mHighAccuracy);
+                break;
+            default:
+                break;
+        }
+
+        boolean enabled = (mode != Settings.Secure.LOCATION_MODE_OFF) && !restricted;
+        mHighAccuracy.setEnabled(enabled);
+        mBatterySaving.setEnabled(enabled);
+        mSensorsOnly.setEnabled(enabled);
+!!!787586.java!!!	getHelpResource() : int
+        return R.string.help_url_location_access;

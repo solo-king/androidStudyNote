@@ -1,0 +1,31 @@
+class SocketOutputStream
+!!!220930.java!!!	close() : void
+            LocalSocketImpl.this.close();
+!!!221058.java!!!	write(inout b : byte) : void
+            write(b, 0, b.length);
+!!!221186.java!!!	write(inout b : byte, in off : int, in len : int) : void
+            synchronized (writeMonitor) {
+                FileDescriptor myFd = fd;
+                if (myFd == null) throw new IOException("socket closed");
+
+                if (off < 0 || len < 0 || (off + len) > b.length ) {
+                    throw new ArrayIndexOutOfBoundsException();
+                }
+                writeba_native(b, off, len, myFd);
+            }
+!!!221314.java!!!	write(in b : int) : void
+            synchronized (writeMonitor) {
+                FileDescriptor myFd = fd;
+                if (myFd == null) throw new IOException("socket closed");
+                write_native(b, myFd);
+            }
+!!!221442.java!!!	flush() : void
+            FileDescriptor myFd = fd;
+            if (myFd == null) throw new IOException("socket closed");
+            while(pending_native(myFd) > 0) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException ie) {
+                    return;
+                }
+            }

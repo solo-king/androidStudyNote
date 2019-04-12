@@ -1,0 +1,87 @@
+class AppListLoader
+!!!450946.java!!!	AppListLoader(inout context : Context, inout state : AppOpsState, inout template : AppOpsState::OpsTemplate, inout userControlled : boolean)
+            super(context);
+            mState = state;
+            mTemplate = template;
+            mUserControlled = userControlled;
+!!!451074.java!!!	loadInBackground() : AppOpsState::AppOpEntry
+            return mState.buildState(mTemplate, 0, null,
+                    mUserControlled ? AppOpsState.LABEL_COMPARATOR : AppOpsState.RECENCY_COMPARATOR);
+!!!451202.java!!!	deliverResult(inout apps : List<AppOpEntry>) : void
+            if (isReset()) {
+                // An async query came in while the loader is stopped.  We
+                // don't need the result.
+                if (apps != null) {
+                    onReleaseResources(apps);
+                }
+            }
+            List<AppOpEntry> oldApps = apps;
+            mApps = apps;
+
+            if (isStarted()) {
+                // If the Loader is currently started, we can immediately
+                // deliver its results.
+                super.deliverResult(apps);
+            }
+
+            // At this point we can release the resources associated with
+            // 'oldApps' if needed; now that the new result is delivered we
+            // know that it is no longer in use.
+            if (oldApps != null) {
+                onReleaseResources(oldApps);
+            }
+!!!451330.java!!!	onStartLoading() : void
+            // We don't monitor changed when loading is stopped, so need
+            // to always reload at this point.
+            onContentChanged();
+
+            if (mApps != null) {
+                // If we currently have a result available, deliver it
+                // immediately.
+                deliverResult(mApps);
+            }
+
+            // Start watching for changes in the app data.
+            if (mPackageObserver == null) {
+                mPackageObserver = new PackageIntentReceiver(this);
+            }
+
+            // Has something interesting in the configuration changed since we
+            // last built the app list?
+            boolean configChange = mLastConfig.applyNewConfig(getContext().getResources());
+
+            if (takeContentChanged() || mApps == null || configChange) {
+                // If the data has changed since the last time it was loaded
+                // or is not currently available, start a load.
+                forceLoad();
+            }
+!!!451458.java!!!	onStopLoading() : void
+            // Attempt to cancel the current load task if possible.
+            cancelLoad();
+!!!451586.java!!!	onCanceled(inout apps : List<AppOpEntry>) : void
+            super.onCanceled(apps);
+
+            // At this point we can release the resources associated with 'apps'
+            // if needed.
+            onReleaseResources(apps);
+!!!451714.java!!!	onReset() : void
+            super.onReset();
+
+            // Ensure the loader is stopped
+            onStopLoading();
+
+            // At this point we can release the resources associated with 'apps'
+            // if needed.
+            if (mApps != null) {
+                onReleaseResources(mApps);
+                mApps = null;
+            }
+
+            // Stop monitoring for changes.
+            if (mPackageObserver != null) {
+                getContext().unregisterReceiver(mPackageObserver);
+                mPackageObserver = null;
+            }
+!!!451842.java!!!	onReleaseResources(inout apps : List<AppOpEntry>) : void
+            // For a simple List<> there is nothing to do.  For something
+            // like a Cursor, we would close it here.

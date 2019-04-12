@@ -1,0 +1,42 @@
+class PaymentSettings
+!!!800642.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NFC_PAYMENT;
+!!!800770.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        mPaymentBackend = new PaymentBackend(getActivity());
+        setHasOptionsMenu(true);
+
+        PreferenceManager manager = getPreferenceManager();
+        PreferenceScreen screen = manager.createPreferenceScreen(getActivity());
+
+        List<PaymentBackend.PaymentAppInfo> appInfos = mPaymentBackend.getPaymentAppInfos();
+        if (appInfos != null && appInfos.size() > 0) {
+            NfcPaymentPreference preference =
+                    new NfcPaymentPreference(getPrefContext(), mPaymentBackend);
+            preference.setKey("payment");
+            screen.addPreference(preference);
+            NfcForegroundPreference foreground = new NfcForegroundPreference(getPrefContext(),
+                    mPaymentBackend);
+            screen.addPreference(foreground);
+        }
+        setPreferenceScreen(screen);
+!!!800898.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+        ViewGroup contentRoot = (ViewGroup) getListView().getParent();
+        View emptyView = getActivity().getLayoutInflater().inflate(
+                R.layout.nfc_payment_empty, contentRoot, false);
+        contentRoot.addView(emptyView);
+        setEmptyView(emptyView);
+!!!801026.java!!!	onResume() : void
+        super.onResume();
+        mPaymentBackend.onResume();
+!!!801154.java!!!	onPause() : void
+        super.onPause();
+        mPaymentBackend.onPause();
+!!!801282.java!!!	onCreateOptionsMenu(inout menu : Menu, inout inflater : MenuInflater) : void
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem menuItem = menu.add(R.string.nfc_payment_how_it_works);
+        Intent howItWorksIntent = new Intent(getActivity(), HowItWorks.class);
+        menuItem.setIntent(howItWorksIntent);
+        menuItem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER);

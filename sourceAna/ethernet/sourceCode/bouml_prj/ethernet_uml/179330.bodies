@@ -1,0 +1,21 @@
+class ParcelableParcel
+!!!524674.java!!!	ParcelableParcel(inout loader : ClassLoader)
+        mParcel = Parcel.obtain();
+        mClassLoader = loader;
+!!!524802.java!!!	ParcelableParcel(inout src : Parcel, inout loader : ClassLoader)
+        mParcel = Parcel.obtain();
+        mClassLoader = loader;
+        int size = src.readInt();
+        int pos = src.dataPosition();
+        mParcel.appendFrom(src, src.dataPosition(), size);
+        src.setDataPosition(pos + size);
+!!!524930.java!!!	getParcel() : Parcel
+        mParcel.setDataPosition(0);
+        return mParcel;
+!!!525058.java!!!	getClassLoader() : ClassLoader
+        return mClassLoader;
+!!!525186.java!!!	describeContents() : int
+        return 0;
+!!!525314.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeInt(mParcel.dataSize());
+        dest.appendFrom(mParcel, 0, mParcel.dataSize());

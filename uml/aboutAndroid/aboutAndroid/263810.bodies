@@ -1,0 +1,359 @@
+class NotificationStation
+!!!813314.java!!!	scheduleRefreshList() : void
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mRefreshListRunnable);
+            mHandler.postDelayed(mRefreshListRunnable, 100);
+        }
+!!!813442.java!!!	onAttach(inout activity : Activity) : void
+        logd("onAttach(%s)", activity.getClass().getSimpleName());
+        super.onAttach(activity);
+        mHandler = new Handler(activity.getMainLooper());
+        mContext = activity;
+        mPm = mContext.getPackageManager();
+        mNoMan = INotificationManager.Stub.asInterface(
+                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+!!!813570.java!!!	onDetach() : void
+        logd("onDetach()");
+        mHandler.removeCallbacks(mRefreshListRunnable);
+        mHandler = null;
+        super.onDetach();
+!!!813698.java!!!	onPause() : void
+        try {
+            mListener.unregisterAsSystemService();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Cannot unregister listener", e);
+        }
+        super.onPause();
+!!!813826.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NOTIFICATION_STATION;
+!!!813954.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        logd("onActivityCreated(%s)", savedInstanceState);
+        super.onActivityCreated(savedInstanceState);
+
+        RecyclerView listView = getListView();
+        Utils.forceCustomPadding(listView, false /* non additive padding */);
+!!!814082.java!!!	onResume() : void
+        logd("onResume()");
+        super.onResume();
+        try {
+            mListener.registerAsSystemService(mContext, new ComponentName(mContext.getPackageName(),
+                    this.getClass().getCanonicalName()), ActivityManager.getCurrentUser());
+        } catch (RemoteException e) {
+            Log.e(TAG, "Cannot register listener", e);
+        }
+        refreshList();
+!!!814210.java!!!	refreshList() : void
+        List<HistoricalNotificationInfo> infos = loadNotifications();
+        if (infos != null) {
+            final int N = infos.size();
+            logd("adding %d infos", N);
+            Collections.sort(infos, mNotificationSorter);
+            if (getPreferenceScreen() == null) {
+                setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getContext()));
+            }
+            getPreferenceScreen().removeAll();
+            for (int i = 0; i < N; i++) {
+                getPreferenceScreen().addPreference(
+                        new HistoricalNotificationPreference(getPrefContext(), infos.get(i)));
+            }
+        }
+!!!814338.java!!!	logd(in msg : String, inout  : Object...args) : void
+        if (DEBUG) {
+            Log.d(TAG, args == null || args.length == 0 ? msg : String.format(msg, args));
+        }
+!!!814466.java!!!	bold(inout cs : CharSequence) : CharSequence
+        if (cs.length() == 0) return cs;
+        SpannableString ss = new SpannableString(cs);
+        ss.setSpan(new StyleSpan(Typeface.BOLD), 0, cs.length(), 0);
+        return ss;
+!!!814594.java!!!	getTitleString(inout n : Notification) : String
+        CharSequence title = null;
+        if (n.extras != null) {
+            title = n.extras.getCharSequence(Notification.EXTRA_TITLE);
+            if (TextUtils.isEmpty(title)) {
+                title = n.extras.getCharSequence(Notification.EXTRA_TEXT);
+            }
+        }
+        if (TextUtils.isEmpty(title) && !TextUtils.isEmpty(n.tickerText)) {
+            title = n.tickerText;
+        }
+        return String.valueOf(title);
+!!!814722.java!!!	formatPendingIntent(inout pi : PendingIntent) : String
+        final StringBuilder sb = new StringBuilder();
+        final IntentSender is = pi.getIntentSender();
+        sb.append("Intent(pkg=").append(is.getCreatorPackage());
+        try {
+            final boolean isActivity =
+                    ActivityManagerNative.getDefault().isIntentSenderAnActivity(is.getTarget());
+            if (isActivity) sb.append(" (activity)");
+        } catch (RemoteException ex) {}
+        sb.append(")");
+        return sb.toString();
+!!!814850.java!!!	loadNotifications() : NotificationStation::HistoricalNotificationInfo
+        final int currentUserId = ActivityManager.getCurrentUser();
+        try {
+            StatusBarNotification[] active = mNoMan.getActiveNotifications(
+                    mContext.getPackageName());
+            StatusBarNotification[] dismissed = mNoMan.getHistoricalNotifications(
+                    mContext.getPackageName(), 50);
+
+            List<HistoricalNotificationInfo> list
+                    = new ArrayList<HistoricalNotificationInfo>(active.length + dismissed.length);
+
+            final Ranking rank = new Ranking();
+
+            for (StatusBarNotification[] resultset
+                    : new StatusBarNotification[][] { active, dismissed }) {
+                for (StatusBarNotification sbn : resultset) {
+                    if (sbn.getUserId() != UserHandle.USER_ALL & sbn.getUserId() != currentUserId) {
+                        continue;
+                    }
+
+                    final Notification n = sbn.getNotification();
+                    final HistoricalNotificationInfo info = new HistoricalNotificationInfo();
+                    info.pkg = sbn.getPackageName();
+                    info.user = sbn.getUserId();
+                    info.icon = loadIconDrawable(info.pkg, info.user, n.icon);
+                    info.pkgicon = loadPackageIconDrawable(info.pkg, info.user);
+                    info.pkgname = loadPackageName(info.pkg);
+                    info.title = getTitleString(n);
+                    if (TextUtils.isEmpty(info.title)) {
+                        info.title = getString(R.string.notification_log_no_title);
+                    }
+                    info.timestamp = sbn.getPostTime();
+                    info.priority = n.priority;
+
+                    info.active = (resultset == active);
+
+                    final SpannableStringBuilder sb = new SpannableStringBuilder();
+                    final String delim = getString(R.string.notification_log_details_delimiter);
+                    sb.append(bold(getString(R.string.notification_log_details_package)))
+                            .append(delim)
+                            .append(info.pkg)
+                            .append("\n")
+                            .append(bold(getString(R.string.notification_log_details_key)))
+                            .append(delim)
+                            .append(sbn.getKey());
+                    sb.append("\n")
+                            .append(bold(getString(R.string.notification_log_details_icon)))
+                            .append(delim)
+                            .append(n.getSmallIcon().toString());
+                    if (sbn.isGroup()) {
+                        sb.append("\n")
+                                .append(bold(getString(R.string.notification_log_details_group)))
+                                .append(delim)
+                                .append(sbn.getGroupKey());
+                        if (n.isGroupSummary()) {
+                            sb.append(bold(
+                                    getString(R.string.notification_log_details_group_summary)));
+                        }
+                    }
+                    sb.append("\n")
+                            .append(bold(getString(R.string.notification_log_details_sound)))
+                            .append(delim);
+                    if (0 != (n.defaults & Notification.DEFAULT_SOUND)) {
+                        sb.append(getString(R.string.notification_log_details_default));
+                    } else if (n.sound != null) {
+                        sb.append(n.sound.toString());
+                    } else {
+                        sb.append(getString(R.string.notification_log_details_none));
+                    }
+                    sb.append("\n")
+                            .append(bold(getString(R.string.notification_log_details_vibrate)))
+                            .append(delim);
+                    if (0 != (n.defaults & Notification.DEFAULT_VIBRATE)) {
+                        sb.append(getString(R.string.notification_log_details_default));
+                    } else if (n.vibrate != null) {
+                        for (int vi=0;vi<n.vibrate.length;vi++) {
+                            if (vi > 0) sb.append(',');
+                            sb.append(String.valueOf(n.vibrate[vi]));
+                        }
+                    } else {
+                        sb.append(getString(R.string.notification_log_details_none));
+                    }
+                    sb.append("\n")
+                            .append(bold(getString(R.string.notification_log_details_visibility)))
+                            .append(delim)
+                            .append(Notification.visibilityToString(n.visibility));
+                    if (n.publicVersion != null) {
+                        sb.append("\n")
+                                .append(bold(getString(
+                                        R.string.notification_log_details_public_version)))
+                                .append(delim)
+                                .append(getTitleString(n.publicVersion));
+                    }
+                    sb.append("\n")
+                            .append(bold(getString(R.string.notification_log_details_priority)))
+                            .append(delim)
+                            .append(Notification.priorityToString(n.priority));
+                    if (resultset == active) {
+                        // mRanking only applies to active notifications
+                        if (mRanking != null && mRanking.getRanking(sbn.getKey(), rank)) {
+                            sb.append("\n")
+                                    .append(bold(getString(
+                                            R.string.notification_log_details_importance)))
+                                    .append(delim)
+                                    .append(Ranking.importanceToString(rank.getImportance()));
+                            if (rank.getImportanceExplanation() != null) {
+                                sb.append("\n")
+                                        .append(bold(getString(
+                                                R.string.notification_log_details_explanation)))
+                                        .append(delim)
+                                        .append(rank.getImportanceExplanation());
+                            }
+                        } else {
+                            if (mRanking == null) {
+                                sb.append("\n")
+                                        .append(bold(getString(
+                                                R.string.notification_log_details_ranking_null)));
+                            } else {
+                                sb.append("\n")
+                                        .append(bold(getString(
+                                                R.string.notification_log_details_ranking_none)));
+                            }
+                        }
+                    }
+                    if (n.contentIntent != null) {
+                        sb.append("\n")
+                                .append(bold(getString(
+                                        R.string.notification_log_details_content_intent)))
+                                .append(delim)
+                                .append(formatPendingIntent(n.contentIntent));
+                    }
+                    if (n.deleteIntent != null) {
+                        sb.append("\n")
+                                .append(bold(getString(
+                                        R.string.notification_log_details_delete_intent)))
+                                .append(delim)
+                                .append(formatPendingIntent(n.deleteIntent));
+                    }
+                    if (n.fullScreenIntent != null) {
+                        sb.append("\n")
+                                .append(bold(getString(
+                                        R.string.notification_log_details_full_screen_intent)))
+                                .append(delim)
+                                .append(formatPendingIntent(n.fullScreenIntent));
+                    }
+                    if (n.actions != null && n.actions.length > 0) {
+                        sb.append("\n")
+                                .append(bold(getString(R.string.notification_log_details_actions)));
+                        for (int ai=0; ai<n.actions.length; ai++) {
+                            final Notification.Action action = n.actions[ai];
+                            sb.append("\n  ").append(String.valueOf(ai)).append(' ')
+                                    .append(bold(getString(
+                                            R.string.notification_log_details_title)))
+                                    .append(delim)
+                                    .append(action.title);
+                            if (action.actionIntent != null) {
+                                sb.append("\n    ")
+                                        .append(bold(getString(
+                                                R.string.notification_log_details_content_intent)))
+                                        .append(delim)
+                                        .append(formatPendingIntent(action.actionIntent));
+                            }
+                            if (action.getRemoteInputs() != null) {
+                                sb.append("\n    ")
+                                        .append(bold(getString(
+                                                R.string.notification_log_details_remoteinput)))
+                                        .append(delim)
+                                        .append(String.valueOf(action.getRemoteInputs().length));
+                            }
+                        }
+                    }
+                    if (n.contentView != null) {
+                        sb.append("\n")
+                                .append(bold(getString(
+                                        R.string.notification_log_details_content_view)))
+                                .append(delim)
+                                .append(n.contentView.toString());
+                    }
+
+                    if (DUMP_EXTRAS) {
+                        if (n.extras != null && n.extras.size() > 0) {
+                            sb.append("\n")
+                                    .append(bold(getString(
+                                            R.string.notification_log_details_extras)));
+                            for (String extraKey : n.extras.keySet()) {
+                                String val = String.valueOf(n.extras.get(extraKey));
+                                if (val.length() > 100) val = val.substring(0, 100) + "...";
+                                sb.append("\n  ").append(extraKey).append(delim).append(val);
+                            }
+                        }
+                    }
+                    if (DUMP_PARCEL) {
+                        final Parcel p = Parcel.obtain();
+                        n.writeToParcel(p, 0);
+                        sb.append("\n")
+                                .append(bold(getString(R.string.notification_log_details_parcel)))
+                                .append(delim)
+                                .append(String.valueOf(p.dataPosition()))
+                                .append(' ')
+                                .append(bold(getString(R.string.notification_log_details_ashmem)))
+                                .append(delim)
+                                .append(String.valueOf(p.getBlobAshmemSize()))
+                                .append("\n");
+                    }
+
+                    info.extra = sb;
+
+                    logd("   [%d] %s: %s", info.timestamp, info.pkg, info.title);
+                    list.add(info);
+                }
+            }
+
+            return list;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Cannot load Notifications: ", e);
+        }
+        return null;
+!!!814978.java!!!	getResourcesForUserPackage(in pkg : String, in userId : int) : Resources
+        Resources r = null;
+
+        if (pkg != null) {
+            try {
+                if (userId == UserHandle.USER_ALL) {
+                    userId = UserHandle.USER_SYSTEM;
+                }
+                r = mPm.getResourcesForApplicationAsUser(pkg, userId);
+            } catch (PackageManager.NameNotFoundException ex) {
+                Log.e(TAG, "Icon package not found: " + pkg, ex);
+                return null;
+            }
+        } else {
+            r = mContext.getResources();
+        }
+        return r;
+!!!815106.java!!!	loadPackageIconDrawable(in pkg : String, in userId : int) : Drawable
+        Drawable icon = null;
+        try {
+            icon = mPm.getApplicationIcon(pkg);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Cannot get application icon", e);
+        }
+
+        return icon;
+!!!815234.java!!!	loadPackageName(in pkg : String) : CharSequence
+        try {
+            ApplicationInfo info = mPm.getApplicationInfo(pkg,
+                    PackageManager.GET_UNINSTALLED_PACKAGES);
+            if (info != null) return mPm.getApplicationLabel(info);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Cannot load package name", e);
+        }
+        return pkg;
+!!!815362.java!!!	loadIconDrawable(in pkg : String, in userId : int, in resId : int) : Drawable
+        Resources r = getResourcesForUserPackage(pkg, userId);
+
+        if (resId == 0) {
+            return null;
+        }
+
+        try {
+            return r.getDrawable(resId, null);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Icon not found in "
+                    + (pkg != null ? resId : "<system>")
+                    + ": " + Integer.toHexString(resId), e);
+        }
+
+        return null;

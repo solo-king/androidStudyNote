@@ -1,0 +1,214 @@
+class DialogEventHandler
+!!!366338.java!!!	DialogEventHandler(inout activity : Activity, inout delegate : TrustedCredentialsDialogBuilder::DelegateInterface)
+            mActivity = activity;
+            mDpm = activity.getSystemService(DevicePolicyManager.class);
+            mUserManager = activity.getSystemService(UserManager.class);
+            mDelegate = delegate;
+
+            mRootContainer = new LinearLayout(mActivity);
+            mRootContainer.setOrientation(LinearLayout.VERTICAL);
+!!!366466.java!!!	setDialog(inout dialog : AlertDialog) : void
+            mDialog = dialog;
+!!!366594.java!!!	setCertHolders(inout certHolder : TrustedCredentialsSettings::CertHolder) : void
+            mCertHolders = certHolder;
+!!!366722.java!!!	onShow(inout dialogInterface : DialogInterface) : void
+            // Config the display content only when the dialog is shown because the
+            // positive/negative buttons don't exist until the dialog is shown
+            nextOrDismiss();
+!!!366850.java!!!	onClick(inout view : View) : void
+            if (view == mPositiveButton) {
+                if (mNeedsApproval) {
+                    onClickTrust();
+                } else {
+                    onClickOk();
+                }
+            } else if (view == mNegativeButton) {
+                onClickRemove();
+            }
+!!!366978.java!!!	onClickOk() : void
+            nextOrDismiss();
+!!!367106.java!!!	onClickTrust() : void
+            CertHolder certHolder = getCurrentCertInfo();
+            if (!mDelegate.startConfirmCredentialIfNotConfirmed(certHolder.getUserId(),
+                    this::onCredentialConfirmed)) {
+                mDpm.approveCaCert(certHolder.getAlias(), certHolder.getUserId(), true);
+                nextOrDismiss();
+            }
+!!!367234.java!!!	onClickRemove() : void
+            final CertHolder certHolder = getCurrentCertInfo();
+            new AlertDialog.Builder(mActivity)
+                    .setMessage(getButtonConfirmation(certHolder))
+                    .setPositiveButton(android.R.string.yes,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int id) {
+                                    mDelegate.removeOrInstallCert(certHolder);
+                                    dialog.dismiss();
+                                    nextOrDismiss();
+                                }
+                            })
+                    .setNegativeButton(android.R.string.no, null)
+                    .show();
+!!!367362.java!!!	onCredentialConfirmed(in userId : int) : void
+            if (mDialog.isShowing() && mNeedsApproval && getCurrentCertInfo() != null
+                    && getCurrentCertInfo().getUserId() == userId) {
+                // Treat it as user just clicks "trust" for this cert
+                onClickTrust();
+            }
+!!!367490.java!!!	getCurrentCertInfo() : TrustedCredentialsSettings::CertHolder
+            return mCurrentCertIndex < mCertHolders.length ? mCertHolders[mCurrentCertIndex] : null;
+!!!367618.java!!!	nextOrDismiss() : void
+            mCurrentCertIndex++;
+            // find next non-null cert or dismiss
+            while (mCurrentCertIndex < mCertHolders.length && getCurrentCertInfo() == null) {
+                mCurrentCertIndex++;
+            }
+
+            if (mCurrentCertIndex >= mCertHolders.length) {
+                mDialog.dismiss();
+                return;
+            }
+
+            updateViewContainer();
+            updatePositiveButton();
+            updateNegativeButton();
+!!!367746.java!!!	isUserSecure(in userId : int) : boolean
+            final LockPatternUtils lockPatternUtils = new LockPatternUtils(mActivity);
+            if (lockPatternUtils.isSecure(userId)) {
+                return true;
+            }
+            UserInfo parentUser = mUserManager.getProfileParent(userId);
+            if (parentUser == null) {
+                return false;
+            }
+            return lockPatternUtils.isSecure(parentUser.id);
+!!!367874.java!!!	updatePositiveButton() : void
+            final CertHolder certHolder = getCurrentCertInfo();
+            mNeedsApproval = !certHolder.isSystemCert()
+                    && isUserSecure(certHolder.getUserId())
+                    && !mDpm.isCaCertApproved(certHolder.getAlias(), certHolder.getUserId());
+
+            final boolean isProfileOrDeviceOwner = RestrictedLockUtils.getProfileOrDeviceOwner(
+                    mActivity, certHolder.getUserId()) != null;
+
+            // Show trust button only when it requires consumer user (non-PO/DO) to approve
+            CharSequence displayText = mActivity.getText(!isProfileOrDeviceOwner && mNeedsApproval
+                    ? R.string.trusted_credentials_trust_label
+                    : android.R.string.ok);
+            mPositiveButton = updateButton(DialogInterface.BUTTON_POSITIVE, displayText);
+!!!368002.java!!!	updateNegativeButton() : void
+            final CertHolder certHolder = getCurrentCertInfo();
+            final boolean showRemoveButton = !mUserManager.hasUserRestriction(
+                    UserManager.DISALLOW_CONFIG_CREDENTIALS,
+                    new UserHandle(certHolder.getUserId()));
+            CharSequence displayText = mActivity.getText(getButtonLabel(certHolder));
+            mNegativeButton = updateButton(DialogInterface.BUTTON_NEGATIVE, displayText);
+            mNegativeButton.setVisibility(showRemoveButton ? View.VISIBLE : View.GONE);
+!!!368130.java!!!	updateButton(in buttonType : int, inout displayText : CharSequence) : Button
+            mDialog.setButton(buttonType, displayText, (DialogInterface.OnClickListener) null);
+            Button button = mDialog.getButton(buttonType);
+            button.setText(displayText);
+            button.setOnClickListener(this);
+            return button;
+!!!368258.java!!!	updateViewContainer() : void
+            CertHolder certHolder = getCurrentCertInfo();
+            LinearLayout nextCertLayout = getCertLayout(certHolder);
+
+            // Displaying first cert doesn't require animation
+            if (mCurrentCertLayout == null) {
+                mCurrentCertLayout = nextCertLayout;
+                mRootContainer.addView(mCurrentCertLayout);
+            } else {
+                animateViewTransition(nextCertLayout);
+            }
+!!!368386.java!!!	getCertLayout(in certHolder : TrustedCredentialsSettings::CertHolder) : LinearLayout
+            final ArrayList<View> views =  new ArrayList<View>();
+            final ArrayList<String> titles = new ArrayList<String>();
+            List<X509Certificate> certificates = mDelegate.getX509CertsFromCertHolder(certHolder);
+            if (certificates != null) {
+                for (X509Certificate certificate : certificates) {
+                    SslCertificate sslCert = new SslCertificate(certificate);
+                    views.add(sslCert.inflateCertificateView(mActivity));
+                    titles.add(sslCert.getIssuedTo().getCName());
+                }
+            }
+
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mActivity,
+                    android.R.layout.simple_spinner_item,
+                    titles);
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            Spinner spinner = new Spinner(mActivity);
+            spinner.setAdapter(arrayAdapter);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position,
+                        long id) {
+                    for (int i = 0; i < views.size(); i++) {
+                        views.get(i).setVisibility(i == position ? View.VISIBLE : View.GONE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+            LinearLayout certLayout = new LinearLayout(mActivity);
+            certLayout.setOrientation(LinearLayout.VERTICAL);
+            certLayout.addView(spinner);
+            for (int i = 0; i < views.size(); ++i) {
+                View certificateView = views.get(i);
+                // Show first cert by default
+                certificateView.setVisibility(i == 0 ? View.VISIBLE : View.GONE);
+                certLayout.addView(certificateView);
+            }
+
+            return certLayout;
+!!!368514.java!!!	getButtonConfirmation(inout certHolder : TrustedCredentialsSettings::CertHolder) : int
+            return certHolder.isSystemCert() ? ( certHolder.isDeleted()
+                        ? R.string.trusted_credentials_enable_confirmation
+                        : R.string.trusted_credentials_disable_confirmation )
+                    : R.string.trusted_credentials_remove_confirmation;
+!!!368642.java!!!	getButtonLabel(inout certHolder : TrustedCredentialsSettings::CertHolder) : int
+            return certHolder.isSystemCert() ? ( certHolder.isDeleted()
+                        ? R.string.trusted_credentials_enable_label
+                        : R.string.trusted_credentials_disable_label )
+                    : R.string.trusted_credentials_remove_label;
+!!!368770.java!!!	animateViewTransition(in nextCertView : View) : void
+            animateOldContent(new Runnable() {
+                @Override
+                public void run() {
+                    addAndAnimateNewContent(nextCertView);
+                }
+            });
+!!!368898.java!!!	animateOldContent(inout callback : Runnable) : void
+            // Fade out
+            mCurrentCertLayout.animate()
+                    .alpha(0)
+                    .setDuration(OUT_DURATION_MS)
+                    .setInterpolator(AnimationUtils.loadInterpolator(mActivity,
+                            android.R.interpolator.fast_out_linear_in))
+                    .withEndAction(callback)
+                    .start();
+!!!369026.java!!!	addAndAnimateNewContent(inout nextCertLayout : View) : void
+            mCurrentCertLayout = nextCertLayout;
+            mRootContainer.removeAllViews();
+            mRootContainer.addView(nextCertLayout);
+
+            mRootContainer.addOnLayoutChangeListener( new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    mRootContainer.removeOnLayoutChangeListener(this);
+
+                    // Animate slide in from the right
+                    final int containerWidth = mRootContainer.getWidth();
+                    mCurrentCertLayout.setTranslationX(containerWidth);
+                    mCurrentCertLayout.animate()
+                            .translationX(0)
+                            .setInterpolator(AnimationUtils.loadInterpolator(mActivity,
+                                    android.R.interpolator.linear_out_slow_in))
+                            .setDuration(IN_DURATION_MS)
+                            .start();
+                }
+            });

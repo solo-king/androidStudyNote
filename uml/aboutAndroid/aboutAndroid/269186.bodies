@@ -1,0 +1,70 @@
+class ZenModeVoiceActivity
+!!!846466.java!!!	onVoiceSettingInteraction(inout intent : Intent) : boolean
+        if (intent.hasExtra(EXTRA_DO_NOT_DISTURB_MODE_ENABLED)) {
+            int minutes = intent.getIntExtra(EXTRA_DO_NOT_DISTURB_MODE_MINUTES, -1);
+            Condition condition = null;
+            int mode = Global.ZEN_MODE_OFF;
+
+            if (intent.getBooleanExtra(EXTRA_DO_NOT_DISTURB_MODE_ENABLED, false)) {
+                if (minutes > 0) {
+                    condition = ZenModeConfig.toTimeCondition(this, minutes, UserHandle.myUserId());
+                }
+                mode = Global.ZEN_MODE_ALARMS;
+            }
+            setZenModeConfig(mode, condition);
+
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                // Show the current Zen Mode setting.
+                audioManager.adjustStreamVolume(AudioManager.STREAM_NOTIFICATION,
+                         AudioManager.ADJUST_SAME,
+                         AudioManager.FLAG_SHOW_UI);
+            }
+            notifySuccess(getChangeSummary(mode, minutes));
+        } else {
+            Log.v(TAG, "Missing extra android.provider.Settings.EXTRA_DO_NOT_DISTURB_MODE_ENABLED");
+            finish();
+        }
+        return false;
+!!!846594.java!!!	setZenModeConfig(in mode : int, inout condition : Condition) : void
+        if (condition != null) {
+            NotificationManager.from(this).setZenMode(mode, condition.id, TAG);
+        } else {
+            NotificationManager.from(this).setZenMode(mode, null, TAG);
+        }
+!!!846722.java!!!	getChangeSummary(in mode : int, in minutes : int) : CharSequence
+        int indefinite = -1;
+        int byMinute = -1;
+        int byHour = -1;
+        int byTime = -1;
+
+        switch (mode) {
+            case Global.ZEN_MODE_ALARMS:
+                indefinite = R.string.zen_mode_summary_alarms_only_indefinite;
+                byMinute = R.plurals.zen_mode_summary_alarms_only_by_minute;
+                byHour = R.plurals.zen_mode_summary_alarms_only_by_hour;
+                byTime = R.string.zen_mode_summary_alarms_only_by_time;
+                break;
+            case Global.ZEN_MODE_OFF:
+                indefinite = R.string.zen_mode_summary_always;
+                break;
+        };
+
+        if (minutes < 0 || mode == Global.ZEN_MODE_OFF) {
+            return getString(indefinite);
+        }
+
+        long time = System.currentTimeMillis() + minutes * MINUTES_MS;
+        String skeleton = DateFormat.is24HourFormat(this, UserHandle.myUserId()) ? "Hm" : "hma";
+        String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
+        CharSequence formattedTime = DateFormat.format(pattern, time);
+        Resources res = getResources();
+
+        if (minutes < 60) {
+            return res.getQuantityString(byMinute, minutes, minutes, formattedTime);
+        } else if (minutes % 60 != 0) {
+            return res.getString(byTime, formattedTime);
+        } else {
+            int hours = minutes / 60;
+            return res.getQuantityString(byHour, hours, hours, formattedTime);
+        }

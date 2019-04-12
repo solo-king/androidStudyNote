@@ -1,0 +1,312 @@
+format 76
+
+classinstance 128898 class_ref 128770 // EthernetEnabler
+  name ""   xyz 615.025 20.7832 2000 life_line_z 2000
+classinstance 129922 class_ref 129666 // EthernetManager
+  name ""   xyz 925.635 16.1428 2000 life_line_z 2000
+classinstance 130690 class_ref 130562 // EthernetService
+  name ""   xyz 1284.67 11.8423 2000 life_line_z 2000
+note 131202 "packages\\apps\\Settings\\src\\com\\android\\settings\\ethernet\\EthernetEnabler.java"
+  xyzwh 525.084 67.7092 2000 265 57
+note 131330 "frameworks\\base\\ethernet\\java\\android\\net\\ethernet\\EthernetManager.java"
+  xyzwh 881.355 63.0294 2000 181 69
+note 139266 "Settings.Global.putInt(cr,Settings.Global.ETH_ON,EthernetManager.ETH_STATE_ENABLED==2);"
+  xyzwh 1175.71 452.727 2025 317 63
+note 139394 "frameworks\\base\\services\\java\\com\\android\\server\\EthernetService.java"
+  xyzwh 1213.05 69.6491 2000 239 51
+classinstance 143106 class_ref 129922 // EthernetStateTracker
+  name ""   xyz 1533.22 5.8 2000 life_line_z 2000
+classinstance 144130 class_ref 148098 // NetworkUtils
+  name ""   xyz 2135.7 7.62165 2000 life_line_z 2000
+classinstance 144642 class_ref 160258 // android_net_NetUtils.cpp
+  name ""   xyz 2314.32 4.64 2005 life_line_z 2000
+classinstance 147586 class_ref 137474 // NetworkInfo
+  name ""   xyz 2616.4 6.04 2000 life_line_z 2000
+note 151426 "EthernetDevInfo info = new EthernetDevInfo();
+info.setConnectMode(Settings.Global.getString(cr, Settings.Global.ETH_MODE));
+info.setIfName(Settings.Global.getString(cr, Settings.Global.ETH_IFNAME));
+info.setIpAddress(Settings.Global.getString(cr, Settings.Global.ETH_IP));
+info.setDnsAddr(Settings.Global.getString(cr, Settings.Global.ETH_DNS));
+info.setNetMask(Settings.Global.getString(cr, Settings.Global.ETH_MASK));
+info.setRouteAddr(Settings.Global.getString(cr, Settings.Global.ETH_ROUTE));"
+  xyzwh 990.92 652.72 2000 472 128
+classinstance 151682 class_ref 166786 // Handler
+  name ""   xyz 2846.2 6.1 2000 life_line_z 2000
+classinstance 152194 class_ref 167682 // Message
+  name ""   xyz 3042.5 4.32 2000 life_line_z 2000
+note 152578 "startMonitoring:
+mTarget = target;
+mTrackerTarget = new Handler(target.getLooper(), mTrackerHandlerCallback);"
+  xyzwh 2155.66 1094.76 2000 317 79
+classinstance 152962 class_ref 195458 // Intent
+  name ""   xyz 3192.48 4.32 2000 life_line_z 2000
+durationcanvas 129026 classinstance_ref 128898 // :EthernetEnabler
+  xyzwh 661 165.64 2010 11 488
+  overlappingdurationcanvas 129666
+    xyzwh 667 199.8 2020 11 112
+  end
+end
+durationcanvas 130050 classinstance_ref 129922 // :EthernetManager
+  xyzwh 974 157.64 2010 11 554
+  overlappingdurationcanvas 132354
+    xyzwh 980 206.68 2020 11 54
+  end
+  overlappingdurationcanvas 132738
+    xyzwh 980 277.8 2020 11 107
+  end
+  overlappingdurationcanvas 143490
+    xyzwh 980 574.04 2020 11 102
+  end
+end
+durationcanvas 132994 classinstance_ref 130690 // :EthernetService
+  xyzwh 1329 343.04 2010 11 363
+  overlappingdurationcanvas 138498
+    xyzwh 1335 387.04 2020 11 25
+  end
+  overlappingdurationcanvas 139010
+    xyzwh 1335 432.88 2020 11 93
+  end
+  overlappingdurationcanvas 151042
+    xyzwh 1335 612.12 2020 11 72
+  end
+end
+durationcanvas 143234 classinstance_ref 143106 // :EthernetStateTracker
+  xyzwh 1592 548.6 2010 11 825
+  overlappingdurationcanvas 147330
+    xyzwh 1598 795.96 2020 11 562
+    overlappingdurationcanvas 147970
+      xyzwh 1604 875.88 2030 11 166
+    end
+    overlappingdurationcanvas 152706
+      xyzwh 1604 1260.24 2030 11 69
+    end
+  end
+end
+durationcanvas 145922 classinstance_ref 144130 // :NetworkUtils
+  xyzwh 2172 666.8 2010 11 29
+end
+durationcanvas 146562 classinstance_ref 144130 // :NetworkUtils
+  xyzwh 2172 737.64 2010 11 45
+end
+durationcanvas 147074 classinstance_ref 144642 // :android_net_NetUtils.cpp
+  xyzwh 2386 766.88 2010 11 25
+end
+durationcanvas 147714 classinstance_ref 147586 // :NetworkInfo
+  xyzwh 2650 840.64 2010 11 39
+end
+durationcanvas 149506 classinstance_ref 144130 // :NetworkUtils
+  xyzwh 2172 901.2 2010 11 39
+end
+durationcanvas 149762 classinstance_ref 144130 // :NetworkUtils
+  xyzwh 2172 954.08 2010 11 39
+end
+durationcanvas 150018 classinstance_ref 144130 // :NetworkUtils
+  xyzwh 2172 1009.88 2010 11 39
+end
+durationcanvas 150274 classinstance_ref 147586 // :NetworkInfo
+  xyzwh 2650 1083.36 2010 11 67
+  overlappingdurationcanvas 150530
+    xyzwh 2656 1120.72 2020 11 25
+  end
+end
+durationcanvas 151810 classinstance_ref 151682 // :Handler
+  xyzwh 2870 1141.76 2010 11 81
+end
+durationcanvas 152322 classinstance_ref 152194 // :Message
+  xyzwh 3069 1214.68 2010 11 39
+end
+durationcanvas 153090 classinstance_ref 152962 // :Intent
+  xyzwh 3211 1298.68 2010 11 71
+  overlappingdurationcanvas 153346
+    xyzwh 3217 1317.68 2020 11 33
+  end
+end
+lostfoundmsgsupport 129154 xyz 346 188 2015
+msg 129282 found_synchronous
+  from lostfoundmsgsupport_ref 129154
+  to durationcanvas_ref 129026
+  yz 186 2015 explicitmsg "onCheckedChanged(CompoundButton buttonView, boolean isChecked)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "xxx,true"
+  label_xy 404 172
+reflexivemsg 129794 synchronous
+  to durationcanvas_ref 129666
+  yz 199 2025 explicitmsg "setEthEnabled(isChecked);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "true"
+  label_xy 612 187
+msg 132482 synchronous
+  from durationcanvas_ref 129666
+  to durationcanvas_ref 132354
+  yz 209 2030 msg operation_ref 136194 // "getEthState() : int"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 768 194
+msg 132610 return
+  from durationcanvas_ref 132354
+  to durationcanvas_ref 129666
+  yz 241 2035 explicitmsg "int state = mEthManager.getEthState();"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 710 226
+msg 132866 synchronous
+  from durationcanvas_ref 129666
+  to durationcanvas_ref 132738
+  yz 283 2025 msg operation_ref 136066 // "setEthEnabled(inout enable : boolean) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "true"
+  label_xy 745 268
+msg 133122 synchronous
+  from durationcanvas_ref 132738
+  to durationcanvas_ref 132994
+  yz 350 2025 explicitmsg "setEthState(in state : int)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "ETH_STATE_ENABLED==2"
+  label_xy 1016 335
+reflexivemsg 138626 synchronous
+  to durationcanvas_ref 138498
+  yz 387 2025 explicitmsg "mEthState = state;"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1313 371
+reflexivemsg 139138 synchronous
+  to durationcanvas_ref 139010
+  yz 432 2025 explicitmsg "persistEthEnabled(true);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1289 417
+msg 143362 synchronous
+  from durationcanvas_ref 132994
+  to durationcanvas_ref 143234
+  yz 548 2015 msg operation_ref 139778 // "resetInterface() : boolean"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1409 534
+msg 143618 synchronous
+  from durationcanvas_ref 143234
+  to durationcanvas_ref 143490
+  yz 588 2025 msg operation_ref 135682 // "getSavedEthConfig() : EthernetDevInfo"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1014 578
+msg 146050 synchronous
+  from durationcanvas_ref 143234
+  to durationcanvas_ref 145922
+  yz 682 2015 msg operation_ref 267394 // "resetConnections(in interfaceName : String, in mask : int) : int"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1721 664
+msg 146690 synchronous
+  from durationcanvas_ref 143234
+  to durationcanvas_ref 146562
+  yz 753 2015 msg operation_ref 267778 // "stopDhcp(in interfaceName : String) : boolean"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "eth0"
+  label_xy 1817 735
+msg 147202 synchronous
+  from durationcanvas_ref 146562
+  to durationcanvas_ref 147074
+  yz 769 2020 explicitmsg "dhcp_stop()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 2253 751
+reflexivemsg 147458 synchronous
+  to durationcanvas_ref 147330
+  yz 795 2025 msg operation_ref 143362 // "setEthState(inout state : boolean, in event : int) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "false,EVENT_HW_DISCONNECTED==4"
+  label_xy 1480 779
+msg 147842 synchronous
+  from durationcanvas_ref 147330
+  to durationcanvas_ref 147714
+  yz 852 2025 msg operation_ref 245890 // "setDetailedState(inout detailedState : NetworkInfo::DetailedState, in reason : String, in extraInfo : String) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "DetailedState.DISCONNECTED,null,null"
+  label_xy 1954 832
+reflexivemsg 148098 synchronous
+  to durationcanvas_ref 147970
+  yz 875 2035 explicitmsg "stopInterface(true);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1571 861
+msg 149634 synchronous
+  from durationcanvas_ref 147970
+  to durationcanvas_ref 149506
+  yz 907 2035 msg operation_ref 267778 // "stopDhcp(in interfaceName : String) : boolean"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "eth0"
+  label_xy 1824 889
+msg 149890 synchronous
+  from durationcanvas_ref 147970
+  to durationcanvas_ref 149762
+  yz 959 2035 msg operation_ref 267394 // "resetConnections(in interfaceName : String, in mask : int) : int"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "eth0,NetworkUtils.RESET_ALL_ADDRESSES"
+  label_xy 1704 942
+msg 150146 synchronous
+  from durationcanvas_ref 147970
+  to durationcanvas_ref 150018
+  yz 1014 2035 msg operation_ref 267266 // "disableInterface(in interfaceName : String) : int"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "eth0"
+  label_xy 1821 996
+msg 150402 synchronous
+  from durationcanvas_ref 147330
+  to durationcanvas_ref 150274
+  yz 1095 2025 msg operation_ref 244610 // "setIsAvailable(inout isAvailable : boolean) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "false"
+  label_xy 2060 1077
+reflexivemsg 150658 synchronous
+  to durationcanvas_ref 150530
+  yz 1120 2025 explicitmsg "mIsAvailable = false"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 2624 1102
+msg 151170 synchronous
+  from durationcanvas_ref 143490
+  to durationcanvas_ref 151042
+  yz 614 2025 msg operation_ref 147330 // "getSavedEthConfig() : EthernetDevInfo"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1059 599
+msg 151298 return
+  from durationcanvas_ref 151042
+  to durationcanvas_ref 143490
+  yz 645 2025 explicitmsg "info"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1153 630
+msg 151554 return
+  from durationcanvas_ref 143490
+  to durationcanvas_ref 143234
+  yz 664 2030 explicitmsg "info"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 1512 653
+msg 151938 synchronous
+  from durationcanvas_ref 147330
+  to durationcanvas_ref 151810
+  yz 1153 2025 explicitmsg "mTarget.obtainMessage() : Message"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "EVENT_CONFIGURATION_CHANGED,mNetworkInfo"
+  label_xy 1624 1134
+msg 152066 return
+  from durationcanvas_ref 151810
+  to durationcanvas_ref 147330
+  yz 1194 2025 explicitmsg "return msg"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 2227 1178
+msg 152450 synchronous
+  from durationcanvas_ref 147330
+  to durationcanvas_ref 152322
+  yz 1226 2025 explicitmsg "msg.sendToTarget() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 2267 1210
+reflexivemsg 152834 synchronous
+  to durationcanvas_ref 152706
+  yz 1260 2035 msg operation_ref 143234 // "postNotification(in event : int) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "EVENT_HW_DISCONNECTED"
+  label_xy 1477 1245
+msg 153218 synchronous
+  from durationcanvas_ref 152706
+  to durationcanvas_ref 153090
+  yz 1300 2035 msg operation_ref 726914 // "Intent(in action : String)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "EthernetManager.ETH_STATE_CHANGED_ACTION"
+  label_xy 2252 1283
+reflexivemsg 153474 synchronous
+  to durationcanvas_ref 153346
+  yz 1317 2025 msg operation_ref 735362 // "setAction(in action : String) : Intent"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "EthernetManager.ETH_STATE_CHANGED_ACTION"
+  label_xy 3043 1303
+end

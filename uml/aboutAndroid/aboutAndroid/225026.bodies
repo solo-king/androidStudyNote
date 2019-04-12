@@ -1,0 +1,64 @@
+class SuggestionsChecks
+!!!591362.java!!!	SuggestionsChecks(inout context : Context)
+        mContext = context.getApplicationContext();
+!!!591490.java!!!	isSuggestionComplete(inout suggestion : Tile) : boolean
+        String className = suggestion.intent.getComponent().getClassName();
+        if (className.equals(ZenModeAutomationSuggestionActivity.class.getName())) {
+            return hasEnabledZenAutoRules();
+        } else if (className.equals(WallpaperSuggestionActivity.class.getName())) {
+            return false;//hasWallpaperSet();
+        } else if (className.equals(WifiCallingSuggestionActivity.class.getName())) {
+            return isWifiCallingUnavailableOrEnabled();
+        } else if (className.equals(FingerprintSuggestionActivity.class.getName())) {
+            return isNotSingleFingerprintEnrolled() || !isFingerprintEnabled();
+        } else if (className.equals(ScreenLockSuggestionActivity.class.getName())) {
+            return isDeviceSecured();
+        } else if (className.equals(FingerprintEnrollSuggestionActivity.class.getName())) {
+            return isDeviceSecured() || !isFingerprintEnabled();
+        }
+
+        SuggestionFeatureProvider provider =
+            FeatureFactory.getFactory(mContext).getSuggestionFeatureProvider();
+        if (provider != null && provider.isPresent(className)) {
+            return provider.isSuggestionCompleted(mContext);
+        }
+
+        return false;
+!!!591618.java!!!	isDeviceSecured() : boolean
+        KeyguardManager km = mContext.getSystemService(KeyguardManager.class);
+        return km.isKeyguardSecure();
+!!!591746.java!!!	isNotSingleFingerprintEnrolled() : boolean
+        FingerprintManager manager = mContext.getSystemService(FingerprintManager.class);
+        return manager == null || manager.getEnrolledFingerprints().size() != 1;
+!!!591874.java!!!	isWifiCallingUnavailableOrEnabled() : boolean
+        if (!ImsManager.isWfcEnabledByPlatform(mContext) ||
+                !ImsManager.isWfcProvisionedOnDevice(mContext)) {
+            return true;
+        }
+        return ImsManager.isWfcEnabledByUser(mContext)
+                && ImsManager.isNonTtyOrTtyOnVolteEnabled(mContext);
+!!!592002.java!!!	hasEnabledZenAutoRules() : boolean
+        Collection<AutomaticZenRule> zenRules =
+                NotificationManager.from(mContext).getAutomaticZenRules().values();
+        for (AutomaticZenRule rule : zenRules) {
+            if (rule.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+!!!592130.java!!!	hasWallpaperSet() : boolean
+        IBinder b = ServiceManager.getService(Context.WALLPAPER_SERVICE);
+        IWallpaperManager service = Stub.asInterface(b);
+        try {
+            return !service.isSetWallpaperAllowed(mContext.getOpPackageName()) ||
+                    service.getWallpaper(mCallback, WallpaperManager.FLAG_SYSTEM,
+                            new Bundle(), mContext.getUserId()) != null;
+        } catch (RemoteException e) {
+        }
+        return false;
+!!!592258.java!!!	isFingerprintEnabled() : boolean
+        DevicePolicyManager dpManager =
+                (DevicePolicyManager) mContext.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        final int dpmFlags = dpManager.getKeyguardDisabledFeatures(null, /* admin */
+                mContext.getUserId());
+        return (dpmFlags & DevicePolicyManager.KEYGUARD_DISABLE_FINGERPRINT) == 0;

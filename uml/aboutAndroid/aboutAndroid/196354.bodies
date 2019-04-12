@@ -1,0 +1,25 @@
+class LocalePreference
+!!!415234.java!!!	LocalePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        init(context);
+!!!415362.java!!!	LocalePreference(inout context : Context)
+        super(context);
+        init(context);
+!!!415490.java!!!	init(inout context : Context) : void
+        List<LocalePicker.LocaleInfo> locales = LocalePicker.getAllAssetLocales(context,
+                false /* in developer mode */);
+
+        final int finalSize = locales.size();
+        final CharSequence[] entries = new CharSequence[finalSize + 1];
+        final CharSequence[] entryValues = new CharSequence[finalSize + 1];
+        entries[0] = context.getResources().getString(R.string.locale_default);
+        entryValues[0] = "";
+
+        for (int i = 0; i < finalSize; i++) {
+            final LocalePicker.LocaleInfo info = locales.get(i);
+            entries[i + 1] = info.toString();
+            entryValues[i + 1] = info.getLocale().toString();
+        }
+
+        setEntries(entries);
+        setEntryValues(entryValues);

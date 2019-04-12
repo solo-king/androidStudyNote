@@ -1,0 +1,129 @@
+class DefaultAssistPreference
+!!!475778.java!!!	DefaultAssistPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setShowItemNone(true);
+        setDialogTitle(R.string.choose_assist_title);
+        mAssistUtils = new AssistUtils(context);
+!!!475906.java!!!	persistString(in value : String) : boolean
+        final Info info = findAssistantByPackageName(value);
+        if (info == null) {
+            setAssistNone();
+            return true;
+        }
+
+        if (info.isVoiceInteractionService()) {
+            setAssistService(info);
+        } else {
+            setAssistActivity(info);
+        }
+        return true;
+!!!476034.java!!!	setAssistNone() : void
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.ASSISTANT, ITEM_NONE_VALUE);
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_INTERACTION_SERVICE, "");
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_RECOGNITION_SERVICE, getDefaultRecognizer());
+
+        setSummary(getContext().getText(R.string.default_assist_none));
+        setSettingsComponent(null);
+!!!476162.java!!!	setAssistService(inout serviceInfo : DefaultAssistPreference::Info) : void
+        final String serviceComponentName = serviceInfo.component.flattenToShortString();
+        final String serviceRecognizerName = new ComponentName(
+                serviceInfo.component.getPackageName(),
+                serviceInfo.voiceInteractionServiceInfo.getRecognitionService())
+                .flattenToShortString();
+
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.ASSISTANT, serviceComponentName);
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_INTERACTION_SERVICE, serviceComponentName);
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_RECOGNITION_SERVICE, serviceRecognizerName);
+
+        setSummary(getEntry());
+        final String settingsActivity =
+                serviceInfo.voiceInteractionServiceInfo.getSettingsActivity();
+        setSettingsComponent(settingsActivity == null ?
+                null :
+                new ComponentName(serviceInfo.component.getPackageName(), settingsActivity));
+!!!476290.java!!!	setAssistActivity(inout activityInfo : DefaultAssistPreference::Info) : void
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.ASSISTANT, activityInfo.component.flattenToShortString());
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_INTERACTION_SERVICE, "");
+        Settings.Secure.putString(getContext().getContentResolver(),
+                Settings.Secure.VOICE_RECOGNITION_SERVICE, getDefaultRecognizer());
+
+        setSummary(getEntry());
+        setSettingsComponent(null);
+!!!476418.java!!!	getDefaultRecognizer() : String
+        ResolveInfo resolveInfo = getContext().getPackageManager().resolveService(
+                new Intent(RecognitionService.SERVICE_INTERFACE),
+                PackageManager.GET_META_DATA);
+        if (resolveInfo == null || resolveInfo.serviceInfo == null) {
+            Log.w(TAG, "Unable to resolve default voice recognition service.");
+            return "";
+        }
+
+        return new ComponentName(resolveInfo.serviceInfo.packageName,
+                resolveInfo.serviceInfo.name).flattenToShortString();
+!!!476546.java!!!	findAssistantByPackageName(in packageName : String) : DefaultAssistPreference::Info
+        for (int i = 0; i < mAvailableAssistants.size(); ++i) {
+            Info info = mAvailableAssistants.get(i);
+            if (info.component.getPackageName().equals(packageName)) {
+                return info;
+            }
+        }
+        return null;
+!!!476674.java!!!	addAssistServices() : void
+        PackageManager pm = getContext().getPackageManager();
+
+        List<ResolveInfo> services = pm.queryIntentServices(
+                new Intent(VoiceInteractionService.SERVICE_INTERFACE),
+                PackageManager.GET_META_DATA);
+        for (int i = 0; i < services.size(); ++i) {
+            ResolveInfo resolveInfo = services.get(i);
+            VoiceInteractionServiceInfo voiceInteractionServiceInfo =
+                    new VoiceInteractionServiceInfo(pm, resolveInfo.serviceInfo);
+            if (!voiceInteractionServiceInfo.getSupportsAssist()) {
+                continue;
+            }
+
+            mAvailableAssistants.add(new Info(
+                    new ComponentName(resolveInfo.serviceInfo.packageName,
+                                      resolveInfo.serviceInfo.name),
+                    voiceInteractionServiceInfo));
+        }
+!!!476802.java!!!	addAssistActivities() : void
+        PackageManager pm = getContext().getPackageManager();
+
+        List<ResolveInfo> activities = pm.queryIntentActivities(
+                new Intent(Intent.ACTION_ASSIST),
+                PackageManager.MATCH_DEFAULT_ONLY);
+        for (int i = 0; i < activities.size(); ++i) {
+            ResolveInfo resolveInfo = activities.get(i);
+            mAvailableAssistants.add(new Info(
+                    new ComponentName(resolveInfo.activityInfo.packageName,
+                                      resolveInfo.activityInfo.name)));
+        }
+!!!476930.java!!!	getCurrentAssist() : ComponentName
+        return mAssistUtils.getAssistComponentForUser(UserHandle.myUserId());
+!!!477058.java!!!	refreshAssistApps() : void
+        mAvailableAssistants.clear();
+        addAssistServices();
+        addAssistActivities();
+
+        List<String> packages = new ArrayList<>();
+        for (int i = 0; i < mAvailableAssistants.size(); ++i) {
+            String packageName = mAvailableAssistants.get(i).component.getPackageName();
+            if (packages.contains(packageName)) {
+                // A service appears before an activity thus overrides it if from the same package.
+                continue;
+            }
+            packages.add(packageName);
+        }
+
+        ComponentName currentAssist = getCurrentAssist();
+        setPackageNames(packages.toArray(new String[packages.size()]),
+                currentAssist == null ? null : currentAssist.getPackageName());

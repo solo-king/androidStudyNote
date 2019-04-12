@@ -1,0 +1,157 @@
+class Binder
+!!!428290.java!!!	getCallingUserHandle() : UserHandle
+        return new UserHandle(UserHandle.getUserId(getCallingUid()));
+!!!429186.java!!!	isProxy(inout iface : IInterface) : boolean
+        return iface.asBinder() != iface;
+!!!429314.java!!!	Binder()
+        init();
+
+        if (FIND_POTENTIAL_LEAKS) {
+            final Class<? extends Binder> klass = getClass();
+            if ((klass.isAnonymousClass() || klass.isMemberClass() || klass.isLocalClass()) &&
+                    (klass.getModifiers() & Modifier.STATIC) == 0) {
+                Log.w(TAG, "The following Binder class should be static or leaks might occur: " +
+                    klass.getCanonicalName());
+            }
+        }
+!!!429442.java!!!	attachInterface(inout owner : IInterface, in descriptor : String) : void
+        mOwner = owner;
+        mDescriptor = descriptor;
+!!!429570.java!!!	getInterfaceDescriptor() : String
+        return mDescriptor;
+!!!429698.java!!!	pingBinder() : boolean
+        return true;
+!!!429826.java!!!	isBinderAlive() : boolean
+        return true;
+!!!429954.java!!!	queryLocalInterface(in descriptor : String) : IInterface
+        if (mDescriptor.equals(descriptor)) {
+            return mOwner;
+        }
+        return null;
+!!!430082.java!!!	setDumpDisabled(in msg : String) : void
+        synchronized (Binder.class) {
+            sDumpDisabled = msg;
+        }
+!!!430210.java!!!	onTransact(in code : int, inout data : Parcel, inout reply : Parcel, in flags : int) : boolean
+        if (code == INTERFACE_TRANSACTION) {
+            reply.writeString(getInterfaceDescriptor());
+            return true;
+        } else if (code == DUMP_TRANSACTION) {
+            ParcelFileDescriptor fd = data.readFileDescriptor();
+            String[] args = data.readStringArray();
+            if (fd != null) {
+                try {
+                    dump(fd.getFileDescriptor(), args);
+                } finally {
+                    try {
+                        fd.close();
+                    } catch (IOException e) {
+                        // swallowed, not propagated back to the caller
+                    }
+                }
+            }
+            // Write the StrictMode header.
+            if (reply != null) {
+                reply.writeNoException();
+            } else {
+                StrictMode.clearGatheredViolations();
+            }
+            return true;
+        }
+        return false;
+!!!430338.java!!!	dump(inout fd : FileDescriptor, inout args : String) : void
+        FileOutputStream fout = new FileOutputStream(fd);
+        PrintWriter pw = new FastPrintWriter(fout);
+        try {
+            final String disabled;
+            synchronized (Binder.class) {
+                disabled = sDumpDisabled;
+            }
+            if (disabled == null) {
+                try {
+                    dump(fd, pw, args);
+                } catch (SecurityException e) {
+                    pw.println("Security exception: " + e.getMessage());
+                    throw e;
+                } catch (Throwable e) {
+                    // Unlike usual calls, in this case if an exception gets thrown
+                    // back to us we want to print it back in to the dump data, since
+                    // that is where the caller expects all interesting information to
+                    // go.
+                    pw.println();
+                    pw.println("Exception occurred while dumping:");
+                    e.printStackTrace(pw);
+                }
+            } else {
+                pw.println(sDumpDisabled);
+            }
+        } finally {
+            pw.flush();
+        }
+!!!430466.java!!!	dumpAsync(in fd : FileDescriptor, in args : String) : void
+        final FileOutputStream fout = new FileOutputStream(fd);
+        final PrintWriter pw = new FastPrintWriter(fout);
+        Thread thr = new Thread("Binder.dumpAsync") {
+            public void run() {
+                try {
+                    dump(fd, pw, args);
+                } finally {
+                    pw.flush();
+                }
+            }
+        };
+        thr.start();
+!!!430722.java!!!	transact(in code : int, inout data : Parcel, inout reply : Parcel, in flags : int) : boolean
+        if (false) Log.v("Binder", "Transact: " + code + " to " + this);
+        if (data != null) {
+            data.setDataPosition(0);
+        }
+        boolean r = onTransact(code, data, reply, flags);
+        if (reply != null) {
+            reply.setDataPosition(0);
+        }
+        return r;
+!!!430978.java!!!	unlinkToDeath(inout recipient : IBinder::DeathRecipient, in flags : int) : boolean
+        return true;
+!!!431106.java!!!	finalize() : void
+        try {
+            destroy();
+        } finally {
+            super.finalize();
+        }
+!!!431490.java!!!	execTransact(in code : int, in dataObj : int, in replyObj : int, in flags : int) : boolean
+        Parcel data = Parcel.obtain(dataObj);
+        Parcel reply = Parcel.obtain(replyObj);
+        // theoretically, we should call transact, which will call onTransact,
+        // but all that does is rewind it, and we just got these from an IPC,
+        // so we'll just call it directly.
+        boolean res;
+        // Log any exceptions as warnings, don't silently suppress them.
+        // If the call was FLAG_ONEWAY then these exceptions disappear into the ether.
+        try {
+            res = onTransact(code, data, reply, flags);
+        } catch (RemoteException e) {
+            if ((flags & FLAG_ONEWAY) != 0) {
+                Log.w(TAG, "Binder call failed.", e);
+            }
+            reply.setDataPosition(0);
+            reply.writeException(e);
+            res = true;
+        } catch (RuntimeException e) {
+            if ((flags & FLAG_ONEWAY) != 0) {
+                Log.w(TAG, "Caught a RuntimeException from the binder stub implementation.", e);
+            }
+            reply.setDataPosition(0);
+            reply.writeException(e);
+            res = true;
+        } catch (OutOfMemoryError e) {
+            // Unconditionally log this, since this is generally unrecoverable.
+            Log.e(TAG, "Caught an OutOfMemoryError from the binder stub implementation.", e);
+            RuntimeException re = new RuntimeException("Out of memory", e);
+            reply.setDataPosition(0);
+            reply.writeException(re);
+            res = true;
+        }
+        reply.recycle();
+        data.recycle();
+        return res;

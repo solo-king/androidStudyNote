@@ -1,0 +1,60 @@
+class PacProxySelector
+!!!269570.java!!!	PacProxySelector()
+        mProxyService = IProxyService.Stub.asInterface(
+                ServiceManager.getService(PROXY_SERVICE));
+        if (mProxyService == null) {
+            // Added because of b10267814 where mako is restarting.
+            Log.e(TAG, "PacManager: no proxy service");
+        }
+        mDefaultList = Lists.newArrayList(java.net.Proxy.NO_PROXY);
+!!!269698.java!!!	select(inout uri : URI) : Proxy
+        if (mProxyService == null) {
+            mProxyService = IProxyService.Stub.asInterface(
+                    ServiceManager.getService(PROXY_SERVICE));
+        }
+        if (mProxyService == null) {
+            Log.e(TAG, "select: no proxy service return NO_PROXY");
+            return Lists.newArrayList(java.net.Proxy.NO_PROXY);
+        }
+        String response = null;
+        String urlString;
+        try {
+            urlString = uri.toURL().toString();
+        } catch (MalformedURLException e) {
+            urlString = uri.getHost();
+        }
+        try {
+            response = mProxyService.resolvePacFile(uri.getHost(), urlString);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        if (response == null) {
+            return mDefaultList;
+        }
+
+        return parseResponse(response);
+!!!269826.java!!!	parseResponse(in response : String) : Proxy
+        String[] split = response.split(";");
+        List<Proxy> ret = Lists.newArrayList();
+        for (String s : split) {
+            String trimmed = s.trim();
+            if (trimmed.equals("DIRECT")) {
+                ret.add(java.net.Proxy.NO_PROXY);
+            } else if (trimmed.startsWith("PROXY ")) {
+                String[] hostPort = trimmed.substring(6).split(":");
+                String host = hostPort[0];
+                int port;
+                try {
+                    port = Integer.parseInt(hostPort[1]);
+                } catch (Exception e) {
+                    port = 8080;
+                }
+                ret.add(new Proxy(Type.HTTP, InetSocketAddress.createUnresolved(host, port)));
+            }
+        }
+        if (ret.size() == 0) {
+            ret.add(java.net.Proxy.NO_PROXY);
+        }
+        return ret;
+!!!269954.java!!!	connectFailed(inout uri : URI, inout address : SocketAddress, inout failure : IOException) : void
+

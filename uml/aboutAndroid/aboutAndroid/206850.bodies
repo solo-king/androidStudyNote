@@ -1,0 +1,8 @@
+class AppStateUsageBridge
+!!!468738.java!!!	AppStateUsageBridge(inout context : Context, inout appState : ApplicationsState, inout callback : AppStateBaseBridge::Callback)
+        super(context, appState, callback, APP_OPS_OP_CODE, PM_PERMISSION);
+!!!468866.java!!!	updateExtraInfo(inout app : AppEntry, in pkg : String, in uid : int) : void
+        app.extraInfo = getUsageInfo(pkg, uid);
+!!!468994.java!!!	getUsageInfo(in pkg : String, in uid : int) : AppStateUsageBridge::UsageState
+        PermissionState permissionState = super.getPermissionInfo(pkg, uid);
+        return new UsageState(permissionState);

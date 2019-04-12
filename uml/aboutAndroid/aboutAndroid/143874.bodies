@@ -1,0 +1,63 @@
+class Display
+!!!265346.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+
+        setContentView(R.layout.display);
+
+        mFontSize = (Spinner) findViewById(R.id.fontSize);
+        mFontSize.setOnItemSelectedListener(mFontSizeChanged);
+        String[] states = new String[3];
+        Resources r = getResources();
+        states[0] = r.getString(R.string.small_font);
+        states[1] = r.getString(R.string.medium_font);
+        states[2] = r.getString(R.string.large_font);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, states);
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item);
+        mFontSize.setAdapter(adapter);
+
+        mPreview = (TextView) findViewById(R.id.preview);
+        mPreview.setText(r.getText(R.string.font_size_preview_text));
+
+        Button save = (Button) findViewById(R.id.save);
+        save.setText(r.getText(R.string.font_size_save));
+        save.setOnClickListener(this);
+
+        mTextSizeTyped = new TypedValue();
+        TypedArray styledAttributes = 
+            obtainStyledAttributes(android.R.styleable.TextView);
+        styledAttributes.getValue(android.R.styleable.TextView_textSize,
+                mTextSizeTyped);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        mDisplayMetrics = new DisplayMetrics();
+        mDisplayMetrics.density = metrics.density;
+        mDisplayMetrics.heightPixels = metrics.heightPixels;
+        mDisplayMetrics.scaledDensity = metrics.scaledDensity;
+        mDisplayMetrics.widthPixels = metrics.widthPixels;
+        mDisplayMetrics.xdpi = metrics.xdpi;
+        mDisplayMetrics.ydpi = metrics.ydpi;
+
+        styledAttributes.recycle();
+!!!265474.java!!!	onResume() : void
+        super.onResume();
+        final ContentResolver resolver = getContentResolver();
+        mFontScale = Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1.0f);
+
+        if (mFontScale < 1) {
+            mFontSize.setSelection(0);
+        } else if (mFontScale > 1) {
+            mFontSize.setSelection(2);
+        } else {
+            mFontSize.setSelection(1);
+        }
+        updateFontScale();
+!!!265602.java!!!	updateFontScale() : void
+        mDisplayMetrics.scaledDensity = mDisplayMetrics.density * mFontScale;
+        float size = mTextSizeTyped.getDimension(mDisplayMetrics);
+        mPreview.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+!!!265730.java!!!	onClick(inout v : View) : void
+        final ContentResolver resolver = getContentResolver();
+        Settings.System.putFloat(resolver, Settings.System.FONT_SCALE, mFontScale);
+        finish();

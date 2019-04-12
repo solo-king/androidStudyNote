@@ -1,0 +1,82 @@
+class HighPowerDetail
+!!!731394.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mPackageName = getArguments().getString(AppInfoBase.ARG_PACKAGE_NAME);
+        PackageManager pm = getContext().getPackageManager();
+        try {
+            mLabel = pm.getApplicationInfo(mPackageName, 0).loadLabel(pm);
+        } catch (NameNotFoundException e) {
+            mLabel = mPackageName;
+        }
+        mDefaultOn = getArguments().getBoolean(ARG_DEFAULT_ON);
+        mIsEnabled = mDefaultOn || mBackend.isWhitelisted(mPackageName);
+!!!731522.java!!!	setup(inout view : View, inout on : boolean) : Checkable
+        ((TextView) view.findViewById(android.R.id.title)).setText(on
+                ? R.string.ignore_optimizations_on : R.string.ignore_optimizations_off);
+        ((TextView) view.findViewById(android.R.id.summary)).setText(on
+                ? R.string.ignore_optimizations_on_desc : R.string.ignore_optimizations_off_desc);
+        view.setClickable(true);
+        view.setOnClickListener(this);
+        if (!on && mBackend.isSysWhitelisted(mPackageName)) {
+            view.setEnabled(false);
+        }
+        return (Checkable) view;
+!!!731650.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+                .setTitle(mLabel)
+                .setNegativeButton(R.string.cancel, null)
+                .setView(R.layout.ignore_optimizations_content);
+        if (!mBackend.isSysWhitelisted(mPackageName)) {
+            b.setPositiveButton(R.string.done, this);
+        }
+        return b.create();
+!!!731778.java!!!	onStart() : void
+        super.onStart();
+        mOptionOn = setup(getDialog().findViewById(R.id.ignore_on), true);
+        mOptionOff = setup(getDialog().findViewById(R.id.ignore_off), false);
+        updateViews();
+!!!731906.java!!!	updateViews() : void
+        mOptionOn.setChecked(mIsEnabled);
+        mOptionOff.setChecked(!mIsEnabled);
+!!!732034.java!!!	onClick(inout v : View) : void
+        if (v == mOptionOn) {
+            mIsEnabled = true;
+            updateViews();
+        } else if (v == mOptionOff) {
+            mIsEnabled = false;
+            updateViews();
+        }
+!!!732162.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            boolean newValue = mIsEnabled;
+            boolean oldValue = mBackend.isWhitelisted(mPackageName);
+            if (newValue != oldValue) {
+                if (newValue) {
+                    mBackend.addApp(mPackageName);
+                } else {
+                    mBackend.removeApp(mPackageName);
+                }
+            }
+        }
+!!!732290.java!!!	onDismiss(inout dialog : DialogInterface) : void
+        super.onDismiss(dialog);
+        Fragment target = getTargetFragment();
+        if (target != null) {
+            target.onActivityResult(getTargetRequestCode(), 0, null);
+        }
+!!!732418.java!!!	getSummary(inout context : Context, inout entry : AppEntry) : CharSequence
+        return getSummary(context, entry.info.packageName);
+!!!732546.java!!!	getSummary(inout context : Context, in pkg : String) : CharSequence
+        PowerWhitelistBackend powerWhitelist = PowerWhitelistBackend.getInstance();
+        return context.getString(powerWhitelist.isSysWhitelisted(pkg) ? R.string.high_power_system
+                : powerWhitelist.isWhitelisted(pkg) ? R.string.high_power_on
+                : R.string.high_power_off);
+!!!732674.java!!!	show(inout caller : Fragment, in packageName : String, in requestCode : int, inout defaultToOn : boolean) : void
+        HighPowerDetail fragment = new HighPowerDetail();
+        Bundle args = new Bundle();
+        args.putString(AppInfoBase.ARG_PACKAGE_NAME, packageName);
+        args.putBoolean(ARG_DEFAULT_ON, defaultToOn);
+        fragment.setArguments(args);
+        fragment.setTargetFragment(caller, requestCode);
+        fragment.show(caller.getFragmentManager(), HighPowerDetail.class.getSimpleName());

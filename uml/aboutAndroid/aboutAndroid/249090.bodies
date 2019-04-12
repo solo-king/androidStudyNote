@@ -1,0 +1,30 @@
+class BatteryHistoryPreference
+!!!721282.java!!!	BatteryHistoryPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setLayoutResource(R.layout.battery_usage_graph);
+        setSelectable(true);
+!!!721410.java!!!	performClick() : void
+        mHelper.storeStatsHistoryInFile(BATTERY_HISTORY_FILE);
+        Bundle args = new Bundle();
+        args.putString(BatteryHistoryDetail.EXTRA_STATS, BATTERY_HISTORY_FILE);
+        args.putParcelable(BatteryHistoryDetail.EXTRA_BROADCAST, mHelper.getBatteryBroadcast());
+        Utils.startWithFragment(getContext(), BatteryHistoryDetail.class.getName(), args,
+                null, 0, R.string.history_details_title, null);
+!!!721538.java!!!	setStats(inout batteryStats : BatteryStatsHelper) : void
+        mHelper = batteryStats;
+        final long elapsedRealtimeUs = SystemClock.elapsedRealtime() * 1000;
+        mBatteryInfo = BatteryInfo.getBatteryInfo(getContext(), batteryStats.getBatteryBroadcast(),
+                batteryStats.getStats(), elapsedRealtimeUs);
+        notifyChanged();
+!!!721666.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        if (mBatteryInfo == null) {
+            return;
+        }
+        view.itemView.setClickable(true);
+        view.setDividerAllowedAbove(true);
+        ((TextView) view.findViewById(R.id.charge)).setText(mBatteryInfo.batteryPercentString);
+        ((TextView) view.findViewById(R.id.estimation)).setText(mBatteryInfo.remainingLabel);
+        UsageView usageView = (UsageView) view.findViewById(R.id.battery_usage);
+        usageView.findViewById(R.id.label_group).setAlpha(.7f);
+        mBatteryInfo.bindHistory(usageView);

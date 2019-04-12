@@ -1,0 +1,19 @@
+class ToggleSwitch
+!!!993410.java!!!	ToggleSwitch(inout context : Context)
+        super(context);
+!!!993538.java!!!	ToggleSwitch(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!993666.java!!!	ToggleSwitch(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        super(context, attrs, defStyleAttr);
+!!!993794.java!!!	ToggleSwitch(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+!!!993922.java!!!	setOnBeforeCheckedChangeListener(inout listener : ToggleSwitch::OnBeforeCheckedChangeListener) : void
+        mOnBeforeListener = listener;
+!!!994050.java!!!	setChecked(inout checked : boolean) : void
+        if (mOnBeforeListener != null
+                && mOnBeforeListener.onBeforeCheckedChanged(this, checked)) {
+            return;
+        }
+        super.setChecked(checked);
+!!!994178.java!!!	setCheckedInternal(inout checked : boolean) : void
+        super.setChecked(checked);

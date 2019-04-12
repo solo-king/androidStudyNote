@@ -1,0 +1,223 @@
+class StringUri
+!!!293762.java!!!	StringUri(in uriString : String)
+            if (uriString == null) {
+                throw new NullPointerException("uriString");
+            }
+
+            this.uriString = uriString;
+!!!293890.java!!!	readFrom(inout parcel : Parcel) : Uri
+            return new StringUri(parcel.readString());
+!!!294018.java!!!	describeContents() : int
+            return 0;
+!!!294146.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+            parcel.writeInt(TYPE_ID);
+            parcel.writeString(uriString);
+!!!294274.java!!!	findSchemeSeparator() : int
+            return cachedSsi == NOT_CALCULATED
+                    ? cachedSsi = uriString.indexOf(':')
+                    : cachedSsi;
+!!!294402.java!!!	findFragmentSeparator() : int
+            return cachedFsi == NOT_CALCULATED
+                    ? cachedFsi = uriString.indexOf('#', findSchemeSeparator())
+                    : cachedFsi;
+!!!294530.java!!!	isHierarchical() : boolean
+            int ssi = findSchemeSeparator();
+
+            if (ssi == NOT_FOUND) {
+                // All relative URIs are hierarchical.
+                return true;
+            }
+
+            if (uriString.length() == ssi + 1) {
+                // No ssp.
+                return false;
+            }
+
+            // If the ssp starts with a '/', this is hierarchical.
+            return uriString.charAt(ssi + 1) == '/';
+!!!294658.java!!!	isRelative() : boolean
+            // Note: We return true if the index is 0
+            return findSchemeSeparator() == NOT_FOUND;
+!!!294786.java!!!	getScheme() : String
+            @SuppressWarnings("StringEquality")
+            boolean cached = (scheme != NOT_CACHED);
+            return cached ? scheme : (scheme = parseScheme());
+!!!294914.java!!!	parseScheme() : String
+            int ssi = findSchemeSeparator();
+            return ssi == NOT_FOUND ? null : uriString.substring(0, ssi);
+!!!295042.java!!!	getSsp() : Uri::Part
+            return ssp == null ? ssp = Part.fromEncoded(parseSsp()) : ssp;
+!!!295170.java!!!	getEncodedSchemeSpecificPart() : String
+            return getSsp().getEncoded();
+!!!295298.java!!!	getSchemeSpecificPart() : String
+            return getSsp().getDecoded();
+!!!295426.java!!!	parseSsp() : String
+            int ssi = findSchemeSeparator();
+            int fsi = findFragmentSeparator();
+
+            // Return everything between ssi and fsi.
+            return fsi == NOT_FOUND
+                    ? uriString.substring(ssi + 1)
+                    : uriString.substring(ssi + 1, fsi);
+!!!295554.java!!!	getAuthorityPart() : Uri::Part
+            if (authority == null) {
+                String encodedAuthority
+                        = parseAuthority(this.uriString, findSchemeSeparator());
+                return authority = Part.fromEncoded(encodedAuthority);
+            }
+
+            return authority;
+!!!295682.java!!!	getEncodedAuthority() : String
+            return getAuthorityPart().getEncoded();
+!!!295810.java!!!	getAuthority() : String
+            return getAuthorityPart().getDecoded();
+!!!295938.java!!!	getPathPart() : Uri::PathPart
+            return path == null
+                    ? path = PathPart.fromEncoded(parsePath())
+                    : path;
+!!!296066.java!!!	getPath() : String
+            return getPathPart().getDecoded();
+!!!296194.java!!!	getEncodedPath() : String
+            return getPathPart().getEncoded();
+!!!296322.java!!!	getPathSegments() : List<String>
+            return getPathPart().getPathSegments();
+!!!296450.java!!!	parsePath() : String
+            String uriString = this.uriString;
+            int ssi = findSchemeSeparator();
+
+            // If the URI is absolute.
+            if (ssi > -1) {
+                // Is there anything after the ':'?
+                boolean schemeOnly = ssi + 1 == uriString.length();
+                if (schemeOnly) {
+                    // Opaque URI.
+                    return null;
+                }
+
+                // A '/' after the ':' means this is hierarchical.
+                if (uriString.charAt(ssi + 1) != '/') {
+                    // Opaque URI.
+                    return null;
+                }
+            } else {
+                // All relative URIs are hierarchical.
+            }
+
+            return parsePath(uriString, ssi);
+!!!296578.java!!!	getQueryPart() : Uri::Part
+            return query == null
+                    ? query = Part.fromEncoded(parseQuery()) : query;
+!!!296706.java!!!	getEncodedQuery() : String
+            return getQueryPart().getEncoded();
+!!!296834.java!!!	parseQuery() : String
+            // It doesn't make sense to cache this index. We only ever
+            // calculate it once.
+            int qsi = uriString.indexOf('?', findSchemeSeparator());
+            if (qsi == NOT_FOUND) {
+                return null;
+            }
+
+            int fsi = findFragmentSeparator();
+
+            if (fsi == NOT_FOUND) {
+                return uriString.substring(qsi + 1);
+            }
+
+            if (fsi < qsi) {
+                // Invalid.
+                return null;
+            }
+
+            return uriString.substring(qsi + 1, fsi);
+!!!296962.java!!!	getQuery() : String
+            return getQueryPart().getDecoded();
+!!!297090.java!!!	getFragmentPart() : Uri::Part
+            return fragment == null
+                    ? fragment = Part.fromEncoded(parseFragment()) : fragment;
+!!!297218.java!!!	getEncodedFragment() : String
+            return getFragmentPart().getEncoded();
+!!!297346.java!!!	parseFragment() : String
+            int fsi = findFragmentSeparator();
+            return fsi == NOT_FOUND ? null : uriString.substring(fsi + 1);
+!!!297474.java!!!	getFragment() : String
+            return getFragmentPart().getDecoded();
+!!!297602.java!!!	toString() : String
+            return uriString;
+!!!297730.java!!!	parseAuthority(in uriString : String, in ssi : int) : String
+            int length = uriString.length();
+
+            // If "//" follows the scheme separator, we have an authority.
+            if (length > ssi + 2
+                    && uriString.charAt(ssi + 1) == '/'
+                    && uriString.charAt(ssi + 2) == '/') {
+                // We have an authority.
+
+                // Look for the start of the path, query, or fragment, or the
+                // end of the string.
+                int end = ssi + 3;
+                LOOP: while (end < length) {
+                    switch (uriString.charAt(end)) {
+                        case '/': // Start of path
+                        case '?': // Start of query
+                        case '#': // Start of fragment
+                            break LOOP;
+                    }
+                    end++;
+                }
+
+                return uriString.substring(ssi + 3, end);
+            } else {
+                return null;
+            }
+
+!!!297858.java!!!	parsePath(in uriString : String, in ssi : int) : String
+            int length = uriString.length();
+
+            // Find start of path.
+            int pathStart;
+            if (length > ssi + 2
+                    && uriString.charAt(ssi + 1) == '/'
+                    && uriString.charAt(ssi + 2) == '/') {
+                // Skip over authority to path.
+                pathStart = ssi + 3;
+                LOOP: while (pathStart < length) {
+                    switch (uriString.charAt(pathStart)) {
+                        case '?': // Start of query
+                        case '#': // Start of fragment
+                            return ""; // Empty path.
+                        case '/': // Start of path!
+                            break LOOP;
+                    }
+                    pathStart++;
+                }
+            } else {
+                // Path starts immediately after scheme separator.
+                pathStart = ssi + 1;
+            }
+
+            // Find end of path.
+            int pathEnd = pathStart;
+            LOOP: while (pathEnd < length) {
+                switch (uriString.charAt(pathEnd)) {
+                    case '?': // Start of query
+                    case '#': // Start of fragment
+                        break LOOP;
+                }
+                pathEnd++;
+            }
+
+            return uriString.substring(pathStart, pathEnd);
+!!!297986.java!!!	buildUpon() : Uri::Builder
+            if (isHierarchical()) {
+                return new Builder()
+                        .scheme(getScheme())
+                        .authority(getAuthorityPart())
+                        .path(getPathPart())
+                        .query(getQueryPart())
+                        .fragment(getFragmentPart());
+            } else {
+                return new Builder()
+                        .scheme(getScheme())
+                        .opaquePart(getSsp())
+                        .fragment(getFragmentPart());
+            }

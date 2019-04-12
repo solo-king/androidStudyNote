@@ -1,0 +1,3 @@
+class LocalCallback
+!!!550402.java!!!	sendResult(inout bundle : Bundle) : void
+            mHandler.post(new DeliverResult(bundle));

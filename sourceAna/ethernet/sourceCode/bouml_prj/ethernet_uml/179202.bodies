@@ -1,0 +1,5 @@
+class OperationCanceledException
+!!!503298.java!!!	OperationCanceledException()
+        this(null);
+!!!503426.java!!!	OperationCanceledException(in message : String)
+        super(message != null ? message : "The operation has been canceled.");

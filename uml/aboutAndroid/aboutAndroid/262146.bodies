@@ -1,0 +1,14 @@
+class SummaryProvider
+!!!801410.java!!!	SummaryProvider(inout context : Context, inout summaryLoader : SummaryLoader)
+            mContext = context;
+            mSummaryLoader = summaryLoader;
+!!!801538.java!!!	setListening(inout listening : boolean) : void
+            if (listening && NfcAdapter.getDefaultAdapter(mContext) != null) {
+                PaymentBackend paymentBackend = new PaymentBackend(mContext);
+                paymentBackend.refresh();
+                PaymentAppInfo app = paymentBackend.getDefaultApp();
+                if (app != null) {
+                    mSummaryLoader.setSummary(this, mContext.getString(R.string.payment_summary,
+                            app.label));
+                }
+            }

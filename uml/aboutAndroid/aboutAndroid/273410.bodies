@@ -1,0 +1,213 @@
+class ScreenScaleActivity
+!!!867202.java!!!	getScreenSize() : void
+       
+       DisplayMetrics displayMetrics = new DisplayMetrics();           
+       getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);          
+       mScreenWidth = displayMetrics.widthPixels;          
+       mScreenHeight = displayMetrics.heightPixels;         
+       mDensityDpi = displayMetrics.densityDpi;         
+       mDpiRatio = ((float)mDefaultDpi)/(float)displayMetrics.densityDpi;          
+       Log.d("ScreenSettingActivity","displayMetrics.densityDpi is: " + mDensityDpi);          
+       Log.d("ScreenSettingActivity","displayMetrics.widthPixels is: " + mScreenWidth);            
+       Log.d("ScreenSettingActivity","displayMetrics.heightPixels is: " + mScreenHeight);  
+!!!867330.java!!!	bitMapScale(in id : int) : Bitmap
+       Bitmap map = BitmapFactory.decodeResource(this.getResources(),id);
+       float scale = mScreenWidth/1280f*mDpiRatio;
+       int width = (int)((float)map.getWidth()*scale);
+       int height = (int)((float)map.getHeight()*scale);
+
+       Bitmap resize = Bitmap.createScaledBitmap(map, width, height, true);
+       return resize;
+!!!867458.java!!!	createView() : void
+       int centerX = mScreenWidth/2;
+       int y = mScreenHeight/5;
+       
+       ImageView touch_up = (ImageView)findViewById(R.id.screen_touch_up);
+       Bitmap map = bitMapScale(R.drawable.screen_vertical_reduce);
+       RelativeLayout.LayoutParams param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+       param.setMargins(centerX-map.getWidth()/2, y, 0, 0);
+       
+       y += map.getHeight()+10;
+       touch_up.setLayoutParams(param);
+
+       mUpButton = (ImageView)findViewById(R.id.button_up);
+       map = bitMapScale(R.drawable.button_vertical_up);
+       y += map.getHeight()+10;
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.BELOW, R.id.screen_touch_up);
+       param.setMargins(centerX-map.getWidth()/2, 10, 0, 0);
+       mUpButton.setLayoutParams(param);
+       
+       ImageView ok = (ImageView)findViewById(R.id.button_ok);
+       Bitmap okmap = bitMapScale(R.drawable.ok);
+       y += okmap.getHeight()/2;
+       param = new RelativeLayout.LayoutParams(okmap.getWidth(),okmap.getHeight());
+       param.addRule(RelativeLayout.BELOW, R.id.button_up);
+       param.setMargins(centerX-okmap.getWidth()/2, 10, 0, 0);
+       ok.setLayoutParams(param);
+
+       mDownButton = (ImageView)findViewById(R.id.button_down);
+       map = bitMapScale(R.drawable.button_vertical_down);
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.BELOW, R.id.button_ok);
+       param.setMargins(centerX-map.getWidth()/2, 10, 0, 0);
+       mDownButton.setLayoutParams(param);
+       
+       ImageView touch_down = (ImageView)findViewById(R.id.screen_touch_down);
+       map = bitMapScale(R.drawable.screen_vertical_add);
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.BELOW, R.id.button_down);
+       param.setMargins(centerX-map.getWidth()/2, 10, 0, 0);
+       touch_down.setLayoutParams(param);
+
+       
+       mLeftButton = (ImageView)findViewById(R.id.button_left);
+       map = bitMapScale(R.drawable.button_left);
+       int x = -okmap.getWidth()/2-10-map.getWidth()/2;
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.ALIGN_LEFT, R.id.button_ok);
+       param.setMargins(x, y-map.getHeight()/2, 0, 0);
+       mLeftButton.setLayoutParams(param);
+       
+       ImageView left = (ImageView)findViewById(R.id.screen_button_left);
+       map = bitMapScale(R.drawable.screen_horizontal_reduce);
+       x += -map.getWidth()/2-10;
+       RelativeLayout.LayoutParams param0 = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param0.addRule(RelativeLayout.ALIGN_LEFT, R.id.button_left);
+       param0.setMargins(x, y-map.getHeight()/2, 0, 0);
+       left.setLayoutParams(param0);
+
+       mRightButton = (ImageView)findViewById(R.id.button_right);
+       map = bitMapScale(R.drawable.button_right);
+       x = okmap.getWidth()/2+10+map.getWidth()/2;
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.ALIGN_RIGHT, R.id.button_ok);
+       param.setMargins(0, y-map.getHeight()/2,-x, 0);
+       mRightButton.setLayoutParams(param);
+
+       ImageView right = (ImageView)findViewById(R.id.screen_button_right);
+       map = bitMapScale(R.drawable.screen_horizontal_add);
+       x += 10+map.getWidth()/2;
+       param = new RelativeLayout.LayoutParams(map.getWidth(),map.getHeight());
+       param.addRule(RelativeLayout.ALIGN_RIGHT, R.id.button_right);
+       param.setMargins(0, y-map.getHeight()/2,-x, 0);
+       right.setLayoutParams(param);
+
+       mRightButton.setOnClickListener(mOnClick);
+       mLeftButton.setOnClickListener(mOnClick);
+       mUpButton.setOnClickListener(mOnClick);
+       mDownButton.setOnClickListener(mOnClick);
+!!!867586.java!!!	hideSystemUI() : void
+       // Set the IMMERSIVE flag.
+       // Set the content to appear under the system bars so that the content
+       // doesn't resize when the system bars hide and show.
+       if (Build.VERSION.SDK_INT >= 19){
+           getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+                   WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+           getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                   WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+           getWindow().getDecorView().setSystemUiVisibility(
+               View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+               | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+               | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+               | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+               | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+               | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+       }
+!!!867714.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+       super.onCreate(savedInstanceState);
+       
+       //full screen
+       hideSystemUI();
+       
+       setContentView(R.layout.screen_setting);
+
+       getWindow().setFormat(PixelFormat.RGBA_8888);            
+//     BitmapFactory.setDefaultConfig(Bitmap.Config.ARGB_8888);
+       getScreenSize();
+       createView();
+   /*  
+       mRightButton = (ImageView)findViewById(R.id.button_right);
+       mLeftButton = (ImageView)findViewById(R.id.button_left);
+       mUpButton = (ImageView)findViewById(R.id.button_up);
+       mDownButton = (ImageView)findViewById(R.id.button_down);
+
+       mRightButton.setOnClickListener(mOnClick);
+       mLeftButton.setOnClickListener(mOnClick);
+       mUpButton.setOnClickListener(mOnClick);
+       mDownButton.setOnClickListener(mOnClick);*/
+       
+       try {
+           mDisplayOutputManager = new DisplayOutputManager();
+        }catch (RemoteException doe) {
+            
+        }
+!!!867842.java!!!	dispatchKeyEvent(inout event : KeyEvent) : boolean
+       int keyCode = event.getKeyCode();
+       LOGD("keyCode = "+keyCode);
+       int scalevalue;
+       switch(keyCode)
+       {
+           case KeyEvent.KEYCODE_DPAD_RIGHT:  
+               mRightButton.setImageResource(R.drawable.button_right_pressed);
+               mHandler.removeMessages(RightButtonResume);
+               // add code here
+               if(mDisplayOutputManager != null) {
+                   scalevalue = mDisplayOutputManager.getOverScan(mDisplayOutputManager.MAIN_DISPLAY).right + 1;
+                   if (scalevalue > MAX_SCALE){
+                       scalevalue = MAX_SCALE;
+                   }
+                   if(scalevalue >=0 )
+                       mDisplayOutputManager.setOverScan(mDisplayOutputManager.MAIN_DISPLAY, mDisplayOutputManager.DISPLAY_OVERSCAN_X, scalevalue);
+               }
+               mHandler.sendEmptyMessageDelayed(RightButtonResume,100);
+               break;
+           case KeyEvent.KEYCODE_DPAD_LEFT:   
+               mHandler.removeMessages(LeftButtonResume);
+               mLeftButton.setImageResource(R.drawable.button_left_pressed);
+               // add code here
+               if(mDisplayOutputManager != null) {
+                   scalevalue = mDisplayOutputManager.getOverScan(mDisplayOutputManager.MAIN_DISPLAY).left - 1;
+                   if (scalevalue < MIN_SCALE){
+                       scalevalue = MIN_SCALE;
+                   }
+                   if(scalevalue >=0)
+                       mDisplayOutputManager.setOverScan(mDisplayOutputManager.MAIN_DISPLAY, mDisplayOutputManager.DISPLAY_OVERSCAN_X, scalevalue);
+               }
+               mHandler.sendEmptyMessageDelayed(LeftButtonResume,100);
+               break;
+           case KeyEvent.KEYCODE_DPAD_UP:     
+               mHandler.removeMessages(UpButtonResume);
+               mUpButton.setImageResource(R.drawable.button_vertical_up_pressed);
+               // add code here
+               if(mDisplayOutputManager != null) {
+                   scalevalue = mDisplayOutputManager.getOverScan(mDisplayOutputManager.MAIN_DISPLAY).top - 1;
+                   if (scalevalue < MIN_SCALE){
+                       scalevalue = MIN_SCALE;
+                   }
+                   if(scalevalue >=0)
+                       mDisplayOutputManager.setOverScan(mDisplayOutputManager.MAIN_DISPLAY, mDisplayOutputManager.DISPLAY_OVERSCAN_Y, scalevalue);
+               }
+               mHandler.sendEmptyMessageDelayed(UpButtonResume,100);
+               break;
+           case KeyEvent.KEYCODE_DPAD_DOWN:  
+               mHandler.removeMessages(DownButtonResume);
+               mDownButton.setImageResource(R.drawable.button_vertical_down_pressed);
+               // add code here
+               if(mDisplayOutputManager != null) {
+                   scalevalue = mDisplayOutputManager.getOverScan(mDisplayOutputManager.MAIN_DISPLAY).bottom + 1;
+                   if (scalevalue > MAX_SCALE){
+                       scalevalue = MAX_SCALE;
+                   }
+                   if(scalevalue >=0 )
+                       mDisplayOutputManager.setOverScan(mDisplayOutputManager.MAIN_DISPLAY, mDisplayOutputManager.DISPLAY_OVERSCAN_Y, scalevalue);
+               }
+               mHandler.sendEmptyMessageDelayed(DownButtonResume,100);
+               break;
+       }
+
+       return super.dispatchKeyEvent(event);
+!!!867970.java!!!	LOGD(in msg : String) : void
+       if(true)
+           Log.d("ScreenSettingActivity",msg);

@@ -1,0 +1,60 @@
+class HttpResponseCache
+!!!355714.java!!!	HttpResponseCache(inout delegate : com.android.okhttp.HttpResponseCache)
+        this.delegate = delegate;
+!!!355842.java!!!	getInstalled() : HttpResponseCache
+        ResponseCache installed = ResponseCache.getDefault();
+        if (installed instanceof com.android.okhttp.HttpResponseCache) {
+            return new HttpResponseCache(
+                    (com.android.okhttp.HttpResponseCache) installed);
+        }
+
+        return null;
+!!!355970.java!!!	install(inout directory : File, in maxSize : long) : HttpResponseCache
+        ResponseCache installed = ResponseCache.getDefault();
+        if (installed instanceof com.android.okhttp.HttpResponseCache) {
+            com.android.okhttp.HttpResponseCache installedCache =
+                    (com.android.okhttp.HttpResponseCache) installed;
+            // don't close and reopen if an equivalent cache is already installed
+            if (installedCache.getDirectory().equals(directory)
+                    && installedCache.getMaxSize() == maxSize
+                    && !installedCache.isClosed()) {
+                return new HttpResponseCache(installedCache);
+            } else {
+                // The HttpResponseCache that owns this object is about to be replaced.
+                installedCache.close();
+            }
+        }
+
+        com.android.okhttp.HttpResponseCache responseCache =
+                new com.android.okhttp.HttpResponseCache(directory, maxSize);
+        ResponseCache.setDefault(responseCache);
+        return new HttpResponseCache(responseCache);
+!!!356098.java!!!	get(inout uri : URI, in requestMethod : String, inout requestHeaders : Map<String, List<String>>) : CacheResponse
+        return delegate.get(uri, requestMethod, requestHeaders);
+!!!356226.java!!!	put(inout uri : URI, inout urlConnection : URLConnection) : CacheRequest
+        return delegate.put(uri, urlConnection);
+!!!356354.java!!!	size() : long
+        return delegate.getSize();
+!!!356482.java!!!	maxSize() : long
+        return delegate.getMaxSize();
+!!!356610.java!!!	flush() : void
+        try {
+            delegate.flush();
+        } catch (IOException ignored) {
+        }
+!!!356738.java!!!	getNetworkCount() : int
+        return delegate.getNetworkCount();
+!!!356866.java!!!	getHitCount() : int
+        return delegate.getHitCount();
+!!!356994.java!!!	getRequestCount() : int
+        return delegate.getRequestCount();
+!!!357122.java!!!	close() : void
+        if (ResponseCache.getDefault() == this.delegate) {
+            ResponseCache.setDefault(null);
+        }
+        delegate.close();
+!!!357250.java!!!	delete() : void
+        if (ResponseCache.getDefault() == this.delegate) {
+            ResponseCache.setDefault(null);
+        }
+        delegate.delete();

@@ -1,0 +1,108 @@
+class UserHandle
+!!!587138.java!!!	isSameUser(in uid1 : int, in uid2 : int) : boolean
+        return getUserId(uid1) == getUserId(uid2);
+!!!587266.java!!!	isSameApp(in uid1 : int, in uid2 : int) : boolean
+        return getAppId(uid1) == getAppId(uid2);
+!!!587394.java!!!	isIsolated(in uid : int) : boolean
+        if (uid > 0) {
+            final int appId = getAppId(uid);
+            return appId >= Process.FIRST_ISOLATED_UID && appId <= Process.LAST_ISOLATED_UID;
+        } else {
+            return false;
+        }
+!!!587522.java!!!	isApp(in uid : int) : boolean
+        if (uid > 0) {
+            final int appId = getAppId(uid);
+            return appId >= Process.FIRST_APPLICATION_UID && appId <= Process.LAST_APPLICATION_UID;
+        } else {
+            return false;
+        }
+!!!587650.java!!!	getUserId(in uid : int) : int
+        if (MU_ENABLED) {
+            return uid / PER_USER_RANGE;
+        } else {
+            return 0;
+        }
+!!!587778.java!!!	getCallingUserId() : int
+        return getUserId(Binder.getCallingUid());
+!!!587906.java!!!	getUid(in userId : int, in appId : int) : int
+        if (MU_ENABLED) {
+            return userId * PER_USER_RANGE + (appId % PER_USER_RANGE);
+        } else {
+            return appId;
+        }
+!!!588034.java!!!	getAppId(in uid : int) : int
+        return uid % PER_USER_RANGE;
+!!!588162.java!!!	getSharedAppGid(in id : int) : int
+        return Process.FIRST_SHARED_APPLICATION_GID + (id % PER_USER_RANGE)
+                - Process.FIRST_APPLICATION_UID;
+!!!588290.java!!!	formatUid(inout sb : StringBuilder, in uid : int) : void
+        if (uid < Process.FIRST_APPLICATION_UID) {
+            sb.append(uid);
+        } else {
+            sb.append('u');
+            sb.append(getUserId(uid));
+            final int appId = getAppId(uid);
+            if (appId >= Process.FIRST_ISOLATED_UID && appId <= Process.LAST_ISOLATED_UID) {
+                sb.append('i');
+                sb.append(appId - Process.FIRST_ISOLATED_UID);
+            } else if (appId >= Process.FIRST_APPLICATION_UID) {
+                sb.append('a');
+                sb.append(appId - Process.FIRST_APPLICATION_UID);
+            } else {
+                sb.append('s');
+                sb.append(appId);
+            }
+        }
+!!!588418.java!!!	formatUid(inout pw : PrintWriter, in uid : int) : void
+        if (uid < Process.FIRST_APPLICATION_UID) {
+            pw.print(uid);
+        } else {
+            pw.print('u');
+            pw.print(getUserId(uid));
+            final int appId = getAppId(uid);
+            if (appId >= Process.FIRST_ISOLATED_UID && appId <= Process.LAST_ISOLATED_UID) {
+                pw.print('i');
+                pw.print(appId - Process.FIRST_ISOLATED_UID);
+            } else if (appId >= Process.FIRST_APPLICATION_UID) {
+                pw.print('a');
+                pw.print(appId - Process.FIRST_APPLICATION_UID);
+            } else {
+                pw.print('s');
+                pw.print(appId);
+            }
+        }
+!!!588546.java!!!	myUserId() : int
+        return getUserId(Process.myUid());
+!!!588674.java!!!	UserHandle(in h : int)
+        mHandle = h;
+!!!588802.java!!!	getIdentifier() : int
+        return mHandle;
+!!!588930.java!!!	toString() : String
+        return "UserHandle{" + mHandle + "}";
+!!!589058.java!!!	equals(inout obj : Object) : boolean
+        try {
+            if (obj != null) {
+                UserHandle other = (UserHandle)obj;
+                return mHandle == other.mHandle;
+            }
+        } catch (ClassCastException e) {
+        }
+        return false;
+!!!589186.java!!!	hashCode() : int
+        return mHandle;
+!!!589314.java!!!	describeContents() : int
+        return 0;
+!!!589442.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        out.writeInt(mHandle);
+!!!589570.java!!!	writeToParcel(inout h : UserHandle, inout out : Parcel) : void
+        if (h != null) {
+            h.writeToParcel(out, 0);
+        } else {
+            out.writeInt(USER_NULL);
+        }
+!!!589698.java!!!	readFromParcel(inout in : Parcel) : UserHandle
+        int h = in.readInt();
+        return h != USER_NULL ? new UserHandle(h) : null;
+!!!589826.java!!!	UserHandle(inout in : Parcel)
+        mHandle = in.readInt();

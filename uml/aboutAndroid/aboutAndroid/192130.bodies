@@ -1,0 +1,22 @@
+class Credential
+!!!382722.java!!!	Credential(in alias : String)
+            this.alias = alias;
+!!!382850.java!!!	Credential(inout in : Parcel)
+            this(in.readString());
+
+            long typeBits = in.readLong();
+            for (Type i : Type.values()) {
+                if ((typeBits & (1L << i.ordinal())) != 0L) {
+                    storedTypes.add(i);
+                }
+            }
+!!!382978.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+            out.writeString(alias);
+
+            long typeBits = 0;
+            for (Type i : storedTypes) {
+                typeBits |= 1L << i.ordinal();
+            }
+            out.writeLong(typeBits);
+!!!383106.java!!!	describeContents() : int
+            return 0;

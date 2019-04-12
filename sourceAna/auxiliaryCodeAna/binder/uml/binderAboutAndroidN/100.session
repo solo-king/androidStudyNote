@@ -1,0 +1,13 @@
+window_sizes 1920 1056 274 1640 883 120
+cleanlooks_style
+diagrams
+  active  classdiagram_ref 141156 // classAboutCppImpl
+    1640 883 100 E 0 0
+end
+show_stereotypes
+selected classdiagram_ref 141156 // classAboutCppImpl
+open
+  usecaseview_ref 134628 // classAboutCImpl
+  usecaseview_ref 141156 // classAboutCppImpl
+end
+end

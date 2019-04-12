@@ -1,0 +1,5 @@
+class Namespace
+!!!219522.java!!!	Namespace(in id : int)
+            this.id = id;
+!!!219650.java!!!	getId() : int
+            return id;

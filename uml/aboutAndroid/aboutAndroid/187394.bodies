@@ -1,0 +1,93 @@
+class WifiApEnabler
+!!!1004418.java!!!	WifiApEnabler(inout context : Context, inout dataSaverBackend : DataSaverBackend, inout switchPreference : SwitchPreference)
+        mContext = context;
+        mDataSaverBackend = dataSaverBackend;
+        mSwitch = switchPreference;
+        mOriginalSummary = switchPreference.getSummary();
+        switchPreference.setPersistent(false);
+
+        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        mCm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        mWifiRegexs = mCm.getTetherableWifiRegexs();
+
+        mIntentFilter = new IntentFilter(WifiManager.WIFI_AP_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(ConnectivityManager.ACTION_TETHER_STATE_CHANGED);
+        mIntentFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+!!!1004546.java!!!	resume() : void
+        mContext.registerReceiver(mReceiver, mIntentFilter);
+        enableWifiSwitch();
+!!!1004674.java!!!	pause() : void
+        mContext.unregisterReceiver(mReceiver);
+!!!1004802.java!!!	enableWifiSwitch() : void
+        boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        if(!isAirplaneMode) {
+            mSwitch.setEnabled(!mDataSaverBackend.isDataSaverEnabled());
+        } else {
+            mSwitch.setSummary(mOriginalSummary);
+            mSwitch.setEnabled(false);
+        }
+!!!1004930.java!!!	updateConfigSummary(inout wifiConfig : WifiConfiguration) : void
+        String s = mContext.getString(
+                com.android.internal.R.string.wifi_tether_configure_ssid_default);
+        mSwitch.setSummary(String.format(
+                    mContext.getString(R.string.wifi_tether_enabled_subtext),
+                    (wifiConfig == null) ? s : wifiConfig.SSID));
+!!!1005058.java!!!	updateTetherState(inout available : Object, inout tethered : Object, inout errored : Object) : void
+        boolean wifiTethered = false;
+        boolean wifiErrored = false;
+
+        for (Object o : tethered) {
+            String s = (String)o;
+            for (String regex : mWifiRegexs) {
+                if (s.matches(regex)) wifiTethered = true;
+            }
+        }
+        for (Object o: errored) {
+            String s = (String)o;
+            for (String regex : mWifiRegexs) {
+                if (s.matches(regex)) wifiErrored = true;
+            }
+        }
+
+        if (wifiTethered) {
+            WifiConfiguration wifiConfig = mWifiManager.getWifiApConfiguration();
+            updateConfigSummary(wifiConfig);
+        } else if (wifiErrored) {
+            mSwitch.setSummary(R.string.wifi_error);
+        }
+!!!1005186.java!!!	handleWifiApStateChanged(in state : int, in reason : int) : void
+        switch (state) {
+            case WifiManager.WIFI_AP_STATE_ENABLING:
+                mSwitch.setSummary(R.string.wifi_tether_starting);
+                mSwitch.setEnabled(false);
+                break;
+            case WifiManager.WIFI_AP_STATE_ENABLED:
+                /**
+                 * Summary on enable is handled by tether
+                 * broadcast notice
+                 */
+                mSwitch.setChecked(true);
+                /* Doesnt need the airplane check */
+                mSwitch.setEnabled(!mDataSaverBackend.isDataSaverEnabled());
+                break;
+            case WifiManager.WIFI_AP_STATE_DISABLING:
+                mSwitch.setSummary(R.string.wifi_tether_stopping);
+                mSwitch.setChecked(false);
+                mSwitch.setEnabled(false);
+                break;
+            case WifiManager.WIFI_AP_STATE_DISABLED:
+                mSwitch.setChecked(false);
+                mSwitch.setSummary(mOriginalSummary);
+                enableWifiSwitch();
+                break;
+            default:
+                mSwitch.setChecked(false);
+                if (reason == WifiManager.SAP_START_FAILURE_NO_CHANNEL) {
+                    mSwitch.setSummary(R.string.wifi_sap_no_channel_error);
+                } else {
+                    mSwitch.setSummary(R.string.wifi_error);
+                }
+                enableWifiSwitch();
+        }

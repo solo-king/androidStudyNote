@@ -1,0 +1,44 @@
+class LoggingEventHandler
+!!!359298.java!!!	requestSent() : void
+        HttpLog.v("LoggingEventHandler:requestSent()");
+!!!359426.java!!!	status(in major_version : int, in minor_version : int, in code : int, in reason_phrase : String) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler:status() major: " + major_version +
+                  " minor: " + minor_version +
+                  " code: " + code +
+                  " reason: " + reason_phrase);
+        }
+!!!359554.java!!!	headers(inout headers : Headers) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler:headers()");
+            HttpLog.v(headers.toString());
+        }
+!!!359682.java!!!	locationChanged(in newLocation : String, inout permanent : boolean) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler: locationChanged() " + newLocation +
+                      " permanent " + permanent);
+        }
+!!!359810.java!!!	data(inout data : byte, in len : int) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler: data() " + len + " bytes");
+        }
+        // HttpLog.v(new String(data, 0, len));
+!!!359938.java!!!	endData() : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler: endData() called");
+        }
+!!!360066.java!!!	certificate(inout certificate : SslCertificate) : void
+         if (HttpLog.LOGV) {
+             HttpLog.v("LoggingEventHandler: certificate(): " + certificate);
+         }
+!!!360194.java!!!	error(in id : int, in description : String) : void
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler: error() called Id:" + id +
+                      " description " + description);
+        }
+!!!360322.java!!!	handleSslErrorRequest(inout error : SslError) : boolean
+        if (HttpLog.LOGV) {
+            HttpLog.v("LoggingEventHandler: handleSslErrorRequest():" + error);
+        }
+        // return false so that the caller thread won't wait forever
+        return false;

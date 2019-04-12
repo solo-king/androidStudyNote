@@ -1,0 +1,37 @@
+class TabSelectionOnLaunchTest
+!!!1034882.java!!!	test_ColdStartWithCorrectArgsCorrectFlags_SupportSelected() : void
+        launchSettingsWithFlags(ARG_SELECT_SUPPORT_TAB, FLAG_RESTART);
+        verifySupportSelected();
+!!!1035010.java!!!	test_ColdStartWithWrongExtra_DoesNotSelectSupport() : void
+        launchSettingsWithFlags(ARG_SELECT_FAKE_TAB, FLAG_RESTART);
+        verifySupportNotSelected();
+!!!1035138.java!!!	test_WarmStartSummarySelectedCorrectExtraWrongFlags_DoesNotSelectSupport() : void
+        InstrumentationRegistry.getContext().
+                startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+        launchSettingsNoFlags(ARG_SELECT_SUPPORT_TAB);
+        verifySupportNotSelected();
+!!!1035266.java!!!	test_WarmStartSummarySelectedWrongExtraWrongFlags_DoesNotSelectSupport() : void
+        InstrumentationRegistry.getContext().
+                startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+        launchSettingsNoFlags(ARG_SELECT_FAKE_TAB);
+        verifySupportNotSelected();
+!!!1035394.java!!!	test_DoesNotCrashOnNullExtra_DoesNotSelectSupport() : void
+        launchSettingsWithFlags(null, FLAG_RESTART);
+        verifySupportNotSelected();
+!!!1035522.java!!!	verifySupportNotSelected() : void
+        onView(withText(mActivityRule.getActivity().getApplicationContext().
+                getString(com.android.settings.R.string.page_tab_title_support))).
+                check(matches(not(isSelected())));
+!!!1035650.java!!!	verifySupportSelected() : void
+        onView(withText(mActivityRule.getActivity().getApplicationContext().
+                getString(com.android.settings.R.string.page_tab_title_support))).
+                check(matches(isSelected()));
+!!!1035778.java!!!	launchSettingsWithFlags(in extra : String, in flags : int) : void
+        Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+        intent.setFlags(flags);
+        intent.putExtra(DashboardContainerFragment.EXTRA_SELECT_SETTINGS_TAB, extra);
+        mActivityRule.launchActivity(intent);
+!!!1035906.java!!!	launchSettingsNoFlags(in extra : String) : void
+        Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+        intent.putExtra(DashboardContainerFragment.EXTRA_SELECT_SETTINGS_TAB, extra);
+        mActivityRule.launchActivity(intent);

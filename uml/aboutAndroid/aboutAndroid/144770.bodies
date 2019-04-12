@@ -1,0 +1,47 @@
+class FingerprintUiHelper
+!!!200706.java!!!	FingerprintUiHelper(inout icon : ImageView, inout errorTextView : TextView, inout callback : FingerprintUiHelper::Callback, in userId : int)
+        mFingerprintManager = icon.getContext().getSystemService(FingerprintManager.class);
+        mIcon = icon;
+        mErrorTextView = errorTextView;
+        mCallback = callback;
+        mUserId = userId;
+!!!200834.java!!!	startListening() : void
+        if (mFingerprintManager != null && mFingerprintManager.isHardwareDetected()
+                && mFingerprintManager.getEnrolledFingerprints(mUserId).size() > 0) {
+            mCancellationSignal = new CancellationSignal();
+            mFingerprintManager.setActiveUser(mUserId);
+            mFingerprintManager.authenticate(
+                    null, mCancellationSignal, 0 /* flags */, this, null, mUserId);
+            setFingerprintIconVisibility(true);
+            mIcon.setImageResource(R.drawable.ic_fingerprint);
+        }
+!!!200962.java!!!	stopListening() : void
+        if (mCancellationSignal != null) {
+            mCancellationSignal.cancel();
+            mCancellationSignal = null;
+        }
+!!!201090.java!!!	isListening() : boolean
+        return mCancellationSignal != null && !mCancellationSignal.isCanceled();
+!!!201218.java!!!	setFingerprintIconVisibility(inout visible : boolean) : void
+        mIcon.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mCallback.onFingerprintIconVisibilityChanged(visible);
+!!!201346.java!!!	onAuthenticationError(in errMsgId : int, inout errString : CharSequence) : void
+        showError(errString);
+        setFingerprintIconVisibility(false);
+!!!201474.java!!!	onAuthenticationHelp(in helpMsgId : int, inout helpString : CharSequence) : void
+        showError(helpString);
+!!!201602.java!!!	onAuthenticationFailed() : void
+        showError(mIcon.getResources().getString(
+                R.string.fingerprint_not_recognized));
+!!!201730.java!!!	onAuthenticationSucceeded(inout result : FingerprintManager.AuthenticationResult) : void
+        mIcon.setImageResource(R.drawable.ic_fingerprint_success);
+        mCallback.onAuthenticated();
+!!!201858.java!!!	showError(inout error : CharSequence) : void
+        if (!isListening()) {
+            return;
+        }
+
+        mIcon.setImageResource(R.drawable.ic_fingerprint_error);
+        mErrorTextView.setText(error);
+        mErrorTextView.removeCallbacks(mResetErrorTextRunnable);
+        mErrorTextView.postDelayed(mResetErrorTextRunnable, ERROR_TIMEOUT);

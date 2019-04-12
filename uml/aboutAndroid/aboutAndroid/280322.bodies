@@ -1,0 +1,6 @@
+class LocalClassLoaderContextThemeWrapper
+!!!918146.java!!!	LocalClassLoaderContextThemeWrapper(inout clazz : Class, inout base : Context, in themeResId : int)
+        super(base, themeResId);
+        mLocalClass = clazz;
+!!!918274.java!!!	getClassLoader() : ClassLoader
+        return mLocalClass.getClassLoader();

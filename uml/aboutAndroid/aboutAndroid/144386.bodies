@@ -1,0 +1,64 @@
+class ConfirmDeviceCredentialBaseActivity
+!!!199554.java!!!	onCreate(inout savedState : Bundle) : void
+        int credentialOwnerUserId = Utils.getCredentialOwnerUserId(this,
+                Utils.getUserIdFromBundle(this, getIntent().getExtras()));
+        if (Utils.isManagedProfile(UserManager.get(this), credentialOwnerUserId)) {
+            setTheme(R.style.Theme_ConfirmDeviceCredentialsWork);
+        } else if (getIntent().getBooleanExtra(
+                ConfirmDeviceCredentialBaseFragment.DARK_THEME, false)) {
+            setTheme(R.style.Theme_ConfirmDeviceCredentialsDark);
+            mDark = true;
+        }
+        super.onCreate(savedState);
+        mIsKeyguardLocked = savedState == null
+                ? getSystemService(KeyguardManager.class).isKeyguardLocked()
+                : savedState.getBoolean(STATE_IS_KEYGUARD_LOCKED, false);
+        // If the activity is launched, not due to config change, when keyguard is locked and the
+        // flag is set, assume it's launched on top of keyguard on purpose.
+        // TODO: Don't abuse SHOW_WHEN_LOCKED and don't check isKeyguardLocked.
+        // Set extra SHOW_WHEN_LOCKED and WindowManager FLAG_SHOW_WHEN_LOCKED only if it's
+        // truly on top of keyguard on purpose
+        if (mIsKeyguardLocked && getIntent().getBooleanExtra(
+                ConfirmDeviceCredentialBaseFragment.SHOW_WHEN_LOCKED, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        }
+        CharSequence msg = getIntent().getStringExtra(
+                ConfirmDeviceCredentialBaseFragment.TITLE_TEXT);
+        setTitle(msg);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
+        mRestoring = savedState != null;
+!!!199682.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_IS_KEYGUARD_LOCKED, mIsKeyguardLocked);
+!!!199810.java!!!	onOptionsItemSelected(inout item : MenuItem) : boolean
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+!!!199938.java!!!	onResume() : void
+        super.onResume();
+        if (!isChangingConfigurations() && !mRestoring && mDark && mFirstTimeVisible) {
+            mFirstTimeVisible = false;
+            prepareEnterAnimation();
+            mEnterAnimationPending = true;
+        }
+!!!200066.java!!!	getFragment() : ConfirmDeviceCredentialBaseFragment
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.main_content);
+        if (fragment != null && fragment instanceof ConfirmDeviceCredentialBaseFragment) {
+            return (ConfirmDeviceCredentialBaseFragment) fragment;
+        }
+        return null;
+!!!200194.java!!!	onEnterAnimationComplete() : void
+        super.onEnterAnimationComplete();
+        if (mEnterAnimationPending) {
+            startEnterAnimation();
+            mEnterAnimationPending = false;
+        }
+!!!200322.java!!!	prepareEnterAnimation() : void
+        getFragment().prepareEnterAnimation();
+!!!200450.java!!!	startEnterAnimation() : void
+        getFragment().startEnterAnimation();

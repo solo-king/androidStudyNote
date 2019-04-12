@@ -1,0 +1,31 @@
+class Messenger
+!!!500098.java!!!	Messenger(inout target : Handler)
+        mTarget = target.getIMessenger();
+!!!500226.java!!!	send(inout message : Message) : void
+        mTarget.send(message);
+!!!500354.java!!!	getBinder() : IBinder
+        return mTarget.asBinder();
+!!!500482.java!!!	equals(inout otherObj : Object) : boolean
+        if (otherObj == null) {
+            return false;
+        }
+        try {
+            return mTarget.asBinder().equals(((Messenger)otherObj)
+                    .mTarget.asBinder());
+        } catch (ClassCastException e) {
+        }
+        return false;
+!!!500610.java!!!	hashCode() : int
+        return mTarget.asBinder().hashCode();
+!!!500738.java!!!	describeContents() : int
+        return 0;
+!!!500866.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        out.writeStrongBinder(mTarget.asBinder());
+!!!500994.java!!!	writeMessengerOrNullToParcel(inout messenger : Messenger, inout out : Parcel) : void
+        out.writeStrongBinder(messenger != null ? messenger.mTarget.asBinder()
+                : null);
+!!!501122.java!!!	readMessengerOrNullFromParcel(inout in : Parcel) : Messenger
+        IBinder b = in.readStrongBinder();
+        return b != null ? new Messenger(b) : null;
+!!!501250.java!!!	Messenger(inout target : IBinder)
+        mTarget = IMessenger.Stub.asInterface(target);

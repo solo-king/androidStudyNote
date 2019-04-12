@@ -1,0 +1,43 @@
+class StorageWizardMoveProgress
+!!!669186.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        if (mVolume == null) {
+            finish();
+            return;
+        }
+        setContentView(R.layout.storage_wizard_progress);
+
+        mMoveId = getIntent().getIntExtra(EXTRA_MOVE_ID, -1);
+        final String appName = getIntent().getStringExtra(EXTRA_TITLE);
+        final String volumeName = mStorage.getBestVolumeDescription(mVolume);
+
+        setIllustrationType(ILLUSTRATION_INTERNAL);
+        setHeaderText(R.string.storage_wizard_move_progress_title, appName);
+        setBodyText(R.string.storage_wizard_move_progress_body, volumeName, appName);
+
+        getNextButton().setVisibility(View.GONE);
+
+        // Register for updates and push through current status
+        getPackageManager().registerMoveCallback(mCallback, new Handler());
+        mCallback.onStatusChanged(mMoveId, getPackageManager().getMoveStatus(mMoveId), -1);
+!!!669314.java!!!	onDestroy() : void
+        super.onDestroy();
+        getPackageManager().unregisterMoveCallback(mCallback);
+!!!669442.java!!!	moveStatusToMessage(in returnCode : int) : CharSequence
+        switch (returnCode) {
+            case PackageManager.MOVE_FAILED_INSUFFICIENT_STORAGE:
+                return getString(R.string.insufficient_storage);
+            case PackageManager.MOVE_FAILED_DEVICE_ADMIN:
+                return getString(R.string.move_error_device_admin);
+            case PackageManager.MOVE_FAILED_DOESNT_EXIST:
+                return getString(R.string.does_not_exist);
+            case PackageManager.MOVE_FAILED_FORWARD_LOCKED:
+                return getString(R.string.app_forward_locked);
+            case PackageManager.MOVE_FAILED_INVALID_LOCATION:
+                return getString(R.string.invalid_location);
+            case PackageManager.MOVE_FAILED_SYSTEM_PACKAGE:
+                return getString(R.string.system_package);
+            case PackageManager.MOVE_FAILED_INTERNAL_ERROR:
+            default:
+                return getString(R.string.insufficient_storage);
+        }

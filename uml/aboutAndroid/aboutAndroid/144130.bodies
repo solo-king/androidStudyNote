@@ -1,0 +1,67 @@
+class ConfirmDeviceCredentialActivity
+!!!198914.java!!!	createIntent(inout title : CharSequence, inout details : CharSequence) : Intent
+        Intent intent = new Intent();
+        intent.setClassName("com.android.settings",
+                ConfirmDeviceCredentialActivity.class.getName());
+        intent.putExtra(KeyguardManager.EXTRA_TITLE, title);
+        intent.putExtra(KeyguardManager.EXTRA_DESCRIPTION, details);
+        return intent;
+!!!199042.java!!!	createIntent(inout title : CharSequence, inout details : CharSequence, in challenge : long) : Intent
+        Intent intent = new Intent();
+        intent.setClassName("com.android.settings",
+                ConfirmDeviceCredentialActivity.class.getName());
+        intent.putExtra(KeyguardManager.EXTRA_TITLE, title);
+        intent.putExtra(KeyguardManager.EXTRA_DESCRIPTION, details);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE, challenge);
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_HAS_CHALLENGE, true);
+        return intent;
+!!!199170.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        String title = intent.getStringExtra(KeyguardManager.EXTRA_TITLE);
+        String details = intent.getStringExtra(KeyguardManager.EXTRA_DESCRIPTION);
+        int userId = Utils.getCredentialOwnerUserId(this);
+        if (isInternalActivity()) {
+            try {
+                userId = Utils.getUserIdFromBundle(this, intent.getExtras());
+            } catch (SecurityException se) {
+                Log.e(TAG, "Invalid intent extra", se);
+            }
+        }
+        final boolean isManagedProfile = Utils.isManagedProfile(UserManager.get(this), userId);
+        // if the client app did not hand in a title and we are about to show the work challenge,
+        // check whether there is a policy setting the organization name and use that as title
+        if ((title == null) && isManagedProfile) {
+            title = getTitleFromOrganizationName(userId);
+        }
+        ChooseLockSettingsHelper helper = new ChooseLockSettingsHelper(this);
+        final LockPatternUtils lockPatternUtils = new LockPatternUtils(this);
+        boolean launched;
+        // If the target is a managed user and user key not unlocked yet, we will force unlock
+        // tied profile so it will enable work mode and unlock managed profile, when personal
+        // challenge is unlocked.
+        if (isManagedProfile && isInternalActivity()
+                && !lockPatternUtils.isSeparateProfileChallengeEnabled(userId)) {
+            // We set the challenge as 0L, so it will force to unlock managed profile when it
+            // unlocks primary profile screen lock, by calling verifyTiedProfileChallenge()
+            launched = helper.launchConfirmationActivityWithExternalAndChallenge(
+                    0 /* request code */, null /* title */, title, details, true /* isExternal */,
+                    0L /* challenge */, userId);
+        } else {
+            launched = helper.launchConfirmationActivity(0 /* request code */, null /* title */,
+                    title, details, false /* returnCredentials */, true /* isExternal */, userId);
+        }
+        if (!launched) {
+            Log.d(TAG, "No pattern, password or PIN set.");
+            setResult(Activity.RESULT_OK);
+        }
+        finish();
+!!!199298.java!!!	isInternalActivity() : boolean
+        return this instanceof ConfirmDeviceCredentialActivity.InternalActivity;
+!!!199426.java!!!	getTitleFromOrganizationName(in userId : int) : String
+        DevicePolicyManager dpm = (DevicePolicyManager) getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        CharSequence organizationNameForUser = (dpm != null)
+                ? dpm.getOrganizationNameForUser(userId) : null;
+        return organizationNameForUser != null ? organizationNameForUser.toString() : null;

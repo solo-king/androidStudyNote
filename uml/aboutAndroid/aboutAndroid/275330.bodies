@@ -1,0 +1,24 @@
+class SettingsSearchIndexablesProvider
+!!!881538.java!!!	onCreate() : boolean
+        return true;
+!!!881666.java!!!	queryXmlResources(inout projection : String) : Cursor
+        MatrixCursor cursor = new MatrixCursor(INDEXABLES_XML_RES_COLUMNS);
+        Collection<SearchIndexableResource> values = SearchIndexableResources.values();
+        for (SearchIndexableResource val : values) {
+            Object[] ref = new Object[7];
+            ref[COLUMN_INDEX_XML_RES_RANK] = val.rank;
+            ref[COLUMN_INDEX_XML_RES_RESID] = val.xmlResId;
+            ref[COLUMN_INDEX_XML_RES_CLASS_NAME] = val.className;
+            ref[COLUMN_INDEX_XML_RES_ICON_RESID] = val.iconResId;
+            ref[COLUMN_INDEX_XML_RES_INTENT_ACTION] = null; // intent action
+            ref[COLUMN_INDEX_XML_RES_INTENT_TARGET_PACKAGE] = null; // intent target package
+            ref[COLUMN_INDEX_XML_RES_INTENT_TARGET_CLASS] = null; // intent target class
+            cursor.addRow(ref);
+        }
+        return cursor;
+!!!881794.java!!!	queryRawData(inout projection : String) : Cursor
+        MatrixCursor result = new MatrixCursor(INDEXABLES_RAW_COLUMNS);
+        return result;
+!!!881922.java!!!	queryNonIndexableKeys(inout projection : String) : Cursor
+        MatrixCursor cursor = new MatrixCursor(NON_INDEXABLES_KEYS_COLUMNS);
+        return cursor;

@@ -1,0 +1,4 @@
+class DevicePickerActivity
+!!!561410.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.bluetooth_device_picker);

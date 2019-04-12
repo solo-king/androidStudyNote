@@ -1,0 +1,101 @@
+class UpdateIndexTask
+!!!878082.java!!!	onPreExecute() : void
+            super.onPreExecute();
+            mIsAvailable.set(false);
+!!!878210.java!!!	onPostExecute(inout aVoid : Void) : void
+            super.onPostExecute(aVoid);
+            mIsAvailable.set(true);
+!!!878338.java!!!	doInBackground(inout  : UpdateData...params) : Void
+            try {
+                final List<SearchIndexableData> dataToUpdate = params[0].dataToUpdate;
+                final List<SearchIndexableData> dataToDelete = params[0].dataToDelete;
+                final Map<String, List<String>> nonIndexableKeys = params[0].nonIndexableKeys;
+
+                final boolean forceUpdate = params[0].forceUpdate;
+                final boolean fullIndex = params[0].fullIndex;
+
+                final SQLiteDatabase database = getWritableDatabase();
+                if (database == null) {
+                    Log.e(LOG_TAG, "Cannot update Index as I cannot get a writable database");
+                    return null;
+                }
+                final String localeStr = Locale.getDefault().toString();
+
+                try {
+                    database.beginTransaction();
+                    if (dataToDelete.size() > 0) {
+                        processDataToDelete(database, localeStr, dataToDelete);
+                    }
+                    if (dataToUpdate.size() > 0) {
+                        processDataToUpdate(database, localeStr, dataToUpdate, nonIndexableKeys,
+                                forceUpdate);
+                    }
+                    database.setTransactionSuccessful();
+                } finally {
+                    database.endTransaction();
+                }
+                if (fullIndex) {
+                    IndexDatabaseHelper.setLocaleIndexed(mContext, localeStr);
+                }
+            } catch (SQLiteFullException e) {
+                Log.e(LOG_TAG, "Unable to index search, out of space", e);
+            }
+
+            return null;
+!!!878466.java!!!	processDataToUpdate(inout database : SQLiteDatabase, in localeStr : String, inout dataToUpdate : List<SearchIndexableData>, inout nonIndexableKeys : Map<String, List<String>>, inout forceUpdate : boolean) : boolean
+
+            if (!forceUpdate && IndexDatabaseHelper.isLocaleAlreadyIndexed(mContext, localeStr)) {
+                Log.d(LOG_TAG, "Locale '" + localeStr + "' is already indexed");
+                return true;
+            }
+
+            boolean result = false;
+            final long current = System.currentTimeMillis();
+
+            final int count = dataToUpdate.size();
+            for (int n = 0; n < count; n++) {
+                final SearchIndexableData data = dataToUpdate.get(n);
+                try {
+                    indexOneSearchIndexableData(database, localeStr, data, nonIndexableKeys);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Cannot index: " + (data != null ? data.className : data)
+                                    + " for locale: " + localeStr, e);
+                }
+            }
+
+            final long now = System.currentTimeMillis();
+            Log.d(LOG_TAG, "Indexing locale '" + localeStr + "' took " +
+                    (now - current) + " millis");
+            return result;
+!!!878594.java!!!	processDataToDelete(inout database : SQLiteDatabase, in localeStr : String, inout dataToDelete : List<SearchIndexableData>) : boolean
+
+            boolean result = false;
+            final long current = System.currentTimeMillis();
+
+            final int count = dataToDelete.size();
+            for (int n = 0; n < count; n++) {
+                final SearchIndexableData data = dataToDelete.get(n);
+                if (data == null) {
+                    continue;
+                }
+                if (!TextUtils.isEmpty(data.className)) {
+                    delete(database, IndexColumns.CLASS_NAME, data.className);
+                } else  {
+                    if (data instanceof SearchIndexableRaw) {
+                        final SearchIndexableRaw raw = (SearchIndexableRaw) data;
+                        if (!TextUtils.isEmpty(raw.title)) {
+                            delete(database, IndexColumns.DATA_TITLE, raw.title);
+                        }
+                    }
+                }
+            }
+
+            final long now = System.currentTimeMillis();
+            Log.d(LOG_TAG, "Deleting data for locale '" + localeStr + "' took " +
+                    (now - current) + " millis");
+            return result;
+!!!878722.java!!!	delete(inout database : SQLiteDatabase, in columName : String, in value : String) : int
+            final String whereClause = columName + "=?";
+            final String[] whereArgs = new String[] { value };
+
+            return database.delete(Tables.TABLE_PREFS_INDEX, whereClause, whereArgs);

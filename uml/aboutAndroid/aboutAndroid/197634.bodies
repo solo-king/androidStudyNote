@@ -1,0 +1,64 @@
+class ToggleAutoclickPreferenceFragment
+!!!420226.java!!!	getAutoclickPreferenceSummary(inout resources : Resources, in delay : int) : CharSequence
+        int summaryIndex = getAutoclickPreferenceSummaryIndex(delay);
+        return resources.getQuantityString(
+                mAutoclickPreferenceSummaries[summaryIndex], delay, delay);
+!!!420354.java!!!	getAutoclickPreferenceSummaryIndex(in delay : int) : int
+        if (delay <= MIN_AUTOCLICK_DELAY) {
+            return 0;
+        }
+        if (delay >= MAX_AUTOCLICK_DELAY) {
+            return mAutoclickPreferenceSummaries.length - 1;
+        }
+        int rangeSize = (MAX_AUTOCLICK_DELAY - MIN_AUTOCLICK_DELAY) /
+                (mAutoclickPreferenceSummaries.length - 1);
+        return (delay - MIN_AUTOCLICK_DELAY) / rangeSize;
+!!!420482.java!!!	onPreferenceToggled(in preferenceKey : String, inout enabled : boolean) : void
+        Settings.Secure.putInt(getContentResolver(), preferenceKey, enabled ? 1 : 0);
+        mDelay.setEnabled(enabled);
+!!!420610.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY_TOGGLE_AUTOCLICK;
+!!!420738.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.accessibility_autoclick_settings);
+
+        int delay = Settings.Secure.getInt(
+                getContentResolver(), Settings.Secure.ACCESSIBILITY_AUTOCLICK_DELAY,
+                AccessibilityManager.AUTOCLICK_DELAY_DEFAULT);
+
+        // Initialize seek bar preference. Sets seek bar size to the number of possible delay
+        // values.
+        mDelay = (SeekBarPreference) findPreference("autoclick_delay");
+        mDelay.setMax(delayToSeekBarProgress(MAX_AUTOCLICK_DELAY));
+        mDelay.setProgress(delayToSeekBarProgress(delay));
+        mDelay.setOnPreferenceChangeListener(this);
+!!!420866.java!!!	onInstallSwitchBarToggleSwitch() : void
+        super.onInstallSwitchBarToggleSwitch();
+
+        int value = Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.ACCESSIBILITY_AUTOCLICK_ENABLED, 0);
+        mSwitchBar.setCheckedInternal(value == 1);
+        mSwitchBar.addOnSwitchChangeListener(this);
+        mDelay.setEnabled(value == 1);
+!!!420994.java!!!	onRemoveSwitchBarToggleSwitch() : void
+        super.onRemoveSwitchBarToggleSwitch();
+        mSwitchBar.removeOnSwitchChangeListener(this);
+!!!421122.java!!!	onSwitchChanged(inout switchView : Switch, inout isChecked : boolean) : void
+        onPreferenceToggled(Settings.Secure.ACCESSIBILITY_AUTOCLICK_ENABLED, isChecked);
+!!!421250.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+
+        setTitle(getString(R.string.accessibility_autoclick_preference_title));
+!!!421378.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference == mDelay && newValue instanceof Integer) {
+            Settings.Secure.putInt(getContentResolver(),
+                   Settings.Secure.ACCESSIBILITY_AUTOCLICK_DELAY,
+                   seekBarProgressToDelay((int)newValue));
+            return true;
+         }
+         return false;
+!!!421506.java!!!	seekBarProgressToDelay(in progress : int) : int
+        return progress * AUTOCLICK_DELAY_STEP + MIN_AUTOCLICK_DELAY;
+!!!421634.java!!!	delayToSeekBarProgress(in delay : int) : int
+        return (delay - MIN_AUTOCLICK_DELAY) / AUTOCLICK_DELAY_STEP;

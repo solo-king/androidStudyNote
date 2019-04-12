@@ -1,0 +1,14 @@
+class CountDownTimer
+!!!456194.java!!!	CountDownTimer(in millisInFuture : long, in countDownInterval : long)
+        mMillisInFuture = millisInFuture;
+        mCountdownInterval = countDownInterval;
+!!!456322.java!!!	cancel() : void
+        mHandler.removeMessages(MSG);
+!!!456450.java!!!	start() : CountDownTimer
+        if (mMillisInFuture <= 0) {
+            onFinish();
+            return this;
+        }
+        mStopTimeInFuture = SystemClock.elapsedRealtime() + mMillisInFuture;
+        mHandler.sendMessage(mHandler.obtainMessage(MSG));
+        return this;

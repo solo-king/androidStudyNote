@@ -1,0 +1,19 @@
+window_sizes 3600 945 227 1687 898 46
+diagrams
+  active  sequencediagram_ref 128002 // ethernet_open_dhcp_wan
+    3367 826 90 10 0 0
+end
+show_stereotypes
+selected class_ref 137474 // NetworkInfo
+open
+  classview_ref 128002 // ethernet
+  classview_ref 128514 // ethernet
+  classview_ref 128642 // ethernet_class
+  classview_ref 128258 // DialogInterface
+  classview_ref 128386 // CompoundButton
+  classview_ref 128898 // IEthernetManager
+  classview_ref 135426 // conn
+  classview_ref 128770 // sourceCode
+  deploymentview_ref 128258 // sourceCode
+end
+end

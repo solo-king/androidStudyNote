@@ -1,0 +1,15 @@
+class VpnProfileParser
+!!!1042050.java!!!	parse(inout in : InputStream) : VpnInfo
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.parse(in, mHandler);
+        } catch (SAXException e) {
+            Log.e(TAG, "Parse vpn profile exception: " + e.toString());
+        } catch (IOException e) {
+            Log.e(TAG, "Parse vpn profile exception: " + e.toString());
+        } catch (ParserConfigurationException e) {
+            Log.e(TAG, "Parse vpn profile exception: " + e.toString());
+        } finally {
+            return mVpnPool;
+        }

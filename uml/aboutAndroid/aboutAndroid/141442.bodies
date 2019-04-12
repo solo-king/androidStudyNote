@@ -1,0 +1,32 @@
+class SaveAndFinishWorker
+!!!191490.java!!!	start(inout utils : LockPatternUtils, inout required : boolean, inout hasChallenge : boolean, in challenge : long, in chosenPassword : String, in currentPassword : String, in requestedQuality : int, in userId : int) : void
+            prepare(utils, required, hasChallenge, challenge, userId);
+
+            mChosenPassword = chosenPassword;
+            mCurrentPassword = currentPassword;
+            mRequestedQuality = requestedQuality;
+            mUserId = userId;
+
+            start();
+!!!191618.java!!!	saveAndVerifyInBackground() : Intent
+            Intent result = null;
+            mUtils.saveLockPassword(mChosenPassword, mCurrentPassword, mRequestedQuality,
+                    mUserId);
+
+            if (mHasChallenge) {
+                byte[] token;
+                try {
+                    token = mUtils.verifyPassword(mChosenPassword, mChallenge, mUserId);
+                } catch (RequestThrottledException e) {
+                    token = null;
+                }
+
+                if (token == null) {
+                    Log.e(TAG, "critical: no token returned for known good password.");
+                }
+
+                result = new Intent();
+                result.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, token);
+            }
+
+            return result;

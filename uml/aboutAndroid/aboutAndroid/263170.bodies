@@ -1,0 +1,44 @@
+class NotificationAccessSettings
+!!!808706.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        mNm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+!!!808834.java!!!	getNotificationListenerConfig() : ManagedServiceSettings::Config
+        final Config c = new Config();
+        c.tag = TAG;
+        c.setting = Settings.Secure.ENABLED_NOTIFICATION_LISTENERS;
+        c.intentAction = NotificationListenerService.SERVICE_INTERFACE;
+        c.permission = android.Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE;
+        c.noun = "notification listener";
+        c.warningDialogTitle = R.string.notification_listener_security_warning_title;
+        c.warningDialogSummary = R.string.notification_listener_security_warning_summary;
+        c.emptyText = R.string.no_notification_listeners;
+        return c;
+!!!808962.java!!!	getMetricsCategory() : int
+        return MetricsEvent.NOTIFICATION_ACCESS;
+!!!809090.java!!!	getConfig() : ManagedServiceSettings::Config
+        return CONFIG;
+!!!809218.java!!!	getListenersCount(inout pm : PackageManager) : int
+        return ServiceListing.getServicesCount(CONFIG, pm);
+!!!809346.java!!!	getEnabledListenersCount(inout context : Context) : int
+        return ServiceListing.getEnabledServicesCount(CONFIG, context);
+!!!809474.java!!!	setEnabled(inout service : ComponentName, in title : String, inout enable : boolean) : boolean
+        if (!enable) {
+            if (!mServiceListing.isEnabled(service)) {
+                return true; // already disabled
+            }
+            // show a friendly dialog
+            new FriendlyWarningDialogFragment()
+                    .setServiceInfo(service, title)
+                    .show(getFragmentManager(), "friendlydialog");
+            return false;
+        } else {
+            return super.setEnabled(service, title, enable);
+        }
+!!!809602.java!!!	deleteRules(in context : Context, in pkg : String) : void
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                final NotificationManager mgr = context.getSystemService(NotificationManager.class);
+                mgr.removeAutomaticZenRules(pkg);
+            }
+        });

@@ -1,0 +1,169 @@
+class NetworkInfo
+!!!243202.java!!!	NetworkInfo(in type : int, in subtype : int, in typeName : String, in subtypeName : String)
+        if (!ConnectivityManager.isNetworkTypeValid(type)) {
+            throw new IllegalArgumentException("Invalid network type: " + type);
+        }
+        mNetworkType = type;
+        mSubtype = subtype;
+        mTypeName = typeName;
+        mSubtypeName = subtypeName;
+        setDetailedState(DetailedState.IDLE, null, null);
+        mState = State.UNKNOWN;
+        mIsAvailable = false; // until we're told otherwise, assume unavailable
+        mIsRoaming = false;
+        mIsConnectedToProvisioningNetwork = false;
+!!!243330.java!!!	NetworkInfo(in type : int, in subtype : int, in typeName : String, in subtypeName : String, in subId : int)
+        if (!ConnectivityManager.isNetworkTypeValid(type)) {
+            throw new IllegalArgumentException("Invalid network type: " + type);
+        }
+        mNetworkType = type;
+        mSubtype = subtype;
+        mTypeName = typeName;
+        mSubtypeName = subtypeName;
+        setDetailedState(DetailedState.IDLE, null, null);
+        mState = State.UNKNOWN;
+        mIsAvailable = false; // until we're told otherwise, assume unavailable
+        mIsRoaming = false;
+        mIsConnectedToProvisioningNetwork = false;
+        mSubscription = subId;
+!!!243458.java!!!	NetworkInfo(inout source : NetworkInfo)
+        if (source != null) {
+            mNetworkType = source.mNetworkType;
+            mSubtype = source.mSubtype;
+            mTypeName = source.mTypeName;
+            mSubtypeName = source.mSubtypeName;
+            mState = source.mState;
+            mDetailedState = source.mDetailedState;
+            mReason = source.mReason;
+            mExtraInfo = source.mExtraInfo;
+            mIsFailover = source.mIsFailover;
+            mIsRoaming = source.mIsRoaming;
+            mIsAvailable = source.mIsAvailable;
+            mIsConnectedToProvisioningNetwork = source.mIsConnectedToProvisioningNetwork;
+            mSubscription = source.mSubscription;
+        }
+!!!243586.java!!!	getType() : int
+        synchronized (this) {
+            return mNetworkType;
+        }
+!!!243714.java!!!	getSubtype() : int
+        synchronized (this) {
+            return mSubtype;
+        }
+!!!243842.java!!!	setSubtype(in subtype : int, in subtypeName : String) : void
+        synchronized (this) {
+            mSubtype = subtype;
+            mSubtypeName = subtypeName;
+        }
+!!!243970.java!!!	getTypeName() : String
+        synchronized (this) {
+            return mTypeName;
+        }
+!!!244098.java!!!	getSubtypeName() : String
+        synchronized (this) {
+            return mSubtypeName;
+        }
+!!!244226.java!!!	isConnectedOrConnecting() : boolean
+        synchronized (this) {
+            return mState == State.CONNECTED || mState == State.CONNECTING;
+        }
+!!!244354.java!!!	isConnected() : boolean
+        synchronized (this) {
+            return mState == State.CONNECTED;
+        }
+!!!244482.java!!!	isAvailable() : boolean
+        synchronized (this) {
+            return mIsAvailable;
+        }
+!!!244610.java!!!	setIsAvailable(inout isAvailable : boolean) : void
+        synchronized (this) {
+            mIsAvailable = isAvailable;
+        }
+!!!244738.java!!!	isFailover() : boolean
+        synchronized (this) {
+            return mIsFailover;
+        }
+!!!244866.java!!!	setFailover(inout isFailover : boolean) : void
+        synchronized (this) {
+            mIsFailover = isFailover;
+        }
+!!!244994.java!!!	isRoaming() : boolean
+        synchronized (this) {
+            return mIsRoaming;
+        }
+!!!245122.java!!!	setRoaming(inout isRoaming : boolean) : void
+        synchronized (this) {
+            mIsRoaming = isRoaming;
+        }
+!!!245250.java!!!	isConnectedToProvisioningNetwork() : boolean
+        synchronized (this) {
+            return mIsConnectedToProvisioningNetwork;
+        }
+!!!245378.java!!!	setIsConnectedToProvisioningNetwork(inout val : boolean) : void
+        synchronized (this) {
+            mIsConnectedToProvisioningNetwork = val;
+        }
+!!!245506.java!!!	getState() : NetworkInfo::State
+        synchronized (this) {
+            return mState;
+        }
+!!!245634.java!!!	getDetailedState() : NetworkInfo::DetailedState
+        synchronized (this) {
+            return mDetailedState;
+        }
+!!!245762.java!!!	getSubscription() : int
+        synchronized (this) {
+            return mSubscription;
+        }
+!!!245890.java!!!	setDetailedState(inout detailedState : NetworkInfo::DetailedState, in reason : String, in extraInfo : String) : void
+        synchronized (this) {
+            this.mDetailedState = detailedState;
+            this.mState = stateMap.get(detailedState);
+            this.mReason = reason;
+            this.mExtraInfo = extraInfo;
+        }
+!!!246018.java!!!	setExtraInfo(in extraInfo : String) : void
+        synchronized (this) {
+            this.mExtraInfo = extraInfo;
+        }
+!!!246146.java!!!	getReason() : String
+        synchronized (this) {
+            return mReason;
+        }
+!!!246274.java!!!	getExtraInfo() : String
+        synchronized (this) {
+            return mExtraInfo;
+        }
+!!!246402.java!!!	toString() : String
+        synchronized (this) {
+            StringBuilder builder = new StringBuilder("NetworkInfo: ");
+            builder.append("type: ").append(getTypeName()).append("[").append(getSubtypeName()).
+            append("], state: ").append(mState).append("/").append(mDetailedState).
+            append(", reason: ").append(mReason == null ? "(unspecified)" : mReason).
+            append(", extra: ").append(mExtraInfo == null ? "(none)" : mExtraInfo).
+            append(", roaming: ").append(mIsRoaming).
+            append(", failover: ").append(mIsFailover).
+            append(", isAvailable: ").append(mIsAvailable).
+            append(", isConnectedToProvisioningNetwork: ").
+                    append(mIsConnectedToProvisioningNetwork).
+            append(", subscription: ").append(mSubscription);
+            return builder.toString();
+        }
+!!!246530.java!!!	describeContents() : int
+        return 0;
+!!!246658.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        synchronized (this) {
+            dest.writeInt(mNetworkType);
+            dest.writeInt(mSubtype);
+            dest.writeString(mTypeName);
+            dest.writeString(mSubtypeName);
+            dest.writeString(mState.name());
+            dest.writeString(mDetailedState.name());
+            dest.writeInt(mIsFailover ? 1 : 0);
+            dest.writeInt(mIsAvailable ? 1 : 0);
+            dest.writeInt(mIsRoaming ? 1 : 0);
+            dest.writeInt(mIsConnectedToProvisioningNetwork ? 1 : 0);
+            dest.writeString(mReason);
+            dest.writeString(mExtraInfo);
+            dest.writeInt(mSubscription);
+        }

@@ -1,0 +1,13 @@
+class NullVibrator
+!!!502402.java!!!	getInstance() : NullVibrator
+        return sInstance;
+!!!502530.java!!!	hasVibrator() : boolean
+        return false;
+!!!502786.java!!!	vibrate(inout pattern : long, in repeat : int) : void
+        if (repeat >= pattern.length) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+!!!502914.java!!!	vibrate(in owningUid : int, in owningPackage : String, in milliseconds : long) : void
+        vibrate(milliseconds);
+!!!503042.java!!!	vibrate(in owningUid : int, in owningPackage : String, inout pattern : long, in repeat : int) : void
+        vibrate(pattern, repeat);

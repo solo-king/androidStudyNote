@@ -1,0 +1,3 @@
+class StartPredicate
+!!!965890.java!!!	StartPredicate(in thresholdValue : float)
+            this.thresholdValue = thresholdValue;

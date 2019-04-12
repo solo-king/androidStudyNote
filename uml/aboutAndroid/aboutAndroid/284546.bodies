@@ -1,0 +1,252 @@
+class ChartDataUsageView
+!!!945410.java!!!	ChartDataUsageView(inout context : Context)
+        this(context, null, 0);
+!!!945538.java!!!	ChartDataUsageView(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, 0);
+!!!945666.java!!!	ChartDataUsageView(inout context : Context, inout attrs : AttributeSet, in defStyle : int)
+        super(context, attrs, defStyle);
+        init(new TimeAxis(), new InvertedChartAxis(new DataAxis()));
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                final ChartSweepView sweep = (ChartSweepView) msg.obj;
+                updateVertAxisBounds(sweep);
+                updateEstimateVisible();
+
+                // we keep dispatching repeating updates until sweep is dropped
+                sendUpdateAxisDelayed(sweep, true);
+            }
+        };
+!!!945794.java!!!	onFinishInflate() : void
+        super.onFinishInflate();
+
+        mGrid = (ChartGridView) findViewById(R.id.grid);
+        mSeries = (ChartNetworkSeriesView) findViewById(R.id.series);
+        mDetailSeries = (ChartNetworkSeriesView) findViewById(R.id.detail_series);
+        mDetailSeries.setVisibility(View.GONE);
+
+        mSweepLimit = (ChartSweepView) findViewById(R.id.sweep_limit);
+        mSweepWarning = (ChartSweepView) findViewById(R.id.sweep_warning);
+
+        // prevent sweeps from crossing each other
+        mSweepWarning.setValidRangeDynamic(null, mSweepLimit);
+        mSweepLimit.setValidRangeDynamic(mSweepWarning, null);
+
+        // mark neighbors for checking touch events against
+        mSweepLimit.setNeighbors(mSweepWarning);
+        mSweepWarning.setNeighbors(mSweepLimit);
+
+        mSweepWarning.addOnSweepListener(mVertListener);
+        mSweepLimit.addOnSweepListener(mVertListener);
+
+        mSweepWarning.setDragInterval(5 * MB_IN_BYTES);
+        mSweepLimit.setDragInterval(5 * MB_IN_BYTES);
+
+        // tell everyone about our axis
+        mGrid.init(mHoriz, mVert);
+        mSeries.init(mHoriz, mVert);
+        mDetailSeries.init(mHoriz, mVert);
+        mSweepWarning.init(mVert);
+        mSweepLimit.init(mVert);
+
+        setActivated(false);
+!!!945922.java!!!	setListener(inout listener : ChartDataUsageView::DataUsageChartListener) : void
+        mListener = listener;
+!!!946050.java!!!	bindNetworkStats(inout stats : NetworkStatsHistory) : void
+        mSeries.bindNetworkStats(stats);
+        mHistory = stats;
+        updateVertAxisBounds(null);
+        updateEstimateVisible();
+        updatePrimaryRange();
+        requestLayout();
+!!!946178.java!!!	bindDetailNetworkStats(inout stats : NetworkStatsHistory) : void
+        mDetailSeries.bindNetworkStats(stats);
+        mDetailSeries.setVisibility(stats != null ? View.VISIBLE : View.GONE);
+        if (mHistory != null) {
+            mDetailSeries.setEndTime(mHistory.getEnd());
+        }
+        updateVertAxisBounds(null);
+        updateEstimateVisible();
+        updatePrimaryRange();
+        requestLayout();
+!!!946306.java!!!	bindNetworkPolicy(inout policy : NetworkPolicy) : void
+        if (policy == null) {
+            mSweepLimit.setVisibility(View.INVISIBLE);
+            mSweepLimit.setValue(-1);
+            mSweepWarning.setVisibility(View.INVISIBLE);
+            mSweepWarning.setValue(-1);
+            return;
+        }
+
+        if (policy.limitBytes != NetworkPolicy.LIMIT_DISABLED) {
+            mSweepLimit.setVisibility(View.VISIBLE);
+            mSweepLimit.setEnabled(true);
+            mSweepLimit.setValue(policy.limitBytes);
+        } else {
+            mSweepLimit.setVisibility(View.INVISIBLE);
+            mSweepLimit.setEnabled(false);
+            mSweepLimit.setValue(-1);
+        }
+
+        if (policy.warningBytes != NetworkPolicy.WARNING_DISABLED) {
+            mSweepWarning.setVisibility(View.VISIBLE);
+            mSweepWarning.setValue(policy.warningBytes);
+        } else {
+            mSweepWarning.setVisibility(View.INVISIBLE);
+            mSweepWarning.setValue(-1);
+        }
+
+        updateVertAxisBounds(null);
+        requestLayout();
+        invalidate();
+!!!946434.java!!!	updateVertAxisBounds(inout activeSweep : ChartSweepView) : void
+        final long max = mVertMax;
+
+        long newMax = 0;
+        if (activeSweep != null) {
+            final int adjustAxis = activeSweep.shouldAdjustAxis();
+            if (adjustAxis > 0) {
+                // hovering around upper edge, grow axis
+                newMax = max * 11 / 10;
+            } else if (adjustAxis < 0) {
+                // hovering around lower edge, shrink axis
+                newMax = max * 9 / 10;
+            } else {
+                newMax = max;
+            }
+        }
+
+        // always show known data and policy lines
+        final long maxSweep = Math.max(mSweepWarning.getValue(), mSweepLimit.getValue());
+        final long maxSeries = Math.max(mSeries.getMaxVisible(), mDetailSeries.getMaxVisible());
+        final long maxVisible = Math.max(maxSeries, maxSweep) * 12 / 10;
+        final long maxDefault = Math.max(maxVisible, 50 * MB_IN_BYTES);
+        newMax = Math.max(maxDefault, newMax);
+
+        // only invalidate when vertMax actually changed
+        if (newMax != mVertMax) {
+            mVertMax = newMax;
+
+            final boolean changed = mVert.setBounds(0L, newMax);
+            mSweepWarning.setValidRange(0L, newMax);
+            mSweepLimit.setValidRange(0L, newMax);
+
+            if (changed) {
+                mSeries.invalidatePath();
+                mDetailSeries.invalidatePath();
+            }
+
+            mGrid.invalidate();
+
+            // since we just changed axis, make sweep recalculate its value
+            if (activeSweep != null) {
+                activeSweep.updateValueFromPosition();
+            }
+
+            // layout other sweeps to match changed axis
+            // TODO: find cleaner way of doing this, such as requesting full
+            // layout and making activeSweep discard its tracking MotionEvent.
+            if (mSweepLimit != activeSweep) {
+                layoutSweep(mSweepLimit);
+            }
+            if (mSweepWarning != activeSweep) {
+                layoutSweep(mSweepWarning);
+            }
+        }
+!!!946562.java!!!	updateEstimateVisible() : void
+        final long maxEstimate = mSeries.getMaxEstimate();
+
+        // show estimate when near warning/limit
+        long interestLine = Long.MAX_VALUE;
+        if (mSweepWarning.isEnabled()) {
+            interestLine = mSweepWarning.getValue();
+        } else if (mSweepLimit.isEnabled()) {
+            interestLine = mSweepLimit.getValue();
+        }
+
+        if (interestLine < 0) {
+            interestLine = Long.MAX_VALUE;
+        }
+
+        final boolean estimateVisible = (maxEstimate >= interestLine * 7 / 10);
+        mSeries.setEstimateVisible(estimateVisible);
+!!!946690.java!!!	sendUpdateAxisDelayed(inout sweep : ChartSweepView, inout force : boolean) : void
+        if (force || !mHandler.hasMessages(MSG_UPDATE_AXIS, sweep)) {
+            mHandler.sendMessageDelayed(
+                    mHandler.obtainMessage(MSG_UPDATE_AXIS, sweep), DELAY_MILLIS);
+        }
+!!!946818.java!!!	clearUpdateAxisDelayed(inout sweep : ChartSweepView) : void
+        mHandler.removeMessages(MSG_UPDATE_AXIS, sweep);
+!!!946946.java!!!	onTouchEvent(inout event : MotionEvent) : boolean
+        if (isActivated()) return false;
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                return true;
+            }
+            case MotionEvent.ACTION_UP: {
+                setActivated(true);
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
+!!!947074.java!!!	getInspectStart() : long
+        return mInspectStart;
+!!!947202.java!!!	getInspectEnd() : long
+        return mInspectEnd;
+!!!947330.java!!!	getWarningBytes() : long
+        return mSweepWarning.getLabelValue();
+!!!947458.java!!!	getLimitBytes() : long
+        return mSweepLimit.getLabelValue();
+!!!947586.java!!!	setVisibleRange(in visibleStart : long, in visibleEnd : long) : void
+        final boolean changed = mHoriz.setBounds(visibleStart, visibleEnd);
+        mGrid.setBounds(visibleStart, visibleEnd);
+        mSeries.setBounds(visibleStart, visibleEnd);
+        mDetailSeries.setBounds(visibleStart, visibleEnd);
+
+        mInspectStart = visibleStart;
+        mInspectEnd = visibleEnd;
+
+        requestLayout();
+        if (changed) {
+            mSeries.invalidatePath();
+            mDetailSeries.invalidatePath();
+        }
+
+        updateVertAxisBounds(null);
+        updateEstimateVisible();
+        updatePrimaryRange();
+!!!947714.java!!!	updatePrimaryRange() : void
+        // prefer showing primary range on detail series, when available
+        if (mDetailSeries.getVisibility() == View.VISIBLE) {
+            mSeries.setSecondary(true);
+        } else {
+            mSeries.setSecondary(false);
+        }
+!!!950018.java!!!	setText(inout builder : SpannableStringBuilder, inout key : Object, inout text : CharSequence, in bootstrap : String) : void
+        int start = builder.getSpanStart(key);
+        int end = builder.getSpanEnd(key);
+        if (start == -1) {
+            start = TextUtils.indexOf(builder, bootstrap);
+            end = start + bootstrap.length();
+            builder.setSpan(key, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+        builder.replace(start, end, text);
+!!!950146.java!!!	roundUpToPowerOfTwo(in i : long) : long
+        // NOTE: borrowed from Hashtable.roundUpToPowerOfTwo()
+
+        i--; // If input is a power of two, shift its high-order bit right
+
+        // "Smear" the high-order bit all the way to the right
+        i |= i >>>  1;
+        i |= i >>>  2;
+        i |= i >>>  4;
+        i |= i >>>  8;
+        i |= i >>> 16;
+        i |= i >>> 32;
+
+        i++;
+
+        return i > 0 ? i : Long.MAX_VALUE;

@@ -1,0 +1,1818 @@
+DDR Version 1.06 20171020
+In
+Channel a: DDR3 400MHz
+Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Die Bus-Width=16 Size=1024MB
+Channel b: DDR3 400MHz
+Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Die Bus-Width=16 Size=1024MB
+Memory OK
+Memory OK
+OUT
+Boot1 Release Time: Apr 11 2018 10:32:58, version: 2.36
+ChipType = 0x8, 225
+mmc2:cmd19,256
+SdmmcInit=2 0
+BootCapSize=2000
+UserCapSize=14910MB
+FwPartOffset=2000 , 2000
+mmc0:cmd8,1024
+mmc0:cmd8,1024
+mmc0:cmd8,1024
+SdmmcInit=0 1
+StorageInit ok = 29861
+LOADER Check OK! 0x0, 59235
+TOS    Check OK! 0x8400000, 88647
+Enter Trust OS
+INF [0x0] TEE-CORE:init_primary_helper:377: Initializing (1.1.0-316-g7b4ec90 #59 Wed May 30 08:26:33 UTC 2018 arm)
+
+INF [0x0] TEE-CORE:init_primary_helper:378: Release version: 1.3
+
+INF [0x0] TEE-CORE:init_primary_helper:379: Next entry point address: 0x0
+
+INF [0x0] TEE-CORE:init_teecore:83: teecore inits done
+
+
+U-Boot 2014.10-RK3288-06-g118d14a (Aug 23 2018 - 10:26:06)
+
+CPU: rk3288
+cpu version = 0
+CPU's clock information:
+    arm pll = 816000000HZ
+    periph pll = 594000000HZ
+    ddr pll = 396000000HZ
+    codec pll = 384000000HZ
+Board:	Rockchip platform Board
+Uboot as second level loader
+DRAM:  Found dram banks: 1
+Adding bank:0000000000000000(0000000080000000)
+Reserve memory for trust os.
+dram reserve bank: base = 0x08400000, size = 0x00e00000
+128 MiB
+GIC CPU mask = 0x00000001
+SdmmcInit = 0 400
+SdmmcInit = 2 0
+storage init OK!
+Using default environment
+
+GetParam
+Load FDT from resource image.
+power key: bank-0 pin-5
+can't find dts node for fixed
+pmic:act8846
+can't find dts node for pwm0
+Can't find dts node for fuel guage cw201x
+ERROR: v7_dcache_inval_range - start address is not aligned - 0x046d9798
+ERROR: v7_dcache_inval_range - stop address is not aligned - 0x046d9998
+invalide header tag
+ca head not found
+SecureBootEn = 0, SecureBootLock = 0
+
+#Boot ver: 2018-08-23#2.36
+empty serial no.
+normal boot.
+checkKey
+vbus = 0
+no fuel gauge found
+no fuel gauge found
+Rockchip UBOOT DRM driver version: develop-v1.0.0
+failed to find phy driver
+failed to find panel driver
+read logo on state from dts [1]
+no fuel gauge found
+rockchip_panel_prepare: failed to find panel prepare funcs
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+AUX CH command reply failed!
+failed to find display timing
+rockchip_panel_deinit: failed to find panel deinit funcs
+Hit any key to stop autoboot:  0 
+load fdt from resouce.
+Secure Boot state: 0
+kernel   @ 0x02000000 (0x007bd9d0)
+ramdisk  @ 0x04bf0000 (0x0016e618)
+bootrk: do_bootm_linux...
+   Loading Device Tree to 04600000, end 046127b9 ... OK
+Add bank:0000000000000000, 0000000008400000
+Add bank:0000000009200000, 0000000076e00000
+WARNING: could not set reg FDT_ERR_BADOFFSET.
+
+Starting kernel ...
+
+[    0.000000] Booting Linux on physical CPU 0x500
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 4.4.143 (chenqigan@chenqigan-pc) (gcc version 4.9 20150123 (prerelease) (GCC) ) #3 SMP PREEMPT Fri Aug 24 12:22:02 CST 2018
+[    0.000000] CPU: ARMv7 Processor [410fc0d1] revision 1 (ARMv7), cr=10c5387d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine model: Firefly-RK3288
+[    0.000000] earlycon: Early serial console at MMIO32 0xff690000 (options '')
+[    0.000000] bootconsole [uart0] enabled
+[    0.000000] cma: Reserved 16 MiB at 0x7f000000
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv65535.65535 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] PERCPU: Embedded 13 pages/cpu @eed8b000 s23936 r8192 d21120 u53248
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 518976
+[    0.000000] Kernel command line: earlycon=uart8250,mmio32,0xff690000 swiotlb=1 console=ttyFIQ0 androidboot.baseband=N/A androidboot.selinux=permissive androidboot.hardware=rk30board androidboot.console=ttyFIQ0 init=/init  mtdparts=rk29xxnand:0x00002000@0x00002000(uboot),0x00002000@0x00004000(trust),0x00002000@0x00006000(misc),0x00008000@0x00008000(resource),0x0000C000@0x00010000(kernel),0x00010000@0x0001C000(boot),0x00010000@0x0002C000(recovery),0x00038000@0x0003C000(backup),0x00040000@0x00074000(cache),0x00400000@0x000B4000(system),0x00008000@0x004B4000(metadata),0x00019000@0x004BC000(vendor0),0x00019000@0x004D5000(vendor1),-@0x004EE000(userdata) storagemedia=emmc androidboot.oem_unlocked=0 uboot_logo=0x02000000@0x7dc00000 loader.timestamp=2018-08-23_10:26:06 SecureBootCheckOk=0
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[    0.000000] Memory: 2025232K/2082816K available (10240K kernel code, 1175K rwdata, 3952K rodata, 1024K init, 884K bss, 41200K reserved, 16384K cma-reserved, 1293672K highmem)
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+[    0.000000]     fixmap  : 0xffc00000 - 0xfff00000   (3072 kB)
+[    0.000000]     vmalloc : 0xf0800000 - 0xff800000   ( 240 MB)
+[    0.000000]     lowmem  : 0xc0000000 - 0xf0000000   ( 768 MB)
+[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+[    0.000000]     modules : 0xbf000000 - 0xbfe00000   (  14 MB)
+[    0.000000]       .text : 0xc0008000 - 0xc0b00000   (11232 kB)
+[    0.000000]       .init : 0xc1000000 - 0xc1100000   (1024 kB)
+[    0.000000]       .data : 0xc1100000 - 0xc1225ca8   (1176 kB)
+[    0.000000]        .bss : 0xc1227000 - 0xc130415c   ( 885 kB)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] 	Build-time adjustment of leaf fanout to 32.
+[    0.000000] NR_IRQS:16 nr_irqs:16 16
+[    0.000000] Architected cp15 timer(s) running at 24.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000005] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.008562] Switching to timer-based delay loop, resolution 41ns
+[    0.016244] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=80000)
+[    0.027205] pid_max: default: 32768 minimum: 301
+[    0.032211] Security Framework initialized
+[    0.036606] SELinux:  Initializing.
+[    0.040373] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.047405] Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.055498] Initializing cgroup subsys memory
+[    0.060211] Initializing cgroup subsys freezer
+[    0.064990] CPU: Testing write buffer coherency: ok
+[    0.070467] CPU0: update cpu_capacity 430
+[    0.074799] CPU0: thread -1, cpu 0, socket 5, mpidr 80000500
+[    0.080908] Setting up static identity map for 0x100000 - 0x100058
+[    0.117855] CPU1: update cpu_capacity 430
+[    0.117860] CPU1: thread -1, cpu 1, socket 5, mpidr 80000501
+[    0.127882] CPU2: update cpu_capacity 430
+[    0.127887] CPU2: thread -1, cpu 2, socket 5, mpidr 80000502
+[    0.137925] CPU3: update cpu_capacity 430
+[    0.137930] CPU3: thread -1, cpu 3, socket 5, mpidr 80000503
+[    0.137997] Brought up 4 CPUs
+[    0.172102] SMP: Total of 4 processors activated (192.00 BogoMIPS).
+[    0.178807] CPU: All CPU(s) started in SVC mode.
+[    0.184933] devtmpfs: initialized
+[    0.202307] VFP support v0.3: implementor 41 architecture 3 part 30 variant d rev 0
+[    0.210864] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 6370867519511994 ns
+[    0.221231] futex hash table entries: 1024 (order: 4, 65536 bytes)
+[    0.228509] pinctrl core: initialized pinctrl subsystem
+[    0.234930] NET: Registered protocol family 16
+[    0.241142] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.261809] cpuidle: using governor ladder
+[    0.279547] cpuidle: using governor menu
+[    0.283782] Registered FIQ tty driver
+[    0.313328] console [pstore-1] enabled
+[    0.317509] pstore: Registered ramoops as persistent store backend
+[    0.324134] ramoops: attached 0xf0000@0x8000000, ecc: 0/0
+[    0.331243] hw-breakpoint: found 5 (+1 reserved) breakpoint and 4 watchpoint registers.
+[    0.339824] hw-breakpoint: maximum watchpoint size is 4 bytes.
+[[    0.346859] console [ttyFIQ0] enabled
+    0.346859] console [ttyFIQ0] enabled
+[    0.354447] bootconsole [uart0] disabled
+[    0.354447] bootconsole [uart0] disabled
+[    0.358866] Registered fiq debugger ttyFIQ0
+[    0.397392] dovdd_1v8: regulator get failed, ret=-517
+[    0.398056] vcc_sd: regulator get failed, ret=-517
+[    0.398374] vcc_flash: regulator get failed, ret=-517
+[    0.398526] vcc_5v: supplied by vcc_sys
+[    0.398974] vcc_host_5v: supplied by vcc_5v
+[    0.399585] vcc28_dvp: regulator get failed, ret=-517
+[    0.399981] vcc_lcd: regulator get failed, ret=-517
+[    0.401034] iommu: Adding device ff900000.iep to group 0
+[    0.401111] iommu: Adding device ff910000.isp to group 1
+[    0.401183] iommu: Adding device ff930000.vop to group 2
+[    0.401253] iommu: Adding device ff940000.vop to group 3
+[    0.401331] iommu: Adding device ff9a0000.vpu-service to group 4
+[    0.401438] iommu: Adding device ff9c0000.hevc-service to group 5
+[    0.401789] rk_iommu ff900800.iommu: can't get aclk
+[    0.401804] rk_iommu ff900800.iommu: can't get hclk
+[    0.403099] SCSI subsystem initialized
+[    0.403326] usbcore: registered new interface driver usbfs
+[    0.403387] usbcore: registered new interface driver hub
+[    0.403454] usbcore: registered new device driver usb
+[    0.403830] rk3288-dwc-control-usb ff770284.dwc-control-usb: host_drv_gpio is not specified or invalid
+[    0.404947] media: Linux media interface: v0.10
+[    0.404999] Linux video capture interface: v2.00
+[    0.405214] pps_core: LinuxPPS API ver. 1 registered
+[    0.405226] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.405253] PTP clock support registered
+[    0.406646] Advanced Linux Sound Architecture Driver Initialized.
+[    0.407170] Bluetooth: Core ver 2.21
+[    0.407208] NET: Registered protocol family 31
+[    0.407217] Bluetooth: HCI device and connection manager initialized
+[    0.407231] Bluetooth: HCI socket layer initialized
+[    0.407243] Bluetooth: L2CAP socket layer initialized
+[    0.407272] Bluetooth: SCO socket layer initialized
+[    0.408306] rockchip-cpuinfo cpuinfo: Serial		: 60b1f771db008efd
+[    0.409132] clocksource: Switched to clocksource arch_sys_counter
+[    0.456126] rga: Module initialized.
+[    0.457794] thermal thermal_zone1: power_allocator: sustainable_power will be estimated
+[    0.458050] NET: Registered protocol family 2
+[    0.458551] TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.458628] TCP bind hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.458760] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.458809] UDP hash table entries: 512 (order: 2, 16384 bytes)
+[    0.458842] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes)
+[    0.458999] NET: Registered protocol family 1
+[    0.459647] Trying to unpack rootfs image as initramfs...
+[    0.538862] Freeing initrd memory: 1468K
+[    0.539876] hw perfevents: enabled with armv7_cortex_a12 PMU driver, 7 counters available
+[    0.542764] audit: initializing netlink subsys (disabled)
+[    0.542822] audit: type=2000 audit(0.426:1): initialized
+[    0.547920] VFS: Disk quotas dquot_6.6.0
+[    0.548070] VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    0.549040] Registering sdcardfs 0.1
+[    0.549329] fuse init (API version 7.23)
+[    0.550597] 
+[    0.550597] TEE Core Framework initialization (ver 1:0.1)
+[    0.550633] TEE armv7 Driver initialization
+[    0.550977] tz_tee_probe: name="armv7sec", id=0, pdev_name="armv7sec.0"
+[    0.550998] TEE core: Alloc the misc device "opteearmtz00" (id=0)
+[    0.551180] TEE Core: Register the misc device "opteearmtz00" (id=0,minor=62)
+[    0.554734] bounce: pool size: 64 pages
+[    0.554875] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+[    0.554900] io scheduler noop registered
+[    0.554915] io scheduler deadline registered
+[    0.554945] io scheduler cfq registered (default)
+[    0.557255] rockchip-dp-phy ff770000.syscon:edp-phy: No edp_24m reset control specified
+[    0.558937] iep: failed to find iep power down clock source.
+[    0.559337] IEP Power ON
+[    0.559521] IEP Power OFF
+[    0.559593] IEP Driver loaded succesfully
+[    0.559754] Module initialized.
+[    0.560120] rk-vcodec ff9a0000.vpu-service: no regulator for vcodec
+[    0.560319] rk-vcodec ff9a0000.vpu-service: probe device
+[    0.560522] rk-vcodec ff9a0000.vpu-service: drm allocator with mmu enabled
+[    0.561033] rk-vcodec ff9a0000.vpu-service: could not find power_model node
+[    0.561053] rk-vcodec ff9a0000.vpu-service: init success
+[    0.561296] rk-vcodec ff9c0000.hevc-service: no regulator for vcodec
+[    0.561505] rk-vcodec ff9c0000.hevc-service: probe device
+[    0.561722] rk-vcodec ff9c0000.hevc-service: drm allocator with mmu enabled
+[    0.562133] rk-vcodec ff9c0000.hevc-service: could not find power_model node
+[    0.562153] rk-vcodec ff9c0000.hevc-service: init success
+[    0.564133] dma-pl330 ff250000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    0.564158] dma-pl330 ff250000.dma-controller: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-20 Num_Events-16
+[    0.564805] dma-pl330 ff600000.dma-controller: Loaded driver for PL330 DMAC-241330
+[    0.564829] dma-pl330 ff600000.dma-controller: 	DBUFF-64x8bytes Num_Chans-5 Num_Peri-6 Num_Events-10
+[    0.566348] Serial: 8250/16550 driver, 5 ports, IRQ sharing disabled
+[    0.567958] ff180000.serial: ttyS0 at MMIO 0xff180000 (irq = 38, base_baud = 1500000) is a 16550A
+[    0.568531] ff190000.serial: ttyS1 at MMIO 0xff190000 (irq = 39, base_baud = 1500000) is a 16550A
+[    0.568874] rockchip-pinctrl pinctrl: pin gpio7-22 already requested by fiq-debugger; cannot claim for ff690000.serial
+[    0.568896] rockchip-pinctrl pinctrl: pin-238 (ff690000.serial) status -22
+[    0.568915] rockchip-pinctrl pinctrl: could not request pin 238 (gpio7-22) from group uart2-xfer  on device rockchip-pinctrl
+[    0.568928] dw-apb-uart ff690000.serial: Error applying setting, reverse things back
+[    0.569202] ff690000.serial: ttyS2 at MMIO 0xff690000 (irq = 40, base_baud = 1500000) is a 16550A
+[    0.569793] ff1b0000.serial: ttyS3 at MMIO 0xff1b0000 (irq = 41, base_baud = 1500000) is a 16550A
+[    0.570253] [drm] Initialized drm 1.1.0 20060810
+[    0.573654] [drm] Rockchip DRM driver version: v1.0.1
+[    0.573915] rockchip-drm display-subsystem: devfreq is not set
+[    0.574175] rockchip-vop ff930000.vop: invalid resource
+[    0.574197] rockchip-vop ff930000.vop: failed to get vop cabc lut registers
+[    0.574782] [drm] no mcu-timing node found in /vop@ff930000
+[    0.574809] rockchip-drm display-subsystem: bound ff930000.vop (ops vop_component_ops)
+[    0.574861] rockchip-vop ff940000.vop: invalid resource
+[    0.574874] rockchip-vop ff940000.vop: failed to get vop cabc lut registers
+[    0.575464] [drm] no mcu-timing node found in /vop@ff940000
+[    0.575491] rockchip-drm display-subsystem: bound ff940000.vop (ops vop_component_ops)
+[    0.575696] i2c i2c-6: of_i2c: modalias failure on /hdmi@ff980000/ports
+[    0.575721] dwhdmi-rockchip ff980000.hdmi: registered DesignWare HDMI I2C bus driver
+[    0.575816] dwhdmi-rockchip ff980000.hdmi: Detected HDMI TX controller v2.01a with HDCP (DWC HDMI 2.0 TX PHY)
+[    0.576635] rockchip-drm display-subsystem: bound ff980000.hdmi (ops dw_hdmi_rockchip_ops)
+[    0.576709] [drm:rockchip_dp_bind] *ERROR* failed to find panel
+[    0.576735] rockchip-drm display-subsystem: failed to bind ff970000.dp (ops rockchip_dp_component_ops): -517
+[    0.577399] rockchip-drm display-subsystem: master bind failed: -517
+[    0.580102] mali ffa30000.gpu: Failed to get regulator
+[    0.580124] mali ffa30000.gpu: Power control initialization failed
+[    0.589199] brd: module loaded
+[    0.594287] loop: module loaded
+[    0.594868] zram: Added device: zram0
+[    0.595717] SCSI Media Changer driver v0.25 
+[    0.596320] rockchip-spi ff110000.spi: no high_speed pinctrl state
+[    0.597148] tun: Universal TUN/TAP device driver, 1.6
+[    0.597166] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    0.598079] rk_gmac-dwmac ff290000.ethernet: clock input or output? (input).
+[    0.598103] rk_gmac-dwmac ff290000.ethernet: TX delay(0x30).
+[    0.598116] rk_gmac-dwmac ff290000.ethernet: RX delay(0x10).
+[    0.598141] rk_gmac-dwmac ff290000.ethernet: integrated PHY? (no).
+[    0.598266] rk_gmac-dwmac ff290000.ethernet: cannot get clock clk_mac_speed
+[    0.598279] rk_gmac-dwmac ff290000.ethernet: clock input from PHY
+[    0.603302] rk_gmac-dwmac ff290000.ethernet: init for RGMII
+[    0.603400] stmmac - user ID: 0x10, Synopsys ID: 0x35
+[    0.603416]  Ring mode enabled
+[    0.603423]  DMA HW capability register supported
+[    0.603430]  Normal descriptors
+[    0.603440]  RX Checksum Offload Engine supported (type 2)
+[    0.603446]  TX Checksum insertion supported
+[    0.603453]  Wake-Up On Lan supported
+[    0.603500]  Enable RX Mitigation via HW Watchdog Timer
+[    1.622162] libphy: stmmac: probed
+[    1.622185] eth%d: PHY ID 001cc915 at 0 IRQ POLL (stmmac-0:00) active
+[    1.622196] eth%d: PHY ID 001cc915 at 1 IRQ POLL (stmmac-0:01)
+[    1.623176] PPP generic driver version 2.4.2
+[    1.623372] PPP BSD Compression module registered
+[    1.623398] PPP Deflate Compression module registered
+[    1.623427] PPP MPPE Compression module registered
+[    1.623447] NET: Registered protocol family 24
+[    1.623490] SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
+[    1.623500] CSLIP: code copyright 1989 Regents of the University of California.
+[    1.623522] Rockchip WiFi SYS interface (V1.00) ... 
+[    1.623631] usbcore: registered new interface driver catc
+[    1.623686] usbcore: registered new interface driver kaweth
+[    1.623702] pegasus: v0.9.3 (2013/04/25), Pegasus/Pegasus II USB Ethernet driver
+[    1.623749] usbcore: registered new interface driver pegasus
+[    1.623809] usbcore: registered new interface driver rtl8150
+[    1.623862] usbcore: registered new interface driver r8152
+[    1.623877] hso: drivers/net/usb/hso.c: Option Wireless
+[    1.623946] usbcore: registered new interface driver hso
+[    1.624018] usbcore: registered new interface driver asix
+[    1.624074] usbcore: registered new interface driver ax88179_178a
+[    1.624127] usbcore: registered new interface driver cdc_ether
+[    1.624187] usbcore: registered new interface driver cdc_eem
+[    1.624242] usbcore: registered new interface driver dm9601
+[    1.624306] usbcore: registered new interface driver smsc75xx
+[    1.624368] usbcore: registered new interface driver smsc95xx
+[    1.624428] usbcore: registered new interface driver gl620a
+[    1.624487] usbcore: registered new interface driver net1080
+[    1.624541] usbcore: registered new interface driver plusb
+[    1.624603] usbcore: registered new interface driver rndis_host
+[    1.624658] usbcore: registered new interface driver cdc_subset
+[    1.624710] usbcore: registered new interface driver zaurus
+[    1.624765] usbcore: registered new interface driver MOSCHIP usb-ethernet driver
+[    1.624842] usbcore: registered new interface driver int51x1
+[    1.624894] usbcore: registered new interface driver kalmia
+[    1.624950] usbcore: registered new interface driver ipheth
+[    1.625012] usbcore: registered new interface driver sierra_net
+[    1.625063] usbcore: registered new interface driver cx82310_eth
+[    1.625124] usbcore: registered new interface driver cdc_ncm
+[    1.625183] usbcore: registered new interface driver qmi_wwan
+[    1.625236] usbcore: registered new interface driver cdc_mbim
+[    1.625569] ff540000.usb supply vusb_d not found, using dummy regulator
+[    1.625637] ff540000.usb supply vusb_a not found, using dummy regulator
+[    1.729444] dwc2 ff540000.usb: DWC OTG Controller
+[    1.729481] dwc2 ff540000.usb: new USB bus registered, assigned bus number 1
+[    1.729514] dwc2 ff540000.usb: irq 46, io mem 0xff540000
+[    1.729733] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.729753] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.729765] usb usb1: Product: DWC OTG Controller
+[    1.729776] usb usb1: Manufacturer: Linux 4.4.143 dwc2_hsotg
+[    1.729787] usb usb1: SerialNumber: ff540000.usb
+[    1.730304] hub 1-0:1.0: USB hub found
+[    1.730350] hub 1-0:1.0: 1 port detected
+[    1.731372] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.731396] ehci-platform: EHCI generic platform driver
+[    1.731620] ehci-platform ff500000.usb: EHCI Host Controller
+[    1.731805] ehci-platform ff500000.usb: new USB bus registered, assigned bus number 2
+[    1.731954] ehci-platform ff500000.usb: irq 45, io mem 0xff500000
+[    1.739162] ehci-platform ff500000.usb: USB 2.0 started, EHCI 1.00
+[    1.739313] usb usb2: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.739332] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.739344] usb usb2: Product: EHCI Host Controller
+[    1.739355] usb usb2: Manufacturer: Linux 4.4.143 ehci_hcd
+[    1.739365] usb usb2: SerialNumber: ff500000.usb
+[    1.739852] hub 2-0:1.0: USB hub found
+[    1.739895] hub 2-0:1.0: 1 port detected
+[    1.740436] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.740472] ohci-platform: OHCI generic platform driver
+[    1.740757] usbcore: registered new interface driver cdc_acm
+[    1.740774] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    1.740846] usbcore: registered new interface driver usblp
+[    1.740905] usbcore: registered new interface driver cdc_wdm
+[    1.740996] usbcore: registered new interface driver usb-storage
+[    1.741057] usbcore: registered new interface driver ums-alauda
+[    1.741110] usbcore: registered new interface driver ums-cypress
+[    1.741161] usbcore: registered new interface driver ums-datafab
+[    1.741212] usbcore: registered new interface driver ums-freecom
+[    1.741275] usbcore: registered new interface driver ums-isd200
+[    1.741328] usbcore: registered new interface driver ums-jumpshot
+[    1.741379] usbcore: registered new interface driver ums-karma
+[    1.741430] usbcore: registered new interface driver ums-onetouch
+[    1.741489] usbcore: registered new interface driver ums-sddr09
+[    1.741541] usbcore: registered new interface driver ums-sddr55
+[    1.741592] usbcore: registered new interface driver ums-usbat
+[    1.741691] usbcore: registered new interface driver usbserial
+[    1.741736] usbcore: registered new interface driver usbserial_generic
+[    1.741772] usbserial: USB Serial support registered for generic
+[    1.741827] usbcore: registered new interface driver option
+[    1.741874] usbserial: USB Serial support registered for GSM modem (1-port)
+[    1.742000] usbcore: registered new interface driver trancevibrator
+[    1.742024] usb20_otg: version 3.10a 21-DEC-2012
+[    1.742312] f0c00040
+[    1.742329] Core Release: 3.10a
+[    1.742338] Setting default values for core params
+[    1.742554] Using Buffer DMA mode
+[    1.742571] Periodic Transfer Interrupt Enhancement - disabled
+[    1.742579] Multiprocessor Interrupt Enhancement - disabled
+[    1.742588] OTG VER PARAM: 0, OTG VER FLAG: 0
+[    1.742596] ^^^^^^^^^^^^^^^^^Device Mode
+[    1.742610] Dedicated Tx FIFOs mode
+[    1.742626] pcd_init otg_dev = edff0700
+[    1.742900] usb20_otg ff580000.usb: DWC OTG Controller
+[    1.743099] usb20_otg ff580000.usb: new USB bus registered, assigned bus number 3
+[    1.743137] usb20_otg ff580000.usb: irq 47, io mem 0x00000000
+[    1.743270] usb usb3: New USB device found, idVendor=1d6b, idProduct=0002
+[    1.743289] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.743301] usb usb3: Product: DWC OTG Controller
+[    1.743312] usb usb3: Manufacturer: Linux 4.4.143 dwc_otg_hcd
+[    1.743323] usb usb3: SerialNumber: ff580000.usb
+[    1.743831] hub 3-0:1.0: USB hub found
+[    1.743875] hub 3-0:1.0: 1 port detected
+[    1.744483] usb20_host: version 3.10a 21-DEC-2012
+[    1.745282] usbcore: registered new interface driver xpad
+[    1.745755] .. rk pwm remotectl v1.1 init
+[    1.746053] input: ff680000.pwm as /devices/platform/ff680000.pwm/input/input0
+[    1.746330] remotectl-pwm ff680000.pwm: Missing psci property in the DT.
+[    1.746494] sensor_register_slave:mma8452,id=17
+[    1.746518] sensor_register_slave:lis3dh,id=7
+[    1.746534] sensor_register_slave:mma7660,id=18
+[    1.746549] sensor_register_slave:lsm303d,id=22
+[    1.746562] sensor_register_slave:gs_mc3230,id=23
+[    1.746570] [Gsensor]   gsensor_init
+[    1.746584] sensor_register_slave:mpu6880_acc,id=24
+[    1.746599] sensor_register_slave:mpu6500_acc,id=25
+[    1.746613] sensor_register_slave:lsm330_acc,id=26
+[    1.746628] sensor_register_slave:akm8975,id=30
+[    1.746642] sensor_register_slave:akm8963,id=31
+[    1.746661] sensor_register_slave:l3g4200d,id=45
+[    1.746676] sensor_register_slave:l3g20d,id=46
+[    1.746690] sensor_register_slave:ewtsa,id=47
+[    1.746704] sensor_register_slave:lsm330_gyro,id=51
+[    1.746718] sensor_register_slave:cm3217,id=53
+[    1.746732] sensor_register_slave:cm3218,id=54
+[    1.747783] i2c /dev entries driver
+[    1.748841] fan53555-regulator 0-0040: FAN53555 Option[8] Rev[1] Detected!
+[    1.748912] fan53555-reg: supplied by vcc_sys
+[    1.749229] vdd_cpu: No configuration
+[    1.751240] fan53555-regulator 0-0041: FAN53555 Option[8] Rev[1] Detected!
+[    1.751295] fan53555-reg: supplied by vcc_sys
+[    1.751617] vdd_gpu: No configuration
+[    1.756257] rtc-hym8563 0-0051: rtc core: registered hym8563 as rtc0
+[    1.757079] act8865 0-005a: Failed to set poweroff capability, already defined
+[    1.757138] REG1: supplied by vcc_sys
+[    1.758175] REG2: supplied by vcc_sys
+[    1.759113] vcc28_dvp: supplied by vcc_io
+[    1.759327] dovdd_1v8: supplied by vcc28_dvp
+[    1.759393] vcc_sd: supplied by vcc_io
+[    1.759601] vcc_flash: supplied by vcc_io
+[    1.759795] vcc_lcd: supplied by vcc_io
+[    1.760018] REG3: supplied by vcc_sys
+[    1.760963] REG4: supplied by vcc_sys
+[    1.761900] REG5: supplied by vcc_sys
+[    1.762834] REG6: supplied by vcc_sys
+[    1.763779] REG7: supplied by vcc_sys
+[    1.764739] REG8: supplied by vcc_sys
+[    1.765689] REG9: supplied by vcc_sys
+[    1.766623] REG10: supplied by vcc_20
+[    1.767664] REG11: supplied by vcc_20
+[    1.768731] REG12: supplied by vcc_20
+[    1.769789] rk3x-i2c ff650000.i2c: Initialized RK3xxx I2C bus at f0ad6000
+[    1.770528] rk3x-i2c ff140000.i2c: Initialized RK3xxx I2C bus at f0ad8000
+[    1.770987] rk3x-i2c ff150000.i2c: Initialized RK3xxx I2C bus at f0ada000
+[    1.842530] dwc_otg_hcd_suspend, usb device mode
+[    2.079177] rk3x-i2c ff160000.i2c: Initialized RK3xxx I2C bus at f0adc000
+[    2.079879] rk3x-i2c ff660000.i2c: Initialized RK3xxx I2C bus at f0ade000
+[    2.080768] IR NEC protocol handler initialized
+[    2.080790] IR RC5(x/sz) protocol handler initialized
+[    2.080803] IR RC6 protocol handler initialized
+[    2.080816] IR JVC protocol handler initialized
+[    2.080828] IR Sony protocol handler initialized
+[    2.080840] IR SANYO protocol handler initialized
+[    2.080852] IR Sharp protocol handler initialized
+[    2.080864] IR MCE Keyboard/mouse protocol handler initialized
+[    2.080876] IR XMP protocol handler initialized
+[    2.081075] usbcore: registered new interface driver uvcvideo
+[    2.081090] USB Video Class driver (1.1.1)
+[    2.081108] CamSys driver version: v0.48.0, CamSys head file version: v1.0.0
+[    2.083631] test_power_init: could not find dev node
+[    2.088234] rockchip-thermal ff280000.tsadc: Missing rockchip,grf property
+[    2.088303] rk_tsadcv2_temp_to_code: Invalid conversion table: code=4095, temperature=2147483647
+[    2.088447] rockchip-thermal ff280000.tsadc: tsadc is probed successfully!
+[    2.089091] device-mapper: uevent: version 1.0.3
+[    2.089165] usb 1-1: new high-speed USB device number 2 using dwc2
+[    2.089518] device-mapper: ioctl: 4.34.0-ioctl (2015-10-28) initialised: dm-devel@redhat.com
+[    2.089650] Bluetooth: HCI UART driver ver 2.3
+[    2.089667] Bluetooth: HCI UART protocol H4 registered
+[    2.089677] Bluetooth: HCI UART protocol LL registered
+[    2.089691] rtk_btusb: RTKBT_RELEASE_NAME: 20170109_TV_ANDROID_6.x
+[    2.089700] rtk_btusb: Realtek Bluetooth USB driver module init, version 4.1.2
+[    2.089707] rtk_btusb: Register usb char device interface for BT driver
+[    2.089933] usbcore: registered new interface driver rtk_btusb
+[    2.090230] cpu cpu0: bin=1
+[    2.090346] cpu cpu0: leakage=20
+[    2.102831] cpu cpu0: temp=37727, pvtm=15550 (15586 + -36)
+[    2.102991] cpu cpu0: pvtm-volt-sel=2
+[    2.103060] cpu cpu0: bin-scale=25
+[    2.104515] cpu cpu0: avs=0, target-scale=25
+[    2.104588] cpu cpu0: l=-2147483648 h=2147483647 hyst=0 l_limit=0 h_limit=0
+[    2.105482] Synopsys Designware Multimedia Card Interface Driver
+[    2.106285] dwmmc_rockchip ff0c0000.dwmmc: IDMAC supports 32-bit address mode.
+[    2.106363] dwmmc_rockchip ff0c0000.dwmmc: Using internal DMA controller.
+[    2.106382] dwmmc_rockchip ff0c0000.dwmmc: Version ID is 270a
+[    2.106430] dwmmc_rockchip ff0c0000.dwmmc: DW MMC controller at irq 29,32 bit host data width,256 deep fifo
+[    2.106454] dwmmc_rockchip ff0c0000.dwmmc: 'clock-freq-min-max' property was deprecated.
+[    2.222541] mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.236893] dwmmc_rockchip ff0c0000.dwmmc: 1 slots initialized
+[    2.237340] dwmmc_rockchip ff0d0000.dwmmc: IDMAC supports 32-bit address mode.
+[    2.237400] dwmmc_rockchip ff0d0000.dwmmc: Using internal DMA controller.
+[    2.237418] dwmmc_rockchip ff0d0000.dwmmc: Version ID is 270a
+[    2.237460] dwmmc_rockchip ff0d0000.dwmmc: DW MMC controller at irq 30,32 bit host data width,256 deep fifo
+[    2.237487] dwmmc_rockchip ff0d0000.dwmmc: 'clock-freq-min-max' property was deprecated.
+[    2.237771] dwmmc_rockchip ff0d0000.dwmmc: Failed getting OCR mask: 0
+[    2.238041] dwmmc_rockchip ff0d0000.dwmmc: allocated mmc-pwrseq
+[    2.238172] dwmmc_rockchip ff0d0000.dwmmc: could not set regulator OCR (-22)
+[    2.238191] dwmmc_rockchip ff0d0000.dwmmc: failed to enable vmmc regulator
+[    2.249251] mmc_host mmc1: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.262604] dwmmc_rockchip ff0d0000.dwmmc: 1 slots initialized
+[    2.262821] usb 1-1: New USB device found, idVendor=1a40, idProduct=0101
+[    2.262843] usb 1-1: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+[    2.262854] usb 1-1: Product: USB 2.0 Hub [MTT]
+[    2.263477] hub 1-1:1.0: USB hub found
+[    2.263557] hub 1-1:1.0: 4 ports detected
+[    2.265452] dwmmc_rockchip ff0f0000.dwmmc: IDMAC supports 32-bit address mode.
+[    2.265527] dwmmc_rockchip ff0f0000.dwmmc: Using internal DMA controller.
+[    2.267571] dwmmc_rockchip ff0f0000.dwmmc: Version ID is 270a
+[    2.267616] dwmmc_rockchip ff0f0000.dwmmc: DW MMC controller at irq 31,32 bit host data width,256 deep fifo
+[    2.267644] dwmmc_rockchip ff0f0000.dwmmc: 'clock-freq-min-max' property was deprecated.
+[    2.279210] mmc_host mmc2: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
+[    2.292551] dwmmc_rockchip ff0f0000.dwmmc: 1 slots initialized
+[    2.293440] hidraw: raw HID events driver (C) Jiri Kosina
+[    2.296895] usbcore: registered new interface driver usbhid
+[    2.296911] usbhid: USB HID core driver
+[    2.297162] ------------[ cut here ]------------
+[    2.297188] WARNING: CPU: 0 PID: 1 at drivers/gpio/gpiolib.c:85 gpio_to_desc+0x90/0xa8()
+[    2.297210] invalid GPIO -2
+[    2.297218] Modules linked in:
+[    2.297234] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 4.4.143 #3
+[    2.297242] Hardware name: Generic DT based system
+[    2.297267] [<c010f854>] (unwind_backtrace) from [<c010bb84>] (show_stack+0x10/0x14)
+[    2.297282] [<c010bb84>] (show_stack) from [<c03ed6b4>] (dump_stack+0x7c/0x9c)
+[    2.297299] [<c03ed6b4>] (dump_stack) from [<c012737c>] (warn_slowpath_common+0x88/0xb4)
+[    2.297315] [<c012737c>] (warn_slowpath_common) from [<c01273e4>] (warn_slowpath_fmt+0x3c/0x64)
+[    2.297331] [<c01273e4>] (warn_slowpath_fmt) from [<c0425d40>] (gpio_to_desc+0x90/0xa8)
+[    2.297346] [<c0425d40>] (gpio_to_desc) from [<c0426914>] (gpio_request+0x10/0x3c)
+[    2.297361] [<c0426914>] (gpio_request) from [<c07aa384>] (inv_mpu_probe+0xb0/0x6cc)
+[    2.297379] [<c07aa384>] (inv_mpu_probe) from [<c06932bc>] (i2c_device_probe+0x190/0x1d4)
+[    2.297405] [<c06932bc>] (i2c_device_probe) from [<c0539cb4>] (driver_probe_device+0x110/0x2c8)
+[    2.297421] [<c0539cb4>] (driver_probe_device) from [<c0539ed4>] (__driver_attach+0x68/0x8c)
+[    2.297436] [<c0539ed4>] (__driver_attach) from [<c0538e88>] (bus_for_each_dev+0x94/0xc0)
+[    2.297450] [<c0538e88>] (bus_for_each_dev) from [<c053943c>] (bus_add_driver+0xcc/0x1e0)
+[    2.297464] [<c053943c>] (bus_add_driver) from [<c053aa64>] (driver_register+0x9c/0xe0)
+[    2.297479] [<c053aa64>] (driver_register) from [<c0693aa0>] (i2c_register_driver+0x4c/0x74)
+[    2.297493] [<c0693aa0>] (i2c_register_driver) from [<c103a7d0>] (inv_mpu_init+0x10/0x4c)
+[    2.297509] [<c103a7d0>] (inv_mpu_init) from [<c0101b58>] (do_one_initcall+0x198/0x1d8)
+[    2.297527] [<c0101b58>] (do_one_initcall) from [<c1000edc>] (kernel_init_freeable+0x1b0/0x298)
+[    2.297544] [<c1000edc>] (kernel_init_freeable) from [<c0a7cf18>] (kernel_init+0x8/0x10c)
+[    2.297560] [<c0a7cf18>] (kernel_init) from [<c0107590>] (ret_from_fork+0x14/0x24)
+[    2.297603] ---[ end trace ca98606163970e88 ]---
+[    2.297616] gpiod_request: invalid GPIO
+[    2.297625] ------------[ cut here ]------------
+[    2.297639] WARNING: CPU: 0 PID: 1 at drivers/gpio/gpiolib.c:85 gpio_to_desc+0x90/0xa8()
+[    2.297647] invalid GPIO -2
+[    2.297653] Modules linked in:
+[    2.297667] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W       4.4.143 #3
+[    2.297675] Hardware name: Generic DT based system
+[    2.297691] [<c010f854>] (unwind_backtrace) from [<c010bb84>] (show_stack+0x10/0x14)
+[    2.297704] [<c010bb84>] (show_stack) from [<c03ed6b4>] (dump_stack+0x7c/0x9c)
+[    2.297719] [<c03ed6b4>] (dump_stack) from [<c012737c>] (warn_slowpath_common+0x88/0xb4)
+[    2.297733] [<c012737c>] (warn_slowpath_common) from [<c01273e4>] (warn_slowpath_fmt+0x3c/0x64)
+[    2.297747] [<c01273e4>] (warn_slowpath_fmt) from [<c0425d40>] (gpio_to_desc+0x90/0xa8)
+[    2.297761] [<c0425d40>] (gpio_to_desc) from [<c07aa38c>] (inv_mpu_probe+0xb8/0x6cc)
+[    2.297777] [<c07aa38c>] (inv_mpu_probe) from [<c06932bc>] (i2c_device_probe+0x190/0x1d4)
+[    2.297796] [<c06932bc>] (i2c_device_probe) from [<c0539cb4>] (driver_probe_device+0x110/0x2c8)
+[    2.297812] [<c0539cb4>] (driver_probe_device) from [<c0539ed4>] (__driver_attach+0x68/0x8c)
+[    2.297826] [<c0539ed4>] (__driver_attach) from [<c0538e88>] (bus_for_each_dev+0x94/0xc0)
+[    2.297840] [<c0538e88>] (bus_for_each_dev) from [<c053943c>] (bus_add_driver+0xcc/0x1e0)
+[    2.297853] [<c053943c>] (bus_add_driver) from [<c053aa64>] (driver_register+0x9c/0xe0)
+[    2.297868] [<c053aa64>] (driver_register) from [<c0693aa0>] (i2c_register_driver+0x4c/0x74)
+[    2.297882] [<c0693aa0>] (i2c_register_driver) from [<c103a7d0>] (inv_mpu_init+0x10/0x4c)
+[    2.297896] [<c103a7d0>] (inv_mpu_init) from [<c0101b58>] (do_one_initcall+0x198/0x1d8)
+[    2.297912] [<c0101b58>] (do_one_initcall) from [<c1000edc>] (kernel_init_freeable+0x1b0/0x298)
+[    2.297926] [<c1000edc>] (kernel_init_freeable) from [<c0a7cf18>] (kernel_init+0x8/0x10c)
+[    2.297941] [<c0a7cf18>] (kernel_init) from [<c0107590>] (ret_from_fork+0x14/0x24)
+[    2.297962] ---[ end trace ca98606163970e89 ]---
+[    2.297976] inv-mpu-iio 1-0068: get mpu-int_config error
+[    2.297999] i2c i2c-1: inv_mpu_probe failed -5
+[    2.298015] inv-mpu-iio: probe of 1-0068 failed with error -5
+[    2.298065] inv_mpu_iio: inv_mpu_init:746
+[    2.298773] ashmem: initialized
+[    2.302752] rknandbase v1.2 2018-05-08
+[    2.303020] rknand: probe of ff400000.nandc failed with error -1
+[    2.303243] mmc1: queuing unknown CIS tuple 0x80 (2 bytes)
+[    2.303379] usbcore: registered new interface driver snd-usb-audio
+[    2.304822] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+[    2.305904] gpiod_direction_output: invalid GPIO
+[    2.305914] gpiod_direction_output: invalid GPIO
+[    2.306391] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+[    2.309160] mmc1: queuing unknown CIS tuple 0x80 (7 bytes)
+[    2.312538] mmc1: queuing unknown CIS tuple 0x81 (9 bytes)
+[    2.316268] tc358749x 1-000f: tc358749x_i2c_probe success
+[    2.320454] u32 classifier
+[    2.320469]     Actions configured
+[    2.320552] Netfilter messages via NETLINK v0.30.
+[    2.320635] nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
+[    2.321287] ctnetlink v0.93: registering with nfnetlink.
+[    2.322108] xt_time: kernel timezone is -0000
+[    2.322326] IPv4 over IPsec tunneling driver
+[    2.323481] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    2.323879] arp_tables: (C) 2002 David S. Miller
+[    2.324096] Initializing XFRM netlink socket
+[    2.324854] NET: Registered protocol family 10
+[    2.325240] mmc2: MAN_BKOPS_EN bit is not set
+[    2.326326] mip6: Mobile IPv6
+[    2.326383] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    2.327870] sit: IPv6 over IPv4 tunneling driver
+[    2.329314] NET: Registered protocol family 17
+[    2.329371] NET: Registered protocol family 15
+[    2.329430] bridge: automatic filtering via arp/ip/ip6tables has been deprecated. Update your scripts to load br_netfilter if you need this.
+[    2.329547] mmc_host mmc2: Bus speed (slot 0) = 49500000Hz (slot req 52000000Hz, actual 49500000HZ div = 0)
+[    2.329977] mmc2: new high speed MMC card at address 0001
+[    2.330394] Bridge firewalling registered
+[    2.330516] Ebtables v2.0 registered
+[    2.330607] mmcblk2: mmc2:0001 AJNB4R 14.6 GiB 
+[    2.330816] Bluetooth: RFCOMM TTY layer initialized
+[    2.330862] Bluetooth: RFCOMM socket layer initialized
+[    2.330895] Bluetooth: RFCOMM ver 1.11
+[    2.330900] mmcblk2boot0: mmc2:0001 AJNB4R partition 1 4.00 MiB
+[    2.330968] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.330984] Bluetooth: BNEP filters: protocol multicast
+[    2.331012] Bluetooth: BNEP socket layer initialized
+[    2.331036] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.331052] Bluetooth: HIDP socket layer initialized
+[    2.331122] l2tp_core: L2TP core driver, V2.0
+[    2.331156] l2tp_ppp: PPPoL2TP kernel driver, V2.0
+[    2.331179] [WLAN_RFKILL]: Enter rfkill_wlan_init
+[    2.331188] mmcblk2boot1: mmc2:0001 AJNB4R partition 2 4.00 MiB
+[    2.331538] [WLAN_RFKILL]: Enter rfkill_wlan_probe
+[    2.331589] [WLAN_RFKILL]: wlan_platdata_parse_dt: wifi_chip_type = ap6335
+[    2.331603] [WLAN_RFKILL]: wlan_platdata_parse_dt: enable wifi power control.
+[    2.331615] [WLAN_RFKILL]: wlan_platdata_parse_dt: wifi power controled by gpio.
+[    2.331728] [WLAN_RFKILL]: wlan_platdata_parse_dt: get property: WIFI,host_wake_irq = 150, flags = 0.
+[    2.331750] [WLAN_RFKILL]: wlan_platdata_parse_dt: The ref_wifi_clk not found !
+[    2.331762] [WLAN_RFKILL]: rfkill_wlan_probe: init gpio
+[    2.331776] [WLAN_RFKILL]: Exit rfkill_wlan_probe
+[    2.331874] [BT_RFKILL]: Enter rfkill_rk_init
+[    2.332396] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: uart_rts_gpios = 139.
+[    2.332504] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,reset_gpio = 149.
+[    2.332552] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_gpio = 146.
+[    2.332596] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_host_irq = 151.
+[    2.332717] [BT_RFKILL]: Request irq for bt wakeup host
+[    2.332755] [BT_RFKILL]: BT_WAKE_HOST IRQ fired
+[    2.332804] [BT_RFKILL]: ** disable irq
+[    2.333019] [BT_RFKILL]: bt_default device registered.
+[    2.333232] sensor_register_slave:mpu6880_gyro,id=50
+[    2.334812] mmcblk2rpmb: mmc2:0001 AJNB4R partition 3 4.00 MiB
+[    2.335387]      uboot: 0x000400000 -- 0x000800000 (4 MB)
+[    2.335417]      trust: 0x000800000 -- 0x000c00000 (4 MB)
+[    2.335437]       misc: 0x000c00000 -- 0x001000000 (4 MB)
+[    2.335451]   resource: 0x001000000 -- 0x002000000 (16 MB)
+[    2.335464]     kernel: 0x002000000 -- 0x003800000 (24 MB)
+[    2.335467] Registering SWP/SWPB emulation handler
+[    2.335486]       boot: 0x003800000 -- 0x005800000 (32 MB)
+[    2.335498]   recovery: 0x005800000 -- 0x007800000 (32 MB)
+[    2.335511]     backup: 0x007800000 -- 0x00e800000 (112 MB)
+[    2.335524]      cache: 0x00e800000 -- 0x016800000 (128 MB)
+[    2.335537]     system: 0x016800000 -- 0x096800000 (2048 MB)
+[    2.335550]   metadata: 0x096800000 -- 0x097800000 (16 MB)
+[    2.335563]    vendor0: 0x097800000 -- 0x09aa00000 (50 MB)
+[    2.335576]    vendor1: 0x09aa000rk3288:/ $ 00 -- 0x09dc00000 (50 MB)
+[    2.335589]   userdata: 0x09dc00000 -- 0x3a3a00000 (12382 MB)
+[    2.335649]  mmcblk2: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14
+[    2.336551] registered taskstats version 1
+[    2.337401] rockchip ion idev is NULL
+[    2.337423] rga2 ff920000.rga: rga ion client create success!
+[    2.337698] rga: Driver loaded successfully ver:3.00
+[    2.338406] [drm] Rockchip DRM driver version: v1.0.1
+[    2.338766] rockchip-drm display-subsystem: devfreq is not set
+[    2.339262] rockchip-vop ff930000.vop: invalid resource
+[    2.339291] rockchip-vop ff930000.vop: failed to get vop cabc lut registers
+[    2.340096] [drm] no mcu-timing node found in /vop@ff930000
+[    2.340135] rockchip-drm display-subsystem: bound ff930000.vop (ops vop_component_ops)
+[    2.340207] rockchip-vop ff940000.vop: invalid resource
+[    2.340223] rockchip-vop ff940000.vop: failed to get vop cabc lut registers
+[    2.341005] [drm] no mcu-timing node found in /vop@ff940000
+[    2.341041] rockchip-drm display-subsystem: bound ff940000.vop (ops vop_component_ops)
+[    2.341554] dwhdmi-rockchip ff980000.hdmi: registered DesignWare HDMI I2C bus driver
+[    2.341659] dwhdmi-rockchip ff980000.hdmi: Detected HDMI TX controller v2.01a with HDCP (DWC HDMI 2.0 TX PHY)
+[    2.343814] rockchip-drm display-subsystem: bound ff980000.hdmi (ops dw_hdmi_rockchip_ops)
+[    2.343910] [drm:rockchip_dp_bind] *ERROR* failed to find panel
+[    2.343964] rockchip-drm display-subsystem: failed to bind ff970000.dp (ops rockchip_dp_component_ops): -517
+[    2.345642] rockchip-drm display-subsystem: master bind failed: -517
+[    2.347430] mali ffa30000.gpu: Failed to get leakage
+[    2.347668] mali ffa30000.gpu: Failed to get pvtm
+[    2.348266] W : [File] : drivers/gpu/arm/midgard/platform/rk/mali_kbase_config_rk.c; [Line] : 113; [Func] : kbase_platform_rk_init(); power-off-delay-ms not available.
+[    2.348751] mali ffa30000.gpu: GPU identified as 0x0750 r1p0 status 0
+[    2.349085] mali ffa30000.gpu: Protected mode not available
+[    2.349723] mali ffa30000.gpu: Using configured power model mali-simple-power-model, and fallback mali-simple-power-model
+[    2.349919] I : [File] : drivers/gpu/arm/midgard/backend/gpu/mali_kbase_devfreq.c; [Line] : 414; [Func] : kbase_devfreq_init(); success initing power_model_simple.
+[    2.350644] mali ffa30000.gpu: Probed as mali0
+[    2.352970] asoc-simple-card spdif-sound: dit-hifi <-> ff8b0000.sound mapping ok
+[    2.354047] [drm] Rockchip DRM driver version: v1.0.1
+[    2.354378] rockchip-drm display-subsystem: devfreq is not set
+[    2.354762] rockchip-vop ff930000.vop: invalid resource
+[    2.354791] rockchip-vop ff930000.vop: failed to get vop cabc lut registers
+[    2.355578] [drm] no mcu-timing node found in /vop@ff930000
+[    2.355617] rockchip-drm display-subsystem: bound ff930000.vop (ops vop_component_ops)
+[    2.355688] rockchip-vop ff940000.vop: invalid resource
+[    2.355704] rockchip-vop ff940000.vop: failed to get vop cabc lut registers
+[    2.356516] [drm] no mcu-timing node found in /vop@ff940000
+[    2.356550] rockchip-drm display-subsystem: bound ff940000.vop (ops vop_component_ops)
+[    2.357074] dwhdmi-rockchip ff980000.hdmi: registered DesignWare HDMI I2C bus driver
+[    2.357177] dwhdmi-rockchip ff980000.hdmi: Detected HDMI TX controller v2.01a with HDCP (DWC HDMI 2.0 TX PHY)
+[    2.359289] rockchip-drm display-subsystem: bound ff980000.hdmi (ops dw_hdmi_rockchip_ops)
+[    2.360405] rockchip-drm display-subsystem: bound ff970000.dp (ops rockchip_dp_component_ops)
+[    2.360431] [drm] Supports vblank timestamp caching Rev 2 (21.10.2013).
+[    2.360443] [drm] No driver support for vblank timestamp query.
+[    2.364311] rockchip-drm display-subsystem: can't not find any loader display
+[    2.364511] rockchip-drm display-subsystem: failed to show loader logo
+[    2.364719] Freeing drm_logo memory: 660K
+[    2.368870] mmc_host mmc1: Bus speed (slot 0) = 49500000Hz (slot req 50000000Hz, actual 49500000HZ div = 0)
+[    2.370237] devfreq ffa30000.gpu: Couldn't update frequency transition information.
+[    2.385217] dwmmc_rockchip ff0d0000.dwmmc: Successfully tuned phase to 100
+[    2.390593] mmc1: queuing unknown CIS tuple 0x91 (3 bytes)
+[    2.390682] mmc1: new ultra high speed SDR104 SDIO card at address 0001
+[    2.398302] rockchip-drm display-subsystem: fb0:  frame buffer device
+[    2.410793] input: gpio-keys as /devices/platform/gpio-keys/input/input1
+[    2.411545] rtc-hym8563 0-0051: setting system clock to 2017-01-01 12:00:01 UTC (1483272001)
+[    2.422123] dovdd_1v8: disabling
+[    2.422147] vcc_sd: disabling
+[    2.422301] I : [File] : drivers/gpu/arm/mali400/mali/linux/mali_kernel_linux.c; [Line] : 417; [Func] : mali_module_init(); svn_rev_string_from_arm of this mali_ko is '-5f5c32a', rk_ko_ver is '5', built at '12:21:39', on 'Aug 24 2018'.
+[    2.422581] Mali: Mali device driver loaded
+[    2.423005] input: rk29-keypad as /devices/platform/rockchip-key/input/input2
+[    2.423202] gpio-keys: failed to request GPIO 5, error -16
+[    2.435901] rk-keypad: probe of rockchip-key failed with error -16
+[    2.436229] ALSA device list:
+[    2.436242]   #0: ROCKCHIP,SPDIF
+[    2.437243] Freeing unused kernel memory: 1024K
+[    2.440071] init: init first stage started!
+[    2.492973] audit: type=1403 audit(1483272001.580:2): policy loaded auid=4294967295 ses=4294967295
+[    2.493486] init: (Initializing SELinux non-enforcing took 0.05s.)
+[    2.497090] init: init second stage started!
+[    2.502604] init: Setting ro.rk.soc=rk3288w
+[    2.502715] init: OK,EMMC DRIVERS INIT OK
+[    2.502754] init: property_set("ro.boot.mode", "emmc") failed
+[    2.502851] init: property_set("ro.hardware", "rk30board") failed
+[    2.505428] init: Running restorecon...
+[    2.549113] init: waitpid failed: No child processes
+[    2.549558] init: (Loading properties from /default.prop took 0.00s.)
+[    2.551686] init: (Parsing /init.environ.rc took 0.00s.)
+[    2.552195] init: (Parsing /init.usb.rc took 0.00s.)
+[    2.553217] init: (Parsing init.rk30board.bootmode.emmc.rc took 0.00s.)
+[    2.554074] init: (Parsing init.rk30board.usb.rc took 0.00s.)
+[    2.554133] init: (Parsing init.rk30board.environment.rc took 0.00s.)
+[    2.554174] init: could not import file '/init.debug.rc' from 'init.rockchip.rc': No such file or directory
+[    2.554196] init: (Parsing init.rockchip.rc took 0.00s.)
+[    2.554712] init: (Parsing init.connectivity.rc took 0.00s.)
+[    2.554752] init: could not import file 'init.box.samba.rc' from '/init.rk30board.rc': No such file or directory
+[    2.554893] init: (Parsing init.rk3288.rc took 0.00s.)
+[    2.554930] init: could not import file 'init.tablet.rc' from '/init.rk30board.rc': No such file or directory
+[    2.554957] init: could not import file 'init.car.rc' from '/init.rk30board.rc': No such file or directory
+[    2.555009] init: (Parsing init.optee.rc took 0.00s.)
+[    2.555032] init: (Parsing /init.rk30board.rc took 0.00s.)
+[    2.555856] init: (Parsing /init.usb.configfs.rc took 0.00s.)
+[    2.555959] init: (Parsing /init.zygote32.rc took 0.00s.)
+[    2.555977] init: (Parsing /init.rc took 0.01s.)
+[    2.556396] init: Starting service 'ueventd'...
+[    2.558067] audit: type=1400 audit(1483272001.643:3): avc:  denied  { getattr } for  pid=1 comm="init" path="/sys/kernel/debug/tracing/trace_marker" dev="tracefs" ino=2164 scontext=u:r:init:s0 tcontext=u:object_r:debugfs_trace_marker:s0 tclass=file permissive=1
+[    2.558475] ueventd: ueventd started!
+[    2.559196] ueventd: invalid gid 'trace'
+[    2.724218] ueventd: Coldboot took 0.16s.
+[    2.850376] vendor storage:20160801 ret = 0
+[    2.882597] init: Waiting for /dev/.coldboot_done...
+[    2.882639] init: Waiting for /dev/.coldboot_done took 0.00s.
+[    2.882674] init: /dev/hw_random not found
+[    2.882886] keychord: using input dev ff680000.pwm for fevent
+[    2.882905] keychord: using input dev gpio-keys for fevent
+[    2.893106] init: write_file: Unable to open '/proc/sys/abi/swp': No such file or directory
+[    2.893284] init: write_file: Unable to open '/sys/module/rockchip_pm/parameters/policy': No such file or directory
+[    2.893659] fs_mgr: Warning: unknown flag resize
+[    2.893765] init: /dev/hw_random not found
+[    2.893855] init: write_file: Unable to open '/sys/block/mmcblk0/bdi/read_ahead_kb': No such file or directory
+[    2.894311] fs_mgr: Warning: unknown flag resize
+[    2.899724] EXT4-fs (mmcblk2p10): mounted filesystem with ordered data mode. Opts: noauto_da_alloc
+[    2.899828] fs_mgr: __mount(source=/dev/block/platform/ff0f0000.dwmmc/by-name/system,target=/system,type=ext4)=0
+[    2.904663] EXT4-fs (mmcblk2p13): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+[    2.904716] fs_mgr: __mount(source=/dev/block/platform/ff0f0000.dwmmc/by-name/vendor1,target=/vendor,type=ext4)=0
+[    2.905060] fs_mgr: check_fs(): mount(/dev/block/platform/ff0f0000.dwmmc/by-name/cache,/cache,ext4)=-1: No such file or directory
+[    2.905721] fs_mgr: Running /system/bin/e2fsck on /dev/block/platform/ff0f0000.dwmmc/by-name/cache
+[    2.920567] random: e2fsck: uninitialized urandom read (40 bytes read, 34 bits of entropy available)
+[    2.994988] e2fsck: e2fsck 1.42.9 (28-Dec-2013)
+[    2.994988] 
+[    2.995024] e2fsck: /dev/block/platform/ff0f0000.dwmmc/by-name/cache: recovering journal
+[    2.995024] 
+[    2.995035] e2fsck: Superblock last mount time is in the future.
+[    2.995035] 
+[    2.995049] e2fsck: 	(by less than a day, probably due to the hardware clock being incorrectly set)  Fix? yes
+[    2.995049] 
+[    2.995059] e2fsck: 
+[    2.995059] 
+[    2.995069] e2fsck: /dev/block/platform/ff0f0000.dwmmc/by-name/cache: clean, 21/8192 files, 1601/32768 blocks (check in 4 mounts)
+[    2.995069] 
+[    2.997299] EXT4-fs (mmcblk2p9): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+[    2.997370] fs_mgr: __mount(source=/dev/block/platform/ff0f0000.dwmmc/by-name/cache,target=/cache,type=ext4)=0
+[    2.997930] EXT4-fs (mmcblk2p11): Ignoring removed nomblk_io_submit option
+[    2.999327] EXT4-fs (mmcblk2p11): recovery complete
+[    2.999342] EXT4-fs (mmcblk2p11): mounted filesystem with ordered data mode. Opts: errors=remount-ro,nomblk_io_submit
+[    2.999384] fs_mgr: check_fs(): mount(/dev/block/platform/ff0f0000.dwmmc/by-name/metadata,/metadata,ext4)=0: Success
+[    3.016489] fs_mgr: check_fs(): unmount(/metadata) succeeded
+[    3.016518] fs_mgr: Running /system/bin/e2fsck on /dev/block/platform/ff0f0000.dwmmc/by-name/metadata
+[    3.017474] random: e2fsck: uninitialized urandom read (40 bytes read, 40 bits of entropy available)
+[    3.030037] e2fsck: e2fsck 1.42.9 (28-Dec-2013)
+[    3.030037] 
+[    3.030071] e2fsck: /dev/block/platform/ff0f0000.dwmmc/by-name/metadata: clean, 12/1024 files, 1103/4096 blocks (check in 4 mounts)
+[    3.030071] 
+[    3.032441] EXT4-fs (mmcblk2p11): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+[    3.032528] fs_mgr: __mount(source=/dev/block/platform/ff0f0000.dwmmc/by-name/metadata,target=/metadata,type=ext4)=0
+[    3.032589] fs_mgr: Running /system/bin/fsck.f2fs -a /dev/block/platform/ff0f0000.dwmmc/by-name/userdata
+[    3.035892] random: fsck.f2fs: uninitialized urandom read (40 bytes read, 41 bits of entropy available)
+[    3.068907] fsck.f2fs: Info: Fix the reported corruption.
+[    3.068907] 
+[    3.068937] fsck.f2fs: c->start_sector=0
+[    3.068937] 
+[    3.068948] fsck.f2fs: Info: Segments per section = 1
+[    3.068948] 
+[    3.068958] fsck.f2fs: Info: Sections per zone = 1
+[    3.068958] 
+[    3.068968] fsck.f2fs: Info: sector size = 512
+[    3.068968] 
+[    3.068977] fsck.f2fs: Info: total sectors = 25358336 (12382 MB)
+[    3.068977] 
+[    3.068990] fsck.f2fs: Info: MKFS version
+[    3.068990] 
+[    3.069001] fsck.f2fs:   "Linux version 4.4.143 (chenqigan@chenqigan-pc) (gcc version 4.9 20150123 (prerelease) (GCC) ) #3 SMP PREEMPT Fri Aug 24 12:22:02 CST 2018"
+[    3.069001] 
+[    3.069012] fsck.f2fs: Info: FSCK version
+[    3.069012] 
+[    3.069022] fsck.f2fs:   from "Linux version 4.4.143 (chenqigan@chenqigan-pc) (gcc version 4.9 20150123 (prerelease) (GCC) ) #3 SMP PREEMPT Fri Aug 24 12:22:02 CST 2018"
+[    3.069022] 
+[    3.069034] fsck.f2fs:     to "Linux version 4.4.143 (chenqigan@chenqigan-pc) (gcc version 4.9 20150123 (prerelease) (GCC) ) #3 SMP PREEMPT Fri Aug 24 12:22:02 CST 2018"
+[    3.069034] 
+[    3.069044] fsck.f2fs: Info: superblock features = 0 : 
+[    3.069044] 
+[    3.069054] fsck.f2fs: Info: superblock encrypt level = 0, salt = 00000000000000000000000000000000
+[    3.069054] 
+[    3.069064] fsck.f2fs: Info: total FS sectors = 25358336 (12382 MB)
+[    3.069064] 
+[    3.069074] fsck.f2fs: Info: CKPT version = 106
+[    3.069074] 
+[    3.069084] fsck.f2fs: Info: No error was reported
+[    3.069084] 
+[    3.265007] F2FS-fs (mmcblk2p14): recover_inode: ino = eba, name = .temp.2CanDW, inline = 3
+[    3.265308] F2FS-fs (mmcblk2p14): recover_dentry: ino = eba, name = .temp.2CanDW, dir = 2e, err = 0
+[    3.265333] F2FS-fs (mmcblk2p14): recover_data: ino = eba (i_size: recover) recovered = 0, err = 0
+[    3.265343] F2FS-fs (mmcblk2p14): recover_inode: ino = ebd, name = .temp.AIhVOE, inline = b
+[    3.265355] F2FS-fs (mmcblk2p14): recover_dentry: ino = ebd, name = .temp.AIhVOE, dir = 2e, err = 0
+[    3.265369] F2FS-fs (mmcblk2p14): recover_data: ino = ebd (i_size: recover) recovered = 0, err = 0
+[    3.265377] F2FS-fs (mmcblk2p14): recover_inode: ino = ebe, name = .temp.743DI3, inline = b
+[    3.265388] F2FS-fs (mmcblk2p14): recover_dentry: ino = ebe, name = .temp.743DI3, dir = 2e, err = 0
+[    3.265402] F2FS-fs (mmcblk2p14): recover_data: ino = ebe (i_size: recover) recovered = 0, err = 0
+[    3.265410] F2FS-fs (mmcblk2p14): recover_inode: ino = ebf, name = .temp.9bQY2V, inline = 3
+[    3.271479] fs_mgr: __mount(source=/dev/block/platform/ff0f0000.dwmmc/by-name/userdata,target=/data,type=f2fs)=0
+[    3.276809] init: (Parsing /system/etc/init/atrace.rc took 0.00s.)
+[    3.277157] init: (Parsing /system/etc/init/audioserver.rc took 0.00s.)
+[    3.277452] init: (Parsing /system/etc/init/bootanim.rc took 0.00s.)
+[    3.277807] init: (Parsing /system/etc/init/bootstat.rc took 0.00s.)
+[    3.278113] init: (Parsing /system/etc/init/cameraserver.rc took 0.00s.)
+[    3.278396] init: (Parsing /system/etc/init/debuggerd.rc took 0.00s.)
+[    3.278694] init: (Parsing /system/etc/init/drmserver.rc took 0.00s.)
+[    3.279070] init: (Parsing /system/etc/init/dumpstate.rc took 0.00s.)
+[    3.279375] init: (Parsing /system/etc/init/gatekeeperd.rc took 0.00s.)
+[    3.279679] init: (Parsing /system/etc/init/init-debug.rc took 0.00s.)
+[    3.279962] init: (Parsing /system/etc/init/installd.rc took 0.00s.)
+[    3.280248] init: (Parsing /system/etc/init/keystore.rc took 0.00s.)
+[    3.280535] init: (Parsing /system/etc/init/lmkd.rc took 0.00s.)
+[    3.280979] init: (Parsing /system/etc/init/logcatd.rc took 0.00s.)
+[    3.281295] init: (Parsing /system/etc/init/logd.rc took 0.00s.)
+[    3.281589] init: (Parsing /system/etc/init/mdnsd.rc took 0.00s.)
+[    3.281877] init: (Parsing /system/etc/init/mediacodec.rc took 0.00s.)
+[    3.282163] init: (Parsing /system/etc/init/mediadrmserver.rc took 0.00s.)
+[    3.282465] init: (Parsing /system/etc/init/mediaextractor.rc took 0.00s.)
+[    3.282776] init: (Parsing /system/etc/init/mediaserver.rc took 0.00s.)
+[    3.283087] init: (Parsing /system/etc/init/mtpd.rc took 0.00s.)
+[    3.283380] init: (Parsing /system/etc/init/netd.rc took 0.00s.)
+[    3.283662] init: (Parsing /system/etc/init/perfprofd.rc took 0.00s.)
+[    3.283951] init: (Parsing /system/etc/init/racoon.rc took 0.00s.)
+[    3.284274] init: (Parsing /system/etc/init/servicemanager.rc took 0.00s.)
+[    3.284565] init: (Parsing /system/etc/init/surfaceflinger.rc took 0.00s.)
+[    3.284870] init: (Parsing /system/etc/init/uncrypt.rc took 0.00s.)
+[    3.285164] init: (Parsing /system/etc/init/vdc.rc took 0.00s.)
+[    3.285458] init: (Parsing /system/etc/init/vold.rc took 0.00s.)
+[    3.286748] init: Starting service 'logd'...
+[    3.291648] init: insmod: open("/system/lib/modules/ump.ko") failed: No such file or directoryinit: insmod: open("/system/lib/modules/mali.ko") failed: No such file or directoryinit: insmod: open("/system/lib/modules/mali_kbase.ko") failed: No such file or directoryinit: insmod: open("/system/lib/modules/rk30_mirroring.ko") failed: No such file or directory
+[    3.291848] random: logd: uninitialized urandom read (40 bytes read, 47 bits of entropy available)
+[    3.292541] init: finit_module for "/system/lib/modules/rk29-ipp.ko" failed: Exec format errorinit: insmod: open("/system/lib/modules/pvrsrvkm.ko") failed: No such file or directoryinit: finit_module for "/drmboot.ko" failed: Exec format errorfs_mgr: Warning: unknown flag resize
+[    3.293635] zram0: detected capacity change from 0 to 533413888
+[    3.299552] random: mkswap: uninitialized urandom read (40 bytes read, 48 bits of entropy available)
+[    3.317185] random: mkswap: uninitialized urandom read (16 bytes read, 48 bits of entropy available)
+[    3.318221] Adding 520908k swap on /dev/block/zram0.  Priority:-1 extents:1 across:520908k SS
+[    3.318758] logd.auditd: start
+[    3.318785] logd.klogd: 3202990373
+[    3.320529] init: property_set("ro.board.platform", "rk3288") failed
+[    3.320840] init: property_set("ro.sf.lcd_density", "320") failed
+[    3.320876] init: property_set("ro.target.product", "tablet") failed
+[    3.321072] init: property_set("ro.rk.screenoff_time", "60000") failed
+[    3.321264] init: property_set("ro.rk.screenshot_enable", "true") failed
+[    3.321409] init: (Loading properties from /system/build.prop took 0.00s.)
+[    3.322054] init: (Loading properties from /vendor/build.prop took 0.00s.)
+[    3.322092] init: (Loading properties from /factory/factory.prop took 0.00s.)
+[    3.322176] fs_mgr: Warning: unknown flag resize
+[    3.322251] init: /recovery not specified in fstab
+[    3.322670] init: Starting service 'debuggerd'...
+[    3.323001] init: do_start: Service debuggerd64 not found
+[    3.323257] init: Starting service 'vold'...
+[    3.325773] init: Not bootcharting.
+[    3.327544] random: debuggerd: uninitialized urandom read (40 bytes read, 49 bits of entropy available)
+[    3.329449] random: vold: uninitialized urandom read (40 bytes read, 49 bits of entropy available)
+[    3.399415] random: vdc: uninitialized urandom read (40 bytes read, 55 bits of entropy available)
+[    3.440690] fs_mgr: Warning: unknown flag resize
+[    3.464773] init: Starting service 'exec 1 (/system/bin/tzdatacheck)'...
+[    3.466631] random: tzdatacheck: uninitialized urandom read (40 bytes read, 55 bits of entropy available)
+[    3.475954] init: Service 'exec 1 (/system/bin/tzdatacheck)' (pid 208) exited with status 0
+[    3.480314] type=1400 audit(1483272002.566:4): avc: denied { setattr } for pid=1 comm="init" name="cifsmanager" dev="mmcblk2p14" ino=86 scontext=u:r:init:s0 tcontext=u:object_r:cifsmanager_exec:s0 tclass=dir permissive=1
+[    3.482782] init: (Loading properties from /data/local.prop took 0.00s.)
+[    3.498898] init: Starting service 'logd-reinit'...
+[    3.502923] init: write_file: Unable to open '/proc/sys/vm/min_free_order_shift': No such file or directory
+[    3.504206] init: Starting service 'healthd'...
+[    3.504806] init: Starting service 'displayd'...
+[    3.505228] init: Starting service 'tee-supplicant'...
+[    3.505830] init: Starting service 'lmkd'...
+[    3.506432] init: Starting service 'servicemanager'...
+[    3.506740] binder: 210:210 transaction failed 29189/-22, size 0-0 line 2961
+[    3.507102] init: Starting service 'surfaceflinger'...
+[    3.509974] init: SELinux:  Could not stat /sys/devices/system/cpu/cpufreq/interactive: No such file or directory.
+[    3.511306] init: write_file: Unable to open '/proc/sys/vm/lazy_vfree_tlb_flush_all_threshold': No such file or directory
+[    3.512820] init: SELinux: Could not get canonical path for /dev/block/platform/fe330000.sdhci/by-name/ restorecon: No such file or directory.
+[    3.514916] init: property 'ro.serialno' doesn't exist while expanding '${ro.serialno}'
+[    3.514944] init: write: cannot expand '${ro.serialno}'
+[    3.516365] file system registered
+[    3.520869] using random self ethernet address
+[    3.520889] using random host ethernet address
+[    3.520955] init: write_file: Unable to open '/config/usb_gadget/g1/functions/rndis.gs4/wceis': Permission denied
+[    3.525232] init: avc:  denied  { set } for property=security.tee_supplicant pid=212 uid=0 gid=0 scontext=u:r:tee:s0 tcontext=u:object_r:default_prop:s0 tclass=property_service permissive=1
+[    3.525893] type=1400 audit(1483272002.610:5): avc: denied { read } for pid=211 comm="displayd" name="psched" dev="proc" ino=4026531945 scontext=u:r:displayd:s0 tcontext=u:object_r:proc_net:s0 tclass=file permissive=1
+[    3.531569] init: write_file: Unable to write to '/dev/cpuset/foreground/boost/cpus': Permission denied
+[    3.532804] init: Starting service 'console'...
+[    3.533422] init: Starting service 'adbd'...
+[    3.533876] init: cannot find '/system/bin/update_verifier' (No such file or directory), disabling 'exec 2 (/system/bin/update_verifier)'
+[    3.533931] init: cannot find '/system/bin/install-recovery.sh' (No such file or directory), disabling 'flash_recovery'
+[    3.534294] init: Starting service 'drmservice'...
+[    3.534696] init: cannot find '/system/bin/bplus_helper' (No such file or directory), disabling 'bplus_helper'
+[    3.534951] init: Service up_eth0 does not have a SELinux domain defined.
+[    3.534986] init: cannot find '/system/bin/rk_store_keybox' (No such file or directory), disabling 'rk_store_keybox'
+[    3.535111] init: Starting service 'akmd'...
+[    3.535908] init: Starting service 'zygote'...
+[    3.536619] init: Starting service 'audioserver'...
+[    3.537230] init: Starting service 'cameraserver'...
+[    3.537974] init: Starting service 'drm'...
+[    3.538739] init: Starting service 'installd'...
+[    3.539265] init: couldn't write 227 to /dev/cpuset/camera-daemon/tasks: No such file or directory
+[    3.539627] init: Starting service 'keystore'...
+[    3.540198] logd.daemon: reinit
+[    3.541001] init: Starting service 'mediacodec'...
+[    3.541695] init: Starting service 'mediadrm'...
+[    3.542810] init: Starting service 'mediaextractor'...
+[    3.543511] init: Starting service 'media'...
+[    3.544163] init: Starting service 'netd'...
+[    3.544655] init: Service 'logd-reinit' (pid 209) exited with status 0
+[    3.545187] init: Starting service 'gatekeeperd'...
+[    3.547446] type=1400 audit(1483272002.610:6): avc: denied { open } for pid=211 comm="displayd" path="/proc/211/net/psched" dev="proc" ino=4026531945 scontext=u:r:displayd:s0 tcontext=u:object_r:proc_net:s0 tclass=file permissive=1
+[    3.547549] type=1400 audit(1483272002.610:7): avc: denied { getattr } for pid=211 comm="displayd" path="/proc/211/net/psched" dev="proc" ino=4026531945 scontext=u:r:displayd:s0 tcontext=u:object_r:proc_net:s0 tclass=file permissive=1
+[    3.547686] type=1400 audit(1483272002.610:8): avc: denied { write } for pid=212 comm="tee-supplicant" name="property_service" dev="tmpfs" ino=9381 scontext=u:r:tee:s0 tcontext=u:object_r:property_socket:s0 tclass=sock_file permissive=1
+[    3.547774] type=1400 audit(1483272002.610:9): avc: denied { connectto } for pid=212 comm="tee-supplicant" path="/dev/socket/property_service" scontext=u:r:tee:s0 tcontext=u:r:init:s0 tclass=unix_stream_socket permissive=1
+[    3.547863] type=1400 audit(1483272002.613:10): avc: denied { module_request } for pid=211 comm="displayd" kmod="net-pf-16-proto-5" scontext=u:r:displayd:s0 tcontext=u:r:kernel:s0 tclass=system permissive=1
+[    3.647691] init: Starting service 'perfprofd'...
+[    3.648269] init: Service 'akmd' (pid 224) exited with status 254
+[    3.710694] init: Service 'drmservice' (pid 223) exited with status 0
+[    3.740433] read descriptors
+[    3.740457] read strings
+[    3.741187] pcd_pullup, is_on 1
+[    4.516648] healthd: No battery devices found
+[    4.516756] healthd: battery l=100 v=0 t=42.4 h=2 st=2 chg=a
+[    4.798652] init: Starting service 'bootanim'...
+[    4.800083] rockchip-vop ff930000.vop: [drm:vop_crtc_enable] Update mode to 1920x1080p93, type: 14
+[    4.802632] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.805593] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.808430] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.809166] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.811259] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.814190] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.814206] rockchip-dp ff970000.dp: LT link start failed!
+[    4.814213] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.817121] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.819984] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.822817] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.822838] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.825661] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.826464] rockchip-dp ff970000.dp: LT link start failed!
+[    4.826479] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.828705] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.831555] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.834510] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.835197] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.837312] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.840292] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.840311] rockchip-dp ff970000.dp: LT link start failed!
+[    4.840319] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.843117] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.845968] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.848807] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.848826] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.851747] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.852525] rockchip-dp ff970000.dp: LT link start failed!
+[    4.852543] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.854788] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.857717] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.860482] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.861258] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.863359] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.866289] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.866308] rockchip-dp ff970000.dp: LT link start failed!
+[    4.866315] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.869271] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.872041] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.874958] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.874979] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.877735] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.878571] rockchip-dp ff970000.dp: LT link start failed!
+[    4.878586] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.880827] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.883650] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.886535] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.887294] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.889473] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.892318] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.892336] rockchip-dp ff970000.dp: LT link start failed!
+[    4.892346] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.895282] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.898058] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.900948] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.900971] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.903812] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.904603] rockchip-dp ff970000.dp: LT link start failed!
+[    4.904613] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.906880] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.909752] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.912619] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.913320] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.915407] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.918363] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.918380] rockchip-dp ff970000.dp: LT link start failed!
+[    4.918387] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.921310] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.924137] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.926990] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.927008] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.929890] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.930641] rockchip-dp ff970000.dp: LT link start failed!
+[    4.930657] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.932929] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.935750] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.938628] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.939360] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.941501] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.944351] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.944366] rockchip-dp ff970000.dp: LT link start failed!
+[    4.944373] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.947345] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.950173] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.952979] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.952996] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.955851] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.956659] rockchip-dp ff970000.dp: LT link start failed!
+[    4.956677] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.958974] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.961755] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.964633] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.965389] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.967560] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.970382] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.970399] rockchip-dp ff970000.dp: LT link start failed!
+[    4.970406] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.973322] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.976249] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.979069] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.979087] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.981880] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.982717] rockchip-dp ff970000.dp: LT link start failed!
+[    4.982734] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    4.985031] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.987893] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.990707] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.991463] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    4.993651] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.996540] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    4.996558] rockchip-dp ff970000.dp: LT link start failed!
+[    4.996567] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    4.999420] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.002313] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.005181] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.005199] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.007949] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.008789] rockchip-dp ff970000.dp: LT link start failed!
+[    5.008803] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.011313] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.014144] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.016917] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.017558] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.019940] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.022691] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.022710] rockchip-dp ff970000.dp: LT link start failed!
+[    5.022717] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.025539] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.028411] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.031240] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.031259] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.034034] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.034882] rockchip-dp ff970000.dp: LT link start failed!
+[    5.034895] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.037157] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.040051] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.042811] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.043596] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.045685] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.048661] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.048679] rockchip-dp ff970000.dp: LT link start failed!
+[    5.048686] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.051502] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.054375] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.057242] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.057264] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.060031] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.060903] rockchip-dp ff970000.dp: LT link start failed!
+[    5.060920] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.063132] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.066042] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.068819] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.069613] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.071675] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.074654] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.074673] rockchip-dp ff970000.dp: LT link start failed!
+[    5.074680] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.077533] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.080390] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.083294] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.083315] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.086066] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.086934] rockchip-dp ff970000.dp: LT link start failed!
+[    5.086948] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.089165] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.092072] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.094851] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.095665] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.097748] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.100715] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.100733] rockchip-dp ff970000.dp: LT link start failed!
+[    5.100740] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.103547] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.106413] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.109313] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.109332] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.112134] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.112960] rockchip-dp ff970000.dp: LT link start failed!
+[    5.112973] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.115258] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.118121] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.120917] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.121696] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.123767] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.126737] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.126756] rockchip-dp ff970000.dp: LT link start failed!
+[    5.126765] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.129618] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.132474] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.135364] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.135385] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.138229] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.139027] rockchip-dp ff970000.dp: LT link start failed!
+[    5.139042] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.141390] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.144143] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.146938] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.147769] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.149859] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.152779] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.152798] rockchip-dp ff970000.dp: LT link start failed!
+[    5.152805] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.155661] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.158578] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.161457] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.161473] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.164232] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.165094] rockchip-dp ff970000.dp: LT link start failed!
+[    5.165109] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.167337] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.170173] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.173022] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.173822] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.175905] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.178872] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.178893] rockchip-dp ff970000.dp: LT link start failed!
+[    5.178901] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.181773] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.184586] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.187492] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.187510] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.190327] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.191153] rockchip-dp ff970000.dp: LT link start failed!
+[    5.191165] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.193362] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.196251] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.199147] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.199880] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.201991] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.204836] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.204857] rockchip-dp ff970000.dp: LT link start failed!
+[    5.204865] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.207834] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.210645] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.213455] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.213473] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.216384] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.217173] rockchip-dp ff970000.dp: LT link start failed!
+[    5.217188] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.219426] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.222220] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.225152] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.225893] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.227978] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.230873] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.230890] rockchip-dp ff970000.dp: LT link start failed!
+[    5.230896] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.233850] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.236628] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.239461] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.239479] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.242358] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.243193] rockchip-dp ff970000.dp: LT link start failed!
+[    5.243209] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.245404] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.248244] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.251177] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.251924] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.254024] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.256894] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.256912] rockchip-dp ff970000.dp: LT link start failed!
+[    5.256920] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.259890] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.262690] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.265490] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.265515] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.268426] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.269228] rockchip-dp ff970000.dp: LT link start failed!
+[    5.269242] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.271419] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.274319] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.277216] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.277967] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.280048] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.282972] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.282988] rockchip-dp ff970000.dp: LT link start failed!
+[    5.282995] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.285935] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.288734] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.291602] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.291619] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.294501] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.295317] rockchip-dp ff970000.dp: LT link start failed!
+[    5.295331] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.297550] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.300401] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.303310] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.304035] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.306112] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.309025] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.309041] rockchip-dp ff970000.dp: LT link start failed!
+[    5.309047] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.311978] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.314813] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.317716] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.317734] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.320536] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.321342] rockchip-dp ff970000.dp: LT link start failed!
+[    5.321357] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.323564] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.326404] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.329326] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.330073] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.332135] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.335066] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.335080] rockchip-dp ff970000.dp: LT link start failed!
+[    5.335087] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.338019] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.340790] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.343684] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.343702] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.346575] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.347386] rockchip-dp ff970000.dp: LT link start failed!
+[    5.347399] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.349561] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.352466] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.355324] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.356104] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.358126] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.361128] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.361145] rockchip-dp ff970000.dp: LT link start failed!
+[    5.361151] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.364046] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.366807] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.369719] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.369739] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.372532] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.373393] rockchip-dp ff970000.dp: LT link start failed!
+[    5.373408] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.375573] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.378505] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.381353] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.382144] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.384177] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.387186] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.387205] rockchip-dp ff970000.dp: LT link start failed!
+[    5.387213] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.390076] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.392848] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.395762] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.395780] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.398602] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.399457] rockchip-dp ff970000.dp: LT link start failed!
+[    5.399471] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.401642] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.404559] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.407415] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.408190] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.410238] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.413190] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.413208] rockchip-dp ff970000.dp: LT link start failed!
+[    5.413216] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.416125] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.418907] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.421814] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.421835] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.424678] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.425512] rockchip-dp ff970000.dp: LT link start failed!
+[    5.425525] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.427709] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.430615] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.433465] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.434241] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.436284] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.439227] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.439246] rockchip-dp ff970000.dp: LT link start failed!
+[    5.439254] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.442152] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.444939] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.447867] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.447890] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.450720] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.451571] rockchip-dp ff970000.dp: LT link start failed!
+[    5.451584] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.453765] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.456712] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.459528] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.460307] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.462344] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.465339] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.465358] rockchip-dp ff970000.dp: LT link start failed!
+[    5.465366] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.468220] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.471016] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.473971] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.473989] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.476783] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.477618] rockchip-dp ff970000.dp: LT link start failed!
+[    5.477628] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.479846] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.482744] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.485527] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.486317] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.488376] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.491360] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.491380] rockchip-dp ff970000.dp: LT link start failed!
+[    5.491387] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.494240] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.497092] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.500013] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.500032] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.502799] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.503642] rockchip-dp ff970000.dp: LT link start failed!
+[    5.503657] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.505872] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.508790] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.511563] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.512368] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.514444] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.517404] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.517417] rockchip-dp ff970000.dp: LT link start failed!
+[    5.517429] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.520261] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.523128] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.526034] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.526056] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.528855] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.529693] rockchip-dp ff970000.dp: LT link start failed!
+[    5.529707] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.531936] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.534805] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.537592] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.538424] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.540532] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.543469] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.543487] rockchip-dp ff970000.dp: LT link start failed!
+[    5.543495] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.546287] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.549202] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.552048] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.552068] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.554833] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.555727] rockchip-dp ff970000.dp: LT link start failed!
+[    5.555741] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.557980] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.560845] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.563637] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.564449] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.566564] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.569504] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.569520] rockchip-dp ff970000.dp: LT link start failed!
+[    5.569527] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.572293] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.575227] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.578094] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.578113] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.580882] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.581775] rockchip-dp ff970000.dp: LT link start failed!
+[    5.581788] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.584046] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.586878] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.589683] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.590510] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.592660] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.595552] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.595572] rockchip-dp ff970000.dp: LT link start failed!
+[    5.595583] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.598380] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.601292] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.604158] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.604179] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.606964] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.607804] rockchip-dp ff970000.dp: LT link start failed!
+[    5.607817] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.610070] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.612934] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.615722] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.616541] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.618670] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.621582] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.621600] rockchip-dp ff970000.dp: LT link start failed!
+[    5.621607] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.624431] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.627332] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.630183] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.630206] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.633009] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.633863] rockchip-dp ff970000.dp: LT link start failed!
+[    5.633882] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.636163] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.638972] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.641747] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.642601] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.644692] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.647609] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.647626] rockchip-dp ff970000.dp: LT link start failed!
+[    5.647633] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.650524] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.653397] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.656280] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.656296] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.659027] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.659926] rockchip-dp ff970000.dp: LT link start failed!
+[    5.659939] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.662221] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.665028] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.667835] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.668654] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.670794] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.673666] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.673683] rockchip-dp ff970000.dp: LT link start failed!
+[    5.673690] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.676531] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.679471] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.682275] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.682294] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.685108] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.685987] rockchip-dp ff970000.dp: LT link start failed!
+[    5.686002] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.688290] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.691074] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.693949] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.694718] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.696877] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.699706] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.699723] rockchip-dp ff970000.dp: LT link start failed!
+[    5.699730] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.702637] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.705524] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.708318] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.708337] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.711189] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.712044] rockchip-dp ff970000.dp: LT link start failed!
+[    5.712060] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.714342] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.717102] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.719993] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.720764] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.722882] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.725740] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.725756] rockchip-dp ff970000.dp: LT link start failed!
+[    5.725763] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.728655] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.731558] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.734366] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.734384] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.737225] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.738081] rockchip-dp ff970000.dp: LT link start failed!
+[    5.738097] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.740361] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.743150] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.746012] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.746801] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.748918] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.751775] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.751792] rockchip-dp ff970000.dp: LT link start failed!
+[    5.751799] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.754721] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.757626] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.760409] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.760428] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.763279] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.764112] rockchip-dp ff970000.dp: LT link start failed!
+[    5.764130] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.766405] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.769181] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.772080] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.772853] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.774977] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.777830] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.777846] rockchip-dp ff970000.dp: LT link start failed!
+[    5.777854] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.780812] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.783678] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.786459] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.786477] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.789370] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.790185] rockchip-dp ff970000.dp: LT link start failed!
+[    5.790202] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.792474] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.795270] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.798137] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.798915] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.801044] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.803892] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.803908] rockchip-dp ff970000.dp: LT link start failed!
+[    5.803915] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.806876] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.809740] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.812536] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.812554] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.815437] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.816267] rockchip-dp ff970000.dp: LT link start failed!
+[    5.816283] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.818531] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.821326] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.824257] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.825024] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.827159] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.829989] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.830005] rockchip-dp ff970000.dp: LT link start failed!
+[    5.830014] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.832970] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.835810] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.838589] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.838607] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.841490] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.842317] rockchip-dp ff970000.dp: LT link start failed!
+[    5.842333] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.844593] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.847375] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.850306] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.851053] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.853174] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.856038] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.856055] rockchip-dp ff970000.dp: LT link start failed!
+[    5.856062] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.858996] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.861860] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.864630] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.864647] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.867555] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.868375] rockchip-dp ff970000.dp: LT link start failed!
+[    5.868391] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.870644] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.873437] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.876332] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.877098] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.879216] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.882053] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.882068] rockchip-dp ff970000.dp: LT link start failed!
+[    5.882075] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.885035] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.887882] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.890689] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.890707] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.893605] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.894422] rockchip-dp ff970000.dp: LT link start failed!
+[    5.894438] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.896675] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.899484] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.902421] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.903149] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.905244] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.908118] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.908137] rockchip-dp ff970000.dp: LT link start failed!
+[    5.908148] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.911132] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.913933] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.916732] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.916748] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.919662] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.920453] rockchip-dp ff970000.dp: LT link start failed!
+[    5.920467] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.922708] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.925516] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.928427] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.929170] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.931254] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.934141] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.934161] rockchip-dp ff970000.dp: LT link start failed!
+[    5.934173] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.937120] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.940008] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.942779] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.942795] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.945681] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.946509] rockchip-dp ff970000.dp: LT link start failed!
+[    5.946524] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.948793] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.951566] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.954495] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.955230] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.957391] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.960191] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.960207] rockchip-dp ff970000.dp: LT link start failed!
+[    5.960214] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.963168] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.966041] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.968790] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.968808] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.971709] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.972540] rockchip-dp ff970000.dp: LT link start failed!
+[    5.972559] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    5.974829] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.977606] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.980528] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.981287] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.983422] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.986270] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.986287] rockchip-dp ff970000.dp: LT link start failed!
+[    5.986294] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    5.989246] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.992096] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.994884] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.994901] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    5.997788] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    5.998610] rockchip-dp ff970000.dp: LT link start failed!
+[    5.998624] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    6.000909] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.003680] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.006582] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.007335] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.009469] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.012314] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.012331] rockchip-dp ff970000.dp: LT link start failed!
+[    6.012338] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    6.015259] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.018132] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.020932] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.020951] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.023765] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.024634] rockchip-dp ff970000.dp: LT link start failed!
+[    6.024648] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    6.026924] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.029724] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.032552] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.033383] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.035507] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.038372] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.038389] rockchip-dp ff970000.dp: LT link start failed!
+[    6.038396] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    6.041249] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.044175] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.046991] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.047010] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.049803] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.050679] rockchip-dp ff970000.dp: LT link start failed!
+[    6.050694] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    6.052961] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.055759] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.058581] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.059403] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.061526] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.064419] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.064435] rockchip-dp ff970000.dp: LT link start failed!
+[    6.064442] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    6.067284] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.070208] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.073028] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.073045] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.075846] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.076722] rockchip-dp ff970000.dp: LT link start failed!
+[    6.076739] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    6.079014] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.081813] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.084659] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.085457] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.087602] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.090458] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.090478] rockchip-dp ff970000.dp: LT link start failed!
+[    6.090485] rockchip-dp ff970000.dp: eDP link training failed (-110)
+[    6.093366] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.096287] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.099070] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.099088] rockchip-dp ff970000.dp: Rx Max Link Rate is abnormal :ff !
+[    6.101892] rockchip-dp ff970000.dp: AUX CH command reply failed!
+[    6.102761] rockchip-dp ff970000.dp: LT link start failed!
+[    6.102777] rockchip-dp ff970000.dp: eDP link training failed (-121)
+[    6.102906] rockchip-dp ff970000.dp: unable to do link train
+[    7.607128] random: nonblocking pool is initialized
+[    8.101796] capability: warning: `system_server' uses 32-bit capabilities (legacy support in use)
+[    9.765826] [otg id chg] last id -1 current id 1
+[    9.765858] PortPower off
+[    9.765870] rk_battery_charger_detect_cb , battery_charger_detect 6
+[    9.889895] Using Buffer DMA mode
+[    9.889914] Periodic Transfer Interrupt Enhancement - disabled
+[    9.889920] Multiprocessor Interrupt Enhancement - disabled
+[    9.889925] OTG VER PARAM: 0, OTG VER FLAG: 0
+[    9.889930] ^^^^^^^^^^^^^^^^^Device Mode
+[    9.889944] dwc_otg_hcd_resume, usb device mode
+[    9.992520] dwc_otg_hcd_suspend, usb device mode
+[   10.389300] rk_battery_charger_detect_cb , battery_charger_detect 0
+INF USER-TA:TA_OpenSessionEntryPoint:97: Hello Rockchip gatekeeper!
+
+
+INF USER-TA:TA_OpenSessionEntryPoint:79: Hello Rockchip Keymaster!
+
+
+[   11.698493] healthd: battery l=100 v=0 t=42.4 h=2 st=2 chg=a
+[   12.368434] acc_open
+[   12.368463] acc_release
+[   12.527989] rk_gmac-dwmac ff290000.ethernet: rk_get_eth_addr: mac address: 26:b0:20:3c:6d:f5
+[   12.528006] eth0: device MAC address 26:b0:20:3c:6d:f5
+[   12.724797] type=1400 audit(1483272011.803:11): avc: denied { search } for pid=234 comm="Binder:234_1" name="519" dev="proc" ino=13713 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=dir permissive=1
+[   12.724960] type=1400 audit(1483272011.803:12): avc: denied { read } for pid=234 comm="Binder:234_1" name="cmdline" dev="proc" ino=10006 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=file permissive=1
+[   12.725059] type=1400 audit(1483272011.803:13): avc: denied { open } for pid=234 comm="Binder:234_1" path="/proc/519/cmdline" dev="proc" ino=10006 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=file permissive=1
+[   12.746332] dwc_otg_hcd_resume, usb device mode
+[   12.746622] dwc_otg_hcd_suspend, usb device mode
+[   12.794401] sdcardfs version 2.0
+[   12.794427] sdcardfs: dev_name -> /data/media
+[   12.794433] sdcardfs: options -> fsuid=1023,fsgid=1023,multiuser,mask=6,userid=0,gid=1015
+[   12.794440] sdcardfs: mnt -> ecaeb210
+[   12.794489] sdcardfs: mounted on top of /data/media type f2fs
+[   12.794950] sdcardfs version 2.0
+[   12.794969] sdcardfs: dev_name -> /data/media
+[   12.794974] sdcardfs: options -> fsuid=1023,fsgid=1023,multiuser,mask=23,userid=0,gid=9997
+[   12.794979] sdcardfs: mnt -> e6611210
+[   12.795008] sdcardfs: mounted on top of /data/media type f2fs
+[   12.797726] sdcardfs version 2.0
+[   12.797750] sdcardfs: dev_name -> /data/media
+[   12.797756] sdcardfs: options -> fsuid=1023,fsgid=1023,multiuser,mask=7,userid=0,gid=9997
+[   12.797762] sdcardfs: mnt -> e6611b10
+[   12.797798] sdcardfs: mounted on top of /data/media type f2fs
+[   12.798555] type=1400 audit(1483272011.856:14): avc: denied { search } for pid=234 comm="mediaserver" name="519" dev="proc" ino=13713 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=dir permissive=1
+[   12.798682] type=1400 audit(1483272011.856:15): avc: denied { read } for pid=234 comm="mediaserver" name="cmdline" dev="proc" ino=10006 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=file permissive=1
+[   12.798983] type=1400 audit(1483272011.856:16): avc: denied { open } for pid=234 comm="mediaserver" path="/proc/519/cmdline" dev="proc" ino=10006 scontext=u:r:mediaserver:s0 tcontext=u:r:system_server:s0 tclass=file permissive=1
+[   14.145947] type=1400 audit(1483272013.230:17): avc: denied { read } for pid=226 comm="AudioOut_D" name="audioformat" dev="sysfs" ino=18025 scontext=u:r:audioserver:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+[   14.146184] type=1400 audit(1483272013.230:18): avc: denied { open } for pid=226 comm="AudioOut_D" path="/sys/devices/platform/display-subsystem/drm/card0/card0-HDMI-A-1/audioformat" dev="sysfs" ino=18025 scontext=u:r:audioserver:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+[   14.146289] type=1400 audit(1483272013.230:19): avc: denied { getattr } for pid=226 comm="AudioOut_D" path="/sys/devices/platform/display-subsystem/drm/card0/card0-HDMI-A-1/audioformat" dev="sysfs" ino=18025 scontext=u:r:audioserver:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+[   14.690900] init: write_file: Unable to open '/sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq': No such file or directory
+[   14.693926] init: cannot find '/system/bin/glgps' (No such file or directory), disabling 'gpsd'
+[   14.697210] init: Starting service 'exec 3 (/system/bin/bootstat)'...
+[   14.739764] init: Service 'exec 3 (/system/bin/bootstat)' (pid 946) exited with status 0
+[   14.740211] init: Starting service 'exec 4 (/system/bin/bootstat)'...
+[   14.755889] init: Service 'exec 4 (/system/bin/bootstat)' (pid 954) exited with status 0
+[   14.756260] init: Starting service 'exec 5 (/system/bin/bootstat)'...
+[   14.771993] init: Service 'exec 5 (/system/bin/bootstat)' (pid 955) exited with status 0
+[   14.772288] init: Starting service 'exec 6 (/system/bin/bootstat)'...
+[   14.797487] init: Service 'exec 6 (/system/bin/bootstat)' (pid 956) exited with status 0
+[   17.625459] init: Service 'bootanim' is being killed...
+[   17.666711] init: Service 'bootanim' (pid 331) killed by signal 9

@@ -1,0 +1,119 @@
+class AppLaunchSettings
+!!!448898.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        addPreferencesFromResource(R.xml.installed_app_launch_settings);
+        mAppDomainUrls = (AppDomainsPreference) findPreference(KEY_SUPPORTED_DOMAIN_URLS);
+        mClearDefaultsPreference = (ClearDefaultsPreference) findPreference(KEY_CLEAR_DEFAULTS);
+        mAppLinkState = (DropDownPreference) findPreference(KEY_APP_LINK_STATE);
+
+        mPm = getActivity().getPackageManager();
+
+        mIsBrowser = isBrowserApp(mPackageName);
+        mHasDomainUrls =
+                (mAppEntry.info.privateFlags & ApplicationInfo.PRIVATE_FLAG_HAS_DOMAIN_URLS) != 0;
+
+        if (!mIsBrowser) {
+            List<IntentFilterVerificationInfo> iviList = mPm.getIntentFilterVerifications(mPackageName);
+            List<IntentFilter> filters = mPm.getAllIntentFilters(mPackageName);
+            CharSequence[] entries = getEntries(mPackageName, iviList, filters);
+            mAppDomainUrls.setTitles(entries);
+            mAppDomainUrls.setValues(new int[entries.length]);
+        }
+        buildStateDropDown();
+!!!449026.java!!!	isBrowserApp(in packageName : String) : boolean
+        sBrowserIntent.setPackage(packageName);
+        List<ResolveInfo> list = mPm.queryIntentActivitiesAsUser(sBrowserIntent,
+                PackageManager.MATCH_ALL, UserHandle.myUserId());
+        final int count = list.size();
+        for (int i = 0; i < count; i++) {
+            ResolveInfo info = list.get(i);
+            if (info.activityInfo != null && info.handleAllWebDataURI) {
+                return true;
+            }
+        }
+        return false;
+!!!449154.java!!!	buildStateDropDown() : void
+        if (mIsBrowser) {
+            // Browsers don't show the app-link prefs
+            mAppLinkState.setShouldDisableView(true);
+            mAppLinkState.setEnabled(false);
+            mAppDomainUrls.setShouldDisableView(true);
+            mAppDomainUrls.setEnabled(false);
+        } else {
+            // Designed order of states in the dropdown:
+            //
+            // * always
+            // * ask
+            // * never
+            mAppLinkState.setEntries(new CharSequence[] {
+                    getString(R.string.app_link_open_always),
+                    getString(R.string.app_link_open_ask),
+                    getString(R.string.app_link_open_never),
+            });
+            mAppLinkState.setEntryValues(new CharSequence[] {
+                    Integer.toString(INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_ALWAYS),
+                    Integer.toString(INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_ALWAYS_ASK),
+                    Integer.toString(INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_NEVER),
+            });
+
+            mAppLinkState.setEnabled(mHasDomainUrls);
+            if (mHasDomainUrls) {
+                // Present 'undefined' as 'ask' because the OS treats them identically for
+                // purposes of the UI (and does the right thing around pending domain
+                // verifications that might arrive after the user chooses 'ask' in this UI).
+                final int state = mPm.getIntentVerificationStatusAsUser(mPackageName, UserHandle.myUserId());
+                mAppLinkState.setValue(
+                        Integer.toString((state == INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_UNDEFINED)
+                                ? INTENT_FILTER_DOMAIN_VERIFICATION_STATUS_ALWAYS_ASK
+                                        : state));
+
+                // Set the callback only after setting the initial selected item
+                mAppLinkState.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        return updateAppLinkState(Integer.parseInt((String) newValue));
+                    }
+                });
+            }
+        }
+!!!449282.java!!!	updateAppLinkState(in newState : int) : boolean
+        if (mIsBrowser) {
+            // We shouldn't get into this state, but if we do make sure
+            // not to cause any permanent mayhem.
+            return false;
+        }
+
+        final int userId = UserHandle.myUserId();
+        final int priorState = mPm.getIntentVerificationStatusAsUser(mPackageName, userId);
+
+        if (priorState == newState) {
+            return false;
+        }
+
+        boolean success = mPm.updateIntentVerificationStatusAsUser(mPackageName, newState, userId);
+        if (success) {
+            // Read back the state to see if the change worked
+            final int updatedState = mPm.getIntentVerificationStatusAsUser(mPackageName, userId);
+            success = (newState == updatedState);
+        } else {
+            Log.e(TAG, "Couldn't update intent verification status!");
+        }
+        return success;
+!!!449410.java!!!	getEntries(in packageName : String, inout iviList : List<IntentFilterVerificationInfo>, inout filters : List<IntentFilter>) : CharSequence
+        ArraySet<String> result = Utils.getHandledDomains(mPm, packageName);
+        return result.toArray(new CharSequence[result.size()]);
+!!!449538.java!!!	refreshUi() : boolean
+        mClearDefaultsPreference.setPackageName(mPackageName);
+        mClearDefaultsPreference.setAppEntry(mAppEntry);
+        return true;
+!!!449666.java!!!	createDialog(in id : int, in errorCode : int) : AlertDialog
+        // No dialogs for preferred launch settings.
+        return null;
+!!!449794.java!!!	onClick(inout v : View) : void
+        // Nothing to do
+!!!449922.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        // actual updates are handled by the app link dropdown callback
+        return true;
+!!!450050.java!!!	getMetricsCategory() : int
+        return MetricsEvent.APPLICATIONS_APP_LAUNCH;

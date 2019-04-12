@@ -1,0 +1,59 @@
+class VolumeUnmountedFragment
+!!!662658.java!!!	show(inout parent : Fragment, in volumeId : String) : void
+            final Bundle args = new Bundle();
+            args.putString(VolumeInfo.EXTRA_VOLUME_ID, volumeId);
+
+            final VolumeUnmountedFragment dialog = new VolumeUnmountedFragment();
+            dialog.setArguments(args);
+            dialog.setTargetFragment(parent, 0);
+            dialog.show(parent.getFragmentManager(), TAG_VOLUME_UNMOUNTED);
+!!!662786.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final Context context = getActivity();
+            final StorageManager sm = context.getSystemService(StorageManager.class);
+
+            final String volumeId = getArguments().getString(VolumeInfo.EXTRA_VOLUME_ID);
+            final VolumeInfo vol = sm.findVolumeById(volumeId);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(TextUtils.expandTemplate(
+                    getText(R.string.storage_dialog_unmounted), vol.getDisk().getDescription()));
+
+            builder.setPositiveButton(R.string.storage_menu_mount,
+                    new DialogInterface.OnClickListener() {
+                /**
+                 * Check if an {@link RestrictedLockUtils#sendShowAdminSupportDetailsIntent admin
+                 * details intent} should be shown for the restriction and show it.
+                 *
+                 * @param restriction The restriction to check
+                 * @return {@code true} iff a intent was shown.
+                 */
+                private boolean wasAdminSupportIntentShown(@NonNull String restriction) {
+                    EnforcedAdmin admin = RestrictedLockUtils.checkIfRestrictionEnforced(
+                            getActivity(), restriction, UserHandle.myUserId());
+                    boolean hasBaseUserRestriction = RestrictedLockUtils.hasBaseUserRestriction(
+                            getActivity(), restriction, UserHandle.myUserId());
+                    if (admin != null && !hasBaseUserRestriction) {
+                        RestrictedLockUtils.sendShowAdminSupportDetailsIntent(getActivity(), admin);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (wasAdminSupportIntentShown(UserManager.DISALLOW_MOUNT_PHYSICAL_MEDIA)) {
+                        return;
+                    }
+
+                    if (vol.disk != null && vol.disk.isUsb() &&
+                            wasAdminSupportIntentShown(UserManager.DISALLOW_USB_FILE_TRANSFER)) {
+                        return;
+                    }
+
+                    new MountTask(context, vol).execute();
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, null);
+
+            return builder.create();

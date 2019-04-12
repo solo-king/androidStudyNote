@@ -1,0 +1,57 @@
+class ColorModePreference
+!!!197762.java!!!	ColorModePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        mDisplayManager = getContext().getSystemService(DisplayManager.class);
+!!!197890.java!!!	getColorModeCount() : int
+        return mDescriptions.size();
+!!!198018.java!!!	startListening() : void
+        mDisplayManager.registerDisplayListener(this, new Handler(Looper.getMainLooper()));
+!!!198146.java!!!	stopListening() : void
+        mDisplayManager.unregisterDisplayListener(this);
+!!!198274.java!!!	onDisplayAdded(in displayId : int) : void
+        if (displayId == Display.DEFAULT_DISPLAY) {
+            updateCurrentAndSupported();
+        }
+!!!198402.java!!!	onDisplayChanged(in displayId : int) : void
+        if (displayId == Display.DEFAULT_DISPLAY) {
+            updateCurrentAndSupported();
+        }
+!!!198658.java!!!	updateCurrentAndSupported() : void
+        mDisplay = mDisplayManager.getDisplay(Display.DEFAULT_DISPLAY);
+
+        mDescriptions = new ArrayList<>();
+
+        Resources resources = getContext().getResources();
+        int[] colorModes = resources.getIntArray(R.array.color_mode_ids);
+        String[] titles = resources.getStringArray(R.array.color_mode_names);
+        String[] descriptions = resources.getStringArray(R.array.color_mode_descriptions);
+        // Map the resource information describing color modes.
+        for (int i = 0; i < colorModes.length; i++) {
+            if (colorModes[i] != -1 && i != 1 /* Skip Natural for now. */) {
+                ColorModeDescription desc = new ColorModeDescription();
+                desc.colorMode = colorModes[i];
+                desc.title = titles[i];
+                desc.summary = descriptions[i];
+                mDescriptions.add(desc);
+            }
+        }
+
+        int currentColorMode = mDisplay.getColorMode();
+        mCurrentIndex = -1;
+        for (int i = 0; i < mDescriptions.size(); i++) {
+            if (mDescriptions.get(i).colorMode == currentColorMode) {
+                mCurrentIndex = i;
+                break;
+            }
+        }
+        setChecked(mCurrentIndex == 1);
+!!!198786.java!!!	persistBoolean(inout value : boolean) : boolean
+        // Right now this is a switch, so we only support two modes.
+        if (mDescriptions.size() == 2) {
+            ColorModeDescription desc = mDescriptions.get(value ? 1 : 0);
+
+            mDisplay.requestColorMode(desc.colorMode);
+            mCurrentIndex = mDescriptions.indexOf(desc);
+        }
+
+        return true;

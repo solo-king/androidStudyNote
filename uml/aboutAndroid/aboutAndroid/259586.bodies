@@ -1,0 +1,142 @@
+class SettingsInjector
+!!!791042.java!!!	SettingsInjector(inout context : Context)
+        mContext = context;
+        mSettings = new HashSet<Setting>();
+        mHandler = new StatusLoadingHandler();
+!!!791170.java!!!	getSettings(in userHandle : UserHandle) : InjectedSetting
+        PackageManager pm = mContext.getPackageManager();
+        Intent intent = new Intent(SettingInjectorService.ACTION_SERVICE_INTENT);
+
+        final int profileId = userHandle.getIdentifier();
+        List<ResolveInfo> resolveInfos =
+                pm.queryIntentServicesAsUser(intent, PackageManager.GET_META_DATA, profileId);
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "Found services for profile id " + profileId + ": " + resolveInfos);
+        }
+        List<InjectedSetting> settings = new ArrayList<InjectedSetting>(resolveInfos.size());
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            try {
+                InjectedSetting setting = parseServiceInfo(resolveInfo, userHandle, pm);
+                if (setting == null) {
+                    Log.w(TAG, "Unable to load service info " + resolveInfo);
+                } else {
+                    settings.add(setting);
+                }
+            } catch (XmlPullParserException e) {
+                Log.w(TAG, "Unable to load service info " + resolveInfo, e);
+            } catch (IOException e) {
+                Log.w(TAG, "Unable to load service info " + resolveInfo, e);
+            }
+        }
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "Loaded settings for profile id " + profileId + ": " + settings);
+        }
+
+        return settings;
+!!!791298.java!!!	parseServiceInfo(inout service : ResolveInfo, inout userHandle : UserHandle, inout pm : PackageManager) : InjectedSetting
+
+        ServiceInfo si = service.serviceInfo;
+        ApplicationInfo ai = si.applicationInfo;
+
+        if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            if (Log.isLoggable(TAG, Log.WARN)) {
+                Log.w(TAG, "Ignoring attempt to inject setting from app not in system image: "
+                        + service);
+                return null;
+            }
+        }
+
+        XmlResourceParser parser = null;
+        try {
+            parser = si.loadXmlMetaData(pm, SettingInjectorService.META_DATA_NAME);
+            if (parser == null) {
+                throw new XmlPullParserException("No " + SettingInjectorService.META_DATA_NAME
+                        + " meta-data for " + service + ": " + si);
+            }
+
+            AttributeSet attrs = Xml.asAttributeSet(parser);
+
+            int type;
+            while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
+                    && type != XmlPullParser.START_TAG) {
+            }
+
+            String nodeName = parser.getName();
+            if (!SettingInjectorService.ATTRIBUTES_NAME.equals(nodeName)) {
+                throw new XmlPullParserException("Meta-data does not start with "
+                        + SettingInjectorService.ATTRIBUTES_NAME + " tag");
+            }
+
+            Resources res = pm.getResourcesForApplicationAsUser(si.packageName,
+                    userHandle.getIdentifier());
+            return parseAttributes(si.packageName, si.name, userHandle, res, attrs);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new XmlPullParserException(
+                    "Unable to load resources for package " + si.packageName);
+        } finally {
+            if (parser != null) {
+                parser.close();
+            }
+        }
+!!!791426.java!!!	parseAttributes(in packageName : String, in className : String, inout userHandle : UserHandle, inout res : Resources, inout attrs : AttributeSet) : InjectedSetting
+
+        TypedArray sa = res.obtainAttributes(attrs, android.R.styleable.SettingInjectorService);
+        try {
+            // Note that to help guard against malicious string injection, we do not allow dynamic
+            // specification of the label (setting title)
+            final String title = sa.getString(android.R.styleable.SettingInjectorService_title);
+            final int iconId =
+                    sa.getResourceId(android.R.styleable.SettingInjectorService_icon, 0);
+            final String settingsActivity =
+                    sa.getString(android.R.styleable.SettingInjectorService_settingsActivity);
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "parsed title: " + title + ", iconId: " + iconId
+                        + ", settingsActivity: " + settingsActivity);
+            }
+            return InjectedSetting.newInstance(packageName, className,
+                    title, iconId, userHandle, settingsActivity);
+        } finally {
+            sa.recycle();
+        }
+!!!791554.java!!!	getInjectedSettings(in profileId : int) : List<Preference>
+        final UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+        final List<UserHandle> profiles = um.getUserProfiles();
+        ArrayList<Preference> prefs = new ArrayList<Preference>();
+        final int profileCount = profiles.size();
+        for (int i = 0; i < profileCount; ++i) {
+            final UserHandle userHandle = profiles.get(i);
+            if (profileId == UserHandle.USER_CURRENT || profileId == userHandle.getIdentifier()) {
+                Iterable<InjectedSetting> settings = getSettings(userHandle);
+                for (InjectedSetting setting : settings) {
+                    Preference pref = addServiceSetting(prefs, setting);
+                    mSettings.add(new Setting(setting, pref));
+                }
+            }
+        }
+
+        reloadStatusMessages();
+
+        return prefs;
+!!!791682.java!!!	reloadStatusMessages() : void
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "reloadingStatusMessages: " + mSettings);
+        }
+        mHandler.sendMessage(mHandler.obtainMessage(WHAT_RELOAD));
+!!!791810.java!!!	addServiceSetting(inout prefs : List<Preference>, inout info : InjectedSetting) : Preference
+        PackageManager pm = mContext.getPackageManager();
+        Drawable appIcon = pm.getDrawable(info.packageName, info.iconId, null);
+        Drawable icon = pm.getUserBadgedIcon(appIcon, info.mUserHandle);
+        CharSequence badgedAppLabel = pm.getUserBadgedLabel(info.title, info.mUserHandle);
+        if (info.title.contentEquals(badgedAppLabel)) {
+            // If badged label is not different from original then no need for it as
+            // a separate content description.
+            badgedAppLabel = null;
+        }
+        Preference pref = new DimmableIconPreference(mContext, badgedAppLabel);
+        pref.setTitle(info.title);
+        pref.setSummary(null);
+        pref.setIcon(icon);
+        pref.setOnPreferenceClickListener(new ServiceSettingClickedListener(info));
+
+        prefs.add(pref);
+        return pref;

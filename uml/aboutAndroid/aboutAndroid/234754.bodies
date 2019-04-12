@@ -1,0 +1,105 @@
+class UnrestrictedDataAccess
+!!!640258.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        setAnimationAllowed(true);
+        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getContext()));
+        mApplicationsState = ApplicationsState.getInstance(
+                (Application) getContext().getApplicationContext());
+        mDataSaverBackend = new DataSaverBackend(getContext());
+        mDataUsageBridge = new AppStateDataUsageBridge(mApplicationsState, this, mDataSaverBackend);
+        mSession = mApplicationsState.newSession(this);
+        mShowSystem = icicle != null && icicle.getBoolean(EXTRA_SHOW_SYSTEM);
+        mFilter = mShowSystem ? ApplicationsState.FILTER_ALL_ENABLED
+                : ApplicationsState.FILTER_DOWNLOADED_AND_LAUNCHER;
+        setHasOptionsMenu(true);
+!!!640386.java!!!	onCreateOptionsMenu(inout menu : Menu, inout inflater : MenuInflater) : void
+        menu.add(Menu.NONE, MENU_SHOW_SYSTEM, Menu.NONE,
+                mShowSystem ? R.string.menu_hide_system : R.string.menu_show_system);
+        super.onCreateOptionsMenu(menu, inflater);
+!!!640514.java!!!	onOptionsItemSelected(inout item : MenuItem) : boolean
+        switch (item.getItemId()) {
+            case MENU_SHOW_SYSTEM:
+                mShowSystem = !mShowSystem;
+                item.setTitle(mShowSystem ? R.string.menu_hide_system : R.string.menu_show_system);
+                mFilter = mShowSystem ? ApplicationsState.FILTER_ALL_ENABLED
+                        : ApplicationsState.FILTER_DOWNLOADED_AND_LAUNCHER;
+                if (mExtraLoaded) {
+                    rebuild();
+                }
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+!!!640642.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_SHOW_SYSTEM, mShowSystem);
+!!!640770.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+        setLoading(true, false);
+!!!640898.java!!!	onResume() : void
+        super.onResume();
+        mSession.resume();
+        mDataUsageBridge.resume();
+!!!641026.java!!!	onPause() : void
+        super.onPause();
+        mDataUsageBridge.pause();
+        mSession.pause();
+!!!641154.java!!!	onDestroy() : void
+        super.onDestroy();
+        mSession.release();
+        mDataUsageBridge.release();
+!!!641282.java!!!	onExtraInfoUpdated() : void
+        mExtraLoaded = true;
+        rebuild();
+!!!641410.java!!!	getHelpResource() : int
+        return R.string.help_url_unrestricted_data_access;
+!!!641538.java!!!	rebuild() : void
+        ArrayList<AppEntry> apps = mSession.rebuild(mFilter, ApplicationsState.ALPHA_COMPARATOR);
+        if (apps != null) {
+            onRebuildComplete(apps);
+        }
+!!!641666.java!!!	onRunningStateChanged(inout running : boolean) : void
+
+!!!641794.java!!!	onPackageListChanged() : void
+
+!!!641922.java!!!	onRebuildComplete(inout apps : ArrayList<AppEntry>) : void
+        if (getContext() == null) return;
+        cacheRemoveAllPrefs(getPreferenceScreen());
+        final int N = apps.size();
+        for (int i = 0; i < N; i++) {
+            AppEntry entry = apps.get(i);
+            String key = entry.info.packageName + "|" + entry.info.uid;
+            AccessPreference preference = (AccessPreference) getCachedPreference(key);
+            if (preference == null) {
+                preference = new AccessPreference(getPrefContext(), entry);
+                preference.setKey(key);
+                preference.setOnPreferenceChangeListener(this);
+                getPreferenceScreen().addPreference(preference);
+            } else {
+                preference.reuse();
+            }
+            preference.setOrder(i);
+        }
+        setLoading(false, true);
+        removeCachedPrefs(getPreferenceScreen());
+!!!642050.java!!!	onPackageIconChanged() : void
+
+!!!642178.java!!!	onPackageSizeChanged(in packageName : String) : void
+
+!!!642306.java!!!	onAllSizesComputed() : void
+
+!!!642434.java!!!	onLauncherInfoChanged() : void
+
+!!!642562.java!!!	onLoadEntriesCompleted() : void
+
+!!!642690.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DATA_USAGE_UNRESTRICTED_ACCESS;
+!!!642818.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference instanceof AccessPreference) {
+            AccessPreference accessPreference = (AccessPreference) preference;
+            boolean whitelisted = newValue == Boolean.TRUE;
+            mDataSaverBackend.setIsWhitelisted(accessPreference.mEntry.info.uid,
+                    accessPreference.mEntry.info.packageName, whitelisted);
+            accessPreference.mState.isDataSaverWhitelisted = whitelisted;
+            return true;
+        }
+        return false;

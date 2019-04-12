@@ -1,0 +1,7 @@
+class Entry
+!!!647938.java!!!	Entry(in order : int, in percentage : float, inout paint : Paint)
+            this.order = order;
+            this.percentage = percentage;
+            this.paint = paint;
+!!!648066.java!!!	compareTo(inout another : PercentageBarChart::Entry) : int
+            return order - another.order;

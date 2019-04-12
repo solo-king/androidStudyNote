@@ -1,0 +1,88 @@
+class UserEnvironment
+!!!474498.java!!!	UserEnvironment(in userId : int)
+            // See storage config details at http://source.android.com/tech/storage/
+            String rawExternalStorage = System.getenv(ENV_EXTERNAL_STORAGE);
+            String rawEmulatedSource = System.getenv(ENV_EMULATED_STORAGE_SOURCE);
+            String rawEmulatedTarget = System.getenv(ENV_EMULATED_STORAGE_TARGET);
+
+            String rawMediaStorage = System.getenv(ENV_MEDIA_STORAGE);
+            if (TextUtils.isEmpty(rawMediaStorage)) {
+                rawMediaStorage = "/data/media";
+            }
+
+            ArrayList<File> externalForVold = Lists.newArrayList();
+            ArrayList<File> externalForApp = Lists.newArrayList();
+
+            if (!TextUtils.isEmpty(rawEmulatedTarget)) {
+                // Device has emulated storage; external storage paths should have
+                // userId burned into them.
+                final String rawUserId = Integer.toString(userId);
+                final File emulatedSourceBase = new File(rawEmulatedSource);
+                final File emulatedTargetBase = new File(rawEmulatedTarget);
+                final File mediaBase = new File(rawMediaStorage);
+
+                // /storage/emulated/0
+                externalForVold.add(buildPath(emulatedSourceBase, rawUserId));
+                externalForApp.add(buildPath(emulatedTargetBase, rawUserId));
+                // /data/media/0
+                mEmulatedDirForDirect = buildPath(mediaBase, rawUserId);
+
+            } else {
+                // Device has physical external storage; use plain paths.
+                if (TextUtils.isEmpty(rawExternalStorage)) {
+                    Log.w(TAG, "EXTERNAL_STORAGE undefined; falling back to default");
+                    rawExternalStorage = "/storage/sdcard0";
+                }
+
+                // /storage/sdcard0
+                externalForVold.add(new File(rawExternalStorage));
+                externalForApp.add(new File(rawExternalStorage));
+                // /data/media
+                mEmulatedDirForDirect = new File(rawMediaStorage);
+            }
+
+            // Splice in any secondary storage paths, but only for owner
+            final String rawSecondaryStorage = System.getenv(ENV_SECONDARY_STORAGE);
+            if (!TextUtils.isEmpty(rawSecondaryStorage) && userId == UserHandle.USER_OWNER) {
+                for (String secondaryPath : rawSecondaryStorage.split(":")) {
+                    externalForVold.add(new File(secondaryPath));
+                    externalForApp.add(new File(secondaryPath));
+                }
+            }
+
+            mExternalDirsForVold = externalForVold.toArray(new File[externalForVold.size()]);
+            mExternalDirsForApp = externalForApp.toArray(new File[externalForApp.size()]);
+!!!474626.java!!!	getExternalStorageDirectory() : File
+            return mExternalDirsForApp[0];
+!!!474754.java!!!	getSecondaryStorageDirectory() : File
+            return mExternalDirsForApp[1];
+!!!474882.java!!!	getExternalStoragePublicDirectory(in type : String) : File
+            return buildExternalStoragePublicDirs(type)[0];
+!!!475010.java!!!	getExternalDirsForVold() : File
+            return mExternalDirsForVold;
+!!!475138.java!!!	getExternalDirsForApp() : File
+            return mExternalDirsForApp;
+!!!475266.java!!!	getMediaDir() : File
+            return mEmulatedDirForDirect;
+!!!475394.java!!!	buildExternalStoragePublicDirs(in type : String) : File
+            return buildPaths(mExternalDirsForApp, type);
+!!!475522.java!!!	buildExternalStorageAndroidDataDirs() : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_DATA);
+!!!475650.java!!!	buildExternalStorageAndroidObbDirs() : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_OBB);
+!!!475778.java!!!	buildExternalStorageAndroidObbDirsForVold() : File
+            return buildPaths(mExternalDirsForVold, DIR_ANDROID, DIR_OBB);
+!!!475906.java!!!	buildExternalStorageAppDataDirs(in packageName : String) : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_DATA, packageName);
+!!!476034.java!!!	buildExternalStorageAppDataDirsForVold(in packageName : String) : File
+            return buildPaths(mExternalDirsForVold, DIR_ANDROID, DIR_DATA, packageName);
+!!!476162.java!!!	buildExternalStorageAppMediaDirs(in packageName : String) : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_MEDIA, packageName);
+!!!476290.java!!!	buildExternalStorageAppObbDirs(in packageName : String) : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_OBB, packageName);
+!!!476418.java!!!	buildExternalStorageAppObbDirsForVold(in packageName : String) : File
+            return buildPaths(mExternalDirsForVold, DIR_ANDROID, DIR_OBB, packageName);
+!!!476546.java!!!	buildExternalStorageAppFilesDirs(in packageName : String) : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_DATA, packageName, DIR_FILES);
+!!!476674.java!!!	buildExternalStorageAppCacheDirs(in packageName : String) : File
+            return buildPaths(mExternalDirsForApp, DIR_ANDROID, DIR_DATA, packageName, DIR_CACHE);

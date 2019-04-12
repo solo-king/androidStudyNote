@@ -1,0 +1,19 @@
+class InputMethodAndSubtypeEnablerActivity
+!!!757506.java!!!	onCreate(in savedState : Bundle) : void
+        super.onCreate(savedState);
+        final ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+!!!757634.java!!!	onNavigateUp() : boolean
+        finish();
+        return true;
+!!!757762.java!!!	getIntent() : Intent
+        final Intent modIntent = new Intent(super.getIntent());
+        if (!modIntent.hasExtra(EXTRA_SHOW_FRAGMENT)) {
+            modIntent.putExtra(EXTRA_SHOW_FRAGMENT, FRAGMENT_NAME);
+        }
+        return modIntent;
+!!!757890.java!!!	isValidFragment(in fragmentName : String) : boolean
+        return FRAGMENT_NAME.equals(fragmentName);

@@ -1,0 +1,52 @@
+class FingerprintEnrollBase
+!!!333570.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_FingerprintEnroll);
+        mToken = getIntent().getByteArrayExtra(
+                ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+        if (savedInstanceState != null && mToken == null) {
+            mToken = savedInstanceState.getByteArray(
+                    ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+        }
+        mUserId = getIntent().getIntExtra(Intent.EXTRA_USER_ID, UserHandle.myUserId());
+!!!333698.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        outState.putByteArray(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
+!!!333826.java!!!	onPostCreate(inout savedInstanceState : Bundle) : void
+        super.onPostCreate(savedInstanceState);
+        initViews();
+!!!333954.java!!!	initViews() : void
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        Button nextButton = getNextButton();
+        if (nextButton != null) {
+            nextButton.setOnClickListener(this);
+        }
+!!!334082.java!!!	getLayout() : GlifLayout
+        return (GlifLayout) findViewById(R.id.setup_wizard_layout);
+!!!334210.java!!!	setHeaderText(in resId : int, inout force : boolean) : void
+        TextView layoutTitle = getLayout().getHeaderTextView();
+        CharSequence previousTitle = layoutTitle.getText();
+        CharSequence title = getText(resId);
+        if (previousTitle != title || force) {
+            if (!TextUtils.isEmpty(previousTitle)) {
+                layoutTitle.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+            }
+            getLayout().setHeaderText(title);
+            setTitle(title);
+        }
+!!!334338.java!!!	setHeaderText(in resId : int) : void
+        setHeaderText(resId, false /* force */);
+!!!334466.java!!!	getNextButton() : Button
+        return (Button) findViewById(R.id.next_button);
+!!!334594.java!!!	onClick(inout v : View) : void
+        if (v == getNextButton()) {
+            onNextButtonClick();
+        }
+!!!334850.java!!!	getEnrollingIntent() : Intent
+        Intent intent = new Intent();
+        intent.setClassName("com.android.settings", FingerprintEnrollEnrolling.class.getName());
+        intent.putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
+        if (mUserId != UserHandle.USER_NULL) {
+            intent.putExtra(Intent.EXTRA_USER_ID, mUserId);
+        }
+        return intent;

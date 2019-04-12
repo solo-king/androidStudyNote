@@ -1,0 +1,11 @@
+class StorageUnmountReceiver
+!!!663938.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
+        final StorageManager storage = context.getSystemService(StorageManager.class);
+
+        final String volId = intent.getStringExtra(VolumeInfo.EXTRA_VOLUME_ID);
+        final VolumeInfo vol = storage.findVolumeById(volId);
+        if (vol != null) {
+            new UnmountTask(context, vol).execute();
+        } else {
+            Log.w(TAG, "Missing volume " + volId);
+        }

@@ -1,0 +1,91 @@
+format 76
+
+note 128130 "init/main.c"
+  xyzwh 98 49 2005 101 35
+note 128770 "arch/arm/kernel/setup.c"
+  xyzwh 301 49 2000 151 35
+note 129282 "drivers/of/fdt.c"
+  xyzwh 841 56 2005 125 35
+classinstance 129410 class_ref 128386 // main.c
+  name ""   xyz 119 4 2005 life_line_z 2000
+classinstance 129922 class_ref 128514 // setup.c
+  name ""   xyz 354 4 2005 life_line_z 2000
+classinstance 130306 class_ref 128642 // fdt.c
+  name ""   xyz 868 10 2005 life_line_z 2000
+classinstance 130562 class_ref 128898 // devtree.c
+  name ""   xyz 597 4 2005 life_line_z 2000
+note 131586 "arch/arm/kernel/devtree.c"
+  xyzwh 550 50 2000 165 37
+note 131970 "void *initial_boot_params;//.
+struct device_node *of_allnodes;//drivers/of/base.c
+early_init_dt_alloc_memory_arch//."
+  xyzwh 629 279 2000 305 79
+durationcanvas 129538 classinstance_ref 129410 // :main.c
+  xyzwh 139 121 2010 11 36
+end
+durationcanvas 130050 classinstance_ref 129922 // :setup.c
+  xyzwh 376 146 2010 11 149
+end
+durationcanvas 130690 classinstance_ref 130562 // :devtree.c
+  xyzwh 623 170 2010 11 64
+end
+durationcanvas 131330 classinstance_ref 130306 // :fdt.c
+  xyzwh 887 269 2010 11 271
+  overlappingdurationcanvas 131714
+    xyzwh 893 375 2020 11 68
+    overlappingdurationcanvas 132354
+      xyzwh 899 405 2030 11 25
+    end
+  end
+  overlappingdurationcanvas 132098
+    xyzwh 893 476 2020 11 25
+  end
+end
+lostfoundmsgsupport 129666 xyz 34 123 2015
+msg 129794 found_synchronous
+  from lostfoundmsgsupport_ref 129666
+  to durationcanvas_ref 129538
+  yz 121 2015 explicitmsg "start_kernel(void)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 44 106
+msg 130178 synchronous
+  from durationcanvas_ref 129538
+  to durationcanvas_ref 130050
+  yz 146 2015 explicitmsg "setup_arch(char **cmdline_p)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 181 131
+msg 130818 synchronous
+  from durationcanvas_ref 130050
+  to durationcanvas_ref 130690
+  yz 174 2015 explicitmsg "setup_machine_fdt(__atags_pointer)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 402 159
+msg 131202 return
+  from durationcanvas_ref 130690
+  to durationcanvas_ref 130050
+  yz 211 2015 explicitmsg "return const struct machine_desc *mdesc;"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 388 196
+msg 131458 synchronous
+  from durationcanvas_ref 130050
+  to durationcanvas_ref 131330
+  yz 269 2015 explicitmsg "unflatten_device_tree(void)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 564 254
+reflexivemsg 131842 synchronous
+  to durationcanvas_ref 131714
+  yz 375 2025 explicitmsg "static void __unflatten_device_tree(void *blob,struct device_node **mynodes,void * (*dt_alloc)(u64 size, u64 align))"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  args "initial_boot_params, &of_allnodes,early_init_dt_alloc_memory_arch"
+  label_xy 602 360
+reflexivemsg 132226 synchronous
+  to durationcanvas_ref 132098
+  yz 476 2025 explicitmsg "of_alias_scan(early_init_dt_alloc_memory_arch);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 778 461
+reflexivemsg 132482 synchronous
+  to durationcanvas_ref 132354
+  yz 405 2035 explicitmsg "unflatten_dt_node(blob, NULL, &start, NULL, NULL, 0);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 676 389
+end

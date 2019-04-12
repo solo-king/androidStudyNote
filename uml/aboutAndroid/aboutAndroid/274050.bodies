@@ -1,0 +1,37 @@
+class SaveSearchQueryTask
+!!!878850.java!!!	doInBackground(inout  : String...params) : Long
+            final long now = new Date().getTime();
+
+            final ContentValues values = new ContentValues();
+            values.put(IndexDatabaseHelper.SavedQueriesColums.QUERY, params[0]);
+            values.put(IndexDatabaseHelper.SavedQueriesColums.TIME_STAMP, now);
+
+            final SQLiteDatabase database = getWritableDatabase();
+            if (database == null) {
+                Log.e(LOG_TAG, "Cannot save Search queries as I cannot get a writable database");
+                return -1L;
+            }
+
+            long lastInsertedRowId = -1L;
+            try {
+                // First, delete all saved queries that are the same
+                database.delete(Tables.TABLE_SAVED_QUERIES,
+                        IndexDatabaseHelper.SavedQueriesColums.QUERY + " = ?",
+                        new String[] { params[0] });
+
+                // Second, insert the saved query
+                lastInsertedRowId =
+                        database.insertOrThrow(Tables.TABLE_SAVED_QUERIES, null, values);
+
+                // Last, remove "old" saved queries
+                final long delta = lastInsertedRowId - MAX_SAVED_SEARCH_QUERY;
+                if (delta > 0) {
+                    int count = database.delete(Tables.TABLE_SAVED_QUERIES, "rowId <= ?",
+                            new String[] { Long.toString(delta) });
+                    Log.d(LOG_TAG, "Deleted '" + count + "' saved Search query(ies)");
+                }
+            } catch (Exception e) {
+                Log.d(LOG_TAG, "Cannot update saved Search queries", e);
+            }
+
+            return lastInsertedRowId;

@@ -1,0 +1,796 @@
+class Bundle
+!!!434306.java!!!	Bundle()
+        mMap = new ArrayMap<String, Object>();
+        mClassLoader = getClass().getClassLoader();
+!!!434434.java!!!	Bundle(inout parcelledData : Parcel)
+        readFromParcel(parcelledData);
+!!!434562.java!!!	Bundle(inout parcelledData : Parcel, in length : int)
+        readFromParcelInner(parcelledData, length);
+!!!434690.java!!!	Bundle(inout loader : ClassLoader)
+        mMap = new ArrayMap<String, Object>();
+        mClassLoader = loader;
+!!!434818.java!!!	Bundle(in capacity : int)
+        mMap = new ArrayMap<String, Object>(capacity);
+        mClassLoader = getClass().getClassLoader();
+!!!434946.java!!!	Bundle(inout b : Bundle)
+        if (b.mParcelledData != null) {
+            if (b.mParcelledData == EMPTY_PARCEL) {
+                mParcelledData = EMPTY_PARCEL;
+            } else {
+                mParcelledData = Parcel.obtain();
+                mParcelledData.appendFrom(b.mParcelledData, 0, b.mParcelledData.dataSize());
+                mParcelledData.setDataPosition(0);
+            }
+        } else {
+            mParcelledData = null;
+        }
+
+        if (b.mMap != null) {
+            mMap = new ArrayMap<String, Object>(b.mMap);
+        } else {
+            mMap = null;
+        }
+
+        mHasFds = b.mHasFds;
+        mFdsKnown = b.mFdsKnown;
+        mClassLoader = b.mClassLoader;
+!!!435074.java!!!	forPair(in key : String, in value : String) : Bundle
+        // TODO: optimize this case.
+        Bundle b = new Bundle(1);
+        b.putString(key, value);
+        return b;
+!!!435202.java!!!	getPairValue() : String
+        unparcel();
+        int size = mMap.size();
+        if (size > 1) {
+            Log.w(TAG, "getPairValue() used on Bundle with multiple pairs.");
+        }
+        if (size == 0) {
+            return null;
+        }
+        Object o = mMap.valueAt(0);
+        try {
+            return (String) o;
+        } catch (ClassCastException e) {
+            typeWarning("getPairValue()", o, "String", e);
+            return null;
+        }
+!!!435330.java!!!	setClassLoader(inout loader : ClassLoader) : void
+        mClassLoader = loader;
+!!!435458.java!!!	getClassLoader() : ClassLoader
+        return mClassLoader;
+!!!435586.java!!!	setAllowFds(inout allowFds : boolean) : boolean
+        boolean orig = mAllowFds;
+        mAllowFds = allowFds;
+        return orig;
+!!!435714.java!!!	clone() : Object
+        return new Bundle(this);
+!!!435842.java!!!	unparcel() : void
+        if (mParcelledData == null) {
+            if (DEBUG) Log.d(TAG, "unparcel " + Integer.toHexString(System.identityHashCode(this))
+                    + ": no parcelled data");
+            return;
+        }
+
+        if (mParcelledData == EMPTY_PARCEL) {
+            if (DEBUG) Log.d(TAG, "unparcel " + Integer.toHexString(System.identityHashCode(this))
+                    + ": empty");
+            if (mMap == null) {
+                mMap = new ArrayMap<String, Object>(1);
+            } else {
+                mMap.erase();
+            }
+            mParcelledData = null;
+            return;
+        }
+
+        int N = mParcelledData.readInt();
+        if (DEBUG) Log.d(TAG, "unparcel " + Integer.toHexString(System.identityHashCode(this))
+                + ": reading " + N + " maps");
+        if (N < 0) {
+            return;
+        }
+        if (mMap == null) {
+            mMap = new ArrayMap<String, Object>(N);
+        } else {
+            mMap.erase();
+            mMap.ensureCapacity(N);
+        }
+        mParcelledData.readArrayMapInternal(mMap, N, mClassLoader);
+        mParcelledData.recycle();
+        mParcelledData = null;
+        if (DEBUG) Log.d(TAG, "unparcel " + Integer.toHexString(System.identityHashCode(this))
+                + " final map: " + mMap);
+!!!435970.java!!!	isParcelled() : boolean
+        return mParcelledData != null;
+!!!436098.java!!!	size() : int
+        unparcel();
+        return mMap.size();
+!!!436226.java!!!	isEmpty() : boolean
+        unparcel();
+        return mMap.isEmpty();
+!!!436354.java!!!	clear() : void
+        unparcel();
+        mMap.clear();
+        mHasFds = false;
+        mFdsKnown = true;
+!!!436482.java!!!	containsKey(in key : String) : boolean
+        unparcel();
+        return mMap.containsKey(key);
+!!!436610.java!!!	get(in key : String) : Object
+        unparcel();
+        return mMap.get(key);
+!!!436738.java!!!	remove(in key : String) : void
+        unparcel();
+        mMap.remove(key);
+!!!436866.java!!!	putAll(inout map : Bundle) : void
+        unparcel();
+        map.unparcel();
+        mMap.putAll(map.mMap);
+
+        // fd state is now known if and only if both bundles already knew
+        mHasFds |= map.mHasFds;
+        mFdsKnown = mFdsKnown && map.mFdsKnown;
+!!!436994.java!!!	keySet() : Set<String>
+        unparcel();
+        return mMap.keySet();
+!!!437122.java!!!	hasFileDescriptors() : boolean
+        if (!mFdsKnown) {
+            boolean fdFound = false;    // keep going until we find one or run out of data
+            
+            if (mParcelledData != null) {
+                if (mParcelledData.hasFileDescriptors()) {
+                    fdFound = true;
+                }
+            } else {
+                // It's been unparcelled, so we need to walk the map
+                for (int i=mMap.size()-1; i>=0; i--) {
+                    Object obj = mMap.valueAt(i);
+                    if (obj instanceof Parcelable) {
+                        if ((((Parcelable)obj).describeContents()
+                                & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0) {
+                            fdFound = true;
+                            break;
+                        }
+                    } else if (obj instanceof Parcelable[]) {
+                        Parcelable[] array = (Parcelable[]) obj;
+                        for (int n = array.length - 1; n >= 0; n--) {
+                            if ((array[n].describeContents()
+                                    & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0) {
+                                fdFound = true;
+                                break;
+                            }
+                        }
+                    } else if (obj instanceof SparseArray) {
+                        SparseArray<? extends Parcelable> array =
+                                (SparseArray<? extends Parcelable>) obj;
+                        for (int n = array.size() - 1; n >= 0; n--) {
+                            if ((array.get(n).describeContents()
+                                    & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0) {
+                                fdFound = true;
+                                break;
+                            }
+                        }
+                    } else if (obj instanceof ArrayList) {
+                        ArrayList array = (ArrayList) obj;
+                        // an ArrayList here might contain either Strings or
+                        // Parcelables; only look inside for Parcelables
+                        if ((array.size() > 0)
+                                && (array.get(0) instanceof Parcelable)) {
+                            for (int n = array.size() - 1; n >= 0; n--) {
+                                Parcelable p = (Parcelable) array.get(n);
+                                if (p != null && ((p.describeContents()
+                                        & Parcelable.CONTENTS_FILE_DESCRIPTOR) != 0)) {
+                                    fdFound = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            mHasFds = fdFound;
+            mFdsKnown = true;
+        }
+        return mHasFds;
+!!!437250.java!!!	putBoolean(in key : String, inout value : boolean) : void
+        unparcel();
+        mMap.put(key, value);
+!!!437378.java!!!	putByte(in key : String, in value : byte) : void
+        unparcel();
+        mMap.put(key, value);
+!!!437506.java!!!	putChar(in key : String, in value : char) : void
+        unparcel();
+        mMap.put(key, value);
+!!!437634.java!!!	putShort(in key : String, in value : short) : void
+        unparcel();
+        mMap.put(key, value);
+!!!437762.java!!!	putInt(in key : String, in value : int) : void
+        unparcel();
+        mMap.put(key, value);
+!!!437890.java!!!	putLong(in key : String, in value : long) : void
+        unparcel();
+        mMap.put(key, value);
+!!!438018.java!!!	putFloat(in key : String, in value : float) : void
+        unparcel();
+        mMap.put(key, value);
+!!!438146.java!!!	putDouble(in key : String, in value : double) : void
+        unparcel();
+        mMap.put(key, value);
+!!!438274.java!!!	putString(in key : String, in value : String) : void
+        unparcel();
+        mMap.put(key, value);
+!!!438402.java!!!	putCharSequence(in key : String, inout value : CharSequence) : void
+        unparcel();
+        mMap.put(key, value);
+!!!438530.java!!!	putParcelable(in key : String, inout value : Parcelable) : void
+        unparcel();
+        mMap.put(key, value);
+        mFdsKnown = false;
+!!!438658.java!!!	putParcelableArray(in key : String, inout value : Parcelable) : void
+        unparcel();
+        mMap.put(key, value);
+        mFdsKnown = false;
+!!!438786.java!!!	putParcelableArrayList(in key : String, inout value : ArrayList<? extends Parcelable>) : void
+        unparcel();
+        mMap.put(key, value);
+        mFdsKnown = false;
+!!!438914.java!!!	putParcelableList(in key : String, inout value : List<? extends Parcelable>) : void
+        unparcel();
+        mMap.put(key, value);
+        mFdsKnown = false;
+!!!439042.java!!!	putSparseParcelableArray(in key : String, inout value : SparseArray<? extends Parcelable>) : void
+        unparcel();
+        mMap.put(key, value);
+        mFdsKnown = false;
+!!!439170.java!!!	putIntegerArrayList(in key : String, inout value : ArrayList<Integer>) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439298.java!!!	putStringArrayList(in key : String, inout value : ArrayList<String>) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439426.java!!!	putCharSequenceArrayList(in key : String, inout value : ArrayList<CharSequence>) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439554.java!!!	putSerializable(in key : String, inout value : Serializable) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439682.java!!!	putBooleanArray(in key : String, inout value : boolean) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439810.java!!!	putByteArray(in key : String, inout value : byte) : void
+        unparcel();
+        mMap.put(key, value);
+!!!439938.java!!!	putShortArray(in key : String, inout value : short) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440066.java!!!	putCharArray(in key : String, inout value : char) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440194.java!!!	putIntArray(in key : String, inout value : int) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440322.java!!!	putLongArray(in key : String, inout value : long) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440450.java!!!	putFloatArray(in key : String, inout value : float) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440578.java!!!	putDoubleArray(in key : String, inout value : double) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440706.java!!!	putStringArray(in key : String, inout value : String) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440834.java!!!	putCharSequenceArray(in key : String, inout value : CharSequence) : void
+        unparcel();
+        mMap.put(key, value);
+!!!440962.java!!!	putBundle(in key : String, inout value : Bundle) : void
+        unparcel();
+        mMap.put(key, value);
+!!!441090.java!!!	putBinder(in key : String, inout value : IBinder) : void
+        unparcel();
+        mMap.put(key, value);
+!!!441218.java!!!	putIBinder(in key : String, inout value : IBinder) : void
+        unparcel();
+        mMap.put(key, value);
+!!!441346.java!!!	getBoolean(in key : String) : boolean
+        unparcel();
+        if (DEBUG) Log.d(TAG, "Getting boolean in "
+                + Integer.toHexString(System.identityHashCode(this)));
+        return getBoolean(key, false);
+!!!441474.java!!!	typeWarning(in key : String, inout value : Object, in className : String, inout defaultValue : Object, inout e : ClassCastException) : void
+        StringBuilder sb = new StringBuilder();
+        sb.append("Key ");
+        sb.append(key);
+        sb.append(" expected ");
+        sb.append(className);
+        sb.append(" but value was a ");
+        sb.append(value.getClass().getName());
+        sb.append(".  The default value ");
+        sb.append(defaultValue);
+        sb.append(" was returned.");
+        Log.w(TAG, sb.toString());
+        Log.w(TAG, "Attempt to cast generated internal exception:", e);
+!!!441602.java!!!	typeWarning(in key : String, inout value : Object, in className : String, inout e : ClassCastException) : void
+        typeWarning(key, value, className, "<null>", e);
+!!!441730.java!!!	getBoolean(in key : String, inout defaultValue : boolean) : boolean
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Boolean) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Boolean", defaultValue, e);
+            return defaultValue;
+        }
+!!!441858.java!!!	getByte(in key : String) : byte
+        unparcel();
+        return getByte(key, (byte) 0);
+!!!441986.java!!!	getByte(in key : String, in defaultValue : byte) : Byte
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Byte) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Byte", defaultValue, e);
+            return defaultValue;
+        }
+!!!442114.java!!!	getChar(in key : String) : char
+        unparcel();
+        return getChar(key, (char) 0);
+!!!442242.java!!!	getChar(in key : String, in defaultValue : char) : char
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Character) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Character", defaultValue, e);
+            return defaultValue;
+        }
+!!!442370.java!!!	getShort(in key : String) : short
+        unparcel();
+        return getShort(key, (short) 0);
+!!!442498.java!!!	getShort(in key : String, in defaultValue : short) : short
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Short) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Short", defaultValue, e);
+            return defaultValue;
+        }
+!!!442626.java!!!	getInt(in key : String) : int
+        unparcel();
+        return getInt(key, 0);
+!!!442754.java!!!	getInt(in key : String, in defaultValue : int) : int
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Integer) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Integer", defaultValue, e);
+            return defaultValue;
+        }
+!!!442882.java!!!	getLong(in key : String) : long
+        unparcel();
+        return getLong(key, 0L);
+!!!443010.java!!!	getLong(in key : String, in defaultValue : long) : long
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Long) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Long", defaultValue, e);
+            return defaultValue;
+        }
+!!!443138.java!!!	getFloat(in key : String) : float
+        unparcel();
+        return getFloat(key, 0.0f);
+!!!443266.java!!!	getFloat(in key : String, in defaultValue : float) : float
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Float) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Float", defaultValue, e);
+            return defaultValue;
+        }
+!!!443394.java!!!	getDouble(in key : String) : double
+        unparcel();
+        return getDouble(key, 0.0);
+!!!443522.java!!!	getDouble(in key : String, in defaultValue : double) : double
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return defaultValue;
+        }
+        try {
+            return (Double) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Double", defaultValue, e);
+            return defaultValue;
+        }
+!!!443650.java!!!	getString(in key : String) : String
+        unparcel();
+        final Object o = mMap.get(key);
+        try {
+            return (String) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "String", e);
+            return null;
+        }
+!!!443778.java!!!	getString(in key : String, in defaultValue : String) : String
+        final String s = getString(key);
+        return (s == null) ? defaultValue : s;
+!!!443906.java!!!	getCharSequence(in key : String) : CharSequence
+        unparcel();
+        final Object o = mMap.get(key);
+        try {
+            return (CharSequence) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "CharSequence", e);
+            return null;
+        }
+!!!444034.java!!!	getCharSequence(in key : String, inout defaultValue : CharSequence) : CharSequence
+        final CharSequence cs = getCharSequence(key);
+        return (cs == null) ? defaultValue : cs;
+!!!444162.java!!!	getBundle(in key : String) : Bundle
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (Bundle) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Bundle", e);
+            return null;
+        }
+!!!444290.java!!!	getParcelable(in key : String) : T
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (T) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Parcelable", e);
+            return null;
+        }
+!!!444418.java!!!	getParcelableArray(in key : String) : Parcelable
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (Parcelable[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Parcelable[]", e);
+            return null;
+        }
+!!!444546.java!!!	getParcelableArrayList(in key : String) : ArrayList<T>
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (ArrayList<T>) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "ArrayList", e);
+            return null;
+        }
+!!!444674.java!!!	getSparseParcelableArray(in key : String) : SparseArray<T>
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (SparseArray<T>) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "SparseArray", e);
+            return null;
+        }
+!!!444802.java!!!	getSerializable(in key : String) : Serializable
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (Serializable) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "Serializable", e);
+            return null;
+        }
+!!!444930.java!!!	getIntegerArrayList(in key : String) : ArrayList<Integer>
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (ArrayList<Integer>) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "ArrayList<Integer>", e);
+            return null;
+        }
+!!!445058.java!!!	getStringArrayList(in key : String) : ArrayList<String>
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (ArrayList<String>) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "ArrayList<String>", e);
+            return null;
+        }
+!!!445186.java!!!	getCharSequenceArrayList(in key : String) : ArrayList<CharSequence>
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (ArrayList<CharSequence>) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "ArrayList<CharSequence>", e);
+            return null;
+        }
+!!!445314.java!!!	getBooleanArray(in key : String) : boolean
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (boolean[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "byte[]", e);
+            return null;
+        }
+!!!445442.java!!!	getByteArray(in key : String) : byte
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (byte[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "byte[]", e);
+            return null;
+        }
+!!!445570.java!!!	getShortArray(in key : String) : short
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (short[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "short[]", e);
+            return null;
+        }
+!!!445698.java!!!	getCharArray(in key : String) : char
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (char[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "char[]", e);
+            return null;
+        }
+!!!445826.java!!!	getIntArray(in key : String) : int
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (int[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "int[]", e);
+            return null;
+        }
+!!!445954.java!!!	getLongArray(in key : String) : long
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (long[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "long[]", e);
+            return null;
+        }
+!!!446082.java!!!	getFloatArray(in key : String) : float
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (float[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "float[]", e);
+            return null;
+        }
+!!!446210.java!!!	getDoubleArray(in key : String) : double
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (double[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "double[]", e);
+            return null;
+        }
+!!!446338.java!!!	getStringArray(in key : String) : String
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (String[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "String[]", e);
+            return null;
+        }
+!!!446466.java!!!	getCharSequenceArray(in key : String) : CharSequence
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (CharSequence[]) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "CharSequence[]", e);
+            return null;
+        }
+!!!446594.java!!!	getBinder(in key : String) : IBinder
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (IBinder) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "IBinder", e);
+            return null;
+        }
+!!!446722.java!!!	getIBinder(in key : String) : IBinder
+        unparcel();
+        Object o = mMap.get(key);
+        if (o == null) {
+            return null;
+        }
+        try {
+            return (IBinder) o;
+        } catch (ClassCastException e) {
+            typeWarning(key, o, "IBinder", e);
+            return null;
+        }
+!!!446850.java!!!	describeContents() : int
+        int mask = 0;
+        if (hasFileDescriptors()) {
+            mask |= Parcelable.CONTENTS_FILE_DESCRIPTOR;
+        }
+        return mask;
+!!!446978.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+        final boolean oldAllowFds = parcel.pushAllowFds(mAllowFds);
+        try {
+            if (mParcelledData != null) {
+                if (mParcelledData == EMPTY_PARCEL) {
+                    parcel.writeInt(0);
+                } else {
+                    int length = mParcelledData.dataSize();
+                    parcel.writeInt(length);
+                    parcel.writeInt(BUNDLE_MAGIC);
+                    parcel.appendFrom(mParcelledData, 0, length);
+                }
+            } else {
+                // Special case for empty bundles.
+                if (mMap == null || mMap.size() <= 0) {
+                    parcel.writeInt(0);
+                    return;
+                }
+                int lengthPos = parcel.dataPosition();
+                parcel.writeInt(-1); // dummy, will hold length
+                parcel.writeInt(BUNDLE_MAGIC);
+    
+                int startPos = parcel.dataPosition();
+                parcel.writeArrayMapInternal(mMap);
+                int endPos = parcel.dataPosition();
+    
+                // Backpatch length
+                parcel.setDataPosition(lengthPos);
+                int length = endPos - startPos;
+                parcel.writeInt(length);
+                parcel.setDataPosition(endPos);
+            }
+        } finally {
+            parcel.restoreAllowFds(oldAllowFds);
+        }
+!!!447106.java!!!	readFromParcel(inout parcel : Parcel) : void
+        int length = parcel.readInt();
+        if (length < 0) {
+            throw new RuntimeException("Bad length in parcel: " + length);
+        }
+        readFromParcelInner(parcel, length);
+!!!447234.java!!!	readFromParcelInner(inout parcel : Parcel, in length : int) : void
+        if (length == 0) {
+            // Empty Bundle or end of data.
+            mParcelledData = EMPTY_PARCEL;
+            mHasFds = false;
+            mFdsKnown = true;
+            return;
+        }
+        int magic = parcel.readInt();
+        if (magic != BUNDLE_MAGIC) {
+            //noinspection ThrowableInstanceNeverThrown
+            throw new IllegalStateException("Bad magic number for Bundle: 0x"
+                    + Integer.toHexString(magic));
+        }
+
+        // Advance within this Parcel
+        int offset = parcel.dataPosition();
+        parcel.setDataPosition(offset + length);
+
+        Parcel p = Parcel.obtain();
+        p.setDataPosition(0);
+        p.appendFrom(parcel, offset, length);
+        if (DEBUG) Log.d(TAG, "Retrieving "  + Integer.toHexString(System.identityHashCode(this))
+                + ": " + length + " bundle bytes starting at " + offset);
+        p.setDataPosition(0);
+
+        mParcelledData = p;
+        mHasFds = p.hasFileDescriptors();
+        mFdsKnown = true;
+!!!447362.java!!!	toString() : String
+        if (mParcelledData != null) {
+            if (mParcelledData == EMPTY_PARCEL) {
+                return "Bundle[EMPTY_PARCEL]";
+            } else {
+                return "Bundle[mParcelledData.dataSize=" +
+                        mParcelledData.dataSize() + "]";
+            }
+        }
+        return "Bundle[" + mMap.toString() + "]";

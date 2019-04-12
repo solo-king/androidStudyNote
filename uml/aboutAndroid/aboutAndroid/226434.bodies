@@ -1,0 +1,61 @@
+class SupportFragment
+!!!592386.java!!!	getMetricsCategory() : int
+        return MetricsProto.MetricsEvent.SUPPORT_FRAGMENT;
+!!!592514.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        mActivity = getActivity();
+        mAccountManager = AccountManager.get(mActivity);
+        mSupportFeatureProvider =
+                FeatureFactory.getFactory(mActivity).getSupportFeatureProvider(mActivity);
+        mSupportItemAdapter = new SupportItemAdapter(mActivity, savedInstanceState,
+                mSupportFeatureProvider, this /* itemClickListener */);
+        mConnectivityManager =
+                (ConnectivityManager) mActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+!!!592642.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        mContent = inflater.inflate(R.layout.support_fragment, container, false);
+        mRecyclerView = (RecyclerView) mContent.findViewById(R.id.support_items);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(
+                getActivity(), LinearLayoutManager.VERTICAL, false /* reverseLayout */));
+        mRecyclerView.setAdapter(mSupportItemAdapter);
+        return mContent;
+!!!592770.java!!!	onResume() : void
+        super.onResume();
+        // Monitor account change.
+        mAccountManager.addOnAccountsUpdatedListener(
+                this /* listener */, null /* handler */, true /* updateImmediately */);
+        // Monitor connectivity
+        mConnectivityManager.registerNetworkCallback(
+                new NetworkRequest.Builder()
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .build(),
+                mNetworkCallback);
+        mSupportItemAdapter.setHasInternet(hasInternet());
+!!!592898.java!!!	onPause() : void
+        super.onPause();
+        // Stop monitor account change.
+        mAccountManager.removeOnAccountsUpdatedListener(this /* listener */);
+        // Stop monitor connectivity.
+        mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
+!!!593026.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        mSupportItemAdapter.onSaveInstanceState(outState);
+!!!593154.java!!!	onAccountsUpdated(inout accounts : Account) : void
+        // Account changed, update support items.
+        mSupportItemAdapter.setAccount(
+                mSupportFeatureProvider.getSupportEligibleAccount(mActivity));
+!!!593282.java!!!	onClick(inout v : View) : void
+        final SupportItemAdapter.ViewHolder vh =
+                (SupportItemAdapter.ViewHolder) mRecyclerView.getChildViewHolder(v);
+        mSupportItemAdapter.onItemClicked(vh.getAdapterPosition());
+!!!593410.java!!!	postConnectivityChanged() : void
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mSupportItemAdapter != null) {
+                    mSupportItemAdapter.setHasInternet(hasInternet());
+                }
+            }
+        });
+!!!593538.java!!!	hasInternet() : boolean
+        final NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();

@@ -1,0 +1,15 @@
+class UndoOperation
+!!!789506.java!!!	UndoOperation(inout owner : UndoOwner)
+        mOwner = owner;
+!!!789762.java!!!	getOwner() : UndoOwner
+        return mOwner;
+!!!789890.java!!!	getOwnerData() : DATA
+        return (DATA)mOwner.getData();
+!!!790018.java!!!	matchOwner(inout owner : UndoOwner) : boolean
+        return owner == getOwner();
+!!!790146.java!!!	hasData() : boolean
+        return true;
+!!!790274.java!!!	allowMerge() : boolean
+        return true;
+!!!790786.java!!!	describeContents() : int
+        return 0;

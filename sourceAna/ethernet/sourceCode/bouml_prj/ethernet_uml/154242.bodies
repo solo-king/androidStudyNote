@@ -1,0 +1,8 @@
+class LoggingConfiguration
+!!!337410.java!!!	LoggingConfiguration(in tag : String, in level : int)
+            this.tag = tag;
+            this.level = level;
+!!!337538.java!!!	isLoggable() : boolean
+            return Log.isLoggable(tag, level);
+!!!337666.java!!!	println(in message : String) : void
+            Log.println(level, tag, message);

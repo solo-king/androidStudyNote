@@ -1,0 +1,8 @@
+class BandListItem
+!!!167042.java!!!	BandListItem(in bm : int)
+            mBandMode = bm;
+!!!167170.java!!!	getBand() : int
+            return mBandMode;
+!!!167298.java!!!	toString() : String
+            if (mBandMode >= BAND_NAMES.length) return "Band mode " + mBandMode;
+            return BAND_NAMES[mBandMode];

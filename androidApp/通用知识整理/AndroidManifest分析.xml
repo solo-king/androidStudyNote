@@ -1,0 +1,43 @@
+    官方资料：
+        https://developer.android.google.cn/guide/topics/manifest/manifest-intro
+package="app.mabel.com.jnitest"
+    决定应用的命名空间，及所有源码都是在该目录下的，官方描述如下
+        The app's package name, which usually matches your code's namespace. 
+<application标签的关键属性
+    官方资料:
+        https://developer.android.google.cn/guide/topics/manifest/application-element
+        android:allowClearUserData [boolean]
+            允许清除用户数据，只有被编译进系统的应用可申明
+        android:label
+            应用标签
+        android:supportsRtl	
+            Declares whether your application is willing to support right-to-left (RTL) layouts.
+<activity标签的关键属性
+    官方资料:https://developer.android.google.cn/guide/topics/manifest/activity-element
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+            决定该Activity是否可以作为一个程序的入口
+        <category android:name="android.intent.category.LAUNCHER" />
+            决定是否在应用列表中生成标签
+        <category android:name="android.intent.category.DEFAULT" />
+            Note: In order to receive implicit intents, you must include the CATEGORY_DEFAULT category in the intent filter. 
+            The methods startActivity() and startActivityForResult() treat all intents as if they declared the CATEGORY_DEFAULT category. 
+            If you do not declare it in your intent filter, no implicit intents will resolve to your activity.
+    额外说明：
+        如果一个程序中多个Activity都设置了以上两种属性，那么在应用列表中将会出现多个标签
+<activity-alias标签
+    支持一些属性及intent-filter、meta-data等配置，因此可以触发一些跟目标Activity不同的功能逻辑，虽然打开的是同一个Activity。
+    举个简单的例子，如之前需要先打开主界面，然后才能点击进入某个Activity，如果使用activity-alias为该Activity配置一个快捷入口，甚至可以为其在桌面生成一个图标，
+    然后点击桌面图标可直接进入该Activity，该功能可满足某些需要快速到达功能界面的需求
+<service标签
+    android:exported="true"
+            Whether or not components of other applications can invoke the service or interact with it — "true" if they can, 
+        When the value is "false", only components of the same application or applications with the same user ID can start the service or bind to it. 
+关于activity_main.xml的总结
+        4.4.1	MainActivity.java中的setContentView(R.layout.activity_main);是如何找到activity_main.xml的
+                    4.4.1.1 在编译是在根目录会自动生成R.java，内部实则是各色静态类，每个资源都对应一个ID，故MainActivity.java中应用R.layout.activity_man可以找到activity_main.xml
+                    4.4.1.1 android:label="@string/app_name"中的@及代表R.java类
+        4.4.2 <LinearLayout标签的关键属性
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"

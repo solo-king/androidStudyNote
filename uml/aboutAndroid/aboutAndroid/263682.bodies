@@ -1,0 +1,20 @@
+class Listener
+!!!812674.java!!!	Listener(inout inner : DialogInterface.OnClickListener)
+            mInner = inner;
+!!!812802.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+            mInner.onClick(dialog, which);
+            ListView listView = ((AlertDialog) dialog).getListView();
+            int selectedPosition = listView.getCheckedItemPosition();
+            if (mView != null) {
+                mView.setVisibility(
+                        checkboxVisibilityForSelectedIndex(selectedPosition, mShowRemoteInput));
+            }
+!!!812930.java!!!	onCheckedChanged(inout buttonView : CompoundButton, inout isChecked : boolean) : void
+            mAllowRemoteInput = !isChecked;
+!!!813058.java!!!	setView(inout view : View) : void
+            mView = view;
+!!!813186.java!!!	onClick(inout v : View) : void
+            if (v.getId() == com.android.internal.R.id.customPanel) {
+                RestrictedLockUtils.sendShowAdminSupportDetailsIntent(getContext(),
+                        mAdminRestrictingRemoteInput);
+            }

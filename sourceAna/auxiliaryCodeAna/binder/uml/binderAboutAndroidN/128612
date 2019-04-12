@@ -1,0 +1,38 @@
+format 221
+"usr" // sourceCode::usr
+  revision 1
+  modified_by 100 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  java_dir "/media/chenqigan/GANYE_SSD/androidStudyNote/sourceAna/auxiliaryCodeAna/binder/sourceCode/usr/"
+  java_package "com.android.server.usr"
+  package_ref 128740 // services
+
+  package_ref 128996 // Utils
+end

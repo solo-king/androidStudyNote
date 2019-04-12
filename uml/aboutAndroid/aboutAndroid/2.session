@@ -1,0 +1,12 @@
+window_sizes 1920 1018 398 1516 834 110
+diagrams
+  active  sequencediagram_ref 128130 // Settings_start_ui_sequence
+    1516 835 100 10 108 366
+end
+show_stereotypes
+selected sequencediagram_ref 128130 // Settings_start_ui_sequence
+open
+  usecaseview_ref 128002 // Settings_app_ana
+  classview_ref 145922 // extends_relation
+end
+end

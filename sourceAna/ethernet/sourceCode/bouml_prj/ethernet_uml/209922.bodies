@@ -1,0 +1,64 @@
+class LabeledIntent
+!!!803330.java!!!	LabeledIntent(inout origIntent : Intent, in sourcePackage : String, in labelRes : int, in icon : int)
+        super(origIntent);
+        mSourcePackage = sourcePackage;
+        mLabelRes = labelRes;
+        mNonLocalizedLabel = null;
+        mIcon = icon;
+!!!803458.java!!!	LabeledIntent(inout origIntent : Intent, in sourcePackage : String, inout nonLocalizedLabel : CharSequence, in icon : int)
+        super(origIntent);
+        mSourcePackage = sourcePackage;
+        mLabelRes = 0;
+        mNonLocalizedLabel = nonLocalizedLabel;
+        mIcon = icon;
+!!!803586.java!!!	LabeledIntent(in sourcePackage : String, in labelRes : int, in icon : int)
+        mSourcePackage = sourcePackage;
+        mLabelRes = labelRes;
+        mNonLocalizedLabel = null;
+        mIcon = icon;
+!!!803714.java!!!	LabeledIntent(in sourcePackage : String, inout nonLocalizedLabel : CharSequence, in icon : int)
+        mSourcePackage = sourcePackage;
+        mLabelRes = 0;
+        mNonLocalizedLabel = nonLocalizedLabel;
+        mIcon = icon;
+!!!803842.java!!!	getSourcePackage() : String
+        return mSourcePackage;
+!!!803970.java!!!	getLabelResource() : int
+        return mLabelRes;
+!!!804098.java!!!	getNonLocalizedLabel() : CharSequence
+        return mNonLocalizedLabel;
+!!!804226.java!!!	getIconResource() : int
+        return mIcon;
+!!!804354.java!!!	loadLabel(inout pm : PackageManager) : CharSequence
+        if (mNonLocalizedLabel != null) {
+            return mNonLocalizedLabel;
+        }
+        if (mLabelRes != 0 && mSourcePackage != null) {
+            CharSequence label = pm.getText(mSourcePackage, mLabelRes, null);
+            if (label != null) {
+                return label;
+            }
+        }
+        return null;
+!!!804482.java!!!	loadIcon(inout pm : PackageManager) : Drawable
+        if (mIcon != 0 && mSourcePackage != null) {
+            Drawable icon = pm.getDrawable(mSourcePackage, mIcon, null);
+            if (icon != null) {
+                return icon;
+            }
+        }
+        return null;
+!!!804610.java!!!	writeToParcel(inout dest : Parcel, in parcelableFlags : int) : void
+        super.writeToParcel(dest, parcelableFlags);
+        dest.writeString(mSourcePackage);
+        dest.writeInt(mLabelRes);
+        TextUtils.writeToParcel(mNonLocalizedLabel, dest, parcelableFlags);
+        dest.writeInt(mIcon);
+!!!804738.java!!!	LabeledIntent(inout in : Parcel)
+        readFromParcel(in);
+!!!804866.java!!!	readFromParcel(inout in : Parcel) : void
+        super.readFromParcel(in);
+        mSourcePackage = in.readString();
+        mLabelRes = in.readInt();
+        mNonLocalizedLabel = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
+        mIcon = in.readInt();

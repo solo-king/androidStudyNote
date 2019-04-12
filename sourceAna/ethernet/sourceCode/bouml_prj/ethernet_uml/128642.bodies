@@ -1,0 +1,14 @@
+class EthernetLayer
+!!!130434.java!!!	EthernetLayer(inout configdialog : EthernetConfigDialog, inout ethManager : EthernetManager)
+        mDialog = configdialog;
+        mEthManager = ethManager;
+        mIntentFilter = new IntentFilter(EthernetManager.ETH_STATE_CHANGED_ACTION);
+        mHandler = new Handler();
+!!!130562.java!!!	resume() : void
+        mDialog.getContext().registerReceiver(mReceiver, mIntentFilter);
+!!!130690.java!!!	pause() : void
+        mDialog.getContext().unregisterReceiver(mReceiver);
+!!!130818.java!!!	handleDevListChanges() : void
+        mDevList = mEthManager.getDeviceNameList();
+        mDialog.updateDevNameList(mDevList);
+        mDevList = null;

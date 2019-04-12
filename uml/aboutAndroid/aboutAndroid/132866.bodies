@@ -1,0 +1,69 @@
+class ApnPreference
+!!!150018.java!!!	ApnPreference(inout context : Context, inout attrs : AttributeSet, in defStyle : int)
+        super(context, attrs, defStyle);
+!!!150146.java!!!	ApnPreference(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, R.attr.apnPreferenceStyle);
+!!!150274.java!!!	ApnPreference(inout context : Context)
+        this(context, null);
+!!!150402.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        View widget = view.findViewById(R.id.apn_radiobutton);
+        if ((widget != null) && widget instanceof RadioButton) {
+            RadioButton rb = (RadioButton) widget;
+            if (mSelectable) {
+                rb.setOnCheckedChangeListener(this);
+
+                boolean isChecked = getKey().equals(mSelectedKey);
+                if (isChecked) {
+                    mCurrentChecked = rb;
+                    mSelectedKey = getKey();
+                }
+
+                mProtectFromCheckedChange = true;
+                rb.setChecked(isChecked);
+                mProtectFromCheckedChange = false;
+                rb.setVisibility(View.VISIBLE);
+            } else {
+                rb.setVisibility(View.GONE);
+            }
+        }
+
+        View textLayout = view.findViewById(R.id.text_layout);
+        if ((textLayout != null) && textLayout instanceof RelativeLayout) {
+            textLayout.setOnClickListener(this);
+        }
+!!!150530.java!!!	isChecked() : boolean
+        return getKey().equals(mSelectedKey);
+!!!150658.java!!!	setChecked() : void
+        mSelectedKey = getKey();
+!!!150786.java!!!	onCheckedChanged(inout buttonView : CompoundButton, inout isChecked : boolean) : void
+        Log.i(TAG, "ID: " + getKey() + " :" + isChecked);
+        if (mProtectFromCheckedChange) {
+            return;
+        }
+
+        if (isChecked) {
+            if (mCurrentChecked != null) {
+                mCurrentChecked.setChecked(false);
+            }
+            mCurrentChecked = buttonView;
+            mSelectedKey = getKey();
+            callChangeListener(mSelectedKey);
+        } else {
+            mCurrentChecked = null;
+            mSelectedKey = null;
+        }
+!!!150914.java!!!	onClick(inout v : android.view.View) : void
+        if ((v != null) && (R.id.text_layout == v.getId())) {
+            Context context = getContext();
+            if (context != null) {
+                int pos = Integer.parseInt(getKey());
+                Uri url = ContentUris.withAppendedId(Telephony.Carriers.CONTENT_URI, pos);
+                context.startActivity(new Intent(Intent.ACTION_EDIT, url));
+            }
+        }
+!!!151042.java!!!	setSelectable(inout selectable : boolean) : void
+        mSelectable = selectable;
+!!!151170.java!!!	getSelectable() : boolean
+        return mSelectable;

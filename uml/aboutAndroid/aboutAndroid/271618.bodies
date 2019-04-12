@@ -1,0 +1,151 @@
+class PrintersAdapter
+!!!859778.java!!!	enable() : void
+            getLoaderManager().initLoader(LOADER_ID_PRINTERS_LOADER, null, this);
+!!!859906.java!!!	disable() : void
+            getLoaderManager().destroyLoader(LOADER_ID_PRINTERS_LOADER);
+            mPrinters.clear();
+!!!860034.java!!!	getUnfilteredCount() : int
+            return mPrinters.size();
+!!!860162.java!!!	getFilter() : Filter
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    synchronized (mLock) {
+                        if (TextUtils.isEmpty(constraint)) {
+                            return null;
+                        }
+                        FilterResults results = new FilterResults();
+                        List<PrinterInfo> filteredPrinters = new ArrayList<PrinterInfo>();
+                        String constraintLowerCase = constraint.toString().toLowerCase();
+                        final int printerCount = mPrinters.size();
+                        for (int i = 0; i < printerCount; i++) {
+                            PrinterInfo printer = mPrinters.get(i);
+                            String name = printer.getName();
+                            if (name != null && name.toLowerCase().contains(constraintLowerCase)) {
+                                filteredPrinters.add(printer);
+                            }
+                        }
+                        results.values = filteredPrinters;
+                        results.count = filteredPrinters.size();
+                        return results;
+                    }
+                }
+
+                @Override
+                @SuppressWarnings("unchecked")
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    synchronized (mLock) {
+                        mLastSearchString = constraint;
+                        mFilteredPrinters.clear();
+                        if (results == null) {
+                            mFilteredPrinters.addAll(mPrinters);
+                        } else {
+                            List<PrinterInfo> printers = (List<PrinterInfo>) results.values;
+                            mFilteredPrinters.addAll(printers);
+                        }
+                    }
+                    notifyDataSetChanged();
+                }
+            };
+!!!860290.java!!!	getCount() : int
+            synchronized (mLock) {
+                return mFilteredPrinters.size();
+            }
+!!!860418.java!!!	getItem(in position : int) : Object
+            synchronized (mLock) {
+                return mFilteredPrinters.get(position);
+            }
+!!!860546.java!!!	getItemId(in position : int) : long
+            return position;
+!!!860674.java!!!	isActionable(in position : int) : boolean
+            PrinterInfo printer = (PrinterInfo) getItem(position);
+            return printer.getStatus() != PrinterInfo.STATUS_UNAVAILABLE;
+!!!860802.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(
+                        R.layout.printer_dropdown_item, parent, false);
+            }
+
+            convertView.setEnabled(isActionable(position));
+
+            final PrinterInfo printer = (PrinterInfo) getItem(position);
+            CharSequence title = printer.getName();
+            CharSequence subtitle = printer.getDescription();
+            Drawable icon = printer.loadIcon(getActivity());
+
+            TextView titleView = (TextView) convertView.findViewById(R.id.title);
+            titleView.setText(title);
+
+            TextView subtitleView = (TextView) convertView.findViewById(R.id.subtitle);
+            if (!TextUtils.isEmpty(subtitle)) {
+                subtitleView.setText(subtitle);
+                subtitleView.setVisibility(View.VISIBLE);
+            } else {
+                subtitleView.setText(null);
+                subtitleView.setVisibility(View.GONE);
+            }
+
+            LinearLayout moreInfoView = (LinearLayout) convertView.findViewById(R.id.more_info);
+            if (printer.getInfoIntent() != null) {
+                moreInfoView.setVisibility(View.VISIBLE);
+                moreInfoView.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            getActivity().startIntentSender(
+                                    printer.getInfoIntent().getIntentSender(), null, 0, 0, 0);
+                        } catch (SendIntentException e) {
+                            Log.e(LOG_TAG, "Could not execute pending info intent: %s", e);
+                        }
+                    }
+                });
+            } else {
+                moreInfoView.setVisibility(View.GONE);
+            }
+
+            ImageView iconView = (ImageView) convertView.findViewById(R.id.icon);
+            if (icon != null) {
+                iconView.setVisibility(View.VISIBLE);
+                if (!isActionable(position)) {
+                    icon.mutate();
+
+                    TypedValue value = new TypedValue();
+                    getActivity().getTheme().resolveAttribute(android.R.attr.disabledAlpha, value,
+                            true);
+                    icon.setAlpha((int)(value.getFloat() * 255));
+                }
+                iconView.setImageDrawable(icon);
+            } else {
+                iconView.setVisibility(View.GONE);
+            }
+
+            return convertView;
+!!!860930.java!!!	onCreateLoader(in id : int, inout args : Bundle) : Loader<List<PrinterInfo>>
+            if (id == LOADER_ID_PRINTERS_LOADER) {
+                return new PrintersLoader(getContext());
+            }
+            return null;
+!!!861058.java!!!	onLoadFinished(inout loader : Loader<List<PrinterInfo>>, inout printers : List<PrinterInfo>) : void
+            synchronized (mLock) {
+                mPrinters.clear();
+                final int printerCount = printers.size();
+                for (int i = 0; i < printerCount; i++) {
+                    PrinterInfo printer = printers.get(i);
+                    if (printer.getId().getServiceName().equals(mComponentName)) {
+                        mPrinters.add(printer);
+                    }
+                }
+                mFilteredPrinters.clear();
+                mFilteredPrinters.addAll(mPrinters);
+                if (!TextUtils.isEmpty(mLastSearchString)) {
+                    getFilter().filter(mLastSearchString);
+                }
+            }
+            notifyDataSetChanged();
+!!!861186.java!!!	onLoaderReset(inout loader : Loader<List<PrinterInfo>>) : void
+            synchronized (mLock) {
+                mPrinters.clear();
+                mFilteredPrinters.clear();
+                mLastSearchString = null;
+            }
+            notifyDataSetInvalidated();

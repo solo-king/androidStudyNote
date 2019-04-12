@@ -1,0 +1,12 @@
+class CustomAdapter
+!!!923650.java!!!	CustomAdapter(inout context : Context, inout objects : CharSequence)
+            super(context, com.android.internal.R.layout.select_dialog_singlechoice_material,
+                    android.R.id.text1, objects);
+!!!923778.java!!!	areAllItemsEnabled() : boolean
+            return false;
+!!!923906.java!!!	isEnabled(in position : int) : boolean
+            return mAvailableIndexes.contains(position);
+!!!924034.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            View view = super.getView(position, convertView, parent);
+            view.setEnabled(isEnabled(position));
+            return view;

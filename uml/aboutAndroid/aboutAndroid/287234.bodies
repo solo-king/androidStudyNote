@@ -1,0 +1,22 @@
+class InvertedChartAxis
+!!!970626.java!!!	InvertedChartAxis(inout wrapped : ChartAxis)
+        mWrapped = wrapped;
+!!!970754.java!!!	setBounds(in min : long, in max : long) : boolean
+        return mWrapped.setBounds(min, max);
+!!!970882.java!!!	setSize(in size : float) : boolean
+        mSize = size;
+        return mWrapped.setSize(size);
+!!!971010.java!!!	convertToPoint(in value : long) : float
+        return mSize - mWrapped.convertToPoint(value);
+!!!971138.java!!!	convertToValue(in point : float) : long
+        return mWrapped.convertToValue(mSize - point);
+!!!971266.java!!!	buildLabel(inout res : Resources, inout builder : SpannableStringBuilder, in value : long) : long
+        return mWrapped.buildLabel(res, builder, value);
+!!!971394.java!!!	getTickPoints() : float
+        final float[] points = mWrapped.getTickPoints();
+        for (int i = 0; i < points.length; i++) {
+            points[i] = mSize - points[i];
+        }
+        return points;
+!!!971522.java!!!	shouldAdjustAxis(in value : long) : int
+        return mWrapped.shouldAdjustAxis(value);

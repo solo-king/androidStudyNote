@@ -1,0 +1,5 @@
+class ThreadPolicy
+!!!561154.java!!!	ThreadPolicy(in mask : int)
+            this.mask = mask;
+!!!561282.java!!!	toString() : String
+            return "[StrictMode.ThreadPolicy; mask=" + mask + "]";

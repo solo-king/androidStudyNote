@@ -1,0 +1,21 @@
+class LinkTextView
+!!!974082.java!!!	LinkTextView(inout context : Context)
+        this(context, null);
+!!!974210.java!!!	LinkTextView(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        mAccessibilityHelper = new LinkAccessibilityHelper(this);
+        ViewCompat.setAccessibilityDelegate(this, mAccessibilityHelper);
+!!!974338.java!!!	setText(inout text : CharSequence, inout type : BufferType) : void
+        super.setText(text, type);
+        if (text instanceof Spanned) {
+            final ClickableSpan[] spans =
+                    ((Spanned) text).getSpans(0, text.length(), ClickableSpan.class);
+            if (spans.length > 0) {
+                setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        }
+!!!974466.java!!!	dispatchHoverEvent(inout event : MotionEvent) : boolean
+        if (mAccessibilityHelper.dispatchHoverEvent(event)) {
+            return true;
+        }
+        return super.dispatchHoverEvent(event);

@@ -1,0 +1,52 @@
+class MigrateEstimateTask
+!!!646914.java!!!	MigrateEstimateTask(inout context : Context)
+        mContext = context;
+        mStorage = context.getSystemService(StorageManager.class);
+!!!647042.java!!!	copyFrom(inout intent : Intent) : void
+        mSizeBytes = intent.getLongExtra(EXTRA_SIZE_BYTES, -1);
+!!!647170.java!!!	copyTo(inout intent : Intent) : void
+        intent.putExtra(EXTRA_SIZE_BYTES, mSizeBytes);
+!!!647298.java!!!	doInBackground(inout  : Void...params) : Long
+        if (mSizeBytes != -1) {
+            return mSizeBytes;
+        }
+
+        final VolumeInfo privateVol = mContext.getPackageManager().getPrimaryStorageCurrentVolume();
+        final VolumeInfo emulatedVol = mStorage.findEmulatedForPrivate(privateVol);
+
+        if (emulatedVol == null) {
+            Log.w(TAG, "Failed to find current primary storage");
+            return -1L;
+        }
+
+        final String path = emulatedVol.getPath().getAbsolutePath();
+        Log.d(TAG, "Estimating for current path " + path);
+
+        final Intent intent = new Intent().setComponent(DEFAULT_CONTAINER_COMPONENT);
+        mContext.bindServiceAsUser(intent, this, Context.BIND_AUTO_CREATE, UserHandle.SYSTEM);
+
+        try {
+            if (mConnected.await(15, TimeUnit.SECONDS)) {
+                return mService.calculateDirectorySize(path);
+            }
+        } catch (InterruptedException | RemoteException e) {
+            Log.w(TAG, "Failed to measure " + path);
+        } finally {
+            mContext.unbindService(this);
+        }
+
+        return -1L;
+!!!647426.java!!!	onPostExecute(inout result : Long) : void
+        mSizeBytes = result;
+        long timeMillis = (mSizeBytes * DateUtils.SECOND_IN_MILLIS) / SPEED_ESTIMATE_BPS;
+        timeMillis = Math.max(timeMillis, DateUtils.SECOND_IN_MILLIS);
+
+        final String size = Formatter.formatFileSize(mContext, mSizeBytes);
+        final String time = DateUtils.formatDuration(timeMillis).toString();
+        onPostExecute(size, time);
+!!!647682.java!!!	onServiceConnected(inout name : ComponentName, inout service : IBinder) : void
+        mService = IMediaContainerService.Stub.asInterface(service);
+        mConnected.countDown();
+!!!647810.java!!!	onServiceDisconnected(inout name : ComponentName) : void
+        // Ignored; we leave service in place for the background thread to
+        // run into DeadObjectException

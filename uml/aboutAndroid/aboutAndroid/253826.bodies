@@ -1,0 +1,9 @@
+class SummaryProvider
+!!!755586.java!!!	SummaryProvider(inout context : Context, inout summaryLoader : SummaryLoader)
+            mContext = context;
+            mSummaryLoader = summaryLoader;
+!!!755714.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                String localeNames = getLocaleNames(mContext);
+                mSummaryLoader.setSummary(this, localeNames);
+            }

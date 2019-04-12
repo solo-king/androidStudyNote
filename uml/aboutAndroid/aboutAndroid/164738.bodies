@@ -1,0 +1,38 @@
+class UnificationConfirmationDialog
+!!!323074.java!!!	newIntance(inout compliant : boolean) : SecuritySettings::UnificationConfirmationDialog
+            UnificationConfirmationDialog dialog = new UnificationConfirmationDialog();
+            Bundle args = new Bundle();
+            args.putBoolean(EXTRA_COMPLIANT, compliant);
+            dialog.setArguments(args);
+            return dialog;
+!!!323202.java!!!	show(inout manager : FragmentManager, in tag : String) : void
+            if (manager.findFragmentByTag(tag) == null) {
+                // Prevent opening multiple dialogs if tapped on button quickly
+                super.show(manager, tag);
+            }
+!!!323330.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final SecuritySettings parentFragment = ((SecuritySettings) getParentFragment());
+            final boolean compliant = getArguments().getBoolean(EXTRA_COMPLIANT);
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.lock_settings_profile_unification_dialog_title)
+                    .setMessage(compliant ? R.string.lock_settings_profile_unification_dialog_body
+                            : R.string.lock_settings_profile_unification_dialog_uncompliant_body)
+                    .setPositiveButton(
+                            compliant ? R.string.lock_settings_profile_unification_dialog_confirm
+                            : R.string.lock_settings_profile_unification_dialog_uncompliant_confirm,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    if (compliant) {
+                                        parentFragment.launchConfirmDeviceLockForUnification();
+                                    }    else {
+                                        parentFragment.unifyUncompliantLocks();
+                                    }
+                                }
+                            }
+                    )
+                    .setNegativeButton(R.string.cancel, null)
+                    .create();
+!!!323458.java!!!	onDismiss(inout dialog : DialogInterface) : void
+            super.onDismiss(dialog);
+            ((SecuritySettings) getParentFragment()).updateUnificationPreference();

@@ -1,0 +1,2146 @@
+format 76
+"sourceCode" // sourceCode
+  revision 3
+  modified_by 2 "loveS"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default class_drawing_mode default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  java_dir "G:/androidStudyNote/sourceAna/ethernet/sourceCode/"
+  java_package "com.android.server"
+  classview 128770 "sourceCode"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default class_drawing_mode default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    class 130562 "EthernetService"
+      visibility public 
+      nformals 6
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name "syncronized" type "" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 130434 // <generalisation>
+	relation 130434 ---|>
+	  a public
+	    cpp default "${type}"
+	    java "${type}"
+	    classrelation_ref 130434 // <generalisation>
+	  b parent class_ref 130690 // Stub
+      end
+
+      attribute 141314 "mContext"
+	private explicit_type "Context"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 141442 "mTracker"
+	private explicit_type "EthernetStateTracker"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 141570 "DevName"
+	private explicit_type "String"
+	multiplicity "[]"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type}${multiplicity} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 141698 "TAG"
+	class_attribute const_attribute private explicit_type "String"
+	init_value " \"EthernetService\""
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 141826 "DEBUG"
+	const_attribute private explicit_type "boolean"
+	init_value " true"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 141954 "isEthEnabled"
+	private explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 142082 "mEthState"
+	private explicit_type "int"
+	init_value " EthernetManager.ETH_STATE_UNKNOWN"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 142210 "mEthDevMode"
+	private explicit_type "String"
+	init_value " EthernetDevInfo.ETH_DEV_MODE_WAN"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment " add by chenqigan "
+      end
+
+      attribute 142338 "mDelayedHandler"
+	private explicit_type "Handler"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 142466 "isEthernetServiceInited"
+	private explicit_type "boolean"
+	init_value " false"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 147074 "EthernetService"
+	public explicit_return_type ""
+	nparams 2
+	  param inout name "context" explicit_type "Context"
+	  param inout name "Tracker" explicit_type "EthernetStateTracker"
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 147202 "isEthConfigured"
+	public explicit_return_type "boolean"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 147330 "getSavedEthConfig"
+	public explicit_return_type "EthernetDevInfo"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "  从数据库中获取 "
+      end
+
+      operation 147458 "setEthMode"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "mode" explicit_type "String"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " dhcp manual "
+      end
+
+      operation 147586 "setEthDevMode"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "devMode" explicit_type "String"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " wan/lan "
+      end
+
+      operation 147714 "UpdateEthDevInfo"
+	public explicit_return_type "void"
+	nparams 1
+	  param inout name "info" explicit_type "EthernetDevInfo"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 147842 "registerForBroadcasts"
+	private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " 注册广播  "
+      end
+
+      operation 147970 "getTotalInterface"
+	public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148098 "getmEthDevMode"
+	public explicit_return_type "String"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148226 "setmEthDevMode"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "mEthDevMode" explicit_type "String"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148354 "scanEthDevice"
+	private explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "  eth列表只选择eth开头的设备 
+
+private int scanEthDevice() {
+int i = 1, j;
+DevName = new String[i];
+DevName[i]  = \"eth0\";
+for (j = 0; j < i; j++) {
+Slog.i(TAG,\" device \" + j + \" name \" + DevName[j]);
+}
+return i;
+}"
+      end
+
+      operation 148482 "getDeviceNameList"
+	public explicit_return_type "String"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type}[] ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148610 "getPersistedState"
+	private explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148738 "getPersistedDevMode"
+	private explicit_return_type "String"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " 获取数据库中的网卡模式:wan/lan "
+      end
+
+      operation 148866 "persistEthEnabled"
+	private explicit_return_type "void"
+	nparams 1
+	  param inout name "enabled" explicit_type "boolean"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 148994 "persistEthDevMode"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "ethDevMode" explicit_type "String"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "add by chenqigan
+EthernetDevInfo.ETH_DEV_MODE_WAN
+EthernetDevInfo.ETH_DEV_MODE_LAN"
+      end
+
+      attribute 142594 "mResetInterface"
+	const_attribute private explicit_type "Runnable"
+	init_value " new Runnable() {
+        public void run() {
+            if(mEthDevMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+                Slog.d(TAG, \"BroadcastReceiver:mEthDevMode = \"+mEthDevMode);
+            }else{
+                try {
+                    mTracker.resetInterface();
+                    Slog.i(TAG, \"$$ mResetInterface call resetInterface()\");
+                } catch (UnknownHostException e) {
+                    Slog.e(TAG, \"Wrong ethernet configuration\");
+                }
+            }
+        }
+    }"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 142722 "mReceiver"
+	const_attribute private explicit_type "BroadcastReceiver"
+	init_value " new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(mEthDevMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){
+                Slog.d(TAG, \"BroadcastReceiver:mEthDevMode = \"+mEthDevMode);
+            }else{
+                String action = intent.getAction();
+                if (action.equals(Intent.ACTION_SCREEN_ON)) {
+                    Slog.d(TAG, \"ACTION_SCREEN_ON\");
+                    if(getPersistedState() == 2){
+                        mDelayedHandler.postDelayed(mResetInterface, 5*1000); // wait 5s for device ready
+                    }
+                } else if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                    Slog.d(TAG, \"ACTION_SCREEN_OFF\");
+                    mDelayedHandler.removeCallbacks(mResetInterface);
+                    mTracker.stopInterface(false);
+                }
+            }
+
+        }
+    }"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 149122 "setmEthStateOnlyWan"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "state" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149250 "setEthState"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "state" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149378 "getEthState"
+	public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149506 "isEthDeviceUp"
+	public explicit_return_type "boolean"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149634 "isEthDeviceAdded"
+	public explicit_return_type "boolean"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149762 "getDhcpInfo"
+	public explicit_return_type "DhcpInfo"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 149890 "ctrlLanFunc"
+	public explicit_return_type "int"
+	nparams 1
+	  param inout name "isChecked" explicit_type "boolean"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "add by chenqigan "
+      end
+    end
+
+    class 166786 "Handler"
+      visibility public 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "A Handler allows you to send and process {@link Message} and Runnable
+objects associated with a thread's {@link MessageQueue}.  Each Handler
+instance is associated with a single thread and that thread's message
+queue.  When you create a new Handler, it is bound to the thread /
+message queue of the thread that is creating it -- from that point on,
+it will deliver messages and runnables to that message queue and execute
+them as they come out of the message queue.
+
+<p>There are two main uses for a Handler: (1) to schedule messages and
+runnables to be executed as some point in the future; and (2) to enqueue
+an action to be performed on a different thread than your own.
+
+<p>Scheduling messages is accomplished with the
+{@link #post}, {@link #postAtTime(Runnable, long)},
+{@link #postDelayed}, {@link #sendEmptyMessage},
+{@link #sendMessage}, {@link #sendMessageAtTime}, and
+{@link #sendMessageDelayed} methods.  The <em>post</em> versions allow
+you to enqueue Runnable objects to be called by the message queue when
+they are received; the <em>sendMessage</em> versions allow you to enqueue
+a {@link Message} object containing a bundle of data that will be
+processed by the Handler's {@link #handleMessage} method (requiring that
+you implement a subclass of Handler).
+
+<p>When posting or sending to a Handler, you can either
+allow the item to be processed as soon as the message queue is ready
+to do so, or specify a delay before it gets processed or absolute time for
+it to be processed.  The latter two allow you to implement timeouts,
+ticks, and other timing-based behavior.
+
+<p>When a
+process is created for your application, its main thread is dedicated to
+running a message queue that takes care of managing the top-level
+application objects (activities, broadcast receivers, etc) and any windows
+they create.  You can create your own threads, and communicate back with
+the main application thread through a Handler.  This is done by calling
+the same <em>post</em> or <em>sendMessage</em> methods as before, but from
+your new thread.  The given Runnable or Message will then be scheduled
+in the Handler's message queue and processed when appropriate."
+      attribute 284162 "FIND_POTENTIAL_LEAKS"
+	class_attribute const_attribute private explicit_type "boolean"
+	init_value " false"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "Set this flag to true to detect anonymous, local or member classes
+that extend this Handler class and that are not static. These kind
+of classes can potentially create leaks.
+"
+      end
+
+      attribute 284290 "TAG"
+	class_attribute const_attribute private explicit_type "String"
+	init_value " \"Handler\""
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      class 166914 "Callback"
+	visibility public stereotype "interface"
+	cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl "${comment}${@}${visibility}interface ${name}${extends} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	operation 392706 "handleMessage"
+	  public explicit_return_type "boolean"
+	  nparams 1
+	    param inout name "msg" explicit_type "Message"
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	end
+      end
+
+      operation 392834 "handleMessage"
+	public explicit_return_type "void"
+	nparams 1
+	  param inout name "msg" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Subclasses must implement this to receive messages."
+      end
+
+      operation 392962 "dispatchMessage"
+	public explicit_return_type "void"
+	nparams 1
+	  param inout name "msg" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Handle system messages here."
+      end
+
+      operation 393090 "Handler"
+	public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Default constructor associates this handler with the {@link Looper} for the
+current thread.
+
+If this thread does not have a looper, this handler won't be able to receive messages
+so an exception is thrown."
+      end
+
+      operation 393218 "Handler"
+	public explicit_return_type ""
+	nparams 1
+	  param inout name "callback" type class_ref 166914 // Callback
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Constructor associates this handler with the {@link Looper} for the
+current thread and takes a callback interface in which you can handle
+messages.
+
+If this thread does not have a looper, this handler won't be able to receive messages
+so an exception is thrown.
+
+@param callback The callback interface in which to handle messages, or null."
+      end
+
+      operation 393346 "Handler"
+	public explicit_return_type ""
+	nparams 1
+	  param inout name "looper" explicit_type "Looper"
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use the provided {@link Looper} instead of the default one.
+
+@param looper The looper, must not be null."
+      end
+
+      operation 393474 "Handler"
+	public explicit_return_type ""
+	nparams 2
+	  param inout name "looper" explicit_type "Looper"
+	  param inout name "callback" type class_ref 166914 // Callback
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use the provided {@link Looper} instead of the default one and take a callback
+interface in which to handle messages.
+
+@param looper The looper, must not be null.
+@param callback The callback interface in which to handle messages, or null."
+      end
+
+      operation 393602 "Handler"
+	public explicit_return_type ""
+	nparams 1
+	  param inout name "async" explicit_type "boolean"
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use the {@link Looper} for the current thread
+and set whether the handler should be asynchronous.
+
+Handlers are synchronous by default unless this constructor is used to make
+one that is strictly asynchronous.
+
+Asynchronous messages represent interrupts or events that do not require global ordering
+with represent to synchronous messages.  Asynchronous messages are not subject to
+the synchronization barriers introduced by {@link MessageQueue#enqueueSyncBarrier(long)}.
+
+@param async If true, the handler calls {@link Message#setAsynchronous(boolean)} for
+each {@link Message} that is sent to it or {@link Runnable} that is posted to it.
+
+@hide"
+      end
+
+      operation 393730 "Handler"
+	public explicit_return_type ""
+	nparams 2
+	  param inout name "callback" type class_ref 166914 // Callback
+	  param inout name "async" explicit_type "boolean"
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use the {@link Looper} for the current thread with the specified callback interface
+and set whether the handler should be asynchronous.
+
+Handlers are synchronous by default unless this constructor is used to make
+one that is strictly asynchronous.
+
+Asynchronous messages represent interrupts or events that do not require global ordering
+with represent to synchronous messages.  Asynchronous messages are not subject to
+the synchronization barriers introduced by {@link MessageQueue#enqueueSyncBarrier(long)}.
+
+@param callback The callback interface in which to handle messages, or null.
+@param async If true, the handler calls {@link Message#setAsynchronous(boolean)} for
+each {@link Message} that is sent to it or {@link Runnable} that is posted to it.
+
+@hide"
+      end
+
+      operation 393858 "Handler"
+	public explicit_return_type ""
+	nparams 3
+	  param inout name "looper" explicit_type "Looper"
+	  param inout name "callback" type class_ref 166914 // Callback
+	  param inout name "async" explicit_type "boolean"
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Use the provided {@link Looper} instead of the default one and take a callback
+interface in which to handle messages.  Also set whether the handler
+should be asynchronous.
+
+Handlers are synchronous by default unless this constructor is used to make
+one that is strictly asynchronous.
+
+Asynchronous messages represent interrupts or events that do not require global ordering
+with represent to synchronous messages.  Asynchronous messages are not subject to
+the synchronization barriers introduced by {@link MessageQueue#enqueueSyncBarrier(long)}.
+
+@param looper The looper, must not be null.
+@param callback The callback interface in which to handle messages, or null.
+@param async If true, the handler calls {@link Message#setAsynchronous(boolean)} for
+each {@link Message} that is sent to it or {@link Runnable} that is posted to it.
+
+@hide"
+      end
+
+      operation 393986 "getMessageName"
+	public explicit_return_type "String"
+	nparams 1
+	  param inout name "message" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Returns a string representing the name of the specified message.
+The default implementation will either return the class name of the
+message callback if any, or the hexadecimal representation of the
+message \"what\" field.
+ 
+@param message The message whose name is being queried "
+      end
+
+      operation 394114 "obtainMessage"
+	public explicit_return_type "Message"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Returns a new {@link android.os.Message Message} from the global message pool. More efficient than
+creating and allocating new instances. The retrieved message has its handler set to this instance (Message.target == this).
+ If you don't want that facility, just call Message.obtain() instead."
+      end
+
+      operation 394242 "obtainMessage"
+	public explicit_return_type "Message"
+	nparams 1
+	  param in name "what" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Same as {@link #obtainMessage()}, except that it also sets the what member of the returned Message.
+
+@param what Value to assign to the returned Message.what field.
+@return A Message from the global message pool."
+      end
+
+      operation 394370 "obtainMessage"
+	public explicit_return_type "Message"
+	nparams 2
+	  param in name "what" explicit_type "int"
+	  param inout name "obj" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "
+Same as {@link #obtainMessage()}, except that it also sets the what and obj members 
+of the returned Message.
+
+@param what Value to assign to the returned Message.what field.
+@param obj Value to assign to the returned Message.obj field.
+@return A Message from the global message pool."
+      end
+
+      operation 394498 "obtainMessage"
+	public explicit_return_type "Message"
+	nparams 3
+	  param in name "what" explicit_type "int"
+	  param in name "arg1" explicit_type "int"
+	  param in name "arg2" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "
+Same as {@link #obtainMessage()}, except that it also sets the what, arg1 and arg2 members of the returned
+Message.
+@param what Value to assign to the returned Message.what field.
+@param arg1 Value to assign to the returned Message.arg1 field.
+@param arg2 Value to assign to the returned Message.arg2 field.
+@return A Message from the global message pool."
+      end
+
+      operation 394626 "obtainMessage"
+	public explicit_return_type "Message"
+	nparams 4
+	  param in name "what" explicit_type "int"
+	  param in name "arg1" explicit_type "int"
+	  param in name "arg2" explicit_type "int"
+	  param inout name "obj" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}, ${t3} ${p3}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "
+Same as {@link #obtainMessage()}, except that it also sets the what, obj, arg1,and arg2 values on the 
+returned Message.
+@param what Value to assign to the returned Message.what field.
+@param arg1 Value to assign to the returned Message.arg1 field.
+@param arg2 Value to assign to the returned Message.arg2 field.
+@param obj Value to assign to the returned Message.obj field.
+@return A Message from the global message pool."
+      end
+
+      operation 394754 "post"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "r" explicit_type "Runnable"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Causes the Runnable r to be added to the message queue.
+The runnable will be run on the thread to which this handler is 
+attached. 
+ 
+@param r The Runnable that will be executed.
+
+@return Returns true if the Runnable was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 394882 "postAtTime"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "r" explicit_type "Runnable"
+	  param in name "uptimeMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Causes the Runnable r to be added to the message queue, to be run
+at a specific time given by <var>uptimeMillis</var>.
+<b>The time-base is {@link android.os.SystemClock#uptimeMillis}.</b>
+The runnable will be run on the thread to which this handler is attached.
+
+@param r The Runnable that will be executed.
+@param uptimeMillis The absolute time at which the callback should run,
+        using the {@link android.os.SystemClock#uptimeMillis} time-base.
+ 
+@return Returns true if the Runnable was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting.  Note that a
+        result of true does not mean the Runnable will be processed -- if
+        the looper is quit before the delivery time of the message
+        occurs then the message will be dropped."
+      end
+
+      operation 395010 "postAtTime"
+	public explicit_return_type "boolean"
+	nparams 3
+	  param inout name "r" explicit_type "Runnable"
+	  param inout name "token" explicit_type "Object"
+	  param in name "uptimeMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Causes the Runnable r to be added to the message queue, to be run
+at a specific time given by <var>uptimeMillis</var>.
+<b>The time-base is {@link android.os.SystemClock#uptimeMillis}.</b>
+The runnable will be run on the thread to which this handler is attached.
+
+@param r The Runnable that will be executed.
+@param uptimeMillis The absolute time at which the callback should run,
+        using the {@link android.os.SystemClock#uptimeMillis} time-base.
+
+@return Returns true if the Runnable was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting.  Note that a
+        result of true does not mean the Runnable will be processed -- if
+        the looper is quit before the delivery time of the message
+        occurs then the message will be dropped.
+        
+@see android.os.SystemClock#uptimeMillis"
+      end
+
+      operation 395138 "postDelayed"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "r" explicit_type "Runnable"
+	  param in name "delayMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Causes the Runnable r to be added to the message queue, to be run
+after the specified amount of time elapses.
+The runnable will be run on the thread to which this handler
+is attached.
+ 
+@param r The Runnable that will be executed.
+@param delayMillis The delay (in milliseconds) until the Runnable
+       will be executed.
+       
+@return Returns true if the Runnable was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting.  Note that a
+        result of true does not mean the Runnable will be processed --
+        if the looper is quit before the delivery time of the message
+        occurs then the message will be dropped."
+      end
+
+      operation 395266 "postAtFrontOfQueue"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "r" explicit_type "Runnable"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Posts a message to an object that implements Runnable.
+Causes the Runnable r to executed on the next iteration through the
+message queue. The runnable will be run on the thread to which this
+handler is attached.
+<b>This method is only for use in very special circumstances -- it
+can easily starve the message queue, cause ordering problems, or have
+other unexpected side-effects.</b>
+ 
+@param r The Runnable that will be executed.
+
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 395394 "runWithScissors"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param in name "r" explicit_type "Runnable"
+	  param in name "timeout" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}final ${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Runs the specified task synchronously.
+<p>
+If the current thread is the same as the handler thread, then the runnable
+runs immediately without being enqueued.  Otherwise, posts the runnable
+to the handler and waits for it to complete before returning.
+</p><p>
+This method is dangerous!  Improper use can result in deadlocks.
+Never call this method while any locks are held or use it in a
+possibly re-entrant manner.
+</p><p>
+This method is occasionally useful in situations where a background thread
+must synchronously await completion of a task that must run on the
+handler's thread.  However, this problem is often a symptom of bad design.
+Consider improving the design (if possible) before resorting to this method.
+</p><p>
+One example of where you might want to use this method is when you just
+set up a Handler thread and need to perform some initialization steps on
+it before continuing execution.
+</p><p>
+If timeout occurs then this method returns <code>false</code> but the runnable
+will remain posted on the handler and may already be in progress or
+complete at a later time.
+</p><p>
+When using this method, be sure to use {@link Looper#quitSafely} when
+quitting the looper.  Otherwise {@link #runWithScissors} may hang indefinitely.
+(TODO: We should fix this by making MessageQueue aware of blocking runnables.)
+</p>
+
+@param r The Runnable that will be executed synchronously.
+@param timeout The timeout in milliseconds, or 0 to wait indefinitely.
+
+@return Returns true if the Runnable was successfully executed.
+        Returns false on failure, usually because the
+        looper processing the message queue is exiting.
+
+@hide This method is prone to abuse and should probably not be in the API.
+If we ever do make it part of the API, we might want to rename it to something
+less funny like runUnsafe()."
+      end
+
+      operation 395522 "removeCallbacks"
+	public explicit_return_type "void"
+	nparams 1
+	  param inout name "r" explicit_type "Runnable"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove any pending posts of Runnable r that are in the message queue."
+      end
+
+      operation 395650 "removeCallbacks"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "r" explicit_type "Runnable"
+	  param inout name "token" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove any pending posts of Runnable <var>r</var> with Object
+<var>token</var> that are in the message queue.  If <var>token</var> is null,
+all callbacks will be removed."
+      end
+
+      operation 395778 "sendMessage"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "msg" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Pushes a message onto the end of the message queue after all pending messages
+before the current time. It will be received in {@link #handleMessage},
+in the thread attached to this handler.
+ 
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 395906 "sendEmptyMessage"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param in name "what" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Sends a Message containing only the what value.
+ 
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 396034 "sendEmptyMessageDelayed"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param in name "what" explicit_type "int"
+	  param in name "delayMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Sends a Message containing only the what value, to be delivered
+after the specified amount of time elapses.
+@see #sendMessageDelayed(android.os.Message, long) 
+
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 396162 "sendEmptyMessageAtTime"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param in name "what" explicit_type "int"
+	  param in name "uptimeMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Sends a Message containing only the what value, to be delivered 
+at a specific time.
+@see #sendMessageAtTime(android.os.Message, long)
+ 
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 396290 "sendMessageDelayed"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "msg" explicit_type "Message"
+	  param in name "delayMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Enqueue a message into the message queue after all pending messages
+before (current time + delayMillis). You will receive it in
+{@link #handleMessage}, in the thread attached to this handler.
+ 
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting.  Note that a
+        result of true does not mean the message will be processed -- if
+        the looper is quit before the delivery time of the message
+        occurs then the message will be dropped."
+      end
+
+      operation 396418 "sendMessageAtTime"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param inout name "msg" explicit_type "Message"
+	  param in name "uptimeMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Enqueue a message into the message queue after all pending messages
+before the absolute time (in milliseconds) <var>uptimeMillis</var>.
+<b>The time-base is {@link android.os.SystemClock#uptimeMillis}.</b>
+You will receive it in {@link #handleMessage}, in the thread attached
+to this handler.
+
+@param uptimeMillis The absolute time at which the message should be
+        delivered, using the
+        {@link android.os.SystemClock#uptimeMillis} time-base.
+        
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting.  Note that a
+        result of true does not mean the message will be processed -- if
+        the looper is quit before the delivery time of the message
+        occurs then the message will be dropped."
+      end
+
+      operation 396546 "sendMessageAtFrontOfQueue"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "msg" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Enqueue a message at the front of the message queue, to be processed on
+the next iteration of the message loop.  You will receive it in
+{@link #handleMessage}, in the thread attached to this handler.
+<b>This method is only for use in very special circumstances -- it
+can easily starve the message queue, cause ordering problems, or have
+other unexpected side-effects.</b>
+ 
+@return Returns true if the message was successfully placed in to the 
+        message queue.  Returns false on failure, usually because the
+        looper processing the message queue is exiting."
+      end
+
+      operation 396674 "enqueueMessage"
+	private explicit_return_type "boolean"
+	nparams 3
+	  param inout name "queue" explicit_type "MessageQueue"
+	  param inout name "msg" explicit_type "Message"
+	  param in name "uptimeMillis" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 396802 "removeMessages"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "what" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove any pending posts of messages with code 'what' that are in the
+message queue."
+      end
+
+      operation 396930 "removeMessages"
+	public explicit_return_type "void"
+	nparams 2
+	  param in name "what" explicit_type "int"
+	  param inout name "object" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove any pending posts of messages with code 'what' and whose obj is
+'object' that are in the message queue.  If <var>object</var> is null,
+all messages will be removed."
+      end
+
+      operation 397058 "removeCallbacksAndMessages"
+	public explicit_return_type "void"
+	nparams 1
+	  param inout name "token" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Remove any pending posts of callbacks and sent messages whose
+<var>obj</var> is <var>token</var>.  If <var>token</var> is null,
+all callbacks and messages will be removed."
+      end
+
+      operation 397186 "hasMessages"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param in name "what" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check if there are any pending posts of messages with code 'what' in
+the message queue."
+      end
+
+      operation 397314 "hasMessages"
+	public explicit_return_type "boolean"
+	nparams 2
+	  param in name "what" explicit_type "int"
+	  param inout name "object" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check if there are any pending posts of messages with code 'what' and
+whose obj is 'object' in the message queue."
+      end
+
+      operation 397442 "hasCallbacks"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param inout name "r" explicit_type "Runnable"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "Check if there are any pending posts of messages with callback r in
+the message queue.
+
+@hide"
+      end
+
+      operation 397570 "getLooper"
+	public explicit_return_type "Looper"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " if we can get rid of this method, the handler need not remember its loop
+ we could instead export a getMessageQueue() method... "
+      end
+
+      operation 397698 "dump"
+	public explicit_return_type "void"
+	nparams 2
+	  param inout name "pw" explicit_type "Printer"
+	  param in name "prefix" explicit_type "String"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 397826 "toString"
+	public explicit_return_type "String"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 397954 "getIMessenger"
+	package explicit_return_type "IMessenger"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent final java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      class 167042 "MessengerImpl"
+	visibility private 
+	cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+	final java_decl "${comment}${@}${visibility}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 171138 // <generalisation>
+	  relation 171138 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 171138 // <generalisation>
+	    b parent class_ref 167170 // Stub
+	end
+
+	operation 398082 "send"
+	  public explicit_return_type "void"
+	  nparams 1
+	    param inout name "msg" explicit_type "Message"
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	end
+      end
+
+      operation 398210 "getPostMessage"
+	class_operation private explicit_return_type "Message"
+	nparams 1
+	  param inout name "r" explicit_type "Runnable"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 398338 "getPostMessage"
+	class_operation private explicit_return_type "Message"
+	nparams 2
+	  param inout name "r" explicit_type "Runnable"
+	  param inout name "token" explicit_type "Object"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 398466 "handleCallback"
+	class_operation private explicit_return_type "void"
+	nparams 1
+	  param inout name "message" explicit_type "Message"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      attribute 284418 "mQueue"
+	const_attribute package explicit_type "MessageQueue"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 284546 "mLooper"
+	const_attribute package explicit_type "Looper"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      classrelation 171266 // mCallback (<unidirectional association>)
+	relation 171266 --->
+	  a role_name "mCallback" const_relation package
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 171266 // mCallback (<unidirectional association>)
+	  b parent class_ref 166914 // Callback
+      end
+
+      attribute 284674 "mAsynchronous"
+	const_attribute package explicit_type "boolean"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 284802 "mMessenger"
+	package explicit_type "IMessenger"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      class 167298 "BlockingRunnable"
+	visibility private 
+	cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+	final java_decl "${comment}${@}${visibility}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 171394 // <realization>
+	  relation 171394 -_-|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 171394 // <realization>
+	    b parent class_ref 167426 // Runnable
+	end
+
+	attribute 284930 "mTask"
+	  const_attribute private explicit_type "Runnable"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 285058 "mDone"
+	  private explicit_type "boolean"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	operation 398594 "BlockingRunnable"
+	  public explicit_return_type ""
+	  nparams 1
+	    param inout name "task" explicit_type "Runnable"
+	  cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	  cpp_def "${comment}${inline}${class}::${name}${(}${)}${volatile}${throw} {
+  ${body}}
+"
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	end
+
+	operation 398722 "run"
+	  public explicit_return_type "void"
+	  nparams 0
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  java_annotation "@Override
+"
+	  
+	  
+	  
+	end
+
+	operation 398850 "postAndWait"
+	  public explicit_return_type "boolean"
+	  nparams 2
+	    param inout name "handler" type class_ref 166786 // Handler
+	    param in name "timeout" explicit_type "long"
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	end
+      end
+    end
+  end
+
+  deploymentview 128258 "sourceCode"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 129282 "EthernetService"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+import java.net.UnknownHostException;
+import android.net.NetworkUtils;
+import android.net.ethernet.EthernetNative;
+import android.net.ethernet.IEthernetManager;
+import android.net.ethernet.EthernetManager;
+import android.net.ethernet.EthernetStateTracker;
+import android.net.ethernet.EthernetDevInfo;
+import android.os.SystemProperties;
+import android.provider.Settings;
+import android.util.Slog;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Handler;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import android.net.DhcpInfo;
+${definition}"
+      associated_classes
+	class_ref 130562 // EthernetService
+      end
+      comment "Copyright (C) 2009 The Android-x86 Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the \"License\");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an \"AS IS\" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Author: Yi Sun <beyounn@gmail.com>"
+    end
+
+    artifact 153730 "Handler"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+import android.util.Log;
+import android.util.Printer;
+import java.lang.reflect.Modifier;
+${definition}"
+      associated_classes
+	class_ref 166786 // Handler
+      end
+      comment "Copyright (C) 2006 The Android Open Source Project
+
+Licensed under the Apache License, Version 2.0 (the \"License\");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an \"AS IS\" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License."
+    end
+  end
+
+  package_ref 143618 // os
+
+  package_ref 144514 // content
+end

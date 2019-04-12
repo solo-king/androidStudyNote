@@ -1,0 +1,51 @@
+class RegistrantList
+!!!548610.java!!!	add(inout h : Handler, in what : int, inout obj : Object) : void
+        add(new Registrant(h, what, obj));
+!!!548738.java!!!	addUnique(inout h : Handler, in what : int, inout obj : Object) : void
+        // if the handler is already in the registrant list, remove it
+        remove(h);
+        add(new Registrant(h, what, obj));        
+!!!548866.java!!!	add(inout r : Registrant) : void
+        removeCleared();
+        registrants.add(r);
+!!!548994.java!!!	removeCleared() : void
+        for (int i = registrants.size() - 1; i >= 0 ; i--) {
+            Registrant  r = (Registrant) registrants.get(i);
+            
+            if (r.refH == null) {
+                registrants.remove(i);
+            }
+        }
+!!!549122.java!!!	size() : int
+        return registrants.size();
+!!!549250.java!!!	get(in index : int) : Object
+        return registrants.get(index);
+!!!549378.java!!!	internalNotifyRegistrants(inout result : Object, inout exception : Throwable) : void
+       for (int i = 0, s = registrants.size(); i < s ; i++) {
+            Registrant  r = (Registrant) registrants.get(i);
+            r.internalNotifyRegistrant(result, exception);
+       }
+!!!549506.java!!!	notifyRegistrants() : void
+        internalNotifyRegistrants(null, null);
+!!!549634.java!!!	notifyException(inout exception : Throwable) : void
+        internalNotifyRegistrants (null, exception);
+!!!549762.java!!!	notifyResult(inout result : Object) : void
+        internalNotifyRegistrants (result, null);
+!!!549890.java!!!	notifyRegistrants(inout ar : AsyncResult) : void
+        internalNotifyRegistrants(ar.result, ar.exception);
+!!!550018.java!!!	remove(inout h : Handler) : void
+        for (int i = 0, s = registrants.size() ; i < s ; i++) {
+            Registrant  r = (Registrant) registrants.get(i);
+            Handler     rh;
+
+            rh = r.getHandler();
+
+            /* Clean up both the requested registrant and
+             * any now-collected registrants
+             */
+            if (rh == null || rh == h) {
+                r.clear();
+            }
+        }
+
+        removeCleared();

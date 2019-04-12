@@ -1,0 +1,5 @@
+class ExploreByTouchNodeProvider
+!!!970114.java!!!	createAccessibilityNodeInfo(in virtualViewId : int) : AccessibilityNodeInfo
+            return ExploreByTouchHelper.this.createNode(virtualViewId);
+!!!970242.java!!!	performAction(in virtualViewId : int, in action : int, inout arguments : Bundle) : boolean
+            return ExploreByTouchHelper.this.performAction(virtualViewId, action, arguments);

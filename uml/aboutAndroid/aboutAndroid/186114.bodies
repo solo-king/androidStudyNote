@@ -1,0 +1,5 @@
+class Item
+!!!351234.java!!!	Item(in label : String, inout icon : Drawable, in packageName : String)
+                this.label = label;
+                this.icon = icon;
+                this.packgeName = packageName;

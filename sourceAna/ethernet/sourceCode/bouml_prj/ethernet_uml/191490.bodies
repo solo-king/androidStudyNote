@@ -1,0 +1,11 @@
+class MountServiceBinderListener
+!!!614146.java!!!	onUsbMassStorageConnectionChanged(inout available : boolean) : void
+            final int size = mListeners.size();
+            for (int i = 0; i < size; i++) {
+                mListeners.get(i).sendShareAvailabilityChanged(available);
+            }
+!!!614274.java!!!	onStorageStateChanged(in path : String, in oldState : String, in newState : String) : void
+            final int size = mListeners.size();
+            for (int i = 0; i < size; i++) {
+                mListeners.get(i).sendStorageStateChanged(path, oldState, newState);
+            }

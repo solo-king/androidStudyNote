@@ -1,0 +1,17 @@
+class SettingsObserver
+!!!991234.java!!!	SettingsObserver(inout handler : Handler, inout context : Context)
+            super(handler);
+            mContext = context;
+!!!991362.java!!!	startObserving() : void
+            ContentResolver resolver = mContext.getContentResolver();
+            // Listen to brightness and brightness mode
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SCREEN_BRIGHTNESS), false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE), false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.SCREEN_AUTO_BRIGHTNESS_ADJ), false, this);
+!!!991490.java!!!	stopObserving() : void
+            mContext.getContentResolver().unregisterContentObserver(this);
+!!!991618.java!!!	onChange(inout selfChange : boolean) : void
+            updateWidget(mContext);

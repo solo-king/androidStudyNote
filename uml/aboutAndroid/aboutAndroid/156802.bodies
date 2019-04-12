@@ -1,0 +1,274 @@
+class HdmiSettings
+!!!279042.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DISPLAY;
+!!!279170.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+//        IntentFilter filter = new IntentFilter("android.intent.action.HDMI_PLUGGED");
+//        getContext().registerReceiver(HdmiListener, filter);
+        context = getActivity();
+        mDisplayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+        mDisplayListener = new DisplayListener();
+        mStrPlatform = SystemProperties.get("ro.board.platform");
+        mDisplayInfo = getDisplayInfo();
+        addPreferencesFromResource(R.xml.hdmi_settings_timeout);
+        mHdmiResolution = (ListPreference) findPreference(KEY_HDMI_RESOLUTION);
+        mHdmiResolution.setOnPreferenceChangeListener(this);
+        mHdmiResolution.setOnPreferenceClickListener(this);
+        if (mDisplayInfo != null) {
+            mHdmiResolution.setEntries(DrmDisplaySetting.getDisplayModes(mDisplayInfo).toArray(new String[0]));
+            mHdmiResolution.setEntryValues(DrmDisplaySetting.getDisplayModes(mDisplayInfo).toArray(new String[0]));
+        }
+        mHdmiScale = findPreference(KEY_HDMI_SCALE);
+        mHdmiScale.setOnPreferenceClickListener(this);
+        mHdmiRotation = (ListPreference) findPreference(KEY_HDMI_ROTATION);
+        mHdmiRotation.setOnPreferenceChangeListener(this);
+        init();
+        boolean enable = android.provider.Settings.System.getInt(getActivity().getContentResolver(),DOUBLE_SCREEN_CONFIG,0) == 1;
+        mHdmiDualScreen = (CheckBoxPreference)findPreference(KEY_HDMI_DUAL_SCREEN);
+        mHdmiDualScreen.setChecked(enable);
+        mHdmiDualScreen.setOnPreferenceChangeListener(this);
+ 
+        mHdmiDualScreenVH = (CheckBoxPreference)findPreference(KEY_HDMI_DUAL_SCREEN_VH);
+        mHdmiDualScreenVH.setEnabled(enable);
+        if(enable) {
+            mHdmiDualScreenVH.setChecked(SystemProperties.getBoolean("persist.orientation.vhshow", false));
+        }
+        mHdmiDualScreenVH.setOnPreferenceChangeListener(this);
+        mHdmiDualScreenList = (ListPreference)findPreference(KEY_HDMI_DUAL_SCREEN_LIST);
+        mHdmiDualScreenList.setOnPreferenceChangeListener(this);
+        mHdmiDualScreenList.setOnPreferenceClickListener(this);
+        mHdmiDualScreenList.setEnabled(SystemProperties.getBoolean("persist.orientation.vhshow", false));
+        Log.d(TAG, "onCreate---------------------");
+!!!279298.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        Log.d(TAG, "onCreateView----------------------------------------");
+        return super.onCreateView(inflater, container, savedInstanceState);
+!!!279426.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        SettingsActivity activity = (SettingsActivity) getActivity();
+        mSwitchBar = activity.getSwitchBar();
+        mSwitchBar.show();
+        mSwitchBar.addOnSwitchChangeListener(this);
+        //restore hdmi switch value
+        String switchValue = SystemProperties.get("sys.hdmi_status.aux", "on");
+        if (switchValue.equals("on")) {
+            mSwitchBar.setChecked(true);
+        } else {
+            mSwitchBar.setChecked(false);
+        }
+        //mSwitchBar.setChecked(sharedPreferences.getString("enable", "1").equals("1"));
+        //String resolutionValue=sharedPreferences.getString("resolution", "1280x720p-60");
+        //Log.d(TAG,"onActivityCreated resolutionValue="+resolutionValue);
+        // context.registerReceiver(hdmiReceiver, new IntentFilter("android.intent.action.HDMI_PLUG"));
+!!!279554.java!!!	onResume() : void
+        super.onResume();
+        IntentFilter filter = new IntentFilter("android.intent.action.HDMI_PLUGGED");
+        getContext().registerReceiver(HdmiListener, filter);
+        updateHDMIState();
+        mDisplayManager.registerDisplayListener(mDisplayListener, null);
+        if (android.provider.Settings.System.getInt(getActivity().getContentResolver(),DOUBLE_SCREEN_STATE,0) == 0) {
+            mHdmiDualScreen.setEnabled(true);
+            if(android.provider.Settings.System.getInt(getActivity().getContentResolver(),DOUBLE_SCREEN_CONFIG,0) == 1) {
+                mHdmiDualScreenVH.setEnabled(true);
+            } else {
+                mHdmiDualScreenVH.setEnabled(false);
+            }
+            mHdmiDualScreenList.setEnabled(SystemProperties.getBoolean("persist.orientation.vhshow", false));
+        } else {
+            mHdmiDualScreen.setEnabled(false);
+            mHdmiDualScreenVH.setEnabled(false);
+            mHdmiDualScreenList.setEnabled(false);
+        }
+!!!279682.java!!!	onPause() : void
+        super.onPause();
+        Log.d(TAG, "onPause----------------");
+        mDisplayManager.unregisterDisplayListener(mDisplayListener);
+        getContext().unregisterReceiver(HdmiListener);
+!!!279810.java!!!	onDestroy() : void
+        mSwitchBar.removeOnSwitchChangeListener(this);
+        super.onDestroy();
+        Log.d(TAG, "onDestroy----------------");
+!!!279938.java!!!	init() : void
+        mIsUseDisplayd = SystemProperties.getBoolean("ro.rk.displayd.enable", false);
+
+        //init hdmi rotation
+        try {
+             wm = IWindowManager.Stub.asInterface(
+                  ServiceManager.getService(Context.WINDOW_SERVICE));
+             int rotation = wm.getRotation();
+             switch (rotation) {
+                  case Surface.ROTATION_0:
+                       mHdmiRotation.setValue("0");
+                       break;
+                  case Surface.ROTATION_90:
+                       mHdmiRotation.setValue("90");
+                       break;
+                  case Surface.ROTATION_180:
+                       mHdmiRotation.setValue("180");
+                       break;
+                  case Surface.ROTATION_270:
+                       mHdmiRotation.setValue("270");
+                       break;
+                  default:
+                       mHdmiRotation.setValue("0");
+                }
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            }
+!!!280066.java!!!	getDisplayInfo() : DisplayInfo
+        DrmDisplaySetting.updateDisplayInfos();
+        DisplayInfo mdisplayInfo = DrmDisplaySetting.getHdmiDisplayInfo();
+
+        return mdisplayInfo;
+!!!280194.java!!!	updateResolutionValue() : void
+        String resolutionValue = null;
+        mDisplayInfo = getDisplayInfo();
+        if (mDisplayInfo != null)
+            resolutionValue = DrmDisplaySetting.getCurDisplayMode(mDisplayInfo);
+        Log.i(TAG, "resolutionValue:" + resolutionValue);
+        mOldResolution = resolutionValue;
+        if (resolutionValue != null)
+            mHdmiResolution.setValue(resolutionValue);
+!!!280322.java!!!	updateHDMIState() : void
+        Display[] allDisplays = mDisplayManager.getDisplays();
+        String switchValue = SystemProperties.get("sys.hdmi_status.aux", "on");
+        if (allDisplays == null || allDisplays.length < 2 || switchValue.equals("off")) {
+            mHdmiResolution.setEnabled(false);
+            mHdmiScale.setEnabled(false);
+            mHdmiRotation.setEnabled(false);
+	        //mHdmiDualScreen.setEnabled(false);
+	        //mHdmiDualScreenVH.setEnabled(false);
+	        mHdmiDualScreenList.setEnabled(false);
+            SystemProperties.set("persist.orientation.vhshow", "false");
+            SystemProperties.set("persist.orientation.vhinit", "0");
+            mHdmiDualScreenVH.setChecked(false);
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                public void run() {
+                    mDisplayInfo = getDisplayInfo();
+                    //增加延迟，保证数据能够拿到
+                    if (mDisplayInfo != null) {
+                        mHdmiResolution.setEntries(DrmDisplaySetting.getDisplayModes(mDisplayInfo).toArray(new String[0]));
+                        mHdmiResolution.setEntryValues(DrmDisplaySetting.getDisplayModes(mDisplayInfo).toArray(new String[0]));
+                        updateResolutionValue();
+                        mHdmiResolution.setEnabled(true);
+                        mHdmiScale.setEnabled(true);
+                        mHdmiRotation.setEnabled(true);
+                        if(getActivity() != null && getActivity().getContentResolver() != null) {
+			                if (android.provider.Settings.System.getInt(getActivity().getContentResolver(),DOUBLE_SCREEN_STATE,0) == 0) {
+                                mHdmiDualScreen.setEnabled(true);
+                                mHdmiDualScreenVH.setEnabled(android.provider.Settings.System.getInt(getActivity().getContentResolver(),DOUBLE_SCREEN_CONFIG,0) == 1);
+                                mHdmiDualScreenList.setEnabled(SystemProperties.getBoolean("persist.orientation.vhshow", false));
+                    	    }
+                        }
+                    }
+
+                }
+            }, 1000);
+
+        }
+!!!280450.java!!!	showConfirmSetModeDialog() : void
+        mDisplayInfo = getDisplayInfo();
+        if (mDisplayInfo != null) {
+            DialogFragment df = ConfirmSetModeDialogFragment.newInstance(mDisplayInfo, new ConfirmSetModeDialogFragment.OnDialogDismissListener() {
+                @Override
+                public void onDismiss(boolean isok) {
+                    Log.i(TAG, "showConfirmSetModeDialog->onDismiss->isok:" + isok);
+                    Log.i(TAG, "showConfirmSetModeDialog->onDismiss->mOldResolution:" + mOldResolution);
+                    updateResolutionValue();
+                }
+            });
+            df.show(getFragmentManager(), "ConfirmDialog");
+        }
+!!!280578.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        // TODO Auto-generated method stub
+        return true;
+!!!280706.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        if (preference == mHdmiScale) {
+            Intent screenScaleIntent = new Intent(getActivity(), ScreenScaleActivity.class);
+            screenScaleIntent.putExtra(ConstData.IntentKey.PLATFORM, mStrPlatform);
+            mDisplayInfo = getDisplayInfo();
+            if (mDisplayInfo != null) {
+                screenScaleIntent.putExtra(ConstData.IntentKey.DISPLAY_INFO, mDisplayInfo);
+                startActivity(screenScaleIntent);
+            }
+        } else if (preference == mHdmiResolution) {
+            updateHDMIState();
+        } else if (preference == mHdmiDualScreenList) {
+            String value = SystemProperties.get("persist.orientation.vhinit","0");
+            mHdmiDualScreenList.setValue(value);
+        }
+        return true;
+!!!280834.java!!!	onPreferenceChange(inout preference : Preference, inout obj : Object) : boolean
+        Log.i(TAG, "onPreferenceChange:" + obj);
+        String key = preference.getKey();
+        Log.d(TAG, key);
+        if(preference == mHdmiResolution) {
+            if (KEY_HDMI_RESOLUTION.equals(key)) {
+                if (obj.equals(mOldResolution))
+                    return true;
+                int index = mHdmiResolution.findIndexOfValue((String) obj);
+                Log.i(TAG, "onPreferenceChange: index= " + index);
+                mDisplayInfo = getDisplayInfo();
+                if (mDisplayInfo != null) {
+                    DrmDisplaySetting.setDisplayModeTemp(mDisplayInfo, index);
+                    showConfirmSetModeDialog();
+                }
+            }
+         } else if (preference == mHdmiRotation) {
+            if (KEY_HDMI_ROTATION.equals(key)) {
+                try {
+                    int value = Integer.parseInt((String) obj);
+                    android.os.SystemProperties.set("persist.sys.orientation", (String) obj);
+                    Log.d(TAG,"freezeRotation~~~value:"+(String) obj);
+                    if(value == 0)
+                        wm.freezeRotation(Surface.ROTATION_0);
+                    else if(value == 90)
+                        wm.freezeRotation(Surface.ROTATION_90);
+                    else if(value == 180)
+                        wm.freezeRotation(Surface.ROTATION_180);
+                    else if(value == 270)
+                        wm.freezeRotation(Surface.ROTATION_270);
+                    else
+                         return true;
+                //android.os.SystemProperties.set("sys.boot_completed", "1");
+                } catch (Exception e) {
+                      Log.e(TAG, "freezeRotation error");
+                }
+            }
+	    } else if (preference == mHdmiDualScreen) {
+            android.provider.Settings.System.putInt(getActivity().getContentResolver(),DOUBLE_SCREEN_CONFIG,(Boolean)obj?1:0);
+            SystemProperties.set("persist.orientation.vhinit", "0");
+            SystemProperties.set("persist.orientation.vhshow", "false");
+            mHdmiDualScreenVH.setEnabled((Boolean)obj);
+            mHdmiDualScreenVH.setChecked(false);
+            mHdmiDualScreenList.setEnabled(false);
+            this.finish();
+	    } else if (preference == mHdmiDualScreenVH) {
+            if((Boolean)obj) {
+                SystemProperties.set("persist.orientation.vhshow", "true");   
+                mHdmiDualScreenList.setEnabled(true);
+            } else {
+                SystemProperties.set("persist.orientation.vhshow", "false");   
+                mHdmiDualScreenList.setEnabled(false);
+                SystemProperties.set("persist.orientation.vhinit", "0");
+            }
+            SystemProperties.set("persist.orientation.vhinit", "0");
+	    } else if (preference == mHdmiDualScreenList) {
+            if("0".equals(obj.toString())) {
+                SystemProperties.set("persist.orientation.vhinit", "0");
+            } else if ("1".equals(obj.toString())) {
+                SystemProperties.set("persist.orientation.vhinit", "1");
+            }
+        }
+        return true;
+!!!280962.java!!!	onSwitchChanged(inout switchView : Switch, inout isChecked : boolean) : void
+        Log.i(TAG, "onSwitchChanged->isChecked:" + isChecked);
+        if (isChecked) {
+            //Settings HDMI on
+            SystemProperties.set("sys.hdmi_status.aux", "on");
+            updateHDMIState();
+        } else {
+            //Settings HDMI off
+            SystemProperties.set("sys.hdmi_status.aux", "off");
+            updateHDMIState();
+        }

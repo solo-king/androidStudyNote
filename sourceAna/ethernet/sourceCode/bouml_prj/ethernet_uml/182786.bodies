@@ -1,0 +1,5 @@
+class DeliverResult
+!!!550146.java!!!	DeliverResult(inout result : Bundle)
+            mResult = result;
+!!!550274.java!!!	run() : void
+            onResult(mResult);

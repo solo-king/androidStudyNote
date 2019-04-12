@@ -1,0 +1,5 @@
+class NetworkRestrictionsPreference
+!!!637570.java!!!	NetworkRestrictionsPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!637698.java!!!	setTemplate(inout template : NetworkTemplate, in subId : int, inout services : TemplatePreference::NetworkServices) : void
+        // TODO: Summary

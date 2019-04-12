@@ -1,0 +1,27 @@
+class Builder
+!!!596994.java!!!	Builder(inout context : Context, in type : int)
+                mContext = context;
+                mType = type;
+!!!597122.java!!!	setIcon(in icon : int) : SupportItemAdapter::SupportData::Builder
+                mIcon = icon;
+                return this;
+!!!597250.java!!!	setTileTitle(in title : int) : SupportItemAdapter::SupportData::Builder
+                mTileTitle = title;
+                return this;
+!!!597378.java!!!	setTileTitleDescription(in titleDescription : int) : SupportItemAdapter::SupportData::Builder
+                mTileTitleDescription = mContext.getString(titleDescription);
+                return this;
+!!!597506.java!!!	setTileSummary(in summary : int) : SupportItemAdapter::SupportData::Builder
+                mTileSummary = mContext.getString(summary);
+                return this;
+!!!597634.java!!!	setTileSummary(inout summary : CharSequence) : SupportItemAdapter::SupportData::Builder
+                mTileSummary = summary;
+                return this;
+!!!597762.java!!!	setMetricsEvent(in metricsEvent : int) : SupportItemAdapter::SupportData::Builder
+                mMetricsEvent = metricsEvent;
+                return this;
+!!!597890.java!!!	setIntent(inout intent : Intent) : SupportItemAdapter::SupportData::Builder
+                mIntent = intent;
+                return this;
+!!!598018.java!!!	build() : SupportItemAdapter::SupportData
+                return new SupportData(this);

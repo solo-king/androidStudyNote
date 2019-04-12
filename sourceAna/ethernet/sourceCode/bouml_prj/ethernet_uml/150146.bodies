@@ -1,0 +1,78 @@
+class OpaqueUri
+!!!298242.java!!!	OpaqueUri(in scheme : String, inout ssp : Uri::Part, inout fragment : Uri::Part)
+            this.scheme = scheme;
+            this.ssp = ssp;
+            this.fragment = fragment == null ? Part.NULL : fragment;
+!!!298370.java!!!	readFrom(inout parcel : Parcel) : Uri
+            return new OpaqueUri(
+                parcel.readString(),
+                Part.readFrom(parcel),
+                Part.readFrom(parcel)
+            );
+!!!298498.java!!!	describeContents() : int
+            return 0;
+!!!298626.java!!!	writeToParcel(inout parcel : Parcel, in flags : int) : void
+            parcel.writeInt(TYPE_ID);
+            parcel.writeString(scheme);
+            ssp.writeTo(parcel);
+            fragment.writeTo(parcel);
+!!!298754.java!!!	isHierarchical() : boolean
+            return false;
+!!!298882.java!!!	isRelative() : boolean
+            return scheme == null;
+!!!299010.java!!!	getScheme() : String
+            return this.scheme;
+!!!299138.java!!!	getEncodedSchemeSpecificPart() : String
+            return ssp.getEncoded();
+!!!299266.java!!!	getSchemeSpecificPart() : String
+            return ssp.getDecoded();
+!!!299394.java!!!	getAuthority() : String
+            return null;
+!!!299522.java!!!	getEncodedAuthority() : String
+            return null;
+!!!299650.java!!!	getPath() : String
+            return null;
+!!!299778.java!!!	getEncodedPath() : String
+            return null;
+!!!299906.java!!!	getQuery() : String
+            return null;
+!!!300034.java!!!	getEncodedQuery() : String
+            return null;
+!!!300162.java!!!	getFragment() : String
+            return fragment.getDecoded();
+!!!300290.java!!!	getEncodedFragment() : String
+            return fragment.getEncoded();
+!!!300418.java!!!	getPathSegments() : List<String>
+            return Collections.emptyList();
+!!!300546.java!!!	getLastPathSegment() : String
+            return null;
+!!!300674.java!!!	getUserInfo() : String
+            return null;
+!!!300802.java!!!	getEncodedUserInfo() : String
+            return null;
+!!!300930.java!!!	getHost() : String
+            return null;
+!!!301058.java!!!	getPort() : int
+            return -1;
+!!!301186.java!!!	toString() : String
+            @SuppressWarnings("StringEquality")
+            boolean cached = cachedString != NOT_CACHED;
+            if (cached) {
+                return cachedString;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(scheme).append(':');
+            sb.append(getEncodedSchemeSpecificPart());
+
+            if (!fragment.isEmpty()) {
+                sb.append('#').append(fragment.getEncoded());
+            }
+
+            return cachedString = sb.toString();
+!!!301314.java!!!	buildUpon() : Uri::Builder
+            return new Builder()
+                    .scheme(this.scheme)
+                    .opaquePart(this.ssp)
+                    .fragment(this.fragment);

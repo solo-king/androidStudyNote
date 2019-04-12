@@ -1,0 +1,15 @@
+class UsrLog
+!!!135908.java!!!	LOGD(in tag : String, in str : String) : void
+
+        if(DEBUG){
+
+            Log.d(tag, str);
+
+        }
+!!!136036.java!!!	LOGE(in tag : String, in str : String) : void
+
+        if(DEBUG){
+
+            Log.e(tag, str);
+
+        }

@@ -1,0 +1,81 @@
+class BytesEditorFragment
+!!!620674.java!!!	show(inout parent : DataUsageEditController, inout isLimit : boolean) : void
+            if (!(parent instanceof Fragment)) {
+                return;
+            }
+            Fragment targetFragment = (Fragment) parent;
+            if (!targetFragment.isAdded()) {
+                return;
+            }
+
+            final Bundle args = new Bundle();
+            args.putParcelable(EXTRA_TEMPLATE, parent.getNetworkTemplate());
+            args.putBoolean(EXTRA_LIMIT, isLimit);
+
+            final BytesEditorFragment dialog = new BytesEditorFragment();
+            dialog.setArguments(args);
+            dialog.setTargetFragment(targetFragment, 0);
+            dialog.show(targetFragment.getFragmentManager(), TAG_WARNING_EDITOR);
+!!!620802.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final Context context = getActivity();
+            final LayoutInflater dialogInflater = LayoutInflater.from(context);
+            final boolean isLimit = getArguments().getBoolean(EXTRA_LIMIT);
+            mView = dialogInflater.inflate(R.layout.data_usage_bytes_editor, null, false);
+            setupPicker((EditText) mView.findViewById(R.id.bytes),
+                    (Spinner) mView.findViewById(R.id.size_spinner));
+            return new AlertDialog.Builder(context)
+                    .setTitle(isLimit ? R.string.data_usage_limit_editor_title
+                            : R.string.data_usage_warning_editor_title)
+                    .setView(mView)
+                    .setPositiveButton(R.string.data_usage_cycle_editor_positive, this)
+                    .create();
+!!!620930.java!!!	setupPicker(inout bytesPicker : EditText, inout type : Spinner) : void
+            final DataUsageEditController target = (DataUsageEditController) getTargetFragment();
+            final NetworkPolicyEditor editor = target.getNetworkPolicyEditor();
+
+            final NetworkTemplate template = getArguments().getParcelable(EXTRA_TEMPLATE);
+            final boolean isLimit = getArguments().getBoolean(EXTRA_LIMIT);
+            final long bytes = isLimit ? editor.getPolicyLimitBytes(template)
+                    : editor.getPolicyWarningBytes(template);
+            final long limitDisabled = isLimit ? LIMIT_DISABLED : WARNING_DISABLED;
+
+            if (bytes > 1.5f * GB_IN_BYTES) {
+                final String bytesText = formatText(bytes / (float) GB_IN_BYTES);
+                bytesPicker.setText(bytesText);
+                bytesPicker.setSelection(0, bytesText.length());
+
+                type.setSelection(1);
+            } else {
+                final String bytesText = formatText(bytes / (float) MB_IN_BYTES);
+                bytesPicker.setText(bytesText);
+                bytesPicker.setSelection(0, bytesText.length());
+
+                type.setSelection(0);
+            }
+!!!621058.java!!!	formatText(in v : float) : String
+            v = Math.round(v * 100) / 100f;
+            return String.valueOf(v);
+!!!621186.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+            if (which != DialogInterface.BUTTON_POSITIVE) {
+                return;
+            }
+            final DataUsageEditController target = (DataUsageEditController) getTargetFragment();
+            final NetworkPolicyEditor editor = target.getNetworkPolicyEditor();
+
+            final NetworkTemplate template = getArguments().getParcelable(EXTRA_TEMPLATE);
+            final boolean isLimit = getArguments().getBoolean(EXTRA_LIMIT);
+            EditText bytesField = (EditText) mView.findViewById(R.id.bytes);
+            Spinner spinner = (Spinner) mView.findViewById(R.id.size_spinner);
+
+            String bytesString = bytesField.getText().toString();
+            if (bytesString.isEmpty()) {
+                bytesString = "0";
+            }
+            final long bytes = (long) (Float.valueOf(bytesString)
+                    * (spinner.getSelectedItemPosition() == 0 ? MB_IN_BYTES : GB_IN_BYTES));
+            if (isLimit) {
+                editor.setPolicyLimitBytes(template, bytes);
+            } else {
+                editor.setPolicyWarningBytes(template, bytes);
+            }
+            target.updateDataUsage();

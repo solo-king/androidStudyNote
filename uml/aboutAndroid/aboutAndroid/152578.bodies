@@ -1,0 +1,144 @@
+class DeviceAdminSettings
+!!!259202.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+!!!259330.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        mDPM = (DevicePolicyManager) getActivity().getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mUm = (UserManager) getActivity().getSystemService(Context.USER_SERVICE);
+        return inflater.inflate(R.layout.device_admin_settings, container, false);
+!!!259458.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+        Utils.forceCustomPadding(getListView(), true /* additive padding */);
+!!!259586.java!!!	onResume() : void
+        super.onResume();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(DevicePolicyManager.ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED);
+        getActivity().registerReceiverAsUser(
+                mBroadcastReceiver, UserHandle.ALL, filter, null, null);
+
+        final ComponentName deviceOwnerComponent = mDPM.getDeviceOwnerComponentOnAnyUser();
+        mDeviceOwnerPkg =
+                deviceOwnerComponent != null ? deviceOwnerComponent.getPackageName() : null;
+        mProfileOwnerComponents.clear();
+        final List<UserHandle> profiles = mUm.getUserProfiles();
+        final int profilesSize = profiles.size();
+        for (int i = 0; i < profilesSize; ++i) {
+            final int profileId = profiles.get(i).getIdentifier();
+            mProfileOwnerComponents.put(profileId, mDPM.getProfileOwnerAsUser(profileId));
+        }
+        updateList();
+!!!259714.java!!!	onPause() : void
+        getActivity().unregisterReceiver(mBroadcastReceiver);
+        super.onPause();
+!!!259842.java!!!	updateList() : void
+        mAdmins.clear();
+
+        final List<UserHandle> profiles = mUm.getUserProfiles();
+        final int profilesSize = profiles.size();
+        for (int i = 0; i < profilesSize; ++i) {
+            final int profileId = profiles.get(i).getIdentifier();
+            updateAvailableAdminsForProfile(profileId);
+        }
+        Collections.sort(mAdmins);
+
+        getListView().setAdapter(new PolicyListAdapter());
+!!!259970.java!!!	onListItemClick(inout l : ListView, inout v : View, in position : int, in id : long) : void
+        Object o = l.getAdapter().getItem(position);
+        DeviceAdminInfo dpi = (DeviceAdminInfo) o;
+        final UserHandle user = new UserHandle(getUserId(dpi));
+        final Activity activity = getActivity();
+        Intent intent = new Intent(activity, DeviceAdminAdd.class);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, dpi.getComponent());
+        activity.startActivityAsUser(intent, user);
+!!!261762.java!!!	isDeviceOwner(inout item : DeviceAdminInfo) : boolean
+        return getUserId(item) == UserHandle.myUserId()
+                && item.getPackageName().equals(mDeviceOwnerPkg);
+!!!261890.java!!!	isProfileOwner(inout item : DeviceAdminInfo) : boolean
+        ComponentName profileOwner = mProfileOwnerComponents.get(getUserId(item));
+        return item.getComponent().equals(profileOwner);
+!!!262018.java!!!	isActiveAdmin(inout item : DeviceAdminInfo) : boolean
+        return mDPM.isAdminActiveAsUser(item.getComponent(), getUserId(item));
+!!!262146.java!!!	isRemovingAdmin(inout item : DeviceAdminInfo) : boolean
+        return mDPM.isRemovingAdmin(item.getComponent(), getUserId(item));
+!!!262274.java!!!	updateAvailableAdminsForProfile(in profileId : int) : void
+        // We are adding the union of two sets 'A' and 'B' of device admins to mAvailableAdmins.
+        // Set 'A' is the set of active admins for the profile whereas set 'B' is the set of
+        // listeners to DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLED for the profile.
+
+        // Add all of set 'A' to mAvailableAdmins.
+        List<ComponentName> activeAdminsListForProfile = mDPM.getActiveAdminsAsUser(profileId);
+        addActiveAdminsForProfile(activeAdminsListForProfile, profileId);
+
+        // Collect set 'B' and add B-A to mAvailableAdmins.
+        addDeviceAdminBroadcastReceiversForProfile(activeAdminsListForProfile, profileId);
+!!!262402.java!!!	addDeviceAdminBroadcastReceiversForProfile(inout alreadyAddedComponents : Collection<ComponentName>, in profileId : int) : void
+        final PackageManager pm = getActivity().getPackageManager();
+        List<ResolveInfo> enabledForProfile = pm.queryBroadcastReceiversAsUser(
+                new Intent(DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLED),
+                PackageManager.GET_META_DATA | PackageManager.GET_DISABLED_UNTIL_USED_COMPONENTS,
+                profileId);
+        if (enabledForProfile == null) {
+            enabledForProfile = Collections.emptyList();
+        }
+        final int n = enabledForProfile.size();
+        for (int i = 0; i < n; ++i) {
+            ResolveInfo resolveInfo = enabledForProfile.get(i);
+            ComponentName riComponentName =
+                    new ComponentName(resolveInfo.activityInfo.packageName,
+                            resolveInfo.activityInfo.name);
+            if (alreadyAddedComponents == null
+                    || !alreadyAddedComponents.contains(riComponentName)) {
+                DeviceAdminInfo deviceAdminInfo =  createDeviceAdminInfo(resolveInfo.activityInfo);
+                // add only visible ones (note: active admins are added regardless of visibility)
+                if (deviceAdminInfo != null && deviceAdminInfo.isVisible()) {
+                    if (!deviceAdminInfo.getActivityInfo().applicationInfo.isInternal()) {
+                        continue;
+                    }
+                    DeviceAdminListItem item = new DeviceAdminListItem();
+                    item.info = deviceAdminInfo;
+                    item.name = deviceAdminInfo.loadLabel(pm).toString();
+                    // Active ones already added.
+                    item.active = false;
+                    mAdmins.add(item);
+                }
+            }
+        }
+!!!262530.java!!!	addActiveAdminsForProfile(in activeAdmins : List<ComponentName>, in profileId : int) : void
+        if (activeAdmins != null) {
+            final PackageManager packageManager = getActivity().getPackageManager();
+            final IPackageManager iPackageManager = AppGlobals.getPackageManager();
+            final int n = activeAdmins.size();
+            for (int i = 0; i < n; ++i) {
+                final ComponentName activeAdmin = activeAdmins.get(i);
+                final ActivityInfo ai;
+                try {
+                    ai = iPackageManager.getReceiverInfo(activeAdmin,
+                            PackageManager.GET_META_DATA |
+                            PackageManager.GET_DISABLED_UNTIL_USED_COMPONENTS |
+                            PackageManager.MATCH_ENCRYPTION_AWARE_AND_UNAWARE, profileId);
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Unable to load component: " + activeAdmin);
+                    continue;
+                }
+                final DeviceAdminInfo deviceAdminInfo = createDeviceAdminInfo(ai);
+                if (deviceAdminInfo == null) {
+                    continue;
+                }
+                // Don't do the applicationInfo.isInternal() check here; if an active
+                // admin is already on SD card, just show it.
+                final DeviceAdminListItem item = new DeviceAdminListItem();
+                item.info = deviceAdminInfo;
+                item.name = deviceAdminInfo.loadLabel(packageManager).toString();
+                item.active = true;
+                mAdmins.add(item);
+            }
+        }
+!!!262658.java!!!	createDeviceAdminInfo(inout ai : ActivityInfo) : DeviceAdminInfo
+        try {
+            return new DeviceAdminInfo(getActivity(), ai);
+        } catch (XmlPullParserException|IOException e) {
+            Log.w(TAG, "Skipping " + ai, e);
+        }
+        return null;
+!!!262786.java!!!	getUserId(inout adminInfo : DeviceAdminInfo) : int
+        return UserHandle.getUserId(adminInfo.getActivityInfo().applicationInfo.uid);

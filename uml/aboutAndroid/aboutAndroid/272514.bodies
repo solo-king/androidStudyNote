@@ -1,0 +1,67 @@
+class PrintJobsLoader
+!!!865026.java!!!	PrintJobsLoader(inout context : Context)
+            super(context);
+            mPrintManager = ((PrintManager) context.getSystemService(
+                    Context.PRINT_SERVICE)).getGlobalPrintManagerForUser(
+                    context.getUserId());
+!!!865154.java!!!	deliverResult(inout printJobs : List<PrintJobInfo>) : void
+            if (isStarted()) {
+                super.deliverResult(printJobs);
+            }
+!!!865282.java!!!	onStartLoading() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onStartLoading()");
+            }
+            // If we already have a result, deliver it immediately.
+            if (!mPrintJobs.isEmpty()) {
+                deliverResult(new ArrayList<PrintJobInfo>(mPrintJobs));
+            }
+            // Start watching for changes.
+            if (mPrintJobStateChangeListener == null) {
+                mPrintJobStateChangeListener = new PrintJobStateChangeListener() {
+                    @Override
+                    public void onPrintJobStateChanged(PrintJobId printJobId) {
+                        onForceLoad();
+                    }
+                };
+                mPrintManager.addPrintJobStateChangeListener(
+                        mPrintJobStateChangeListener);
+            }
+            // If the data changed or we have no data - load it now.
+            if (mPrintJobs.isEmpty()) {
+                onForceLoad();
+            }
+!!!865410.java!!!	onStopLoading() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onStopLoading()");
+            }
+            // Cancel the load in progress if possible.
+            onCancelLoad();
+!!!865538.java!!!	onReset() : void
+            if (DEBUG) {
+                Log.i(LOG_TAG, "onReset()");
+            }
+            // Stop loading.
+            onStopLoading();
+            // Clear the cached result.
+            mPrintJobs.clear();
+            // Stop watching for changes.
+            if (mPrintJobStateChangeListener != null) {
+                mPrintManager.removePrintJobStateChangeListener(
+                        mPrintJobStateChangeListener);
+                mPrintJobStateChangeListener = null;
+            }
+!!!865666.java!!!	loadInBackground() : List<PrintJobInfo>
+            List<PrintJobInfo> printJobInfos = null;
+            List<PrintJob> printJobs = mPrintManager.getPrintJobs();
+            final int printJobCount = printJobs.size();
+            for (int i = 0; i < printJobCount; i++) {
+                PrintJobInfo printJob = printJobs.get(i).getInfo();
+                if (shouldShowToUser(printJob)) {
+                    if (printJobInfos == null) {
+                        printJobInfos = new ArrayList<PrintJobInfo>();
+                    }
+                    printJobInfos.add(printJob);
+                }
+            }
+            return printJobInfos;

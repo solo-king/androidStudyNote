@@ -1,0 +1,47 @@
+class KeyboardLayoutLoader
+!!!767106.java!!!	KeyboardLayoutLoader(inout context : Context, inout hardKeyboards : List<HardKeyboardDeviceInfo>)
+            super(context);
+            mHardKeyboards = Preconditions.checkNotNull(hardKeyboards);
+!!!767234.java!!!	loadInBackground(inout deviceInfo : PhysicalKeyboardFragment::HardKeyboardDeviceInfo) : PhysicalKeyboardFragment::Keyboards
+            final ArrayList<Keyboards.KeyboardInfo> keyboardInfoList = new ArrayList<>();
+            final InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
+            final InputManager im = getContext().getSystemService(InputManager.class);
+            if (imm != null && im != null) {
+                for (InputMethodInfo imi : imm.getEnabledInputMethodList()) {
+                    final List<InputMethodSubtype> subtypes = imm.getEnabledInputMethodSubtypeList(
+                            imi, true /* allowsImplicitlySelectedSubtypes */);
+                    if (subtypes.isEmpty()) {
+                        // Here we use null to indicate that this IME has no subtype.
+                        final InputMethodSubtype nullSubtype = null;
+                        final KeyboardLayout layout = im.getKeyboardLayoutForInputDevice(
+                                deviceInfo.mDeviceIdentifier, imi, nullSubtype);
+                        keyboardInfoList.add(new Keyboards.KeyboardInfo(imi, nullSubtype, layout));
+                        continue;
+                    }
+
+                    // If the IME supports subtypes, we pick up "keyboard" subtypes only.
+                    final int N = subtypes.size();
+                    for (int i = 0; i < N; ++i) {
+                        final InputMethodSubtype subtype = subtypes.get(i);
+                        if (!IM_SUBTYPE_MODE_KEYBOARD.equalsIgnoreCase(subtype.getMode())) {
+                            continue;
+                        }
+                        final KeyboardLayout layout = im.getKeyboardLayoutForInputDevice(
+                                deviceInfo.mDeviceIdentifier, imi, subtype);
+                        keyboardInfoList.add(new Keyboards.KeyboardInfo(imi, subtype, layout));
+                    }
+                }
+            }
+            return new Keyboards(deviceInfo, keyboardInfoList);
+!!!767362.java!!!	loadInBackground() : PhysicalKeyboardFragment::Keyboards
+            List<Keyboards> keyboardsList = new ArrayList<>(mHardKeyboards.size());
+            for (HardKeyboardDeviceInfo deviceInfo : mHardKeyboards) {
+                keyboardsList.add(loadInBackground(deviceInfo));
+            }
+            return keyboardsList;
+!!!767490.java!!!	onStartLoading() : void
+            super.onStartLoading();
+            forceLoad();
+!!!767618.java!!!	onStopLoading() : void
+            super.onStopLoading();
+            cancelLoad();

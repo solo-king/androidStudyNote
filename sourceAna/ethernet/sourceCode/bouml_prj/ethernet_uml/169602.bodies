@@ -1,0 +1,5 @@
+class BadParcelableException
+!!!408834.java!!!	BadParcelableException(in msg : String)
+        super(msg);
+!!!408962.java!!!	BadParcelableException(inout cause : Exception)
+        super(cause);

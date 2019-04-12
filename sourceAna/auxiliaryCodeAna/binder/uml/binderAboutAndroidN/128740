@@ -1,0 +1,1067 @@
+format 221
+"services" // sourceCode::usr::services
+  revision 1
+  modified_by 100 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  java_dir "/media/chenqigan/GANYE_SSD/androidStudyNote/sourceAna/auxiliaryCodeAna/binder/sourceCode/usr/services/"
+  java_package "com.android.server.usr.services"
+  classview 128228 "services"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    class 129252 "UsrGpioService"
+      visibility public 
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      classrelation 129252 // <generalisation>
+	relation 129252 ---|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 129252 // <generalisation>
+	  b parent class_ref 129380 // Stub
+      end
+
+      attribute 128740 "TAG"
+	const_attribute private explicit_type "String"
+	init_value " \"UsrGpioService\""
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 128868 "mContext"
+	private explicit_type "Context"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 129764 "open_gpio_devices"
+	class_operation package explicit_return_type "int"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+	comment "  STATIC MEMBER STATEMENT  "
+      end
+
+      operation 129892 "set_gpio_mode"
+	class_operation package explicit_return_type "int"
+	nparams 3
+	  param in name "gpioName" explicit_type "int"
+	  param in name "gpioMode" explicit_type "int"
+	  param in name "defaultStatus" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130020 "get_gpio_mode"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130148 "set_gpio_output_status"
+	class_operation package explicit_return_type "int"
+	nparams 2
+	  param in name "gpioName" explicit_type "int"
+	  param in name "gpioStatus" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130276 "get_gpio_output_status"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130404 "get_gpio_input_status"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130532 "ctrl_adcx_status"
+	class_operation package explicit_return_type "int"
+	nparams 2
+	  param in name "adcName" explicit_type "int"
+	  param inout name "status" explicit_type "boolean"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130660 "get_adcx_status"
+	class_operation package explicit_return_type "boolean"
+	nparams 1
+	  param in name "adcName" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130788 "get_adcx_vaules"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param in name "adcName" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 130916 "watchdog_ctrl"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param inout name "open" explicit_type "boolean"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 131044 "feet_dog"
+	class_operation package explicit_return_type "int"
+	nparams 1
+	  param in name "time" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 131172 "unsafe_reboot"
+	class_operation package explicit_return_type "int"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 131300 "get_watchdog_status"
+	class_operation package explicit_return_type "int"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 131428 "get_version"
+	class_operation package explicit_return_type "java.lang.String"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 131556 "UsrGpioService"
+	public explicit_return_type ""
+	nparams 1
+	  param inout name "context" explicit_type "Context"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 131684 "setGpioMode"
+	public explicit_return_type "int"
+	nparams 3
+	  param in name "gpioName" explicit_type "int"
+	  param in name "gpioMode" explicit_type "int"
+	  param in name "defaultStatus" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 131812 "getGpioMode"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 131940 "setGpioOutputStatus"
+	public explicit_return_type "int"
+	nparams 2
+	  param in name "gpioName" explicit_type "int"
+	  param in name "gpioStatus" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132068 "getGpioOutputStatus"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132196 "getGpioInputStatus"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "gpioName" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132324 "ctrlAdcxStatus"
+	public explicit_return_type "int"
+	nparams 2
+	  param in name "adcName" explicit_type "int"
+	  param inout name "status" explicit_type "boolean"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132452 "getAdcxStatus"
+	public explicit_return_type "boolean"
+	nparams 1
+	  param in name "adcName" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132580 "getAdcxVaules"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "adcName" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132708 "watchdogCtrl"
+	public explicit_return_type "int"
+	nparams 1
+	  param inout name "open" explicit_type "boolean"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132836 "feetDog"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "time" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 132964 "unsafeReboot"
+	public explicit_return_type "int"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 133092 "getWatchdogStatus"
+	public explicit_return_type "int"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 133220 "getVersion"
+	public explicit_return_type "java.lang.String"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+    end
+
+    class 129508 "UsrLedService"
+      visibility public 
+      cpp_decl ""
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      classrelation 129380 // <generalisation>
+	relation 129380 ---|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 129380 // <generalisation>
+	  b parent class_ref 128868 // Stub
+      end
+
+      classrelation 129508 // <realization>
+	relation 129508 -_-|>
+	  a public
+	    java "${type}"
+	    classrelation_ref 129508 // <realization>
+	  b parent class_ref 129636 // IUsrLedManagerData
+      end
+
+      operation 133348 "open_led_devices"
+	class_operation private explicit_return_type "int"
+	nparams 0
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      operation 133476 "led_ctrl"
+	class_operation private explicit_return_type "int"
+	nparams 1
+	  param in name "cmd" explicit_type "int"
+	
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}native ${type} ${name}${(}${t0} ${p0}${)}${throws};
+s"
+	
+	
+	
+      end
+
+      attribute 128996 "TAG"
+	const_attribute private explicit_type "String"
+	init_value " \"UsrLedService\""
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 129124 "DEBUG"
+	const_attribute private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "true:打印Log信息"
+      end
+
+      attribute 129252 "mContext"
+	private explicit_type "Context"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 129380 "LED_BING_INTERVAL_TIME"
+	const_attribute private explicit_type "int"
+	init_value " 150"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "ms"
+      end
+
+      attribute 129508 "WORK_LED_BLING_INTERVAL_TIME"
+	const_attribute private explicit_type "int"
+	init_value " 1000"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "ms"
+      end
+
+      attribute 129636 "BLINK_COUNT"
+	const_attribute private explicit_type "int"
+	init_value " 3"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 129764 "lastSignalLevel"
+	class_attribute private explicit_type "int"
+	init_value " -1"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 129892 "serviceCanCalledFlags"
+	class_attribute volatile private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 130020 "mConnectivityManager"
+	private explicit_type "ConnectivityManager"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "网络链接服务代理类
+"
+      end
+
+      attribute 130148 "networkStatusChangeBeforeBlink"
+	volatile private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment " ture:跑马灯闪烁前有网络状态变化通知,执行完需要进行网络恢复
+ false:无通知
+ 解决在跑马灯前就已有网络通知
+
+"
+      end
+
+      attribute 130276 "holdSignalAndCloseAll"
+	volatile private explicit_type "boolean"
+	init_value " false"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "true:信号指示灯不可设置，并且应该全部关闭
+false:无限制
+
+"
+      end
+
+      attribute 130404 "currentlySignalLevel"
+	volatile private explicit_type "int"
+	init_value " -1"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+	comment "当前信号灯的强度
+"
+      end
+
+      attribute 130532 "bingRunnable"
+	private explicit_type "Runnable"
+	init_value " new Runnable() {
+        @Override
+        public void run() {
+        
+        	ledBlinkCount(BLINK_COUNT);
+            new Thread(workLedBlink).start();
+            serviceCanCalledFlags = true;
+            //在跑马灯过程中有网络通知来过那么需要马上更新下网络状态
+            if(networkStatusChangeBeforeBlink){
+                updateNetLed();
+            }
+        }
+    }"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 130660 "workLedBlink"
+	private explicit_type "Runnable"
+	init_value " new Runnable() {
+        @Override
+        public void run() {
+            while(true){
+                ledCtrl(WORK_LED_ON);
+                UsrGeneralUtils.sleepMs(WORK_LED_BLING_INTERVAL_TIME);
+                ledCtrl(WORK_LED_OFF);
+                UsrGeneralUtils.sleepMs(WORK_LED_BLING_INTERVAL_TIME);
+            }
+        }
+    }"
+	cpp_decl ""
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      operation 133604 "getImportComponents"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "放置一些系统服务的获取"
+      end
+
+      operation 133732 "UsrLedService"
+	public explicit_return_type ""
+	nparams 1
+	  param inout name "context" explicit_type "Context"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${synchronized}${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 133860 "netLedCtrl"
+	private explicit_return_type "void"
+	nparams 1
+	  param inout name "netLedCtrlCmd" explicit_type "boolean"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "辅助函数，用于单独控制NET指示灯。依赖于ledCtrl()接口"
+      end
+
+      operation 133988 "updateNetLed"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 134116 "isNetworkChanged"
+	private explicit_return_type "boolean"
+	nparams 1
+	  param in name "action" explicit_type "String"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      class 129764 "SignalStrengthReceiver"
+	visibility package 
+	cpp_decl ""
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129636 // <generalisation>
+	  relation 129636 ---|>
+	    a public
+	      java "${type}"
+	      classrelation_ref 129636 // <generalisation>
+	    b parent class_ref 129892 // BroadcastReceiver
+	end
+
+	operation 134244 "onReceive"
+	  public explicit_return_type "void"
+	  nparams 2
+	    param inout name "context" explicit_type "Context"
+	    param inout name "intent" explicit_type "Intent"
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  java_annotation "@Override
+"
+	  
+	  
+	  
+	end
+      end
+
+      operation 134372 "addSignalChanageListener"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "注册网络信号灯变化广播"
+      end
+
+      class 130020 "NetworkChanagerReceiver"
+	visibility package 
+	cpp_decl ""
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129764 // <generalisation>
+	  relation 129764 ---|>
+	    a public
+	      java "${type}"
+	      classrelation_ref 129764 // <generalisation>
+	    b parent class_ref 129892 // BroadcastReceiver
+	end
+
+	operation 134500 "onReceive"
+	  public explicit_return_type "void"
+	  nparams 2
+	    param inout name "context" explicit_type "Context"
+	    param inout name "intent" explicit_type "Intent"
+	  
+	  preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}, ${t1} ${p1}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  java_annotation "@Override
+"
+	  
+	  
+	  
+	end
+      end
+
+      operation 134628 "addNetWorkChanageListener"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "注册网络变化广播"
+      end
+
+      operation 134756 "openLedDevices"
+	public explicit_return_type "int"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 134884 "ledCtrl"
+	public explicit_return_type "int"
+	nparams 1
+	  param in name "cmd" explicit_type "int"
+	
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	java_annotation "@Override
+"
+	
+	
+	
+      end
+
+      operation 135012 "led_bing"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 135140 "ledBlinkCount"
+	private explicit_return_type "void"
+	nparams 1
+	  param in name "blinkCount" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 135268 "closeAllSignalLed"
+	private explicit_return_type "void"
+	nparams 0
+	
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 135396 "updateCurrentlySignalLevel"
+	private explicit_return_type "boolean"
+	nparams 1
+	  param in name "level" explicit_type "int"
+	
+	preserve_java_body_indent synchronized java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment "1.保持要显示的level为最新状态
+2.存在更新操作则返回true,反之则返回false
+"
+      end
+
+      operation 135524 "updateSignalLevelLed"
+	private explicit_return_type "void"
+	nparams 1
+	  param in name "level" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 135652 "signalCtrl"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "level" explicit_type "int"
+	
+	preserve_java_body_indent java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${t0} ${p0}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+    end
+  end
+
+  deploymentview 128228 "services"
+    //deployment diagram settings
+    deploymentdiagramsettings
+     end
+    artifact 128228 "UsrGpioService"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+import android.content.Context;
+import android.os.IUsrGpioService;
+import com.android.server.usr.Utils.UsrLog;
+import com.android.server.usr.Utils.UsrGeneralUtils;
+import android.util.Log;
+${definition}"
+      associated_elems
+	class_ref 129252 // UsrGpioService
+      end
+    end
+
+    artifact 128356 "UsrLedService"
+      stereotype "source"
+      java_src "${comment}
+${package}
+${imports}
+import android.content.Context;
+import android.os.IUsrLedService;
+import android.service.usr.leds.IUsrLedManagerData;
+import com.android.server.usr.Utils.UsrLog;
+import com.android.server.usr.Utils.UsrGeneralUtils;
+import android.telephony.SignalStrength;
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
+import android.os.ServiceManager;
+${definition}"
+      associated_elems
+	class_ref 129508 // UsrLedService
+      end
+    end
+  end
+end

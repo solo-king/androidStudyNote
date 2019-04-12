@@ -1,0 +1,235 @@
+class NotificationSettingsBase
+!!!801666.java!!!	onActivityCreated(inout savedInstanceState : Bundle) : void
+        super.onActivityCreated(savedInstanceState);
+        if (DEBUG) Log.d(TAG, "onActivityCreated mCreated=" + mCreated);
+        if (mCreated) {
+            Log.w(TAG, "onActivityCreated: ignoring duplicate call");
+            return;
+        }
+        mCreated = true;
+!!!801794.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        mContext = getActivity();
+        Intent intent = getActivity().getIntent();
+        Bundle args = getArguments();
+        if (DEBUG) Log.d(TAG, "onCreate getIntent()=" + intent);
+        if (intent == null && args == null) {
+            Log.w(TAG, "No intent");
+            toastAndFinish();
+            return;
+        }
+
+        mPm = getPackageManager();
+        mUm = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
+
+        mPkg = args != null && args.containsKey(AppInfoBase.ARG_PACKAGE_NAME)
+                ? args.getString(AppInfoBase.ARG_PACKAGE_NAME)
+                : intent.getStringExtra(Settings.EXTRA_APP_PACKAGE);
+        mUid = args != null && args.containsKey(AppInfoBase.ARG_PACKAGE_UID)
+                ? args.getInt(AppInfoBase.ARG_PACKAGE_UID)
+                : intent.getIntExtra(Settings.EXTRA_APP_UID, -1);
+        if (mUid == -1 || TextUtils.isEmpty(mPkg)) {
+            Log.w(TAG, "Missing extras: " + Settings.EXTRA_APP_PACKAGE + " was " + mPkg + ", "
+                    + Settings.EXTRA_APP_UID + " was " + mUid);
+            toastAndFinish();
+            return;
+        }
+        mUserId = UserHandle.getUserId(mUid);
+
+        if (DEBUG) Log.d(TAG, "Load details for pkg=" + mPkg + " uid=" + mUid);
+        mPkgInfo = findPackageInfo(mPkg, mUid);
+        if (mPkgInfo == null) {
+            Log.w(TAG, "Failed to find package info: " + Settings.EXTRA_APP_PACKAGE + " was " + mPkg
+                    + ", " + Settings.EXTRA_APP_UID + " was " + mUid);
+            toastAndFinish();
+            return;
+        }
+
+        mSuspendedAppsAdmin = RestrictedLockUtils.checkIfApplicationIsSuspended(
+                mContext, mPkg, mUserId);
+        mShowSlider = Settings.Secure.getInt(getContentResolver(), TUNER_SETTING, 0) == 1;
+!!!801922.java!!!	onResume() : void
+        super.onResume();
+        if ((mUid != -1 && getPackageManager().getPackagesForUid(mUid) == null)) {
+            // App isn't around anymore, must have been removed.
+            finish();
+            return;
+        }
+        mSuspendedAppsAdmin = RestrictedLockUtils.checkIfApplicationIsSuspended(
+                mContext, mPkg, mUserId);
+        if (mImportance != null) {
+            mImportance.setDisabledByAdmin(mSuspendedAppsAdmin);
+        }
+        if (mPriority != null) {
+            mPriority.setDisabledByAdmin(mSuspendedAppsAdmin);
+        }
+        if (mBlock != null) {
+            mBlock.setDisabledByAdmin(mSuspendedAppsAdmin);
+        }
+        if (mSilent != null) {
+            mSilent.setDisabledByAdmin(mSuspendedAppsAdmin);
+        }
+        if (mVisibilityOverride != null) {
+            mVisibilityOverride.setDisabledByAdmin(mSuspendedAppsAdmin);
+        }
+!!!802050.java!!!	setupImportancePrefs(inout notBlockable : boolean, inout notSilenceable : boolean, in importance : int, inout banned : boolean) : void
+        if (mShowSlider && !notSilenceable) {
+            setVisible(mBlock, false);
+            setVisible(mSilent, false);
+            mImportance.setDisabledByAdmin(mSuspendedAppsAdmin);
+            mImportance.setMinimumProgress(
+                    notBlockable ? Ranking.IMPORTANCE_MIN : Ranking.IMPORTANCE_NONE);
+            mImportance.setMax(Ranking.IMPORTANCE_MAX);
+            mImportance.setProgress(importance);
+            mImportance.setAutoOn(importance == Ranking.IMPORTANCE_UNSPECIFIED);
+            mImportance.setCallback(new ImportanceSeekBarPreference.Callback() {
+                @Override
+                public void onImportanceChanged(int progress, boolean fromUser) {
+                    if (fromUser) {
+                        mBackend.setImportance(mPkg, mUid, progress);
+                    }
+                    updateDependents(progress);
+                }
+            });
+        } else {
+            setVisible(mImportance, false);
+            // Hide controls that are not settable, unless they are already switched on.
+            final boolean blocked = (importance == Ranking.IMPORTANCE_NONE || banned);
+            if (notBlockable && !blocked) {
+                setVisible(mBlock, false);
+            } else {
+                mBlock.setChecked(blocked);
+                mBlock.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        final boolean blocked = (Boolean) newValue;
+                        final int importance =
+                                blocked ? Ranking.IMPORTANCE_NONE : Ranking.IMPORTANCE_UNSPECIFIED;
+                        mBackend.setImportance(mPkgInfo.packageName, mUid, importance);
+                        updateDependents(importance);
+                        return true;
+                    }
+                });
+            }
+            final boolean silenced = (importance == Ranking.IMPORTANCE_LOW);
+            if (notSilenceable && !silenced) {
+                setVisible(mSilent, false);
+            } else {
+                mSilent.setChecked(silenced);
+                mSilent.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        final boolean silenced = (Boolean) newValue;
+                        final int importance =
+                                silenced ? Ranking.IMPORTANCE_LOW : Ranking.IMPORTANCE_UNSPECIFIED;
+                        mBackend.setImportance(mPkgInfo.packageName, mUid, importance);
+                        updateDependents(importance);
+                        return true;
+                    }
+                });
+            }
+            updateDependents(banned ? Ranking.IMPORTANCE_NONE : importance);
+        }
+!!!802178.java!!!	setupPriorityPref(inout priority : boolean) : void
+        mPriority.setDisabledByAdmin(mSuspendedAppsAdmin);
+        mPriority.setChecked(priority);
+        mPriority.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                final boolean bypassZenMode = (Boolean) newValue;
+                return mBackend.setBypassZenMode(mPkgInfo.packageName, mUid, bypassZenMode);
+            }
+        });
+!!!802306.java!!!	setupVisOverridePref(in sensitive : int) : void
+        ArrayList<CharSequence> entries = new ArrayList<>();
+        ArrayList<CharSequence> values = new ArrayList<>();
+
+        mVisibilityOverride.clearRestrictedItems();
+        if (getLockscreenNotificationsEnabled() && getLockscreenAllowPrivateNotifications()) {
+            final String summaryShowEntry =
+                    getString(R.string.lock_screen_notifications_summary_show);
+            final String summaryShowEntryValue = Integer.toString(Ranking.VISIBILITY_NO_OVERRIDE);
+            entries.add(summaryShowEntry);
+            values.add(summaryShowEntryValue);
+            setRestrictedIfNotificationFeaturesDisabled(summaryShowEntry, summaryShowEntryValue,
+                    DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS
+                            | DevicePolicyManager.KEYGUARD_DISABLE_UNREDACTED_NOTIFICATIONS);
+        }
+
+        final String summaryHideEntry = getString(R.string.lock_screen_notifications_summary_hide);
+        final String summaryHideEntryValue = Integer.toString(Notification.VISIBILITY_PRIVATE);
+        entries.add(summaryHideEntry);
+        values.add(summaryHideEntryValue);
+        setRestrictedIfNotificationFeaturesDisabled(summaryHideEntry, summaryHideEntryValue,
+                DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS);
+        entries.add(getString(R.string.lock_screen_notifications_summary_disable));
+        values.add(Integer.toString(Notification.VISIBILITY_SECRET));
+        mVisibilityOverride.setEntries(entries.toArray(new CharSequence[entries.size()]));
+        mVisibilityOverride.setEntryValues(values.toArray(new CharSequence[values.size()]));
+
+        if (sensitive == Ranking.VISIBILITY_NO_OVERRIDE) {
+            mVisibilityOverride.setValue(Integer.toString(getGlobalVisibility()));
+        } else {
+            mVisibilityOverride.setValue(Integer.toString(sensitive));
+        }
+        mVisibilityOverride.setSummary("%s");
+
+        mVisibilityOverride.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int sensitive = Integer.parseInt((String) newValue);
+                if (sensitive == getGlobalVisibility()) {
+                    sensitive = Ranking.VISIBILITY_NO_OVERRIDE;
+                }
+                mBackend.setVisibilityOverride(mPkgInfo.packageName, mUid, sensitive);
+                return true;
+            }
+        });
+!!!802434.java!!!	setRestrictedIfNotificationFeaturesDisabled(inout entry : CharSequence, inout entryValue : CharSequence, in keyguardNotificationFeatures : int) : void
+        EnforcedAdmin admin = RestrictedLockUtils.checkIfKeyguardFeaturesDisabled(
+                mContext, keyguardNotificationFeatures, mUserId);
+        if (admin != null) {
+            RestrictedItem item = new RestrictedItem(entry, entryValue, admin);
+            mVisibilityOverride.addRestrictedItem(item);
+        }
+!!!802562.java!!!	getGlobalVisibility() : int
+        int globalVis = Ranking.VISIBILITY_NO_OVERRIDE;
+        if (!getLockscreenNotificationsEnabled()) {
+            globalVis = Notification.VISIBILITY_SECRET;
+        } else if (!getLockscreenAllowPrivateNotifications()) {
+            globalVis = Notification.VISIBILITY_PRIVATE;
+        }
+        return globalVis;
+!!!802690.java!!!	getLockscreenNotificationsEnabled() : boolean
+        return Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, 0) != 0;
+!!!802818.java!!!	getLockscreenAllowPrivateNotifications() : boolean
+        return Settings.Secure.getInt(getContentResolver(),
+                Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, 0) != 0;
+!!!803074.java!!!	setVisible(inout p : Preference, inout visible : boolean) : void
+        final boolean isVisible = getPreferenceScreen().findPreference(p.getKey()) != null;
+        if (isVisible == visible) return;
+        if (visible) {
+            getPreferenceScreen().addPreference(p);
+        } else {
+            getPreferenceScreen().removePreference(p);
+        }
+!!!803202.java!!!	toastAndFinish() : void
+        Toast.makeText(mContext, R.string.app_not_found_dlg_text, Toast.LENGTH_SHORT).show();
+        getActivity().finish();
+!!!803330.java!!!	findPackageInfo(in pkg : String, in uid : int) : PackageInfo
+        final String[] packages = mPm.getPackagesForUid(uid);
+        if (packages != null && pkg != null) {
+            final int N = packages.length;
+            for (int i = 0; i < N; i++) {
+                final String p = packages[i];
+                if (pkg.equals(p)) {
+                    try {
+                        return mPm.getPackageInfo(pkg, PackageManager.GET_SIGNATURES);
+                    } catch (NameNotFoundException e) {
+                        Log.w(TAG, "Failed to load package " + pkg, e);
+                    }
+                }
+            }
+        }
+        return null;

@@ -1,0 +1,26 @@
+class UriPermission
+!!!791810.java!!!	UriPermission(inout uri : Uri, in modeFlags : int, in persistedTime : long)
+        mUri = uri;
+        mModeFlags = modeFlags;
+        mPersistedTime = persistedTime;
+!!!791938.java!!!	UriPermission(inout in : Parcel)
+        mUri = in.readParcelable(null);
+        mModeFlags = in.readInt();
+        mPersistedTime = in.readLong();
+!!!792066.java!!!	getUri() : Uri
+        return mUri;
+!!!792194.java!!!	isReadPermission() : boolean
+        return (mModeFlags & Intent.FLAG_GRANT_READ_URI_PERMISSION) != 0;
+!!!792322.java!!!	isWritePermission() : boolean
+        return (mModeFlags & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0;
+!!!792450.java!!!	getPersistedTime() : long
+        return mPersistedTime;
+!!!792578.java!!!	toString() : String
+        return "UriPermission {uri=" + mUri + ", modeFlags=" + mModeFlags + ", persistedTime="
+                + mPersistedTime + "}";
+!!!792706.java!!!	describeContents() : int
+        return 0;
+!!!792834.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        dest.writeParcelable(mUri, flags);
+        dest.writeInt(mModeFlags);
+        dest.writeLong(mPersistedTime);

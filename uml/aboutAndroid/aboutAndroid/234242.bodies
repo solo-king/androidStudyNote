@@ -1,0 +1,19 @@
+class SummaryProvider
+!!!637314.java!!!	SummaryProvider(inout activity : Activity, inout summaryLoader : SummaryLoader)
+            mActivity = activity;
+            mSummaryLoader = summaryLoader;
+            mDataController = new DataUsageController(activity);
+!!!637442.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                DataUsageController.DataUsageInfo info = mDataController.getDataUsageInfo();
+                String used;
+                if (info == null) {
+                    used = Formatter.formatFileSize(mActivity, 0);
+                } else if (info.limitLevel <= 0) {
+                    used = Formatter.formatFileSize(mActivity, info.usageLevel);
+                } else {
+                    used = Utils.formatPercentage(info.usageLevel, info.limitLevel);
+                }
+                mSummaryLoader.setSummary(this,
+                        mActivity.getString(R.string.data_usage_summary_format, used));
+            }

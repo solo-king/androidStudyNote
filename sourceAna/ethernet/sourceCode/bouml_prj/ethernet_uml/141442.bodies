@@ -1,0 +1,4 @@
+class DnsArg
+!!!186882.java!!!	DnsArg(inout d : InetAddress, in s : int)
+            dns = d;
+            seq = s;

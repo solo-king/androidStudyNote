@@ -1,0 +1,18 @@
+class DefaultState
+!!!171010.java!!!	processMessage(inout message : Message) : boolean
+            if (DBG) log(getName() + message.toString());
+            switch (message.what) {
+                case CMD_DETECT_PORTAL:
+                    NetworkInfo info = (NetworkInfo) message.obj;
+                    // Checking on a secondary connection is not supported
+                    // yet
+                    notifyPortalCheckComplete(info);
+                    break;
+                case CMD_CONNECTIVITY_CHANGE:
+                case CMD_DELAYED_CAPTIVE_CHECK:
+                    break;
+                default:
+                    loge("Ignoring " + message);
+                    break;
+            }
+            return HANDLED;

@@ -1,0 +1,3 @@
+class MessengerImpl
+!!!407682.java!!!	send(inout msg : Message) : void
+            Handler.this.sendMessage(msg);

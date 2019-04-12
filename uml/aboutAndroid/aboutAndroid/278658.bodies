@@ -1,0 +1,28 @@
+class RestrictedMenuItem
+!!!905346.java!!!	RestrictedMenuItem(inout context : Context, in title : String, in restriction : String, inout action : Runnable)
+            mContext = context;
+            mTitle = title;
+            mAction = action;
+
+            final int myUserId = UserHandle.myUserId();
+            mAdmin = RestrictedLockUtils.checkIfRestrictionEnforced(context,
+                    restriction, myUserId);
+            mIsRestrictedByBase = RestrictedLockUtils.hasBaseUserRestriction(mContext,
+                    restriction, myUserId);
+!!!905474.java!!!	toString() : String
+            return mTitle;
+!!!905602.java!!!	doAction() : void
+            if (isRestrictedByBase()) {
+                return;
+            }
+
+            if (isRestrictedByAdmin()) {
+                RestrictedLockUtils.sendShowAdminSupportDetailsIntent(mContext, mAdmin);
+                return;
+            }
+
+            mAction.run();
+!!!905730.java!!!	isRestrictedByAdmin() : boolean
+            return mAdmin != null;
+!!!905858.java!!!	isRestrictedByBase() : boolean
+            return mIsRestrictedByBase;

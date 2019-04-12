@@ -1,0 +1,14 @@
+class SummaryProvider
+!!!268290.java!!!	SummaryProvider(inout context : Context, inout loader : SummaryLoader)
+            mContext = context;
+            mLoader = loader;
+!!!268418.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                updateSummary();
+            }
+!!!268546.java!!!	updateSummary() : void
+            boolean auto = Settings.System.getInt(mContext.getContentResolver(),
+                    SCREEN_BRIGHTNESS_MODE, SCREEN_BRIGHTNESS_MODE_AUTOMATIC)
+                    == SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+            mLoader.setSummary(this, mContext.getString(auto ? R.string.display_summary_on
+                    : R.string.display_summary_off));

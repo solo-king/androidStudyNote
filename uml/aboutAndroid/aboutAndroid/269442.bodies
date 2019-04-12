@@ -1,0 +1,89 @@
+class ZenRuleSelectionDialog
+!!!847490.java!!!	ZenRuleSelectionDialog(inout context : Context, inout serviceListing : ZenServiceListing)
+        mContext = context;
+        mPm = context.getPackageManager();
+        mNm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mServiceListing = serviceListing;
+        final View v =
+                LayoutInflater.from(context).inflate(R.layout.zen_rule_type_selection, null, false);
+
+        mRuleContainer = (LinearLayout) v.findViewById(R.id.rule_container);
+        if (mServiceListing != null) {
+            bindType(defaultNewEvent());
+            bindType(defaultNewSchedule());
+            mServiceListing.addZenCallback(mServiceListingCallback);
+            mServiceListing.reloadApprovedServices();
+        }
+        mDialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.zen_mode_choose_rule_type)
+                .setView(v)
+                .setOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (mServiceListing != null) {
+                            mServiceListing.removeZenCallback(mServiceListingCallback);
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+!!!847618.java!!!	show() : void
+        mDialog.show();
+!!!848002.java!!!	bindType(in ri : ZenRuleInfo) : void
+        try {
+            ApplicationInfo info = mPm.getApplicationInfo(ri.packageName, 0);
+            final LinearLayout v = (LinearLayout) LayoutInflater.from(mContext).inflate(
+                    R.layout.zen_rule_type, null, false);
+
+            LoadIconTask task = new LoadIconTask((ImageView) v.findViewById(R.id.icon));
+            task.execute(info);
+            ((TextView) v.findViewById(R.id.title)).setText(ri.title);
+            if (!ri.isSystem) {
+                TextView subtitle = (TextView) v.findViewById(R.id.subtitle);
+                subtitle.setText(info.loadLabel(mPm));
+                subtitle.setVisibility(View.VISIBLE);
+            }
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDialog.dismiss();
+                    if (ri.isSystem) {
+                        onSystemRuleSelected(ri);
+                    } else {
+                        onExternalRuleSelected(ri);
+                    }
+                }
+            });
+            mRuleContainer.addView(v);
+        } catch (PackageManager.NameNotFoundException e) {
+            // Omit rule.
+        }
+!!!848130.java!!!	defaultNewSchedule() : ZenRuleInfo
+        final ZenModeConfig.ScheduleInfo schedule = new ZenModeConfig.ScheduleInfo();
+        schedule.days = ZenModeConfig.ALL_DAYS;
+        schedule.startHour = 22;
+        schedule.endHour = 7;
+        final ZenRuleInfo rt = new ZenRuleInfo();
+        rt.settingsAction = ZenModeScheduleRuleSettings.ACTION;
+        rt.title = mContext.getString(R.string.zen_schedule_rule_type_name);
+        rt.packageName = ZenModeConfig.getEventConditionProvider().getPackageName();
+        rt.defaultConditionId = ZenModeConfig.toScheduleConditionId(schedule);
+        rt.serviceComponent = ZenModeConfig.getScheduleConditionProvider();
+        rt.isSystem = true;
+        return rt;
+!!!848258.java!!!	defaultNewEvent() : ZenRuleInfo
+        final ZenModeConfig.EventInfo event = new ZenModeConfig.EventInfo();
+        event.calendar = null; // any calendar
+        event.reply = ZenModeConfig.EventInfo.REPLY_ANY_EXCEPT_NO;
+        final ZenRuleInfo rt = new ZenRuleInfo();
+        rt.settingsAction = ZenModeEventRuleSettings.ACTION;
+        rt.title = mContext.getString(R.string.zen_event_rule_type_name);
+        rt.packageName = ZenModeConfig.getScheduleConditionProvider().getPackageName();
+        rt.defaultConditionId = ZenModeConfig.toEventConditionId(event);
+        rt.serviceComponent = ZenModeConfig.getEventConditionProvider();
+        rt.isSystem = true;
+        return rt;
+!!!848386.java!!!	bindExternalRules(inout externalRuleTypes : Set<ZenRuleInfo>) : void
+        for (ZenRuleInfo ri : externalRuleTypes) {
+            bindType(ri);
+        }

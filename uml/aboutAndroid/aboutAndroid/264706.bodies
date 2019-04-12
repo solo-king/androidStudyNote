@@ -1,0 +1,5 @@
+class RestrictedItem
+!!!820354.java!!!	RestrictedItem(inout entry : CharSequence, inout entryValue : CharSequence, inout enforcedAdmin : EnforcedAdmin)
+            this.entry = entry;
+            this.entryValue = entryValue;
+            this.enforcedAdmin = enforcedAdmin;

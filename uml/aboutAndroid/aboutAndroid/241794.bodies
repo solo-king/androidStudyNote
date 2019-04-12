@@ -1,0 +1,43 @@
+class ConfirmSetModeDialogFragment
+!!!673538.java!!!	newInstance(inout di : DisplayInfo, inout listener : ConfirmSetModeDialogFragment::OnDialogDismissListener) : ConfirmSetModeDialogFragment
+        ConfirmSetModeDialogFragment frag = new ConfirmSetModeDialogFragment();
+        Bundle b = new Bundle();
+        b.putSerializable("displayinfo", di);
+        b.putSerializable("listener", listener);
+        frag.setArguments(b);
+        return frag;
+!!!673666.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+
+        mDisplayInfo = (DisplayInfo) getArguments().getSerializable("displayinfo");
+        mListener = (OnDialogDismissListener) getArguments().getSerializable("listener");
+
+        mHdmiResoSetConfirmDialog = new AlertDialog.Builder(getActivity())
+                .setTitle(getString(R.string.confirm_dialog_title))
+                .setMessage(getString(R.string.confirm_dialog_message) + " 10s")
+                .setPositiveButton(getString(R.string.okay), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mIsOk = true;
+                        mHdmiResoSetConfirmDialog.dismiss();
+                    }
+                }).setNegativeButton(getString(R.string.str_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mIsOk = false;
+                        mHdmiResoSetConfirmDialog.dismiss();
+                    }
+                }).create();
+        startTimeCount();
+        return mHdmiResoSetConfirmDialog;
+!!!673794.java!!!	onDismiss(inout dialog : DialogInterface) : void
+        super.onDismiss(dialog);
+        stopTimeCount();
+        DrmDisplaySetting.confirmSaveDisplayMode(mDisplayInfo, mIsOk);
+        mListener.onDismiss(mIsOk);
+        mIsOk = false;
+!!!673922.java!!!	startTimeCount() : void
+        mNegativeCount = 10;
+        isTimeCountRunning = true;
+        myHander.sendEmptyMessageDelayed(TYPE_NEGATIVE, 1000);
+!!!674050.java!!!	stopTimeCount() : void
+        isTimeCountRunning = false;

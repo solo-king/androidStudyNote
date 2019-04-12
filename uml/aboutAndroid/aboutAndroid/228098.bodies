@@ -1,0 +1,25 @@
+class BackgroundDataCondition
+!!!602370.java!!!	BackgroundDataCondition(inout manager : ConditionManager)
+        super(manager);
+!!!602498.java!!!	refreshState() : void
+        setActive(NetworkPolicyManager.from(mManager.getContext()).getRestrictBackground());
+!!!602626.java!!!	getIcon() : Icon
+        return Icon.createWithResource(mManager.getContext(), R.drawable.ic_data_saver);
+!!!602754.java!!!	getTitle() : CharSequence
+        return mManager.getContext().getString(R.string.condition_bg_data_title);
+!!!602882.java!!!	getSummary() : CharSequence
+        return mManager.getContext().getString(R.string.condition_bg_data_summary);
+!!!603010.java!!!	getActions() : CharSequence
+        return new CharSequence[] { mManager.getContext().getString(R.string.condition_turn_off) };
+!!!603138.java!!!	onPrimaryClick() : void
+        mManager.getContext().startActivity(new Intent(mManager.getContext(),
+                Settings.DataUsageSummaryActivity.class));
+!!!603266.java!!!	getMetricsConstant() : int
+        return MetricsEvent.SETTINGS_CONDITION_BACKGROUND_DATA;
+!!!603394.java!!!	onActionClick(in index : int) : void
+        if (index == 0) {
+            NetworkPolicyManager.from(mManager.getContext()).setRestrictBackground(false);
+            setActive(false);
+        } else {
+            throw new IllegalArgumentException("Unexpected index " + index);
+        }

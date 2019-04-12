@@ -1,0 +1,32 @@
+class Context
+!!!690818.java!!!	registerComponentCallbacks(inout callback : ComponentCallbacks) : void
+        getApplicationContext().registerComponentCallbacks(callback);
+!!!690946.java!!!	unregisterComponentCallbacks(inout callback : ComponentCallbacks) : void
+        getApplicationContext().unregisterComponentCallbacks(callback);
+!!!691074.java!!!	getText(in resId : int) : CharSequence
+        return getResources().getText(resId);
+!!!691202.java!!!	getString(in resId : int) : String
+        return getResources().getString(resId);
+!!!691330.java!!!	getString(in resId : int, inout  : Object...formatArgs) : String
+        return getResources().getString(resId, formatArgs);
+!!!691586.java!!!	getThemeResId() : int
+        return 0;
+!!!691842.java!!!	obtainStyledAttributes(inout attrs : int) : TypedArray
+        return getTheme().obtainStyledAttributes(attrs);
+!!!691970.java!!!	obtainStyledAttributes(in resid : int, inout attrs : int) : TypedArray
+        return getTheme().obtainStyledAttributes(resid, attrs);
+!!!692098.java!!!	obtainStyledAttributes(inout set : AttributeSet, inout attrs : int) : TypedArray
+        return getTheme().obtainStyledAttributes(set, attrs, 0, 0);
+!!!692226.java!!!	obtainStyledAttributes(inout set : AttributeSet, inout attrs : int, in defStyleAttr : int, in defStyleRes : int) : TypedArray
+        return getTheme().obtainStyledAttributes(
+            set, attrs, defStyleAttr, defStyleRes);
+!!!696962.java!!!	startActivityAsUser(inout intent : Intent, inout user : UserHandle) : void
+        throw new RuntimeException("Not implemented. Must override in a subclass.");
+!!!697218.java!!!	startActivityAsUser(inout intent : Intent, inout options : Bundle, inout userId : UserHandle) : void
+        throw new RuntimeException("Not implemented. Must override in a subclass.");
+!!!697602.java!!!	startActivitiesAsUser(inout intents : Intent, inout options : Bundle, inout userHandle : UserHandle) : void
+        throw new RuntimeException("Not implemented. Must override in a subclass.");
+!!!701058.java!!!	bindServiceAsUser(inout service : Intent, inout conn : ServiceConnection, in flags : int, inout user : UserHandle) : boolean
+        throw new RuntimeException("Not implemented. Must override in a subclass.");
+!!!704386.java!!!	isRestricted() : boolean
+        return false;

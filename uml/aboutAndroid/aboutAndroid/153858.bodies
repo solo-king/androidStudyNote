@@ -1,0 +1,336 @@
+class DisplaySettings
+!!!265858.java!!!	getMetricsCategory() : int
+        return MetricsEvent.DISPLAY;
+!!!265986.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mProduct = SystemProperties.get("ro.target.product");
+        String supportHDMI = SystemProperties.get("ro.rk.hdmi_enable", "false");
+        final Activity activity = getActivity();
+        final ContentResolver resolver = activity.getContentResolver();
+
+        addPreferencesFromResource(R.xml.display_settings);
+        mHDMIPreference = findPreference(KEY_HDMI_SETTINGS);
+        if(!"tablet".equals(mProduct) || !"true".equals(supportHDMI)){
+            getPreferenceScreen().removePreference(mHDMIPreference);
+        }
+        mScreenSaverPreference = findPreference(KEY_SCREEN_SAVER);
+        if (mScreenSaverPreference != null
+                && getResources().getBoolean(
+                        com.android.internal.R.bool.config_dreamsSupported) == false) {
+            getPreferenceScreen().removePreference(mScreenSaverPreference);
+        }
+
+        mScreenTimeoutPreference = (TimeoutListPreference) findPreference(KEY_SCREEN_TIMEOUT);
+
+        mFontSizePref = findPreference(KEY_FONT_SIZE);
+
+        if (isAutomaticBrightnessAvailable(getResources())) {
+            mAutoBrightnessPreference = (SwitchPreference) findPreference(KEY_AUTO_BRIGHTNESS);
+            mAutoBrightnessPreference.setOnPreferenceChangeListener(this);
+        } else {
+            removePreference(KEY_AUTO_BRIGHTNESS);
+        }
+
+        if (!NightDisplayController.isAvailable(activity)) {
+            removePreference(KEY_NIGHT_DISPLAY);
+        }
+
+        if (isLiftToWakeAvailable(activity)) {
+            mLiftToWakePreference = (SwitchPreference) findPreference(KEY_LIFT_TO_WAKE);
+            mLiftToWakePreference.setOnPreferenceChangeListener(this);
+        } else {
+            removePreference(KEY_LIFT_TO_WAKE);
+        }
+
+        if (isDozeAvailable(activity)) {
+            mDozePreference = (SwitchPreference) findPreference(KEY_DOZE);
+            mDozePreference.setOnPreferenceChangeListener(this);
+        } else {
+            removePreference(KEY_DOZE);
+        }
+
+        if (isTapToWakeAvailable(getResources())) {
+            mTapToWakePreference = (SwitchPreference) findPreference(KEY_TAP_TO_WAKE);
+            mTapToWakePreference.setOnPreferenceChangeListener(this);
+        } else {
+            removePreference(KEY_TAP_TO_WAKE);
+        }
+
+        if (isCameraGestureAvailable(getResources())) {
+            mCameraGesturePreference = (SwitchPreference) findPreference(KEY_CAMERA_GESTURE);
+            mCameraGesturePreference.setOnPreferenceChangeListener(this);
+        } else {
+            removePreference(KEY_CAMERA_GESTURE);
+        }
+
+        if (RotationPolicy.isRotationLockToggleVisible(activity)) {
+            DropDownPreference rotatePreference =
+                    (DropDownPreference) findPreference(KEY_AUTO_ROTATE);
+            int rotateLockedResourceId;
+            // The following block sets the string used when rotation is locked.
+            // If the device locks specifically to portrait or landscape (rather than current
+            // rotation), then we use a different string to include this information.
+            if (allowAllRotations(activity)) {
+                rotateLockedResourceId = R.string.display_auto_rotate_stay_in_current;
+            } else {
+                if (RotationPolicy.getRotationLockOrientation(activity)
+                        == Configuration.ORIENTATION_PORTRAIT) {
+                    rotateLockedResourceId =
+                            R.string.display_auto_rotate_stay_in_portrait;
+                } else {
+                    rotateLockedResourceId =
+                            R.string.display_auto_rotate_stay_in_landscape;
+                }
+            }
+            rotatePreference.setEntries(new CharSequence[] {
+                    activity.getString(R.string.display_auto_rotate_rotate),
+                    activity.getString(rotateLockedResourceId),
+            });
+            rotatePreference.setEntryValues(new CharSequence[] { "0", "1" });
+            rotatePreference.setValueIndex(RotationPolicy.isRotationLocked(activity) ?
+                    1 : 0);
+            rotatePreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    final boolean locked = Integer.parseInt((String) newValue) != 0;
+                    MetricsLogger.action(getActivity(), MetricsEvent.ACTION_ROTATION_LOCK,
+                            locked);
+                    RotationPolicy.setRotationLock(activity, locked);
+                    return true;
+                }
+            });
+        } else {
+            removePreference(KEY_AUTO_ROTATE);
+        }
+
+        if (isVrDisplayModeAvailable(activity)) {
+            DropDownPreference vrDisplayPref =
+                    (DropDownPreference) findPreference(KEY_VR_DISPLAY_PREF);
+            vrDisplayPref.setEntries(new CharSequence[] {
+                    activity.getString(R.string.display_vr_pref_low_persistence),
+                    activity.getString(R.string.display_vr_pref_off),
+            });
+            vrDisplayPref.setEntryValues(new CharSequence[] { "0", "1" });
+
+            final Context c = activity;
+            int currentUser = ActivityManager.getCurrentUser();
+            int current = Settings.Secure.getIntForUser(c.getContentResolver(),
+                            Settings.Secure.VR_DISPLAY_MODE,
+                            /*default*/Settings.Secure.VR_DISPLAY_MODE_LOW_PERSISTENCE,
+                            currentUser);
+            vrDisplayPref.setValueIndex(current);
+            vrDisplayPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int i = Integer.parseInt((String) newValue);
+                    int u = ActivityManager.getCurrentUser();
+                    if (!Settings.Secure.putIntForUser(c.getContentResolver(),
+                            Settings.Secure.VR_DISPLAY_MODE,
+                            i, u)) {
+                        Log.e(TAG, "Could not change setting for " +
+                                Settings.Secure.VR_DISPLAY_MODE);
+                    }
+                    return true;
+                }
+            });
+        } else {
+            removePreference(KEY_VR_DISPLAY_PREF);
+        }
+
+        mNightModePreference = (ListPreference) findPreference(KEY_NIGHT_MODE);
+        if (mNightModePreference != null) {
+            final UiModeManager uiManager = (UiModeManager) getSystemService(
+                    Context.UI_MODE_SERVICE);
+            final int currentNightMode = uiManager.getNightMode();
+            mNightModePreference.setValue(String.valueOf(currentNightMode));
+            mNightModePreference.setOnPreferenceChangeListener(this);
+        }
+!!!266114.java!!!	allowAllRotations(inout context : Context) : boolean
+        return Resources.getSystem().getBoolean(
+                com.android.internal.R.bool.config_allowAllRotations);
+!!!266242.java!!!	isLiftToWakeAvailable(inout context : Context) : boolean
+        SensorManager sensors = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        return sensors != null && sensors.getDefaultSensor(Sensor.TYPE_WAKE_GESTURE) != null;
+!!!266370.java!!!	isDozeAvailable(inout context : Context) : boolean
+        String name = Build.IS_DEBUGGABLE ? SystemProperties.get("debug.doze.component") : null;
+        if (TextUtils.isEmpty(name)) {
+            name = context.getResources().getString(
+                    com.android.internal.R.string.config_dozeComponent);
+        }
+        return !TextUtils.isEmpty(name);
+!!!266498.java!!!	isTapToWakeAvailable(inout res : Resources) : boolean
+        return res.getBoolean(com.android.internal.R.bool.config_supportDoubleTapWake);
+!!!266626.java!!!	isAutomaticBrightnessAvailable(inout res : Resources) : boolean
+        return res.getBoolean(com.android.internal.R.bool.config_automatic_brightness_available);
+!!!266754.java!!!	isCameraGestureAvailable(inout res : Resources) : boolean
+        boolean configSet = res.getInteger(
+                com.android.internal.R.integer.config_cameraLaunchGestureSensorType) != -1;
+        return configSet &&
+                !SystemProperties.getBoolean("gesture.disable_camera_launch", false);
+!!!266882.java!!!	isVrDisplayModeAvailable(inout context : Context) : boolean
+        PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature(PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
+!!!267010.java!!!	updateTimeoutPreferenceDescription(in currentTimeout : long) : void
+        TimeoutListPreference preference = mScreenTimeoutPreference;
+        String summary;
+        if (preference.isDisabledByAdmin()) {
+            summary = getString(R.string.disabled_by_policy_title);
+        } else if (currentTimeout < 0) {
+            // Unsupported value
+            summary = "";
+        } else {
+            final CharSequence[] entries = preference.getEntries();
+            final CharSequence[] values = preference.getEntryValues();
+            if (entries == null || entries.length == 0) {
+                summary = "";
+            } else {
+                int best = 0;
+                for (int i = 0; i < values.length; i++) {
+                    long timeout = Long.parseLong(values[i].toString());
+                    if (currentTimeout >= timeout) {
+                        best = i;
+                    }
+                }
+                if (currentTimeout > 1800000) {
+                    summary = preference.getContext().getString(R.string.screen_never_timeout_summary,
+                            entries[best]);
+                } else {
+                    summary = preference.getContext().getString(R.string.screen_timeout_summary,
+                            entries[best]);
+                }
+            }
+        }
+        preference.setSummary(summary);
+!!!267138.java!!!	onResume() : void
+        super.onResume();
+        updateState();
+        final long currentTimeout = Settings.System.getLong(getActivity().getContentResolver(),
+                SCREEN_OFF_TIMEOUT, FALLBACK_SCREEN_TIMEOUT_VALUE);
+        mScreenTimeoutPreference.setValue(String.valueOf(currentTimeout));
+        mScreenTimeoutPreference.setOnPreferenceChangeListener(this);
+        final DevicePolicyManager dpm = (DevicePolicyManager) getActivity().getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        if (dpm != null) {
+            final EnforcedAdmin admin = RestrictedLockUtils.checkIfMaximumTimeToLockIsSet(
+                    getActivity());
+            final long maxTimeout = dpm
+                    .getMaximumTimeToLockForUserAndProfiles(UserHandle.myUserId());
+            mScreenTimeoutPreference.removeUnusableTimeouts(maxTimeout, admin);
+        }
+        updateTimeoutPreferenceDescription(currentTimeout);
+
+        disablePreferenceIfManaged(KEY_WALLPAPER, UserManager.DISALLOW_SET_WALLPAPER);
+!!!267266.java!!!	onPause() : void
+        super.onPause();
+!!!267394.java!!!	updateState() : void
+        updateFontSizeSummary();
+        updateScreenSaverSummary();
+
+        // Update auto brightness if it is available.
+        if (mAutoBrightnessPreference != null) {
+            int brightnessMode = Settings.System.getInt(getContentResolver(),
+                    SCREEN_BRIGHTNESS_MODE, SCREEN_BRIGHTNESS_MODE_MANUAL);
+            mAutoBrightnessPreference.setChecked(brightnessMode != SCREEN_BRIGHTNESS_MODE_MANUAL);
+        }
+
+        // Update lift-to-wake if it is available.
+        if (mLiftToWakePreference != null) {
+            int value = Settings.Secure.getInt(getContentResolver(), WAKE_GESTURE_ENABLED, 0);
+            mLiftToWakePreference.setChecked(value != 0);
+        }
+
+        // Update tap to wake if it is available.
+        if (mTapToWakePreference != null) {
+            int value = Settings.Secure.getInt(getContentResolver(), DOUBLE_TAP_TO_WAKE, 0);
+            mTapToWakePreference.setChecked(value != 0);
+        }
+
+        // Update doze if it is available.
+        if (mDozePreference != null) {
+            int value = Settings.Secure.getInt(getContentResolver(), DOZE_ENABLED, 1);
+            mDozePreference.setChecked(value != 0);
+        }
+
+        // Update camera gesture #1 if it is available.
+        if (mCameraGesturePreference != null) {
+            int value = Settings.Secure.getInt(getContentResolver(), CAMERA_GESTURE_DISABLED, 0);
+            mCameraGesturePreference.setChecked(value == 0);
+        }
+!!!267522.java!!!	updateScreenSaverSummary() : void
+        if (mScreenSaverPreference != null) {
+            mScreenSaverPreference.setSummary(
+                    DreamSettings.getSummaryTextWithDreamName(getActivity()));
+        }
+!!!267650.java!!!	updateFontSizeSummary() : void
+        final Context context = mFontSizePref.getContext();
+        final float currentScale = Settings.System.getFloat(context.getContentResolver(),
+                Settings.System.FONT_SCALE, 1.0f);
+        final Resources res = context.getResources();
+        final String[] entries = res.getStringArray(R.array.entries_font_size);
+        final String[] strEntryValues = res.getStringArray(R.array.entryvalues_font_size);
+        final int index = ToggleFontSizePreferenceFragment.fontSizeValueToIndex(currentScale,
+                strEntryValues);
+        mFontSizePref.setSummary(entries[index]);
+!!!267778.java!!!	onPreferenceChange(inout preference : Preference, inout objValue : Object) : boolean
+        final String key = preference.getKey();
+        if (KEY_SCREEN_TIMEOUT.equals(key)) {
+            try {
+                int value = Integer.parseInt((String) objValue);
+                Settings.System.putInt(getContentResolver(), SCREEN_OFF_TIMEOUT, value);
+                updateTimeoutPreferenceDescription(value);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "could not persist screen timeout setting", e);
+            }
+        }
+        if (preference == mAutoBrightnessPreference) {
+            boolean auto = (Boolean) objValue;
+            Settings.System.putInt(getContentResolver(), SCREEN_BRIGHTNESS_MODE,
+                    auto ? SCREEN_BRIGHTNESS_MODE_AUTOMATIC : SCREEN_BRIGHTNESS_MODE_MANUAL);
+        }
+        if (preference == mLiftToWakePreference) {
+            boolean value = (Boolean) objValue;
+            Settings.Secure.putInt(getContentResolver(), WAKE_GESTURE_ENABLED, value ? 1 : 0);
+        }
+        if (preference == mDozePreference) {
+            boolean value = (Boolean) objValue;
+            Settings.Secure.putInt(getContentResolver(), DOZE_ENABLED, value ? 1 : 0);
+        }
+        if (preference == mTapToWakePreference) {
+            boolean value = (Boolean) objValue;
+            Settings.Secure.putInt(getContentResolver(), DOUBLE_TAP_TO_WAKE, value ? 1 : 0);
+        }
+        if (preference == mCameraGesturePreference) {
+            boolean value = (Boolean) objValue;
+            Settings.Secure.putInt(getContentResolver(), CAMERA_GESTURE_DISABLED,
+                    value ? 0 : 1 /* Backwards because setting is for disabling */);
+        }
+        if (preference == mNightModePreference) {
+            try {
+                final int value = Integer.parseInt((String) objValue);
+                final UiModeManager uiManager = (UiModeManager) getSystemService(
+                        Context.UI_MODE_SERVICE);
+                uiManager.setNightMode(value);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "could not persist night mode setting", e);
+            }
+        }
+        return true;
+!!!267906.java!!!	onPreferenceTreeClick(inout preference : Preference) : boolean
+        if (preference == mDozePreference) {
+            MetricsLogger.action(getActivity(), MetricsEvent.ACTION_AMBIENT_DISPLAY);
+        }
+        return super.onPreferenceTreeClick(preference);
+!!!268034.java!!!	getHelpResource() : int
+        return R.string.help_uri_display;
+!!!268162.java!!!	disablePreferenceIfManaged(in key : String, in restriction : String) : void
+        final RestrictedPreference pref = (RestrictedPreference) findPreference(key);
+        if (pref != null) {
+            pref.setDisabledByAdmin(null);
+            if (RestrictedLockUtils.hasBaseUserRestriction(getActivity(), restriction,
+                    UserHandle.myUserId())) {
+                pref.setEnabled(false);
+            } else {
+                pref.checkRestrictionAndSetDisabled(restriction);
+            }
+        }

@@ -1,0 +1,34 @@
+class AppListPreferenceWithSettings
+!!!163586.java!!!	AppListPreferenceWithSettings(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setWidgetLayoutResource(R.layout.preference_widget_settings);
+!!!163714.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+
+        mSettingsIcon = view.findViewById(R.id.settings_button);
+        mSettingsIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setComponent(mSettingsComponent);
+                getContext().startActivity(new Intent(intent));
+            }
+        });
+
+        ViewGroup container = (ViewGroup) mSettingsIcon.getParent();
+        container.setPaddingRelative(0, 0, 0, 0);
+
+        updateSettingsVisibility();
+!!!163842.java!!!	updateSettingsVisibility() : void
+        if (mSettingsIcon == null) {
+            return;
+        }
+
+        if (mSettingsComponent == null) {
+            mSettingsIcon.setVisibility(View.GONE);
+        } else {
+            mSettingsIcon.setVisibility(View.VISIBLE);
+        }
+!!!163970.java!!!	setSettingsComponent(inout settings : ComponentName) : void
+        mSettingsComponent = settings;
+        updateSettingsVisibility();

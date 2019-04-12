@@ -1,0 +1,135 @@
+class PhysicalKeyboardFragment
+!!!764546.java!!!	onCreatePreferences(inout bundle : Bundle, in s : String) : void
+        Activity activity = Preconditions.checkNotNull(getActivity());
+        addPreferencesFromResource(R.xml.physical_keyboard_settings);
+        mIm = Preconditions.checkNotNull(activity.getSystemService(InputManager.class));
+        mSettings = new InputMethodUtils.InputMethodSettings(
+                activity.getResources(),
+                getContentResolver(),
+                new HashMap<>(),
+                new ArrayList<>(),
+                UserHandle.myUserId(),
+                false /* copyOnWrite */);
+        mKeyboardAssistanceCategory = Preconditions.checkNotNull(
+                (PreferenceCategory) findPreference(KEYBOARD_ASSISTANCE_CATEGORY));
+        mShowVirtualKeyboardSwitch = Preconditions.checkNotNull(
+                (SwitchPreference) mKeyboardAssistanceCategory.findPreference(
+                        SHOW_VIRTUAL_KEYBOARD_SWITCH));
+        findPreference(KEYBOARD_SHORTCUTS_HELPER).setOnPreferenceClickListener(
+                new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        toggleKeyboardShortcutsMenu();
+                        return true;
+                    }
+                });
+!!!764674.java!!!	onResume() : void
+        super.onResume();
+        clearLoader();
+        mLastHardKeyboards.clear();
+        updateHardKeyboards();
+        mIm.registerInputDeviceListener(this, null);
+        mShowVirtualKeyboardSwitch.setOnPreferenceChangeListener(
+                mShowVirtualKeyboardSwitchPreferenceChangeListener);
+        registerShowVirtualKeyboardSettingsObserver();
+!!!764802.java!!!	onPause() : void
+        super.onPause();
+        clearLoader();
+        mLastHardKeyboards.clear();
+        mIm.unregisterInputDeviceListener(this);
+        mShowVirtualKeyboardSwitch.setOnPreferenceChangeListener(null);
+        unregisterShowVirtualKeyboardSettingsObserver();
+!!!764930.java!!!	onLoadFinishedInternal(in loaderId : int, in keyboardsList : List<Keyboards>) : void
+        if (!mLoaderIDs.remove(loaderId)) {
+            // Already destroyed loader.  Ignore.
+            return;
+        }
+
+        Collections.sort(keyboardsList);
+        final PreferenceScreen preferenceScreen = getPreferenceScreen();
+        preferenceScreen.removeAll();
+        for (Keyboards keyboards : keyboardsList) {
+            final PreferenceCategory category = new PreferenceCategory(getPrefContext(), null);
+            category.setTitle(keyboards.mDeviceInfo.mDeviceName);
+            category.setOrder(0);
+            preferenceScreen.addPreference(category);
+            for (Keyboards.KeyboardInfo info : keyboards.mKeyboardInfoList) {
+                mTempKeyboardInfoList.clear();
+                final InputMethodInfo imi = info.mImi;
+                final InputMethodSubtype imSubtype = info.mImSubtype;
+                if (imi != null) {
+                    KeyboardInfoPreference pref =
+                            new KeyboardInfoPreference(getPrefContext(), info);
+                    pref.setOnPreferenceClickListener(preference -> {
+                        showKeyboardLayoutScreen(
+                                keyboards.mDeviceInfo.mDeviceIdentifier, imi, imSubtype);
+                        return true;
+                    });
+                    mTempKeyboardInfoList.add(pref);
+                    Collections.sort(mTempKeyboardInfoList);
+                }
+                for (KeyboardInfoPreference pref : mTempKeyboardInfoList) {
+                    category.addPreference(pref);
+                }
+            }
+        }
+        mTempKeyboardInfoList.clear();
+        mKeyboardAssistanceCategory.setOrder(1);
+        preferenceScreen.addPreference(mKeyboardAssistanceCategory);
+        updateShowVirtualKeyboardSwitch();
+!!!765058.java!!!	onInputDeviceAdded(in deviceId : int) : void
+        updateHardKeyboards();
+!!!765186.java!!!	onInputDeviceRemoved(in deviceId : int) : void
+        updateHardKeyboards();
+!!!765314.java!!!	onInputDeviceChanged(in deviceId : int) : void
+        updateHardKeyboards();
+!!!765442.java!!!	getMetricsCategory() : int
+        return MetricsEvent.PHYSICAL_KEYBOARDS;
+!!!765570.java!!!	getHardKeyboards() : PhysicalKeyboardFragment::HardKeyboardDeviceInfo
+        final ArrayList<HardKeyboardDeviceInfo> keyboards = new ArrayList<>();
+        final int[] devicesIds = InputDevice.getDeviceIds();
+        for (int deviceId : devicesIds) {
+            final InputDevice device = InputDevice.getDevice(deviceId);
+            if (device != null && !device.isVirtual() && device.isFullKeyboard()) {
+                keyboards.add(new HardKeyboardDeviceInfo(device.getName(), device.getIdentifier()));
+            }
+        }
+        return keyboards;
+!!!765698.java!!!	updateHardKeyboards() : void
+        final ArrayList<HardKeyboardDeviceInfo> newHardKeyboards = getHardKeyboards();
+        if (!Objects.equals(newHardKeyboards, mLastHardKeyboards)) {
+            clearLoader();
+            mLastHardKeyboards.clear();
+            mLastHardKeyboards.addAll(newHardKeyboards);
+            mLoaderIDs.add(mNextLoaderId);
+            getLoaderManager().initLoader(mNextLoaderId, null,
+                    new Callbacks(getContext(), this, mLastHardKeyboards));
+            ++mNextLoaderId;
+        }
+!!!765826.java!!!	showKeyboardLayoutScreen(inout inputDeviceIdentifier : InputDeviceIdentifier, inout imi : InputMethodInfo, inout imSubtype : InputMethodSubtype) : void
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClass(getActivity(), Settings.KeyboardLayoutPickerActivity.class);
+        intent.putExtra(KeyboardLayoutPickerFragment2.EXTRA_INPUT_DEVICE_IDENTIFIER,
+                inputDeviceIdentifier);
+        intent.putExtra(KeyboardLayoutPickerFragment2.EXTRA_INPUT_METHOD_INFO, imi);
+        intent.putExtra(KeyboardLayoutPickerFragment2.EXTRA_INPUT_METHOD_SUBTYPE, imSubtype);
+        startActivity(intent);
+!!!765954.java!!!	clearLoader() : void
+        for (final int loaderId : mLoaderIDs) {
+            getLoaderManager().destroyLoader(loaderId);
+        }
+        mLoaderIDs.clear();
+!!!766082.java!!!	registerShowVirtualKeyboardSettingsObserver() : void
+        unregisterShowVirtualKeyboardSettingsObserver();
+        getActivity().getContentResolver().registerContentObserver(
+                Secure.getUriFor(Secure.SHOW_IME_WITH_HARD_KEYBOARD),
+                false,
+                mContentObserver,
+                UserHandle.myUserId());
+        updateShowVirtualKeyboardSwitch();
+!!!766210.java!!!	unregisterShowVirtualKeyboardSettingsObserver() : void
+        getActivity().getContentResolver().unregisterContentObserver(mContentObserver);
+!!!766338.java!!!	updateShowVirtualKeyboardSwitch() : void
+        mShowVirtualKeyboardSwitch.setChecked(mSettings.isShowImeWithHardKeyboardEnabled());
+!!!766466.java!!!	toggleKeyboardShortcutsMenu() : void
+        getActivity().requestShowKeyboardShortcuts();

@@ -1,0 +1,40 @@
+class ToggleFontSizePreferenceFragment
+!!!414338.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mActivityLayoutResId = R.layout.font_size_activity;
+        mPreviewSampleResIds = new int[]{R.layout.font_size_preview};
+
+        Resources res = getContext().getResources();
+        final ContentResolver resolver = getContext().getContentResolver();
+        // Mark the appropriate item in the preferences list.
+        mEntries = res.getStringArray(R.array.entries_font_size);
+        final String[] strEntryValues = res.getStringArray(R.array.entryvalues_font_size);
+        final float currentScale =
+                Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1.0f);
+        mInitialIndex = fontSizeValueToIndex(currentScale, strEntryValues);
+        mValues = new float[strEntryValues.length];
+        for (int i = 0; i < strEntryValues.length; ++i) {
+            mValues[i] = Float.parseFloat(strEntryValues[i]);
+        }
+!!!414466.java!!!	createConfig(inout origConfig : Configuration, in index : int) : Configuration
+        // Populate the sample layouts.
+        final Configuration config = new Configuration(origConfig);
+        config.fontScale = mValues[index];
+        return config;
+!!!414594.java!!!	commit() : void
+        if (getContext() == null) return;
+        final ContentResolver resolver = getContext().getContentResolver();
+        Settings.System.putFloat(resolver, Settings.System.FONT_SCALE, mValues[mCurrentIndex]);
+!!!414722.java!!!	getMetricsCategory() : int
+        return MetricsEvent.ACCESSIBILITY_FONT_SIZE;
+!!!414850.java!!!	fontSizeValueToIndex(in val : float, inout indices : String) : int
+        float lastVal = Float.parseFloat(indices[0]);
+        for (int i=1; i<indices.length; i++) {
+            float thisVal = Float.parseFloat(indices[i]);
+            if (val < (lastVal + (thisVal-lastVal)*.5f)) {
+                return i-1;
+            }
+            lastVal = thisVal;
+        }
+        return indices.length-1;

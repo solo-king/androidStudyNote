@@ -1,0 +1,99 @@
+class ManageDomainUrls
+!!!505218.java!!!	onCreate(inout icicle : Bundle) : void
+        super.onCreate(icicle);
+        setAnimationAllowed(true);
+        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getContext()));
+        mApplicationsState = ApplicationsState.getInstance(
+                (Application) getContext().getApplicationContext());
+        mSession = mApplicationsState.newSession(this);
+        setHasOptionsMenu(true);
+!!!505346.java!!!	onViewCreated(inout view : View, inout savedInstanceState : Bundle) : void
+        super.onViewCreated(view, savedInstanceState);
+!!!505474.java!!!	onResume() : void
+        super.onResume();
+        mSession.resume();
+!!!505602.java!!!	onPause() : void
+        super.onPause();
+        mSession.pause();
+!!!505730.java!!!	onDestroy() : void
+        super.onDestroy();
+        mSession.release();
+!!!506114.java!!!	onRebuildComplete(inout apps : ArrayList<AppEntry>) : void
+        if (getContext() == null) {
+            return;
+        }
+
+        final boolean disableWebActions = Global.getInt(getContext().getContentResolver(),
+                Global.ENABLE_EPHEMERAL_FEATURE, 1) == 0;
+        if (disableWebActions) {
+            mDomainAppList = getPreferenceScreen();
+        } else {
+            final PreferenceGroup preferenceScreen = getPreferenceScreen();
+            if (preferenceScreen.getPreferenceCount() == 0) {
+                // add preferences
+                final PreferenceCategory webActionCategory =
+                        new PreferenceCategory(getPrefContext());
+                webActionCategory.setTitle(R.string.web_action_section_title);
+                preferenceScreen.addPreference(webActionCategory);
+
+                // toggle to enable / disable Web Actions [aka Instant Apps]
+                mWebAction = new SwitchPreference(getPrefContext());
+                mWebAction.setTitle(R.string.web_action_enable_title);
+                mWebAction.setSummary(R.string.web_action_enable_summary);
+                mWebAction.setChecked(Settings.Secure.getInt(getContentResolver(),
+                        Settings.Secure.WEB_ACTION_ENABLED, 1) != 0);
+                mWebAction.setOnPreferenceChangeListener(this);
+                webActionCategory.addPreference(mWebAction);
+
+                // list to manage link handling per app
+                mDomainAppList = new PreferenceCategory(getPrefContext());
+                mDomainAppList.setTitle(R.string.domain_url_section_title);
+                preferenceScreen.addPreference(mDomainAppList);
+            }
+        }
+        rebuildAppList(mDomainAppList, apps);
+!!!506242.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        if (preference == mWebAction) {
+            final int enabled = (boolean) newValue ? 1 : 0;
+            Settings.Secure.putInt(
+                    getContentResolver(), Settings.Secure.WEB_ACTION_ENABLED, enabled);
+            return true;
+        }
+        return false;
+!!!506370.java!!!	rebuild() : void
+        final ArrayList<AppEntry> apps = mSession.rebuild(
+                ApplicationsState.FILTER_WITH_DOMAIN_URLS, ApplicationsState.ALPHA_COMPARATOR);
+        if (apps != null) {
+            onRebuildComplete(apps);
+        }
+!!!506498.java!!!	rebuildAppList(inout group : PreferenceGroup, inout apps : ArrayList<AppEntry>) : void
+        cacheRemoveAllPrefs(group);
+        final int N = apps.size();
+        for (int i = 0; i < N; i++) {
+            AppEntry entry = apps.get(i);
+            String key = entry.info.packageName + "|" + entry.info.uid;
+            DomainAppPreference preference = (DomainAppPreference) getCachedPreference(key);
+            if (preference == null) {
+                preference = new DomainAppPreference(getPrefContext(), entry);
+                preference.setKey(key);
+                preference.setOnPreferenceClickListener(this);
+                group.addPreference(preference);
+            } else {
+                preference.reuse();
+            }
+            preference.setOrder(i);
+        }
+        removeCachedPrefs(group);
+!!!507138.java!!!	onLoadEntriesCompleted() : void
+        rebuild();
+!!!507266.java!!!	getMetricsCategory() : int
+        return MetricsEvent.MANAGE_DOMAIN_URLS;
+!!!507394.java!!!	onPreferenceClick(inout preference : Preference) : boolean
+        if (preference.getClass() == DomainAppPreference.class) {
+            ApplicationsState.AppEntry entry = ((DomainAppPreference) preference).mEntry;
+            AppInfoBase.startAppInfoFragment(AppLaunchSettings.class, R.string.auto_launch_label,
+                    entry.info.packageName, entry.info.uid, this,
+                    INSTALLED_APP_DETAILS);
+            return true;
+        }
+        return false;

@@ -1,0 +1,84 @@
+class IntentSender
+!!!755074.java!!!	sendIntent(inout context : Context, in code : int, inout intent : Intent, inout onFinished : IntentSender::OnFinished, inout handler : Handler) : void
+        sendIntent(context, code, intent, onFinished, handler, null);
+!!!755202.java!!!	sendIntent(inout context : Context, in code : int, inout intent : Intent, inout onFinished : IntentSender::OnFinished, inout handler : Handler, in requiredPermission : String) : void
+        try {
+            String resolvedType = intent != null ?
+                    intent.resolveTypeIfNeeded(context.getContentResolver())
+                    : null;
+            int res = mTarget.send(code, intent, resolvedType,
+                    onFinished != null
+                            ? new FinishedDispatcher(this, onFinished, handler)
+                            : null,
+                    requiredPermission);
+            if (res < 0) {
+                throw new SendIntentException();
+            }
+        } catch (RemoteException e) {
+            throw new SendIntentException();
+        }
+!!!755330.java!!!	getTargetPackage() : String
+        try {
+            return ActivityManagerNative.getDefault()
+                .getPackageForIntentSender(mTarget);
+        } catch (RemoteException e) {
+            // Should never happen.
+            return null;
+        }
+!!!755458.java!!!	getCreatorPackage() : String
+        try {
+            return ActivityManagerNative.getDefault()
+                .getPackageForIntentSender(mTarget);
+        } catch (RemoteException e) {
+            // Should never happen.
+            return null;
+        }
+!!!755586.java!!!	getCreatorUid() : int
+        try {
+            return ActivityManagerNative.getDefault()
+                .getUidForIntentSender(mTarget);
+        } catch (RemoteException e) {
+            // Should never happen.
+            return -1;
+        }
+!!!755714.java!!!	getCreatorUserHandle() : UserHandle
+        try {
+            int uid = ActivityManagerNative.getDefault()
+                .getUidForIntentSender(mTarget);
+            return uid > 0 ? new UserHandle(UserHandle.getUserId(uid)) : null;
+        } catch (RemoteException e) {
+            // Should never happen.
+            return null;
+        }
+!!!755842.java!!!	equals(inout otherObj : Object) : boolean
+        if (otherObj instanceof IntentSender) {
+            return mTarget.asBinder().equals(((IntentSender)otherObj)
+                    .mTarget.asBinder());
+        }
+        return false;
+!!!755970.java!!!	hashCode() : int
+        return mTarget.asBinder().hashCode();
+!!!756098.java!!!	toString() : String
+        StringBuilder sb = new StringBuilder(128);
+        sb.append("IntentSender{");
+        sb.append(Integer.toHexString(System.identityHashCode(this)));
+        sb.append(": ");
+        sb.append(mTarget != null ? mTarget.asBinder() : null);
+        sb.append('}');
+        return sb.toString();
+!!!756226.java!!!	describeContents() : int
+        return 0;
+!!!756354.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        out.writeStrongBinder(mTarget.asBinder());
+!!!756482.java!!!	writeIntentSenderOrNullToParcel(inout sender : IntentSender, inout out : Parcel) : void
+        out.writeStrongBinder(sender != null ? sender.mTarget.asBinder()
+                : null);
+!!!756610.java!!!	readIntentSenderOrNullFromParcel(inout in : Parcel) : IntentSender
+        IBinder b = in.readStrongBinder();
+        return b != null ? new IntentSender(b) : null;
+!!!756738.java!!!	getTarget() : IIntentSender
+        return mTarget;
+!!!756866.java!!!	IntentSender(inout target : IIntentSender)
+        mTarget = target;
+!!!756994.java!!!	IntentSender(inout target : IBinder)
+        mTarget = IIntentSender.Stub.asInterface(target);

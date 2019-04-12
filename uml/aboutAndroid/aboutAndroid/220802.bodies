@@ -1,0 +1,247 @@
+class DeviceProfilesSettings
+!!!563074.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mManager = Utils.getLocalBtManager(getActivity());
+        CachedBluetoothDeviceManager deviceManager = mManager.getCachedDeviceManager();
+
+        String address = getArguments().getString(ARG_DEVICE_ADDRESS);
+        BluetoothDevice remoteDevice = mManager.getBluetoothAdapter().getRemoteDevice(address);
+
+        mCachedDevice = deviceManager.findDevice(remoteDevice);
+        if (mCachedDevice == null) {
+            mCachedDevice = deviceManager.addDevice(mManager.getBluetoothAdapter(),
+                    mManager.getProfileManager(), remoteDevice);
+        }
+        mProfileManager = mManager.getProfileManager();
+!!!563202.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+        mRootView = LayoutInflater.from(getContext()).inflate(R.layout.device_profiles_settings,
+                null);
+        mProfileContainer = (ViewGroup) mRootView.findViewById(R.id.profiles_section);
+        mProfileLabel = (TextView) mRootView.findViewById(R.id.profiles_label);
+        final EditText deviceName = (EditText) mRootView.findViewById(R.id.name);
+        deviceName.setText(mCachedDevice.getName(), TextView.BufferType.EDITABLE);
+        return new AlertDialog.Builder(getContext())
+                .setView(mRootView)
+                .setNeutralButton(R.string.forget, this)
+                .setPositiveButton(R.string.okay, this)
+                .setTitle(R.string.bluetooth_preference_paired_devices)
+                .create();
+!!!563330.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        switch (which) {
+            case DialogInterface.BUTTON_POSITIVE:
+                EditText deviceName = (EditText) mRootView.findViewById(R.id.name);
+                mCachedDevice.setName(deviceName.getText().toString());
+                break;
+            case DialogInterface.BUTTON_NEUTRAL:
+                mCachedDevice.unpair();
+                com.android.settings.bluetooth.Utils.updateSearchIndex(getContext(),
+                        BluetoothSettings.class.getName(), mCachedDevice.getName(),
+                        getString(R.string.bluetooth_settings),
+                        R.drawable.ic_settings_bluetooth, false);
+                break;
+        }
+!!!563458.java!!!	onDestroy() : void
+        super.onDestroy();
+        if (mDisconnectDialog != null) {
+            mDisconnectDialog.dismiss();
+            mDisconnectDialog = null;
+        }
+        if (mCachedDevice != null) {
+            mCachedDevice.unregisterCallback(this);
+        }
+!!!563586.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+!!!563714.java!!!	onResume() : void
+        super.onResume();
+
+        mManager.setForegroundActivity(getActivity());
+        if (mCachedDevice != null) {
+            mCachedDevice.registerCallback(this);
+            if (mCachedDevice.getBondState() == BluetoothDevice.BOND_NONE) {
+                dismiss();
+                return;
+            }
+            addPreferencesForProfiles();
+            refresh();
+        }
+!!!563842.java!!!	onPause() : void
+        super.onPause();
+
+        if (mCachedDevice != null) {
+            mCachedDevice.unregisterCallback(this);
+        }
+
+        mManager.setForegroundActivity(null);
+!!!563970.java!!!	addPreferencesForProfiles() : void
+        mProfileContainer.removeAllViews();
+        for (LocalBluetoothProfile profile : mCachedDevice.getConnectableProfiles()) {
+            CheckBox pref = createProfilePreference(profile);
+            mProfileContainer.addView(pref);
+        }
+
+        final int pbapPermission = mCachedDevice.getPhonebookPermissionChoice();
+        // Only provide PBAP cabability if the client device has requested PBAP.
+        if (pbapPermission != CachedBluetoothDevice.ACCESS_UNKNOWN) {
+            final PbapServerProfile psp = mManager.getProfileManager().getPbapProfile();
+            CheckBox pbapPref = createProfilePreference(psp);
+            mProfileContainer.addView(pbapPref);
+        }
+
+        final MapProfile mapProfile = mManager.getProfileManager().getMapProfile();
+        final int mapPermission = mCachedDevice.getMessagePermissionChoice();
+        if (mapPermission != CachedBluetoothDevice.ACCESS_UNKNOWN) {
+            CheckBox mapPreference = createProfilePreference(mapProfile);
+            mProfileContainer.addView(mapPreference);
+        }
+
+        showOrHideProfileGroup();
+!!!564098.java!!!	showOrHideProfileGroup() : void
+        int numProfiles = mProfileContainer.getChildCount();
+        if (!mProfileGroupIsRemoved && numProfiles == 0) {
+            mProfileContainer.setVisibility(View.GONE);
+            mProfileLabel.setVisibility(View.GONE);
+            mProfileGroupIsRemoved = true;
+        } else if (mProfileGroupIsRemoved && numProfiles != 0) {
+            mProfileContainer.setVisibility(View.VISIBLE);
+            mProfileLabel.setVisibility(View.VISIBLE);
+            mProfileGroupIsRemoved = false;
+        }
+!!!564226.java!!!	createProfilePreference(inout profile : LocalBluetoothProfile) : CheckBox
+        CheckBox pref = new CheckBox(getActivity());
+        pref.setTag(profile.toString());
+        pref.setText(profile.getNameResource(mCachedDevice.getDevice()));
+        pref.setOnClickListener(this);
+
+        refreshProfilePreference(pref, profile);
+
+        return pref;
+!!!564354.java!!!	onClick(inout v : View) : void
+        if (v instanceof CheckBox) {
+            LocalBluetoothProfile prof = getProfileOf(v);
+            onProfileClicked(prof, (CheckBox) v);
+        }
+!!!564482.java!!!	onProfileClicked(inout profile : LocalBluetoothProfile, inout profilePref : CheckBox) : void
+        BluetoothDevice device = mCachedDevice.getDevice();
+
+        if (KEY_PBAP_SERVER.equals(profilePref.getTag())) {
+            final int newPermission = mCachedDevice.getPhonebookPermissionChoice()
+                == CachedBluetoothDevice.ACCESS_ALLOWED ? CachedBluetoothDevice.ACCESS_REJECTED
+                : CachedBluetoothDevice.ACCESS_ALLOWED;
+            mCachedDevice.setPhonebookPermissionChoice(newPermission);
+            profilePref.setChecked(newPermission == CachedBluetoothDevice.ACCESS_ALLOWED);
+            return;
+        }
+
+        if (!profilePref.isChecked()) {
+            // Recheck it, until the dialog is done.
+            profilePref.setChecked(true);
+            askDisconnect(mManager.getForegroundActivity(), profile);
+        } else {
+            if (profile instanceof MapProfile) {
+                mCachedDevice.setMessagePermissionChoice(BluetoothDevice.ACCESS_ALLOWED);
+            }
+            if (profile.isPreferred(device)) {
+                // profile is preferred but not connected: disable auto-connect
+                if (profile instanceof PanProfile) {
+                    mCachedDevice.connectProfile(profile);
+                } else {
+                    profile.setPreferred(device, false);
+                }
+            } else {
+                profile.setPreferred(device, true);
+                mCachedDevice.connectProfile(profile);
+            }
+            refreshProfilePreference(profilePref, profile);
+        }
+!!!564610.java!!!	askDisconnect(inout context : Context, in profile : LocalBluetoothProfile) : void
+        // local reference for callback
+        final CachedBluetoothDevice device = mCachedDevice;
+        String name = device.getName();
+        if (TextUtils.isEmpty(name)) {
+            name = context.getString(R.string.bluetooth_device);
+        }
+
+        String profileName = context.getString(profile.getNameResource(device.getDevice()));
+
+        String title = context.getString(R.string.bluetooth_disable_profile_title);
+        String message = context.getString(R.string.bluetooth_disable_profile_message,
+                profileName, name);
+
+        DialogInterface.OnClickListener disconnectListener =
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                device.disconnect(profile);
+                profile.setPreferred(device.getDevice(), false);
+                if (profile instanceof MapProfile) {
+                    device.setMessagePermissionChoice(BluetoothDevice.ACCESS_REJECTED);
+                }
+                refreshProfilePreference(findProfile(profile.toString()), profile);
+            }
+        };
+
+        mDisconnectDialog = Utils.showDisconnectDialog(context,
+                mDisconnectDialog, disconnectListener, title, Html.fromHtml(message));
+!!!564738.java!!!	onDeviceAttributesChanged() : void
+        refresh();
+!!!564866.java!!!	refresh() : void
+        final EditText deviceNameField = (EditText) mRootView.findViewById(R.id.name);
+        if (deviceNameField != null) {
+            deviceNameField.setText(mCachedDevice.getName());
+        }
+
+        refreshProfiles();
+!!!564994.java!!!	refreshProfiles() : void
+        for (LocalBluetoothProfile profile : mCachedDevice.getConnectableProfiles()) {
+            CheckBox profilePref = findProfile(profile.toString());
+            if (profilePref == null) {
+                profilePref = createProfilePreference(profile);
+                mProfileContainer.addView(profilePref);
+            } else {
+                refreshProfilePreference(profilePref, profile);
+            }
+        }
+        for (LocalBluetoothProfile profile : mCachedDevice.getRemovedProfiles()) {
+            CheckBox profilePref = findProfile(profile.toString());
+            if (profilePref != null) {
+                Log.d(TAG, "Removing " + profile.toString() + " from profile list");
+                mProfileContainer.removeView(profilePref);
+            }
+        }
+
+        showOrHideProfileGroup();
+!!!565122.java!!!	findProfile(in profile : String) : CheckBox
+        return (CheckBox) mProfileContainer.findViewWithTag(profile);
+!!!565250.java!!!	refreshProfilePreference(inout profilePref : CheckBox, inout profile : LocalBluetoothProfile) : void
+        BluetoothDevice device = mCachedDevice.getDevice();
+
+        // Gray out checkbox while connecting and disconnecting.
+        profilePref.setEnabled(!mCachedDevice.isBusy());
+
+        if (profile instanceof MapProfile) {
+            profilePref.setChecked(mCachedDevice.getMessagePermissionChoice()
+                    == CachedBluetoothDevice.ACCESS_ALLOWED);
+
+        } else if (profile instanceof PbapServerProfile) {
+            profilePref.setChecked(mCachedDevice.getPhonebookPermissionChoice()
+                    == CachedBluetoothDevice.ACCESS_ALLOWED);
+
+        } else if (profile instanceof PanProfile) {
+            profilePref.setChecked(profile.getConnectionStatus(device) ==
+                    BluetoothProfile.STATE_CONNECTED);
+
+        } else {
+            profilePref.setChecked(profile.isPreferred(device));
+        }
+!!!565378.java!!!	getProfileOf(inout v : View) : LocalBluetoothProfile
+        if (!(v instanceof CheckBox)) {
+            return null;
+        }
+        String key = (String) v.getTag();
+        if (TextUtils.isEmpty(key)) return null;
+
+        try {
+            return mProfileManager.getProfileByName(key);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }

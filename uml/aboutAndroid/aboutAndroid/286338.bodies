@@ -1,0 +1,5 @@
+class RightwardStartPredicate
+!!!966146.java!!!	RightwardStartPredicate(in thresholdValue : float)
+            super(thresholdValue);
+!!!966274.java!!!	shouldStart(in currentValue : float) : boolean
+            return currentValue > thresholdValue;

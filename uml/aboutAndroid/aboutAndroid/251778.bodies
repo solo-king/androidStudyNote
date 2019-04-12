@@ -1,0 +1,132 @@
+class GestureSettings
+!!!743170.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.gesture_settings);
+        Context context = getActivity();
+        mPreferences = new ArrayList();
+
+        // Double tap power for camera
+        if (isCameraDoubleTapPowerGestureAvailable(getResources())) {
+            int cameraDisabled = Secure.getInt(
+                    getContentResolver(), Secure.CAMERA_DOUBLE_TAP_POWER_GESTURE_DISABLED, 0);
+            addPreference(PREF_KEY_DOUBLE_TAP_POWER, cameraDisabled == 0);
+        } else {
+            removePreference(PREF_KEY_DOUBLE_TAP_POWER);
+        }
+
+        // Ambient Display
+        mAmbientConfig = new AmbientDisplayConfiguration(context);
+        if (mAmbientConfig.pulseOnPickupAvailable()) {
+            boolean pickup = mAmbientConfig.pulseOnPickupEnabled(UserHandle.myUserId());
+            addPreference(PREF_KEY_PICK_UP, pickup);
+        } else {
+            removePreference(PREF_KEY_PICK_UP);
+        }
+        if (mAmbientConfig.pulseOnDoubleTapAvailable()) {
+            boolean doubleTap = mAmbientConfig.pulseOnDoubleTapEnabled(UserHandle.myUserId());
+            addPreference(PREF_KEY_DOUBLE_TAP_SCREEN, doubleTap);
+        } else {
+            removePreference(PREF_KEY_DOUBLE_TAP_SCREEN);
+        }
+
+        // Fingerprint slide for notifications
+        if (isSystemUINavigationAvailable(context)) {
+            addPreference(PREF_KEY_SWIPE_DOWN_FINGERPRINT, isSystemUINavigationEnabled(context));
+        } else {
+            removePreference(PREF_KEY_SWIPE_DOWN_FINGERPRINT);
+        }
+
+        // Double twist for camera mode
+        if (isDoubleTwistAvailable(context)) {
+            int doubleTwistEnabled = Secure.getInt(
+                    getContentResolver(), Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, 1);
+            addPreference(PREF_KEY_DOUBLE_TWIST, doubleTwistEnabled != 0);
+        } else {
+            removePreference(PREF_KEY_DOUBLE_TWIST);
+        }
+
+!!!743298.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        RecyclerView listview = getListView();
+        listview.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    for (GesturePreference pref : mPreferences) {
+                        pref.setScrolling(true);
+                    }
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    for (GesturePreference pref : mPreferences) {
+                        pref.setScrolling(false);
+                    }
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            }
+        });
+        return view;
+!!!743426.java!!!	onStart() : void
+        super.onStart();
+        for (GesturePreference preference : mPreferences) {
+            preference.onViewVisible();
+        }
+!!!743554.java!!!	onStop() : void
+        super.onStop();
+        for (GesturePreference preference : mPreferences) {
+            preference.onViewInvisible();
+        }
+!!!743682.java!!!	onPreferenceChange(inout preference : Preference, inout newValue : Object) : boolean
+        boolean enabled = (boolean) newValue;
+        String key = preference.getKey();
+        if (PREF_KEY_DOUBLE_TAP_POWER.equals(key)) {
+            Secure.putInt(getContentResolver(),
+                    Secure.CAMERA_DOUBLE_TAP_POWER_GESTURE_DISABLED, enabled ? 0 : 1);
+        } else if (PREF_KEY_PICK_UP.equals(key)) {
+            Secure.putInt(getContentResolver(), Secure.DOZE_PULSE_ON_PICK_UP, enabled ? 1 : 0);
+        } else if (PREF_KEY_DOUBLE_TAP_SCREEN.equals(key)) {
+            Secure.putInt(getContentResolver(), Secure.DOZE_PULSE_ON_DOUBLE_TAP, enabled ? 1 : 0);
+        } else if (PREF_KEY_SWIPE_DOWN_FINGERPRINT.equals(key)) {
+            Secure.putInt(getContentResolver(),
+                    Secure.SYSTEM_NAVIGATION_KEYS_ENABLED, enabled ? 1 : 0);
+        } else if (PREF_KEY_DOUBLE_TWIST.equals(key)) {
+            Secure.putInt(getContentResolver(),
+                    Secure.CAMERA_DOUBLE_TWIST_TO_FLIP_ENABLED, enabled ? 1 : 0);
+        }
+        return true;
+!!!743810.java!!!	getHelpResource() : int
+        return R.string.help_url_gestures;
+!!!743938.java!!!	getMetricsCategory() : int
+        return MetricsEvent.SETTINGS_GESTURES;
+!!!744066.java!!!	isCameraDoubleTapPowerGestureAvailable(inout res : Resources) : boolean
+        return res.getBoolean(
+                com.android.internal.R.bool.config_cameraDoubleTapPowerGestureEnabled);
+!!!744194.java!!!	isSystemUINavigationAvailable(inout context : Context) : boolean
+        return context.getResources().getBoolean(
+                com.android.internal.R.bool.config_supportSystemNavigationKeys);
+!!!744322.java!!!	isSystemUINavigationEnabled(inout context : Context) : boolean
+        return Secure.getInt(context.getContentResolver(), Secure.SYSTEM_NAVIGATION_KEYS_ENABLED, 0)
+                == 1;
+!!!744450.java!!!	isDoubleTwistAvailable(inout context : Context) : boolean
+        return hasSensor(context, R.string.gesture_double_twist_sensor_name,
+                R.string.gesture_double_twist_sensor_vendor);
+!!!744578.java!!!	hasSensor(inout context : Context, in nameResId : int, in vendorResId : int) : boolean
+        Resources resources = context.getResources();
+        String name = resources.getString(nameResId);
+        String vendor = resources.getString(vendorResId);
+        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(vendor)) {
+            SensorManager sensorManager =
+                    (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+            for (Sensor s : sensorManager.getSensorList(Sensor.TYPE_ALL)) {
+                if (name.equals(s.getName()) && vendor.equals(s.getVendor())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+!!!744706.java!!!	addPreference(in key : String, inout enabled : boolean) : void
+        GesturePreference preference = (GesturePreference) findPreference(key);
+        preference.setChecked(enabled);
+        preference.setOnPreferenceChangeListener(this);
+        mPreferences.add(preference);

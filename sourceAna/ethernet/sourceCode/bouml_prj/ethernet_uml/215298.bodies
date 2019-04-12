@@ -1,0 +1,40 @@
+class AssetInputStream
+!!!857730.java!!!	getAssetInt() : int
+            return mAsset;
+!!!857858.java!!!	AssetInputStream(in asset : int)
+            mAsset = asset;
+            mLength = getAssetLength(asset);
+!!!857986.java!!!	read() : int
+            return readAssetChar(mAsset);
+!!!858114.java!!!	markSupported() : boolean
+            return true;
+!!!858242.java!!!	available() : int
+            long len = getAssetRemainingLength(mAsset);
+            return len > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)len;
+!!!858370.java!!!	close() : void
+            synchronized (AssetManager.this) {
+                if (mAsset != 0) {
+                    destroyAsset(mAsset);
+                    mAsset = 0;
+                    decRefsLocked(hashCode());
+                }
+            }
+!!!858498.java!!!	mark(in readlimit : int) : void
+            mMarkPos = seekAsset(mAsset, 0, 0);
+!!!858626.java!!!	reset() : void
+            seekAsset(mAsset, mMarkPos, -1);
+!!!858754.java!!!	read(inout b : byte) : int
+            return readAsset(mAsset, b, 0, b.length);
+!!!858882.java!!!	read(inout b : byte, in off : int, in len : int) : int
+            return readAsset(mAsset, b, off, len);
+!!!859010.java!!!	skip(in n : long) : long
+            long pos = seekAsset(mAsset, 0, 0);
+            if ((pos+n) > mLength) {
+                n = mLength-pos;
+            }
+            if (n > 0) {
+                seekAsset(mAsset, n, 0);
+            }
+            return n;
+!!!859138.java!!!	finalize() : void
+            close();

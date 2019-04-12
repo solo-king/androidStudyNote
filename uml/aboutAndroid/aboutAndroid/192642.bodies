@@ -1,0 +1,3 @@
+class Type
+!!!382594.java!!!	Type(in prefix : String)
+                this.prefix = prefix;

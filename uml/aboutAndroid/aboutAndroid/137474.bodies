@@ -1,0 +1,21 @@
+class CustomPreferenceDialogFragment
+!!!169730.java!!!	newInstance(in key : String) : CustomDialogPreference::CustomPreferenceDialogFragment
+            final CustomPreferenceDialogFragment fragment = new CustomPreferenceDialogFragment();
+            final Bundle b = new Bundle(1);
+            b.putString(ARG_KEY, key);
+            fragment.setArguments(b);
+            return fragment;
+!!!169858.java!!!	getCustomizablePreference() : CustomDialogPreference
+            return (CustomDialogPreference) getPreference();
+!!!169986.java!!!	onPrepareDialogBuilder(inout builder : AlertDialog.Builder) : void
+            super.onPrepareDialogBuilder(builder);
+            getCustomizablePreference().setFragment(this);
+            getCustomizablePreference().onPrepareDialogBuilder(builder, this);
+!!!170114.java!!!	onDialogClosed(inout positiveResult : boolean) : void
+            getCustomizablePreference().onDialogClosed(positiveResult);
+!!!170242.java!!!	onBindDialogView(inout view : View) : void
+            super.onBindDialogView(view);
+            getCustomizablePreference().onBindDialogView(view);
+!!!170370.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+            super.onClick(dialog, which);
+            getCustomizablePreference().onClick(dialog, which);

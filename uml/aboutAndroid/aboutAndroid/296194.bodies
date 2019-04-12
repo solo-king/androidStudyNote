@@ -1,0 +1,12 @@
+class SettingsLaunchPerformance
+!!!1039874.java!!!	SettingsLaunchPerformance()
+        super();
+!!!1040002.java!!!	onCreate(inout arguments : Bundle) : void
+        super.onCreate(arguments);
+
+        mIntent.setClassName(getTargetContext(), "com.android.settings.Settings");
+        start();
+!!!1040130.java!!!	onStart() : void
+        super.onStart();
+        LaunchApp();
+        finish(Activity.RESULT_OK, mResults);

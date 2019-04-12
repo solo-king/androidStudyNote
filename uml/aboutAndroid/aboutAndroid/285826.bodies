@@ -1,0 +1,24 @@
+class PendingRevealAnimator
+!!!965762.java!!!	PendingRevealAnimator(in dot : int, inout predicate : DotsPageIndicator::StartPredicate)
+            super(predicate);
+            this.dot = dot;
+            setFloatValues(MINIMAL_REVEAL, 1f);
+            setDuration(animHalfDuration);
+            setInterpolator(interpolator);
+
+            addUpdateListener(new AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                    // todo avoid autoboxing
+                    setDotRevealFraction(PendingRevealAnimator.this.dot,
+                            (Float) valueAnimator.getAnimatedValue());
+                }
+            });
+
+            addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    setDotRevealFraction(PendingRevealAnimator.this.dot, 0f);
+                    postInvalidateOnAnimation();
+                }
+            });

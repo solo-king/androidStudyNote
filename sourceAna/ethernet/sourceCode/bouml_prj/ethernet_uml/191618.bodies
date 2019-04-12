@@ -1,0 +1,27 @@
+class ListenerDelegate
+!!!615810.java!!!	ListenerDelegate(inout listener : StorageEventListener)
+            mStorageEventListener = listener;
+            mHandler = new Handler(mTgtLooper) {
+                @Override
+                public void handleMessage(Message msg) {
+                    StorageEvent e = (StorageEvent) msg.obj;
+
+                    if (msg.what == StorageEvent.EVENT_UMS_CONNECTION_CHANGED) {
+                        UmsConnectionChangedStorageEvent ev = (UmsConnectionChangedStorageEvent) e;
+                        mStorageEventListener.onUsbMassStorageConnectionChanged(ev.available);
+                    } else if (msg.what == StorageEvent.EVENT_STORAGE_STATE_CHANGED) {
+                        StorageStateChangedStorageEvent ev = (StorageStateChangedStorageEvent) e;
+                        mStorageEventListener.onStorageStateChanged(ev.path, ev.oldState, ev.newState);
+                    } else {
+                        Log.e(TAG, "Unsupported event " + msg.what);
+                    }
+                }
+            };
+!!!615938.java!!!	getListener() : StorageEventListener
+            return mStorageEventListener;
+!!!616066.java!!!	sendShareAvailabilityChanged(inout available : boolean) : void
+            UmsConnectionChangedStorageEvent e = new UmsConnectionChangedStorageEvent(available);
+            mHandler.sendMessage(e.getMessage());
+!!!616194.java!!!	sendStorageStateChanged(in path : String, in oldState : String, in newState : String) : void
+            StorageStateChangedStorageEvent e = new StorageStateChangedStorageEvent(path, oldState, newState);
+            mHandler.sendMessage(e.getMessage());

@@ -1,0 +1,31 @@
+class AppArrayAdapter
+!!!161154.java!!!	AppArrayAdapter(inout context : Context, in textViewResourceId : int, inout objects : CharSequence, inout imageDrawables : Drawable, in selectedIndex : int)
+            super(context, textViewResourceId, objects);
+            mSelectedIndex = selectedIndex;
+            mImageDrawables = imageDrawables;
+!!!161282.java!!!	isEnabled(in position : int) : boolean
+            return mSummaries == null || mSummaries[position] == null;
+!!!161410.java!!!	getView(in position : int, inout convertView : View, inout parent : ViewGroup) : View
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            View view = inflater.inflate(R.layout.app_preference_item, parent, false);
+            TextView textView = (TextView) view.findViewById(android.R.id.title);
+            textView.setText(getItem(position));
+            if (position == mSelectedIndex && position == mSystemAppIndex) {
+                view.findViewById(R.id.system_default_label).setVisibility(View.VISIBLE);
+            } else if (position == mSelectedIndex) {
+                view.findViewById(R.id.default_label).setVisibility(View.VISIBLE);
+            } else if (position == mSystemAppIndex) {
+                view.findViewById(R.id.system_label).setVisibility(View.VISIBLE);
+            }
+            ImageView imageView = (ImageView) view.findViewById(android.R.id.icon);
+            imageView.setImageDrawable(mImageDrawables[position]);
+            // Summaries are describing why a item is disabled, so anything with a summary
+            // is not enabled.
+            boolean enabled = mSummaries == null || mSummaries[position] == null;
+            view.setEnabled(enabled);
+            if (!enabled) {
+                TextView summary = (TextView) view.findViewById(android.R.id.summary);
+                summary.setText(mSummaries[position]);
+                summary.setVisibility(View.VISIBLE);
+            }
+            return view;

@@ -1,0 +1,7 @@
+class BaseSearchIndexProvider
+!!!232066.java!!!	getXmlResourcesToIndex(inout context : Context, inout enabled : boolean) : List<SearchIndexableResource>
+        return null;
+!!!232194.java!!!	getRawDataToIndex(inout context : Context, inout enabled : boolean) : SearchIndexableRaw
+        return null;
+!!!232322.java!!!	getNonIndexableKeys(inout context : Context) : List<String>
+        return EMPTY_LIST;

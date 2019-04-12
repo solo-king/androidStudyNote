@@ -1,0 +1,7 @@
+class WarnedListPreference
+!!!395010.java!!!	WarnedListPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!395138.java!!!	onClick() : void
+        // Ignore this until an explicit call to click()
+!!!395266.java!!!	click() : void
+        super.onClick();

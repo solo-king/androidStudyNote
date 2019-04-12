@@ -1,0 +1,33 @@
+class ForgetConfirmFragment
+!!!649090.java!!!	show(inout parent : Fragment, in fsUuid : String) : void
+            final Bundle args = new Bundle();
+            args.putString(VolumeRecord.EXTRA_FS_UUID, fsUuid);
+
+            final ForgetConfirmFragment dialog = new ForgetConfirmFragment();
+            dialog.setArguments(args);
+            dialog.setTargetFragment(parent, 0);
+            dialog.show(parent.getFragmentManager(), TAG_FORGET_CONFIRM);
+!!!649218.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
+            final Context context = getActivity();
+            final StorageManager storage = context.getSystemService(StorageManager.class);
+
+            final String fsUuid = getArguments().getString(VolumeRecord.EXTRA_FS_UUID);
+            final VolumeRecord record = storage.findRecordByUuid(fsUuid);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(TextUtils.expandTemplate(
+                    getText(R.string.storage_internal_forget_confirm_title), record.getNickname()));
+            builder.setMessage(TextUtils.expandTemplate(
+                    getText(R.string.storage_internal_forget_confirm), record.getNickname()));
+
+            builder.setPositiveButton(R.string.storage_menu_forget,
+                    new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    storage.forgetVolume(fsUuid);
+                    getActivity().finish();
+                }
+            });
+            builder.setNegativeButton(R.string.cancel, null);
+
+            return builder.create();

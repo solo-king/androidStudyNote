@@ -1,0 +1,276 @@
+class EthernetService
+!!!147074.java!!!	EthernetService(inout context : Context, inout Tracker : EthernetStateTracker)
+        mTracker = Tracker;
+        mContext = context;
+        isEthEnabled = getPersistedState();
+        mEthDevMode = getPersistedDevMode();//获取网卡模式
+        Slog.v(TAG,"EthernetService构造函数:Ethernet dev enabled " + isEthEnabled +" mEthDevMode = "+mEthDevMode);
+        getDeviceNameList();
+        setEthState(isEthEnabled);//根据状态以及模式网卡设置
+        registerForBroadcasts();
+        Slog.v(TAG, "Trigger the ethernet monitor");
+        mTracker.StartPolling();
+        mDelayedHandler = new Handler();  
+        isEthernetServiceInited = true;
+!!!147202.java!!!	isEthConfigured() : boolean
+        final ContentResolver cr = mContext.getContentResolver();
+        int x = Settings.Global.getInt(cr, Settings.Global.ETH_CONF,0);
+
+        if (x == 1)
+            return true;
+        return false;
+!!!147330.java!!!	getSavedEthConfig() : EthernetDevInfo
+        if (isEthConfigured()) {
+            final ContentResolver cr = mContext.getContentResolver();
+            EthernetDevInfo info = new EthernetDevInfo();
+            info.setConnectMode(Settings.Global.getString(cr, Settings.Global.ETH_MODE));
+            info.setIfName(Settings.Global.getString(cr, Settings.Global.ETH_IFNAME));
+            info.setIpAddress(Settings.Global.getString(cr, Settings.Global.ETH_IP));
+            info.setDnsAddr(Settings.Global.getString(cr, Settings.Global.ETH_DNS));
+            info.setNetMask(Settings.Global.getString(cr, Settings.Global.ETH_MASK));
+            info.setRouteAddr(Settings.Global.getString(cr, Settings.Global.ETH_ROUTE));
+            info.setDevMode(Settings.Global.getString(cr, Settings.Global.ETH_DEV_MODE));
+
+            return info;
+        }
+        return null;
+!!!147458.java!!!	setEthMode(in mode : String) : void
+        final ContentResolver cr = mContext.getContentResolver();
+        Slog.v(TAG,"Set ethernet mode " + DevName + " -> " + mode);
+        if (DevName != null) {
+            Settings.Global.putString(cr, Settings.Global.ETH_IFNAME, DevName[0]);
+            Settings.Global.putInt(cr, Settings.Global.ETH_CONF,1);
+            Settings.Global.putString(cr, Settings.Global.ETH_MODE, mode);
+        }
+!!!147586.java!!!	setEthDevMode(in devMode : String) : void
+        final ContentResolver cr = mContext.getContentResolver();
+        Slog.v(TAG,"Set ethernet dev mode " + DevName + " -> " + devMode);
+        if (DevName != null) {
+            Settings.Global.putString(cr, Settings.Global.ETH_IFNAME, DevName[0]);
+            Settings.Global.putString(cr, Settings.Global.ETH_DEV_MODE, devMode);
+        }
+!!!147714.java!!!	UpdateEthDevInfo(inout info : EthernetDevInfo) : void
+        final ContentResolver cr = mContext.getContentResolver();
+        Settings.Global.putInt(cr, Settings.Global.ETH_CONF,1);
+        Settings.Global.putString(cr, Settings.Global.ETH_IFNAME, info.getIfName());
+        Settings.Global.putString(cr, Settings.Global.ETH_IP, info.getIpAddress());
+        Settings.Global.putString(cr, Settings.Global.ETH_MODE, info.getConnectMode());
+        Settings.Global.putString(cr, Settings.Global.ETH_DNS, info.getDnsAddr());
+        Settings.Global.putString(cr, Settings.Global.ETH_ROUTE, info.getRouteAddr());
+        Settings.Global.putString(cr, Settings.Global.ETH_MASK,info.getNetMask());
+
+        /* add by chenqigan */
+        Slog.d(TAG, "info.getDevMode()= "+info.getDevMode());
+        Settings.Global.putString(cr, Settings.Global.ETH_DEV_MODE,info.getDevMode());
+        if (mEthState == EthernetManager.ETH_STATE_ENABLED) {
+            try {
+                mTracker.resetInterface();
+                Slog.i(TAG, "$$UpdateEthDevInfo() call resetInterface()");
+            } catch (UnknownHostException e) {
+                Slog.e(TAG, "Wrong ethernet configuration");
+            }
+        }
+!!!147842.java!!!	registerForBroadcasts() : void
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        mContext.registerReceiver(mReceiver, intentFilter);
+!!!147970.java!!!	getTotalInterface() : int
+        return EthernetNative.getInterfaceCnt();
+!!!148098.java!!!	getmEthDevMode() : String
+        return mEthDevMode;
+!!!148226.java!!!	setmEthDevMode(in mEthDevMode : String) : void
+        this.mEthDevMode = mEthDevMode;
+!!!148354.java!!!	scanEthDevice() : int
+        int i = 0,j;
+        if ((i = EthernetNative.getInterfaceCnt()) != 0) {
+            Slog.i(TAG, "total found " + i + " net devices");
+            if (DevName == null || DevName.length != i)
+                DevName = new String[i];
+        }
+        else
+            return i;
+
+        for (j = 0; j < i; j++) {
+            DevName[j] = EthernetNative.getInterfaceName(j);
+            if (DevName[j] == null)
+                break;
+            Slog.i(TAG," device " + j + " name " + DevName[j]);
+        }
+
+        return i;
+!!!148482.java!!!	getDeviceNameList() : String
+        return (scanEthDevice() > 0 ) ? DevName : null;
+!!!148610.java!!!	getPersistedState() : int
+        final ContentResolver cr = mContext.getContentResolver();
+        try {
+            return Settings.Global.getInt(cr, Settings.Global.ETH_ON);
+        } catch (Settings.SettingNotFoundException e) {
+            //return EthernetManager.ETH_STATE_UNKNOWN;
+            return EthernetManager.ETH_STATE_DISABLED;
+        }
+!!!148738.java!!!	getPersistedDevMode() : String
+        final ContentResolver cr = mContext.getContentResolver();
+
+        try {
+            return Settings.Global.getString(cr, Settings.Global.ETH_DEV_MODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return EthernetDevInfo.ETH_DEV_MODE_WAN;
+        }
+!!!148866.java!!!	persistEthEnabled(inout enabled : boolean) : void
+
+        final ContentResolver cr = mContext.getContentResolver();
+
+        Settings.Global.putInt(cr, Settings.Global.ETH_ON,
+        enabled ? EthernetManager.ETH_STATE_ENABLED : EthernetManager.ETH_STATE_DISABLED);
+
+!!!148994.java!!!	persistEthDevMode(in ethDevMode : String) : void
+        final ContentResolver cr = mContext.getContentResolver();
+        Settings.Global.putString(cr, Settings.Global.ETH_DEV_MODE, ethDevMode);
+        setmEthDevMode(ethDevMode);
+!!!149122.java!!!	setmEthStateOnlyWan(in state : int) : void
+        new Thread("stopInterface") {
+            @Override
+            public void run() {
+                Slog.d(TAG, "2");
+                mTracker.stopInterface(false);
+            }
+        }.start();
+!!!149250.java!!!	setEthState(in state : int) : void
+
+        /*时刻从数据库中获取*/
+        Slog.d(TAG, "setEthState:getPersistedDevMode() = "+getPersistedDevMode());
+        if(getPersistedDevMode().equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){//dev_mode == lan
+            Slog.i(TAG, "dev_mode == lan: setEthState from " + mEthState + " to "+ state);
+            if (mEthState != state) {//只有状态变化的时候才执ctrlLanFunc
+                mEthState = state;
+                if(state == EthernetManager.ETH_STATE_ENABLED){
+                    ctrlLanFunc(true);
+                }else{
+                    ctrlLanFunc(false);
+                }
+            }
+        }else{
+            Slog.i(TAG, "setEthState from " + mEthState + " to "+ state);
+            if (mEthState != state) {//只有状态变化的时候才执行
+                mEthState = state;
+                if (state == EthernetManager.ETH_STATE_DISABLED) {
+                    persistEthEnabled(false);
+                    Slog.d(TAG, "1");
+//              mTracker.stopInterface(false);
+                    new Thread("stopInterface") {
+                        @Override
+                        public void run() {
+                            Slog.d(TAG, "2");
+                            mTracker.stopInterface(false);
+                        }
+                    }.start();
+                    Slog.d(TAG, "3");
+                } else {
+                    persistEthEnabled(true);
+                    Slog.d(TAG, "4");
+                    if (!isEthConfigured()) {
+                        // If user did not configure any interfaces yet, pick the first one
+                        // and enable it.
+                        setEthMode(EthernetDevInfo.ETH_CONN_MODE_DHCP);
+                        Slog.d(TAG, "5");
+                    }
+                    if (!isEthernetServiceInited){
+                        Slog.i(TAG, "$$ EthernetService uninited,disable setEthState() call resetInterface()");
+                        Slog.i(TAG, "$$ resetInterface() will be called in reconnect()");
+                    }
+                    else {
+                        Slog.i(TAG, "$$ setEthState() start thread to resetInterface()");
+                        new Thread("resetInterface") {
+                            @Override
+                            public void run() {
+                                try {
+                                    Slog.d(TAG, "6");
+                                    mTracker.resetInterface();
+                                } catch (UnknownHostException e) {
+                                    Slog.e(TAG, "Wrong ethernet configuration");
+                                }
+                            }
+                        }.start();
+                    }
+                }
+            }
+        }
+!!!149378.java!!!	getEthState() : int
+        return mEthState;
+!!!149506.java!!!	isEthDeviceUp() : boolean
+        try {
+            boolean retval = false;
+            FileReader fr = new FileReader("/sys/class/net/" + DevName[0] +"/operstate");
+            BufferedReader br = new BufferedReader(fr, 32);
+            String status = br.readLine();
+            if (status != null && status.equals("up")) {
+                Slog.d(TAG, "EthDevice status:" + status);
+                retval = true;
+            }
+            else if (status != null && status.equals("down")) {
+                Slog.d(TAG, "EthDevice status:" + status);
+                retval = false;
+            }
+            else {
+                retval =  false;
+            }
+            br.close();
+            fr.close();
+            return retval;
+        } catch (IOException e) {
+            Slog.d(TAG, "get EthDevice status error");
+            return false;
+        }
+!!!149634.java!!!	isEthDeviceAdded() : boolean
+        /*获取数据库dev mode*/
+        String devMode = getPersistedDevMode();
+        Slog.d(TAG, "isEthDeviceAdded : devMode = "+devMode);
+        if(devMode.equals(EthernetDevInfo.ETH_DEV_MODE_LAN)){//add by chenqigan
+            return false;
+        }else {
+            if (null == DevName || null == DevName[0]) {
+                Slog.d(TAG, "isEthDeviceAdded: trigger scanEthDevice");
+                scanEthDevice();
+            }
+
+            if (null == DevName || null == DevName[0]) {
+                Slog.d(TAG, "EthernetNative.isEthDeviceAdded: No Device Found");
+                return false;
+            }
+
+            int retval = EthernetNative.isInterfaceAdded(DevName[0]);
+            Slog.d(TAG, "EthernetNative.isEthDeviceAdded(" + DevName[0] +") return " + (0 == retval));
+            if (retval == 0)
+                return true;
+            else
+                return false;
+        }
+!!!149762.java!!!	getDhcpInfo() : DhcpInfo
+        return mTracker.getDhcpInfo();
+!!!149890.java!!!	ctrlLanFunc(inout isChecked : boolean) : int
+        if(isChecked){
+            Slog.d(TAG, "openLanFunc");
+            /*关闭eth0，如果当前使用的为eth0，则触发切换网卡事件*/
+           //setmEthStateOnlyWan(EthernetManager.ETH_STATE_DISABLED);
+            /*设置字段dev_mode = lan*/
+            persistEthDevMode(EthernetDevInfo.ETH_DEV_MODE_LAN);
+            persistEthEnabled(isChecked);//单独设置网卡开
+            /*设置属性关键字，专制root用户执行脚本*/
+            /*  on property:sys.lan.open=1
+                    start open_lan_service
+                on property:sys.lan.open=2
+                    start stop_lan_service
+             */
+            SystemProperties.set("sys.lan.open", "1");
+        }else{
+            Slog.d(TAG, "closeLanFunc");
+        /*设置属性关键字，专制root用户执行脚本*/
+            SystemProperties.set("sys.lan.open", "2");
+        /* 设置网卡字段dev_mode = wan */
+           // persistEthDevMode(EthernetDevInfo.ETH_DEV_MODE_WAN);
+           // persistEthEnabled(EthernetManager.ETH_STATE_DISABLED);//设置下数据库中的eth_on字段
+        }
+        persistEthEnabled(isChecked);//设置下数据库中的eth_on字段
+        return 0;

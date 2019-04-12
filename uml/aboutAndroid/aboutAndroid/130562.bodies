@@ -1,0 +1,11 @@
+class AirplaneModeVoiceActivity
+!!!135554.java!!!	onVoiceSettingInteraction(inout intent : Intent) : boolean
+        if (intent.hasExtra(Settings.EXTRA_AIRPLANE_MODE_ENABLED)) {
+            ConnectivityManager mgr = (ConnectivityManager) getSystemService(
+                    Context.CONNECTIVITY_SERVICE);
+            mgr.setAirplaneMode(intent.getBooleanExtra(
+                    Settings.EXTRA_AIRPLANE_MODE_ENABLED, false));
+        } else {
+            Log.v(TAG, "Missing airplane mode extra");
+        }
+        return true;

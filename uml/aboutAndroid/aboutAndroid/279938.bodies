@@ -1,0 +1,11 @@
+class SummaryProvider
+!!!916482.java!!!	SummaryProvider(inout context : Context, inout summaryLoader : SummaryLoader)
+            mContext = context;
+            mSummaryLoader = summaryLoader;
+!!!916610.java!!!	setListening(inout listening : boolean) : void
+            if (listening) {
+                UserInfo info = mContext.getSystemService(UserManager.class).getUserInfo(
+                        UserHandle.myUserId());
+                mSummaryLoader.setSummary(this, mContext.getString(R.string.user_summary,
+                        info.name));
+            }

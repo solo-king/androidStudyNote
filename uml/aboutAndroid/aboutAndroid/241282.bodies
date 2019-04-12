@@ -1,0 +1,18 @@
+class AppGridView
+!!!671874.java!!!	AppGridView(inout context : Context)
+        this(context, null);
+!!!672002.java!!!	AppGridView(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, 0);
+!!!672130.java!!!	AppGridView(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        this(context, attrs, defStyleAttr, 0);
+!!!672258.java!!!	AppGridView(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleResId : int)
+        super(context, attrs, defStyleAttr, defStyleResId);
+
+        setNumColumns(AUTO_FIT);
+
+        final int columnWidth = getResources().getDimensionPixelSize(
+                R.dimen.screen_zoom_preview_app_icon_width);
+        setColumnWidth(columnWidth);
+
+        setAdapter(new AppsAdapter(context, R.layout.screen_zoom_preview_app_icon,
+                android.R.id.text1, android.R.id.icon1));

@@ -1,0 +1,6 @@
+class LogSSC
+!!!164196.java!!!	set(inout t : Time, in s : String, in subId : int, in phoneId : int, inout state : ServiceState) : void
+            mTime = t; mS = s; mSubId = subId; mPhoneId = phoneId; mState = state;
+!!!164324.java!!!	toString() : String
+            return mS + " Time " + mTime.toString() + " mSubId " + mSubId + " mPhoneId "
+                    + mPhoneId + "  mState " + mState;

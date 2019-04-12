@@ -1,0 +1,3 @@
+class SetupChooseLockPatternFragment
+!!!342914.java!!!	getRedactionInterstitialIntent(inout context : Context) : Intent
+            return null;

@@ -1,0 +1,128 @@
+class SyncAdapterType
+!!!771586.java!!!	SyncAdapterType(in authority : String, in accountType : String, inout userVisible : boolean, inout supportsUploading : boolean)
+        if (TextUtils.isEmpty(authority)) {
+            throw new IllegalArgumentException("the authority must not be empty: " + authority);
+        }
+        if (TextUtils.isEmpty(accountType)) {
+            throw new IllegalArgumentException("the accountType must not be empty: " + accountType);
+        }
+        this.authority = authority;
+        this.accountType = accountType;
+        this.userVisible = userVisible;
+        this.supportsUploading = supportsUploading;
+        this.isAlwaysSyncable = false;
+        this.allowParallelSyncs = false;
+        this.settingsActivity = null;
+        this.isKey = false;
+!!!771714.java!!!	SyncAdapterType(in authority : String, in accountType : String, inout userVisible : boolean, inout supportsUploading : boolean, inout isAlwaysSyncable : boolean, inout allowParallelSyncs : boolean, in settingsActivity : String)
+        if (TextUtils.isEmpty(authority)) {
+            throw new IllegalArgumentException("the authority must not be empty: " + authority);
+        }
+        if (TextUtils.isEmpty(accountType)) {
+            throw new IllegalArgumentException("the accountType must not be empty: " + accountType);
+        }
+        this.authority = authority;
+        this.accountType = accountType;
+        this.userVisible = userVisible;
+        this.supportsUploading = supportsUploading;
+        this.isAlwaysSyncable = isAlwaysSyncable;
+        this.allowParallelSyncs = allowParallelSyncs;
+        this.settingsActivity = settingsActivity;
+        this.isKey = false;
+!!!771842.java!!!	SyncAdapterType(in authority : String, in accountType : String)
+        if (TextUtils.isEmpty(authority)) {
+            throw new IllegalArgumentException("the authority must not be empty: " + authority);
+        }
+        if (TextUtils.isEmpty(accountType)) {
+            throw new IllegalArgumentException("the accountType must not be empty: " + accountType);
+        }
+        this.authority = authority;
+        this.accountType = accountType;
+        this.userVisible = true;
+        this.supportsUploading = true;
+        this.isAlwaysSyncable = false;
+        this.allowParallelSyncs = false;
+        this.settingsActivity = null;
+        this.isKey = true;
+!!!771970.java!!!	supportsUploading() : boolean
+        if (isKey) {
+            throw new IllegalStateException(
+                    "this method is not allowed to be called when this is a key");
+        }
+        return supportsUploading;
+!!!772098.java!!!	isUserVisible() : boolean
+        if (isKey) {
+            throw new IllegalStateException(
+                    "this method is not allowed to be called when this is a key");
+        }
+        return userVisible;
+!!!772226.java!!!	allowParallelSyncs() : boolean
+        if (isKey) {
+            throw new IllegalStateException(
+                    "this method is not allowed to be called when this is a key");
+        }
+        return allowParallelSyncs;
+!!!772354.java!!!	isAlwaysSyncable() : boolean
+        if (isKey) {
+            throw new IllegalStateException(
+                    "this method is not allowed to be called when this is a key");
+        }
+        return isAlwaysSyncable;
+!!!772482.java!!!	getSettingsActivity() : String
+        if (isKey) {
+            throw new IllegalStateException(
+                    "this method is not allowed to be called when this is a key");
+        }
+        return settingsActivity;
+!!!772610.java!!!	newKey(in authority : String, in accountType : String) : SyncAdapterType
+        return new SyncAdapterType(authority, accountType);
+!!!772738.java!!!	equals(inout o : Object) : boolean
+        if (o == this) return true;
+        if (!(o instanceof SyncAdapterType)) return false;
+        final SyncAdapterType other = (SyncAdapterType)o;
+        // don't include userVisible or supportsUploading in the equality check
+        return authority.equals(other.authority) && accountType.equals(other.accountType);
+!!!772866.java!!!	hashCode() : int
+        int result = 17;
+        result = 31 * result + authority.hashCode();
+        result = 31 * result + accountType.hashCode();
+        // don't include userVisible or supportsUploading  the hash
+        return result;
+!!!772994.java!!!	toString() : String
+        if (isKey) {
+            return "SyncAdapterType Key {name=" + authority
+                    + ", type=" + accountType
+                    + "}";
+        } else {
+            return "SyncAdapterType {name=" + authority
+                    + ", type=" + accountType
+                    + ", userVisible=" + userVisible
+                    + ", supportsUploading=" + supportsUploading
+                    + ", isAlwaysSyncable=" + isAlwaysSyncable
+                    + ", allowParallelSyncs=" + allowParallelSyncs
+                    + ", settingsActivity=" + settingsActivity
+                    + "}";
+        }
+!!!773122.java!!!	describeContents() : int
+        return 0;
+!!!773250.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+        if (isKey) {
+            throw new IllegalStateException("keys aren't parcelable");
+        }
+
+        dest.writeString(authority);
+        dest.writeString(accountType);
+        dest.writeInt(userVisible ? 1 : 0);
+        dest.writeInt(supportsUploading ? 1 : 0);
+        dest.writeInt(isAlwaysSyncable ? 1 : 0);
+        dest.writeInt(allowParallelSyncs ? 1 : 0);
+        dest.writeString(settingsActivity);
+!!!773378.java!!!	SyncAdapterType(inout source : Parcel)
+        this(
+                source.readString(),
+                source.readString(),
+                source.readInt() != 0,
+                source.readInt() != 0,
+                source.readInt() != 0,
+                source.readInt() != 0,
+                source.readString());

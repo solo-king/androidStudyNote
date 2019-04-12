@@ -1,0 +1,6 @@
+class BrightnessPreference
+!!!168066.java!!!	BrightnessPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!168194.java!!!	onClick() : void
+        getContext().startActivityAsUser(new Intent(Intent.ACTION_SHOW_BRIGHTNESS_DIALOG),
+                UserHandle.CURRENT_OR_SELF);

@@ -1,0 +1,33 @@
+class ResultReceiver
+!!!554114.java!!!	ResultReceiver(inout handler : Handler)
+        mLocal = true;
+        mHandler = handler;
+!!!554242.java!!!	send(in resultCode : int, inout resultData : Bundle) : void
+        if (mLocal) {
+            if (mHandler != null) {
+                mHandler.post(new MyRunnable(resultCode, resultData));
+            } else {
+                onReceiveResult(resultCode, resultData);
+            }
+            return;
+        }
+        
+        if (mReceiver != null) {
+            try {
+                mReceiver.send(resultCode, resultData);
+            } catch (RemoteException e) {
+            }
+        }
+!!!554498.java!!!	describeContents() : int
+        return 0;
+!!!554626.java!!!	writeToParcel(inout out : Parcel, in flags : int) : void
+        synchronized (this) {
+            if (mReceiver == null) {
+                mReceiver = new MyResultReceiver();
+            }
+            out.writeStrongBinder(mReceiver.asBinder());
+        }
+!!!554754.java!!!	ResultReceiver(inout in : Parcel)
+        mLocal = false;
+        mHandler = null;
+        mReceiver = IResultReceiver.Stub.asInterface(in.readStrongBinder());

@@ -1,0 +1,13 @@
+class ShortcutIconResource
+!!!725634.java!!!	fromContext(inout context : Context, in resourceId : int) : Intent::ShortcutIconResource
+            ShortcutIconResource icon = new ShortcutIconResource();
+            icon.packageName = context.getPackageName();
+            icon.resourceName = context.getResources().getResourceName(resourceId);
+            return icon;
+!!!725762.java!!!	describeContents() : int
+            return 0;
+!!!725890.java!!!	writeToParcel(inout dest : Parcel, in flags : int) : void
+            dest.writeString(packageName);
+            dest.writeString(resourceName);
+!!!726018.java!!!	toString() : String
+            return resourceName;

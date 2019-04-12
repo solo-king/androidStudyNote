@@ -1,0 +1,127 @@
+class FingerprintEnrollFindSensor
+!!!704258.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+        setContentView(getContentView());
+        setHeaderText(R.string.security_settings_fingerprint_enroll_find_sensor_title);
+        if (savedInstanceState != null) {
+            mLaunchedConfirmLock = savedInstanceState.getBoolean(EXTRA_KEY_LAUNCHED_CONFIRM);
+            mToken = savedInstanceState.getByteArray(
+                    ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+        }
+        if (mToken == null && !mLaunchedConfirmLock) {
+            launchConfirmLock();
+        } else if (mToken != null) {
+            startLookingForFingerprint(); // already confirmed, so start looking for fingerprint
+        }
+        mAnimation = (FingerprintFindSensorAnimation) findViewById(
+                R.id.fingerprint_sensor_location_animation);
+!!!704386.java!!!	getContentView() : int
+        return R.layout.fingerprint_enroll_find_sensor;
+!!!704514.java!!!	onStart() : void
+        super.onStart();
+        mAnimation.startAnimation();
+!!!704642.java!!!	startLookingForFingerprint() : void
+        mSidecar = (FingerprintEnrollSidecar) getFragmentManager().findFragmentByTag(
+                FingerprintEnrollEnrolling.TAG_SIDECAR);
+        if (mSidecar == null) {
+            mSidecar = new FingerprintEnrollSidecar();
+            getFragmentManager().beginTransaction()
+                    .add(mSidecar, FingerprintEnrollEnrolling.TAG_SIDECAR).commit();
+        }
+        mSidecar.setListener(new Listener() {
+            @Override
+            public void onEnrollmentProgressChange(int steps, int remaining) {
+                mNextClicked = true;
+                if (!mSidecar.cancelEnrollment()) {
+                    proceedToEnrolling();
+                }
+            }
+
+            @Override
+            public void onEnrollmentHelp(CharSequence helpString) {
+            }
+
+            @Override
+            public void onEnrollmentError(int errMsgId, CharSequence errString) {
+                if (mNextClicked && errMsgId == FingerprintManager.FINGERPRINT_ERROR_CANCELED) {
+                    mNextClicked = false;
+                    proceedToEnrolling();
+                }
+            }
+        });
+!!!704770.java!!!	onStop() : void
+        super.onStop();
+        mAnimation.pauseAnimation();
+!!!704898.java!!!	onDestroy() : void
+        super.onDestroy();
+        mAnimation.stopAnimation();
+!!!705026.java!!!	onSaveInstanceState(inout outState : Bundle) : void
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_KEY_LAUNCHED_CONFIRM, mLaunchedConfirmLock);
+        outState.putByteArray(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
+!!!705154.java!!!	onNextButtonClick() : void
+        mNextClicked = true;
+        if (mSidecar == null || (mSidecar != null && !mSidecar.cancelEnrollment())) {
+            proceedToEnrolling();
+        }
+!!!705282.java!!!	proceedToEnrolling() : void
+        getFragmentManager().beginTransaction().remove(mSidecar).commit();
+        mSidecar = null;
+        startActivityForResult(getEnrollingIntent(), ENROLLING);
+!!!705410.java!!!	onActivityResult(in requestCode : int, in resultCode : int, inout data : Intent) : void
+        if (requestCode == CONFIRM_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                mToken = data.getByteArrayExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN);
+                overridePendingTransition(R.anim.suw_slide_next_in, R.anim.suw_slide_next_out);
+                getIntent().putExtra(ChooseLockSettingsHelper.EXTRA_KEY_CHALLENGE_TOKEN, mToken);
+                startLookingForFingerprint();
+            } else {
+                finish();
+            }
+        } else if (requestCode == ENROLLING) {
+            if (resultCode == RESULT_FINISHED) {
+                setResult(RESULT_FINISHED);
+                finish();
+            } else if (resultCode == RESULT_SKIP) {
+                setResult(RESULT_SKIP);
+                finish();
+            } else if (resultCode == RESULT_TIMEOUT) {
+                setResult(RESULT_TIMEOUT);
+                finish();
+            } else {
+                FingerprintManager fpm = getSystemService(FingerprintManager.class);
+                int enrolled = fpm.getEnrolledFingerprints().size();
+                int max = getResources().getInteger(
+                        com.android.internal.R.integer.config_fingerprintMaxTemplatesPerUser);
+                if (enrolled >= max) {
+                    finish();
+                } else {
+                    // We came back from enrolling but it wasn't completed, start again.
+                    startLookingForFingerprint();
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+!!!705538.java!!!	launchConfirmLock() : void
+        long challenge = getSystemService(FingerprintManager.class).preEnroll();
+        ChooseLockSettingsHelper helper = new ChooseLockSettingsHelper(this);
+        boolean launchedConfirmationActivity = false;
+        if (mUserId == UserHandle.USER_NULL) {
+            launchedConfirmationActivity = helper.launchConfirmationActivity(CONFIRM_REQUEST,
+                getString(R.string.security_settings_fingerprint_preference_title),
+                null, null, challenge);
+        } else {
+            launchedConfirmationActivity = helper.launchConfirmationActivity(CONFIRM_REQUEST,
+                    getString(R.string.security_settings_fingerprint_preference_title),
+                    null, null, challenge, mUserId);
+        }
+        if (!launchedConfirmationActivity) {
+            // This shouldn't happen, as we should only end up at this step if a lock thingy is
+            // already set.
+            finish();
+        } else {
+            mLaunchedConfirmLock = true;
+        }
+!!!705666.java!!!	getMetricsCategory() : int
+        return MetricsEvent.FINGERPRINT_FIND_SENSOR;

@@ -1,0 +1,11 @@
+class SettingsObserver
+!!!132324.java!!!	SettingsObserver(inout handler : Handler, in msg : int)
+            super(handler);
+            mHandler = handler;
+            mMsg = msg;
+!!!132452.java!!!	observe(inout context : Context) : void
+            ContentResolver resolver = context.getContentResolver();
+            resolver.registerContentObserver(Settings.Global.getUriFor(Settings.Global.AUTO_TIME),
+                    false, this);
+!!!132580.java!!!	onChange(inout selfChange : boolean) : void
+            mHandler.obtainMessage(mMsg).sendToTarget();

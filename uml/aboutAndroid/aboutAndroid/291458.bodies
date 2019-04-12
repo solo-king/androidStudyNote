@@ -1,0 +1,19 @@
+class WifiConfigInfo
+!!!1010690.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mWifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        setContentView(R.layout.wifi_config_info);
+        mConfigList = (TextView) findViewById(R.id.config_list);
+!!!1010818.java!!!	onResume() : void
+        super.onResume();
+        if (mWifiManager.isWifiEnabled()) {
+            final List<WifiConfiguration> wifiConfigs = mWifiManager.getConfiguredNetworks();
+            StringBuffer configList  = new StringBuffer();
+            for (int i = wifiConfigs.size() - 1; i >= 0; i--) {
+                configList.append(wifiConfigs.get(i));
+            }
+            mConfigList.setText(configList);
+        } else {
+            mConfigList.setText(R.string.wifi_state_disabled);
+        }

@@ -1,0 +1,36 @@
+class ManageablePreference
+!!!929410.java!!!	ManageablePreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setPersistent(false);
+        setOrder(0);
+        setUserId(UserHandle.myUserId());
+!!!929538.java!!!	getUserId() : int
+        return mUserId;
+!!!929666.java!!!	setUserId(in userId : int) : void
+        mUserId = userId;
+        checkRestrictionAndSetDisabled(UserManager.DISALLOW_CONFIG_VPN, userId);
+!!!929794.java!!!	isAlwaysOn() : boolean
+        return mIsAlwaysOn;
+!!!929922.java!!!	getState() : int
+        return mState;
+!!!930050.java!!!	setState(in state : int) : void
+        if (mState != state) {
+            mState = state;
+            updateSummary();
+            notifyHierarchyChanged();
+        }
+!!!930178.java!!!	setAlwaysOn(inout isEnabled : boolean) : void
+        if (mIsAlwaysOn != isEnabled) {
+            mIsAlwaysOn = isEnabled;
+            updateSummary();
+        }
+!!!930306.java!!!	updateSummary() : void
+        final Resources res = getContext().getResources();
+        final String[] states = res.getStringArray(R.array.vpn_states);
+        String summary = (mState == STATE_NONE ? "" : states[mState]);
+        if (mIsAlwaysOn) {
+            final String alwaysOnString = res.getString(R.string.vpn_always_on_active);
+            summary = TextUtils.isEmpty(summary) ? alwaysOnString : res.getString(
+                    R.string.join_two_unrelated_items, summary, alwaysOnString);
+        }
+        setSummary(summary);

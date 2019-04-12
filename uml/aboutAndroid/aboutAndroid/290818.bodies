@@ -1,0 +1,69 @@
+class WifiDialog
+!!!999554.java!!!	WifiDialog(inout context : Context, inout listener : WifiDialog::WifiDialogListener, inout accessPoint : AccessPoint, in mode : int, inout hideSubmitButton : boolean)
+        this(context, listener, accessPoint, mode);
+        mHideSubmitButton = hideSubmitButton;
+!!!999682.java!!!	WifiDialog(inout context : Context, inout listener : WifiDialog::WifiDialogListener, inout accessPoint : AccessPoint, in mode : int)
+        super(context);
+        mMode = mode;
+        mListener = listener;
+        mAccessPoint = accessPoint;
+        mHideSubmitButton = false;
+!!!999810.java!!!	getController() : WifiConfigController
+        return mController;
+!!!999938.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        mView = getLayoutInflater().inflate(R.layout.wifi_dialog, null);
+        setView(mView);
+        setInverseBackgroundForced(true);
+        mController = new WifiConfigController(this, mView, mAccessPoint, mMode);
+        super.onCreate(savedInstanceState);
+
+        if (mHideSubmitButton) {
+            mController.hideSubmitButton();
+        } else {
+            /* During creation, the submit button can be unavailable to determine
+             * visibility. Right after creation, update button visibility */
+            mController.enableSubmitIfAppropriate();
+        }
+
+        if (mAccessPoint == null) {
+            mController.hideForgetButton();
+        }
+!!!1000066.java!!!	onRestoreInstanceState(inout savedInstanceState : Bundle) : void
+            super.onRestoreInstanceState(savedInstanceState);
+            mController.updatePassword();
+!!!1000194.java!!!	dispatchSubmit() : void
+        if (mListener != null) {
+            mListener.onSubmit(this);
+        }
+        dismiss();
+!!!1000322.java!!!	onClick(inout dialogInterface : DialogInterface, in id : int) : void
+        if (mListener != null) {
+            switch (id) {
+                case BUTTON_SUBMIT:
+                    mListener.onSubmit(this);
+                    break;
+                case BUTTON_FORGET:
+                    if (WifiSettings.isEditabilityLockedDown(
+                            getContext(), mAccessPoint.getConfig())) {
+                        RestrictedLockUtils.sendShowAdminSupportDetailsIntent(getContext(),
+                                RestrictedLockUtils.getDeviceOwner(getContext()));
+                        return;
+                    }
+                    mListener.onForget(this);
+                    break;
+            }
+        }
+!!!1000450.java!!!	getMode() : int
+        return mMode;
+!!!1000578.java!!!	getSubmitButton() : Button
+        return getButton(BUTTON_SUBMIT);
+!!!1000706.java!!!	getForgetButton() : Button
+        return getButton(BUTTON_FORGET);
+!!!1000834.java!!!	getCancelButton() : Button
+        return getButton(BUTTON_NEGATIVE);
+!!!1000962.java!!!	setSubmitButton(inout text : CharSequence) : void
+        setButton(BUTTON_SUBMIT, text, this);
+!!!1001090.java!!!	setForgetButton(inout text : CharSequence) : void
+        setButton(BUTTON_FORGET, text, this);
+!!!1001218.java!!!	setCancelButton(inout text : CharSequence) : void
+        setButton(BUTTON_NEGATIVE, text, this);

@@ -1,0 +1,352 @@
+# Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above
+#       copyright notice, this list of conditions and the following
+#       disclaimer in the documentation and/or other materials provided
+#       with the distribution.
+#     * Neither the name of The Linux Foundation nor the names of its
+#       contributors may be used to endorse or promote products derived
+#       from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
+# WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
+# BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+# BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
+# IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+import init.qti.carrier.rc
+
+on early-init
+    mkdir /firmware 0771 system system
+    mkdir /system 0777 root root
+    symlink /data/tombstones /tombstones
+    write /sys/kernel/mm/ksm/pages_to_scan 100
+    write /sys/kernel/mm/ksm/sleep_millisecs 500
+    write /sys/kernel/mm/ksm/deferred_timer 1
+    write /sys/kernel/mm/ksm/run 1
+
+on fs
+    mount_all fstab.qcom
+    swapon_all fstab.qcom
+
+    # Keeping following partitions outside fstab file. As user may not have
+    # these partition flashed on the device. Failure to mount any partition in fstab file
+    # results in failure to launch late-start class.
+
+    wait /dev/block/bootdevice/by-name/cache
+    mount ext4 /dev/block/bootdevice/by-name/cache /cache nosuid nodev barrier=1
+
+    wait /dev/block/bootdevice/by-name/persist
+    mount ext4 /dev/block/bootdevice/by-name/persist /persist nosuid nodev barrier=1
+    mkdir /persist/data 0700 system system
+
+    wait /dev/block/bootdevice/by-name/modem
+    mount vfat /dev/block/bootdevice/by-name/modem /firmware ro shortname=lower,uid=1000,gid=1000,dmask=227,fmask=337
+    #write /sys/kernel/boot_adsp/boot 1
+##############chenqigan add###########    
+on device-added-/dev/usr_leds
+    chmod 777 /dev/usr_leds
+#on device-added-/dev/usr_leds
+#####################################
+
+on post-fs-data
+    mkdir /data/tombstones 0771 system system
+    mkdir /tombstones/modem 0771 system system
+    mkdir /tombstones/lpass 0771 system system
+    mkdir /tombstones/wcnss 0771 system system
+    mkdir /tombstones/dsps 0771 system system
+    #add by chenqigan
+#    setprop ro.sf.lcd_density 120
+    setprop service.adb.tcp.port 5557
+    setprop sys.lan.open 0
+    chmod 777 /system/bin/lan_func.sh
+    #add by chenqigan end
+
+#start camera server as daemon
+service qcamerasvr /system/bin/mm-qcamera-daemon
+    class late_start
+    user camera
+    group camera system inet input graphics
+
+on init
+   write /sys/module/qpnp_rtc/parameters/poweron_alarm 1
+
+# Allow usb charging to be disabled peristently
+on property:persist.usb.chgdisabled=1
+    write /sys/class/power_supply/battery/charging_enabled 0
+
+on property:persist.usb.chgdisabled=0
+    write /sys/class/power_supply/battery/charging_enabled 1
+
+service qrngd /system/bin/qrngd -f
+   class main
+   user root
+   group root
+
+service qrngp /system/bin/qrngp -f
+   class main
+   user root
+   group root
+   oneshot
+   disabled
+
+on property:sys.boot_completed=1
+   start qrngp
+
+service qseecomd /system/bin/qseecomd
+   class core
+   user root
+   group root
+
+service perfd /system/bin/perfd
+   class main
+   user root
+   disabled
+
+service thermal-engine /system/bin/thermal-engine
+   class main
+   user root
+   group root
+
+service time_daemon /system/bin/time_daemon
+   class late_start
+   user root
+   group root
+
+service audiod /system/bin/audiod
+   class late_start
+   user system
+   group system
+
+on charger-fs
+   wait /dev/block/bootdevice/by-name/system
+   mount ext4 /dev/block/bootdevice/by-name/system /system ro barrier=1
+   chown root system /sys/class/power_supply/bms/current_now
+   chown root system /sys/class/power_supply/bms/voltage_ocv
+   chmod 0664 /sys/class/power_supply/bms/current_now
+   chmod 0664 /sys/class/power_supply/bms/voltage_ocv
+
+on charger
+   start vm_bms
+   start qcom-post-boot
+
+on boot
+    start rmt_storage
+    insmod /system/lib/modules/adsprpc.ko
+    write /proc/sys/vm/swappiness 100
+    insmod /system/lib/modules/smscusbnet.ko
+    insmod /system/lib/modules/smsc9500.ko
+    start set_eth0_mac
+
+service ppd /system/bin/mm-pp-daemon
+    class late_start
+    disabled
+    user system
+    socket pps stream 0660 system system
+    group system graphics
+
+service per_mgr /system/bin/pm-service
+    class core
+    user system
+    group system net_raw
+
+on property:init.svc.surfaceflinger=stopped
+    stop ppd
+
+on property:init.svc.surfaceflinger=running
+    start ppd
+
+service wcnss-service /system/bin/wcnss_service
+    class late_start
+    user system
+    group system wifi
+    oneshot
+
+service imsstarter /system/bin/sh /system/etc/init.qti.ims.sh
+    class main
+    oneshot
+
+service imsqmidaemon /system/bin/imsqmidaemon
+    class main
+    user system
+    socket ims_qmid stream 0660 system radio
+    group ims radio net_raw log qcom_diag
+    disabled
+
+on property:service.qti.ims.enabled=1
+    start imsqmidaemon
+
+service imsdatadaemon /system/bin/imsdatadaemon
+    class main
+    user system
+    socket ims_datad stream 0660 system radio
+    group system ims wifi radio inet net_raw log qcom_diag net_admin
+    disabled
+
+on property:sys.ims.QMI_DAEMON_STATUS=1
+    start imsdatadaemon
+
+service ims_rtp_daemon /system/bin/ims_rtp_daemon
+   class main
+   user system
+   socket ims_rtpd stream 0660 system ims
+   group ims net_raw diag qcom_diag log
+   disabled
+
+service gestureservice /system/bin/gestureservice
+   class main
+   user root
+   group root
+   disabled
+
+#modify by chenqigan   
+on property:sys.ims.DATA_DAEMON_STATUS=1
+    start ims_rtp_daemon
+
+#modify by chenqigan   
+on property:sys.ims.DATA_DAEMON_STATUS=2
+    stop ims_rtp_daemon
+
+service touch /system/bin/sh /system/etc/init.qti.synaptics_dsx_qhd.sh
+   class late_start
+   user root
+   group root
+   oneshot
+   disabled
+
+on property:persist.sys.synaptics_dsx.qhd=true
+   start touch
+
+on property:persist.sys.synaptics_dsx.qhd=false
+   stop touch
+
+
+service dhcpcd_eth0 /system/bin/dhcpcd -ABKL
+    class main
+    disabled
+    oneshot
+
+# IP Renew
+# # eth0
+service iprenew_eth0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+
+#chenqigan watch dog
+service sys_watch_dog /system/bin/watch_dog
+   class main 
+   user root
+   group root
+
+
+#chenqigan lan func
+service   open_lan_service  /system/bin/sh /system/bin/lan_func.sh open
+   user root
+   group root
+   oneshot
+   disabled
+
+#chenqigan set eth0 mac
+service  set_eth0_mac  /system/bin/sh /system/bin/set_eth0_mac.sh set_hw_mac
+   user root
+   group root
+   oneshot
+   disabled
+
+#chenqigan get eth0 mac
+service  get_eth0_mac  /system/bin/sh /system/bin/set_eth0_mac.sh get_sdcard_mac
+   user root
+   group root
+   oneshot
+   disabled
+
+#chenqigan watch dog
+service   stop_lan_service  /system/bin/sh /system/bin/lan_func.sh close
+   user root
+   group root
+   oneshot
+   disabled
+
+#chenqigan fix umount Failure
+service   umount_usbotg  /system/bin/sh /system/bin/usr_usbotg_fix.sh umount_usb_otg
+   user root
+   group root
+   oneshot
+   disabled
+
+#获取otg模式
+service   get_otg_mode /system/bin/sh /system/bin/usr_opr_device.sh get_otg_mode
+   user root
+   group root
+   oneshot
+   disabled
+
+
+#设备otg模式切换至host
+service   sw_to_host /system/bin/sh /system/bin/usr_opr_device.sh swtich_to_host
+   user root
+   group root
+   oneshot
+   disabled
+
+#设备otg模式切换至peripheral
+service   sw_to_peri /system/bin/sh /system/bin/usr_opr_device.sh swtich_to_peripheral
+   user root
+   group root
+   oneshot
+   disabled
+
+#设备删除EPC300SelfCheck
+service   del_sc_app /system/bin/sh /system/bin/usr_opr_device.sh del_epc300_self_check
+   user root
+   group root
+   oneshot
+   disabled
+#测试
+service hello /system/bin/hello nihao hello
+   class main
+   user root
+   group root
+#  critical
+#  oneshot
+#  disabled
+   onrestart mkdir /sdcard/yss
+#测试
+on property:hello=1
+   start hello
+
+on property:usr.remove.epc300sc=1
+    start del_sc_app
+
+on property:sys.device.mode=1
+    start sw_to_host
+on property:sys.device.mode=2
+    start sw_to_peri
+on property:usr.get.otg.mode=1
+    start get_otg_mode
+
+on property:sys.lan.open=1
+    start open_lan_service
+on property:sys.lan.open=2
+    start stop_lan_service
+
+on property:usr.usbotg.umount=1
+    start umount_usbotg
+
+on property:usr.get.mac=1
+    start get_eth0_mac 

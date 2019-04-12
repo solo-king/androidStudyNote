@@ -1,0 +1,18 @@
+class Entity
+!!!724866.java!!!	Entity(inout values : ContentValues)
+        mValues = values;
+        mSubValues = new ArrayList<NamedContentValues>();
+!!!724994.java!!!	getEntityValues() : ContentValues
+        return mValues;
+!!!725122.java!!!	getSubValues() : Entity::NamedContentValues
+        return mSubValues;
+!!!725250.java!!!	addSubValue(inout uri : Uri, inout values : ContentValues) : void
+        mSubValues.add(new Entity.NamedContentValues(uri, values));
+!!!725506.java!!!	toString() : String
+        final StringBuilder sb = new StringBuilder();
+        sb.append("Entity: ").append(getEntityValues());
+        for (Entity.NamedContentValues namedValue : getSubValues()) {
+            sb.append("\n  ").append(namedValue.uri);
+            sb.append("\n  -> ").append(namedValue.values);
+        }
+        return sb.toString();

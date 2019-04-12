@@ -1,0 +1,123 @@
+class SeekBarPreference
+!!!323586.java!!!	SeekBarPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
+        super(context, attrs, defStyleAttr, defStyleRes);
+
+        TypedArray a = context.obtainStyledAttributes(
+                attrs, com.android.internal.R.styleable.ProgressBar, defStyleAttr, defStyleRes);
+        setMax(a.getInt(com.android.internal.R.styleable.ProgressBar_max, mMax));
+        a.recycle();
+
+        a = context.obtainStyledAttributes(attrs,
+                com.android.internal.R.styleable.SeekBarPreference, defStyleAttr, defStyleRes);
+        final int layoutResId = a.getResourceId(
+                com.android.internal.R.styleable.SeekBarPreference_layout,
+                com.android.internal.R.layout.preference_widget_seekbar);
+        a.recycle();
+
+        setLayoutResource(layoutResId);
+!!!323714.java!!!	SeekBarPreference(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
+        this(context, attrs, defStyleAttr, 0);
+!!!323842.java!!!	SeekBarPreference(inout context : Context, inout attrs : AttributeSet)
+        this(context, attrs, com.android.internal.R.attr.seekBarPreferenceStyle);
+!!!323970.java!!!	SeekBarPreference(inout context : Context)
+        this(context, null);
+!!!324098.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
+        super.onBindViewHolder(view);
+        view.itemView.setOnKeyListener(this);
+        SeekBar seekBar = (SeekBar) view.findViewById(
+                com.android.internal.R.id.seekbar);
+        seekBar.setOnSeekBarChangeListener(this);
+        seekBar.setMax(mMax);
+        seekBar.setProgress(mProgress);
+        seekBar.setEnabled(isEnabled());
+!!!324226.java!!!	getSummary() : CharSequence
+        return null;
+!!!324354.java!!!	onSetInitialValue(inout restoreValue : boolean, inout defaultValue : Object) : void
+        setProgress(restoreValue ? getPersistedInt(mProgress)
+                : (Integer) defaultValue);
+!!!324482.java!!!	onGetDefaultValue(inout a : TypedArray, in index : int) : Object
+        return a.getInt(index, 0);
+!!!324610.java!!!	onKey(inout v : View, in keyCode : int, inout event : KeyEvent) : boolean
+        if (event.getAction() != KeyEvent.ACTION_DOWN) {
+            return false;
+        }
+
+        SeekBar seekBar = (SeekBar) v.findViewById(com.android.internal.R.id.seekbar);
+        if (seekBar == null) {
+            return false;
+        }
+        return seekBar.onKeyDown(keyCode, event);
+!!!324738.java!!!	setMax(in max : int) : void
+        if (max != mMax) {
+            mMax = max;
+            notifyChanged();
+        }
+!!!324866.java!!!	setProgress(in progress : int) : void
+        setProgress(progress, true);
+!!!324994.java!!!	setProgress(in progress : int, inout notifyChanged : boolean) : void
+        if (progress > mMax) {
+            progress = mMax;
+        }
+        if (progress < 0) {
+            progress = 0;
+        }
+        if (progress != mProgress) {
+            mProgress = progress;
+            persistInt(progress);
+            if (notifyChanged) {
+                notifyChanged();
+            }
+        }
+!!!325122.java!!!	getProgress() : int
+        return mProgress;
+!!!325250.java!!!	syncProgress(inout seekBar : SeekBar) : void
+        int progress = seekBar.getProgress();
+        if (progress != mProgress) {
+            if (callChangeListener(progress)) {
+                setProgress(progress, false);
+            } else {
+                seekBar.setProgress(mProgress);
+            }
+        }
+!!!325378.java!!!	onProgressChanged(inout seekBar : SeekBar, in progress : int, inout fromUser : boolean) : void
+        if (fromUser && !mTrackingTouch) {
+            syncProgress(seekBar);
+        }
+!!!325506.java!!!	onStartTrackingTouch(inout seekBar : SeekBar) : void
+        mTrackingTouch = true;
+!!!325634.java!!!	onStopTrackingTouch(inout seekBar : SeekBar) : void
+        mTrackingTouch = false;
+        if (seekBar.getProgress() != mProgress) {
+            syncProgress(seekBar);
+        }
+!!!325762.java!!!	onSaveInstanceState() : Parcelable
+        /*
+         * Suppose a client uses this preference type without persisting. We
+         * must save the instance state so it is able to, for example, survive
+         * orientation changes.
+         */
+
+        final Parcelable superState = super.onSaveInstanceState();
+        if (isPersistent()) {
+            // No need to save instance state since it's persistent
+            return superState;
+        }
+
+        // Save the instance state
+        final SavedState myState = new SavedState(superState);
+        myState.progress = mProgress;
+        myState.max = mMax;
+        return myState;
+!!!325890.java!!!	onRestoreInstanceState(inout state : Parcelable) : void
+        if (!state.getClass().equals(SavedState.class)) {
+            // Didn't save state for us in onSaveInstanceState
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        // Restore the instance state
+        SavedState myState = (SavedState) state;
+        super.onRestoreInstanceState(myState.getSuperState());
+        mProgress = myState.progress;
+        mMax = myState.max;
+        notifyChanged();

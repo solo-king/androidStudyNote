@@ -1,0 +1,5 @@
+format 76
+
+classinstance 128002 class_ref 150530 // DashboardAdapter
+  name ""   xyz 547 16 2005 life_line_z 2000
+end

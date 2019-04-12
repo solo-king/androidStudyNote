@@ -1,0 +1,15 @@
+class BatterySaverModeVoiceActivity
+!!!721794.java!!!	onVoiceSettingInteraction(inout intent : Intent) : boolean
+        if (intent.hasExtra(EXTRA_BATTERY_SAVER_MODE_ENABLED)) {
+            PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (powerManager.setPowerSaveMode(
+                    intent.getBooleanExtra(EXTRA_BATTERY_SAVER_MODE_ENABLED, false))) {
+                notifySuccess(null);
+            } else {
+                Log.v(TAG, "Unable to set power mode");
+                notifyFailure(null);
+            }
+        } else {
+            Log.v(TAG, "Missing battery saver mode extra");
+        }
+        return true;

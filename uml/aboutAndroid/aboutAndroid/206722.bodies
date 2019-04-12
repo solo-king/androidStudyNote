@@ -1,0 +1,3 @@
+class SmsState
+!!!468610.java!!!	isGranted() : boolean
+            return smsState == SmsUsageMonitor.PREMIUM_SMS_PERMISSION_ALWAYS_ALLOW;

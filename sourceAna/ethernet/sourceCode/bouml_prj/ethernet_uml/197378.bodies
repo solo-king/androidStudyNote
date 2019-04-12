@@ -1,0 +1,190 @@
+class Transport
+!!!656386.java!!!	getContentProvider() : ContentProvider
+            return ContentProvider.this;
+!!!656514.java!!!	getProviderName() : String
+            return getContentProvider().getClass().getName();
+!!!656642.java!!!	query(in callingPkg : String, inout uri : Uri, inout projection : String, in selection : String, inout selectionArgs : String, in sortOrder : String, inout cancellationSignal : ICancellationSignal) : Cursor
+            if (enforceReadPermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return rejectQuery(uri, projection, selection, selectionArgs, sortOrder,
+                        CancellationSignal.fromTransport(cancellationSignal));
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.query(
+                        uri, projection, selection, selectionArgs, sortOrder,
+                        CancellationSignal.fromTransport(cancellationSignal));
+            } finally {
+                setCallingPackage(original);
+            }
+!!!656770.java!!!	getType(inout uri : Uri) : String
+            return ContentProvider.this.getType(uri);
+!!!656898.java!!!	insert(in callingPkg : String, inout uri : Uri, inout initialValues : ContentValues) : Uri
+            if (enforceWritePermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return rejectInsert(uri, initialValues);
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.insert(uri, initialValues);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657026.java!!!	bulkInsert(in callingPkg : String, inout uri : Uri, inout initialValues : ContentValues) : int
+            if (enforceWritePermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return 0;
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.bulkInsert(uri, initialValues);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657154.java!!!	applyBatch(in callingPkg : String, inout operations : ArrayList<ContentProviderOperation>) : ContentProviderResult
+            for (ContentProviderOperation operation : operations) {
+                if (operation.isReadOperation()) {
+                    if (enforceReadPermission(callingPkg, operation.getUri())
+                            != AppOpsManager.MODE_ALLOWED) {
+                        throw new OperationApplicationException("App op not allowed", 0);
+                    }
+                }
+
+                if (operation.isDeleteOperation()) {
+                    if (enforceDeletePermission(callingPkg, operation.getUri())
+                            != AppOpsManager.MODE_ALLOWED) {
+                        throw new OperationApplicationException("App op not allowed", 0);
+                    }
+                } else if (operation.isWriteOperation()) {
+                    if (enforceWritePermission(callingPkg, operation.getUri())
+                            != AppOpsManager.MODE_ALLOWED) {
+                        throw new OperationApplicationException("App op not allowed", 0);
+                    }
+                }
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.applyBatch(operations);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657282.java!!!	delete(in callingPkg : String, inout uri : Uri, in selection : String, inout selectionArgs : String) : int
+            if (enforceDeletePermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return 0;
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.delete(uri, selection, selectionArgs);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657410.java!!!	update(in callingPkg : String, inout uri : Uri, inout values : ContentValues, in selection : String, inout selectionArgs : String) : int
+            if (enforceWritePermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return 0;
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.update(uri, values, selection, selectionArgs);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657538.java!!!	openFile(in callingPkg : String, inout uri : Uri, in mode : String, inout cancellationSignal : ICancellationSignal) : ParcelFileDescriptor
+            enforceFilePermission(callingPkg, uri, mode);
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.openFile(
+                        uri, mode, CancellationSignal.fromTransport(cancellationSignal));
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657666.java!!!	openAssetFile(in callingPkg : String, inout uri : Uri, in mode : String, inout cancellationSignal : ICancellationSignal) : AssetFileDescriptor
+            enforceFilePermission(callingPkg, uri, mode);
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.openAssetFile(
+                        uri, mode, CancellationSignal.fromTransport(cancellationSignal));
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657794.java!!!	call(in callingPkg : String, in method : String, in arg : String, inout extras : Bundle) : Bundle
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.call(method, arg, extras);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!657922.java!!!	getStreamTypes(inout uri : Uri, in mimeTypeFilter : String) : String
+            return ContentProvider.this.getStreamTypes(uri, mimeTypeFilter);
+!!!658050.java!!!	openTypedAssetFile(in callingPkg : String, inout uri : Uri, in mimeType : String, inout opts : Bundle, inout cancellationSignal : ICancellationSignal) : AssetFileDescriptor
+            enforceFilePermission(callingPkg, uri, "r");
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.openTypedAssetFile(
+                        uri, mimeType, opts, CancellationSignal.fromTransport(cancellationSignal));
+            } finally {
+                setCallingPackage(original);
+            }
+!!!658178.java!!!	createCancellationSignal() : ICancellationSignal
+            return CancellationSignal.createTransport();
+!!!658306.java!!!	canonicalize(in callingPkg : String, inout uri : Uri) : Uri
+            if (enforceReadPermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return null;
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.canonicalize(uri);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!658434.java!!!	uncanonicalize(in callingPkg : String, inout uri : Uri) : Uri
+            if (enforceReadPermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                return null;
+            }
+            final String original = setCallingPackage(callingPkg);
+            try {
+                return ContentProvider.this.uncanonicalize(uri);
+            } finally {
+                setCallingPackage(original);
+            }
+!!!658562.java!!!	enforceFilePermission(in callingPkg : String, inout uri : Uri, in mode : String) : void
+            if (mode != null && mode.indexOf('w') != -1) {
+                if (enforceWritePermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                    throw new FileNotFoundException("App op not allowed");
+                }
+            } else {
+                if (enforceReadPermission(callingPkg, uri) != AppOpsManager.MODE_ALLOWED) {
+                    throw new FileNotFoundException("App op not allowed");
+                }
+            }
+!!!658690.java!!!	enforceReadPermission(in callingPkg : String, inout uri : Uri) : int
+            enforceReadPermissionInner(uri);
+            if (mReadOp != AppOpsManager.OP_NONE) {
+                return mAppOpsManager.noteOp(mReadOp, Binder.getCallingUid(), callingPkg);
+            }
+            return AppOpsManager.MODE_ALLOWED;
+!!!658818.java!!!	enforceWritePermission(in callingPkg : String, inout uri : Uri) : int
+            enforceWritePermissionInner(uri);
+            if (mWriteOp != AppOpsManager.OP_NONE) {
+                return mAppOpsManager.noteOp(mWriteOp, Binder.getCallingUid(), callingPkg);
+            }
+            return AppOpsManager.MODE_ALLOWED;
+!!!658946.java!!!	enforceDeletePermission(in callingPkg : String, inout uri : Uri) : int
+            enforceWritePermissionInner(uri);
+            if (mWriteOp != AppOpsManager.OP_NONE) {
+                int op = mWriteOp;
+                switch (mWriteOp) {
+                case AppOpsManager.OP_WRITE_SMS:
+                    op = AppOpsManager.OP_DELETE_SMS;
+                    break;
+                case AppOpsManager.OP_WRITE_MMS:
+                    op = AppOpsManager.OP_DELETE_MMS;
+                    break;
+                case AppOpsManager.OP_WRITE_CONTACTS:
+                    op = AppOpsManager.OP_DELETE_CONTACTS;
+                    break;
+                case AppOpsManager.OP_WRITE_CALL_LOG:
+                    op = AppOpsManager.OP_DELETE_CALL_LOG;
+                    break;
+                default:
+                    break;
+                }
+               mAppOpsManager.noteOp(op, Binder.getCallingUid(), callingPkg);
+            }
+            return AppOpsManager.MODE_ALLOWED;

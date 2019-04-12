@@ -1,0 +1,68 @@
+class RequestIgnoreBatteryOptimizations
+!!!741890.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        mDeviceIdleService = IDeviceIdleController.Stub.asInterface(
+                ServiceManager.getService(DEVICE_IDLE_SERVICE));
+
+        Uri data = getIntent().getData();
+        if (data == null) {
+            Log.w(TAG, "No data supplied for IGNORE_BATTERY_OPTIMIZATION_SETTINGS in: "
+                    + getIntent());
+            finish();
+            return;
+        }
+        mPackageName = data.getSchemeSpecificPart();
+        if (mPackageName == null) {
+            Log.w(TAG, "No data supplied for IGNORE_BATTERY_OPTIMIZATION_SETTINGS in: "
+                    + getIntent());
+            finish();
+            return;
+        }
+
+        PowerManager power = getSystemService(PowerManager.class);
+        if (power.isIgnoringBatteryOptimizations(mPackageName)) {
+            Log.i(TAG, "Not should prompt, already ignoring optimizations: " + mPackageName);
+            finish();
+            return;
+        }
+
+        ApplicationInfo ai;
+        try {
+            ai = getPackageManager().getApplicationInfo(mPackageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "Requested package doesn't exist: " + mPackageName);
+            finish();
+            return;
+        }
+
+        if (getPackageManager().checkPermission(
+                Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, mPackageName)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "Requested package " + mPackageName + " does not hold permission "
+                    + Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            finish();
+            return;
+        }
+
+        final AlertController.AlertParams p = mAlertParams;
+        p.mTitle = getText(R.string.high_power_prompt_title);
+        p.mMessage = getString(R.string.high_power_prompt_body, ai.loadLabel(getPackageManager()));
+        p.mPositiveButtonText = getText(R.string.yes);
+        p.mNegativeButtonText = getText(R.string.no);
+        p.mPositiveButtonListener = this;
+        p.mNegativeButtonListener = this;
+        setupAlert();
+!!!742018.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        switch (which) {
+            case BUTTON_POSITIVE:
+                try {
+                    mDeviceIdleService.addPowerSaveWhitelistApp(mPackageName);
+                } catch (RemoteException e) {
+                    Log.w(TAG, "Unable to reach IDeviceIdleController", e);
+                }
+                setResult(RESULT_OK);
+                break;
+            case BUTTON_NEGATIVE:
+                break;
+        }

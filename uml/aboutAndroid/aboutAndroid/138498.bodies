@@ -1,0 +1,16 @@
+class ChooseLockGeneric
+!!!179074.java!!!	getIntent() : Intent
+        Intent modIntent = new Intent(super.getIntent());
+        modIntent.putExtra(EXTRA_SHOW_FRAGMENT, getFragmentClass().getName());
+
+        String action = modIntent.getAction();
+        if (ACTION_SET_NEW_PASSWORD.equals(action)
+                || ACTION_SET_NEW_PARENT_PROFILE_PASSWORD.equals(action)) {
+            modIntent.putExtra(EXTRA_HIDE_DRAWER, true);
+        }
+        return modIntent;
+!!!179202.java!!!	isValidFragment(in fragmentName : String) : boolean
+        if (ChooseLockGenericFragment.class.getName().equals(fragmentName)) return true;
+        return false;
+!!!179330.java!!!	getFragmentClass() : Class<? extends Fragment>
+        return ChooseLockGenericFragment.class;

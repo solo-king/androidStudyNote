@@ -1,0 +1,23 @@
+class SpinnerPreference
+!!!638850.java!!!	SpinnerPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+        setLayoutResource(R.layout.data_usage_cycles);
+!!!638978.java!!!	setAdapter(inout cycleAdapter : CycleAdapter) : void
+        mAdapter = cycleAdapter;
+        notifyChanged();
+!!!639106.java!!!	setOnItemSelectedListener(inout listener : AdapterView.OnItemSelectedListener) : void
+        mListener = listener;
+!!!639234.java!!!	getSelectedItem() : Object
+        return mCurrentObject;
+!!!639362.java!!!	setSelection(in position : int) : void
+        mPosition = position;
+        mCurrentObject = mAdapter.getItem(mPosition);
+        notifyChanged();
+!!!639490.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        Spinner spinner = (Spinner) holder.findViewById(R.id.cycles_spinner);
+        spinner.setAdapter(mAdapter);
+        spinner.setSelection(mPosition);
+        spinner.setOnItemSelectedListener(mOnSelectedListener);
+!!!639618.java!!!	performClick(inout view : View) : void
+        view.findViewById(R.id.cycles_spinner).performClick();

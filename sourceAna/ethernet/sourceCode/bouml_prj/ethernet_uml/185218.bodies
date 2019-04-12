@@ -1,0 +1,52 @@
+class Builder
+!!!561410.java!!!	Builder()
+                mMask = 0;
+!!!561538.java!!!	Builder(inout policy : StrictMode::ThreadPolicy)
+                mMask = policy.mask;
+!!!561666.java!!!	detectAll() : StrictMode::ThreadPolicy::Builder
+                return enable(ALL_THREAD_DETECT_BITS);
+!!!561794.java!!!	permitAll() : StrictMode::ThreadPolicy::Builder
+                return disable(ALL_THREAD_DETECT_BITS);
+!!!561922.java!!!	detectNetwork() : StrictMode::ThreadPolicy::Builder
+                return enable(DETECT_NETWORK);
+!!!562050.java!!!	permitNetwork() : StrictMode::ThreadPolicy::Builder
+                return disable(DETECT_NETWORK);
+!!!562178.java!!!	detectDiskReads() : StrictMode::ThreadPolicy::Builder
+                return enable(DETECT_DISK_READ);
+!!!562306.java!!!	permitDiskReads() : StrictMode::ThreadPolicy::Builder
+                return disable(DETECT_DISK_READ);
+!!!562434.java!!!	detectCustomSlowCalls() : StrictMode::ThreadPolicy::Builder
+                return enable(DETECT_CUSTOM);
+!!!562562.java!!!	permitCustomSlowCalls() : StrictMode::ThreadPolicy::Builder
+                return disable(DETECT_CUSTOM);
+!!!562690.java!!!	detectDiskWrites() : StrictMode::ThreadPolicy::Builder
+                return enable(DETECT_DISK_WRITE);
+!!!562818.java!!!	permitDiskWrites() : StrictMode::ThreadPolicy::Builder
+                return disable(DETECT_DISK_WRITE);
+!!!562946.java!!!	penaltyDialog() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_DIALOG);
+!!!563074.java!!!	penaltyDeath() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_DEATH);
+!!!563202.java!!!	penaltyDeathOnNetwork() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_DEATH_ON_NETWORK);
+!!!563330.java!!!	penaltyFlashScreen() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_FLASH);
+!!!563458.java!!!	penaltyLog() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_LOG);
+!!!563586.java!!!	penaltyDropBox() : StrictMode::ThreadPolicy::Builder
+                return enable(PENALTY_DROPBOX);
+!!!563714.java!!!	enable(in bit : int) : StrictMode::ThreadPolicy::Builder
+                mMask |= bit;
+                return this;
+!!!563842.java!!!	disable(in bit : int) : StrictMode::ThreadPolicy::Builder
+                mMask &= ~bit;
+                return this;
+!!!563970.java!!!	build() : StrictMode::ThreadPolicy
+                // If there are detection bits set but no violation bits
+                // set, enable simple logging.
+                if (mMask != 0 &&
+                    (mMask & (PENALTY_DEATH | PENALTY_LOG |
+                              PENALTY_DROPBOX | PENALTY_DIALOG)) == 0) {
+                    penaltyLog();
+                }
+                return new ThreadPolicy(mMask);

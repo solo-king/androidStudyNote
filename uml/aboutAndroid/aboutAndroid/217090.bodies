@@ -1,0 +1,48 @@
+class RunningServices
+!!!535938.java!!!	onCreate(inout savedInstanceState : Bundle) : void
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+!!!536066.java!!!	onCreateView(inout inflater : LayoutInflater, inout container : ViewGroup, inout savedInstanceState : Bundle) : View
+        View rootView = inflater.inflate(R.layout.manage_applications_running, null);
+        mRunningProcessesView = (RunningProcessesView) rootView.findViewById(
+                R.id.running_processes);
+        mRunningProcessesView.doCreate();
+        mLoadingContainer = rootView.findViewById(R.id.loading_container);
+
+        return rootView;
+!!!536194.java!!!	onCreateOptionsMenu(inout menu : Menu, inout inflater : MenuInflater) : void
+        mOptionsMenu = menu;
+        menu.add(0, SHOW_RUNNING_SERVICES, 1, R.string.show_running_services)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(0, SHOW_BACKGROUND_PROCESSES, 2, R.string.show_background_processes)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        updateOptionsMenu();
+!!!536322.java!!!	onResume() : void
+        super.onResume();
+        boolean haveData = mRunningProcessesView.doResume(this, mRunningProcessesAvail);
+        Utils.handleLoadingContainer(mLoadingContainer, mRunningProcessesView, haveData, false);
+!!!536450.java!!!	onPause() : void
+        super.onPause();
+        mRunningProcessesView.doPause();
+!!!536578.java!!!	onOptionsItemSelected(inout item : MenuItem) : boolean
+        switch (item.getItemId()) {
+            case SHOW_RUNNING_SERVICES:
+                mRunningProcessesView.mAdapter.setShowBackground(false);
+                break;
+            case SHOW_BACKGROUND_PROCESSES:
+                mRunningProcessesView.mAdapter.setShowBackground(true);
+                break;
+            default:
+                return false;
+        }
+        updateOptionsMenu();
+        return true;
+!!!536706.java!!!	onPrepareOptionsMenu(inout menu : Menu) : void
+        updateOptionsMenu();
+!!!536834.java!!!	updateOptionsMenu() : void
+        boolean showingBackground = mRunningProcessesView.mAdapter.getShowBackground();
+        mOptionsMenu.findItem(SHOW_RUNNING_SERVICES).setVisible(showingBackground);
+        mOptionsMenu.findItem(SHOW_BACKGROUND_PROCESSES).setVisible(!showingBackground);
+!!!536962.java!!!	getMetricsCategory() : int
+        return MetricsEvent.RUNNING_SERVICES;

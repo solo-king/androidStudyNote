@@ -1,0 +1,15 @@
+class MyPagerAdapter
+!!!459522.java!!!	MyPagerAdapter(inout fm : FragmentManager)
+            super(fm);
+!!!459650.java!!!	getItem(in position : int) : Fragment
+            return new AppOpsCategory(sPageTemplates[position]);
+!!!459778.java!!!	getCount() : int
+            return sPageTemplates.length;
+!!!459906.java!!!	getPageTitle(in position : int) : CharSequence
+            return mPageNames[position];
+!!!460162.java!!!	onPageSelected(in position : int) : void
+            mCurPos = position;
+!!!460290.java!!!	onPageScrollStateChanged(in state : int) : void
+            if (state == ViewPager.SCROLL_STATE_IDLE) {
+                //updateCurrentTab(mCurPos);
+            }

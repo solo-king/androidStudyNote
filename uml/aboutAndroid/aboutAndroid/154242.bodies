@@ -1,0 +1,6 @@
+class DividedCategory
+!!!268674.java!!!	DividedCategory(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs);
+!!!268802.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        holder.setDividerAllowedAbove(true);

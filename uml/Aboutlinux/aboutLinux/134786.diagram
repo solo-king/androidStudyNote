@@ -1,0 +1,46 @@
+format 76
+
+classinstance 128002 class_ref 128514 // setup.c
+  name ""   xyz 184 4 2005 life_line_z 2000
+classinstance 129026 class_ref 129026 // board_8909.c
+  name ""   xyz 422 4 2005 life_line_z 2000
+note 129154 "arch/arm/mach-msm/board-8909.c"
+  xyzwh 395 47 2005 221 37
+note 129282 "arch/arm/kernel/setup.c"
+  xyzwh 139 47 2010 151 37
+durationcanvas 128130 classinstance_ref 128002 // :setup.c
+  xyzwh 206 134 2010 11 178
+  overlappingdurationcanvas 128514
+    xyzwh 212 157 2020 11 117
+    overlappingdurationcanvas 128770
+      xyzwh 218 192 2030 11 65
+    end
+  end
+end
+durationcanvas 129410 classinstance_ref 129026 // :board_8909.c
+  xyzwh 462 226 2010 11 25
+end
+lostfoundmsgsupport 128258 xyz 29 136 2015
+msg 128386 found_synchronous
+  from lostfoundmsgsupport_ref 128258
+  to durationcanvas_ref 128130
+  yz 134 2015 explicitmsg "arch_initcall(customize_machine);"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 14 118
+reflexivemsg 128642 synchronous
+  to durationcanvas_ref 128514
+  yz 157 2025 explicitmsg "customize_machine"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 177 142
+reflexivemsg 128898 synchronous
+  to durationcanvas_ref 128770
+  yz 192 2035 explicitmsg "machine_desc->init_machine();"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 151 177
+msg 129538 synchronous
+  from durationcanvas_ref 128770
+  to durationcanvas_ref 129410
+  yz 226 2035 explicitmsg "msm8909_init(void)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 290 211
+end

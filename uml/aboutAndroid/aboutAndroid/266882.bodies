@@ -1,0 +1,16 @@
+class SettingsObserver
+!!!832002.java!!!	SettingsObserver()
+            super(mHandler);
+!!!832130.java!!!	register() : void
+            getContentResolver().registerContentObserver(ZEN_MODE_URI, false, this);
+            getContentResolver().registerContentObserver(ZEN_MODE_CONFIG_ETAG_URI, false, this);
+!!!832258.java!!!	unregister() : void
+            getContentResolver().unregisterContentObserver(this);
+!!!832386.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
+            super.onChange(selfChange, uri);
+            if (ZEN_MODE_URI.equals(uri)) {
+                updateZenMode(true /*fireChanged*/);
+            }
+            if (ZEN_MODE_CONFIG_ETAG_URI.equals(uri)) {
+                maybeRefreshRules(true, true /*fireChanged*/);
+            }

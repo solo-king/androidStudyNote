@@ -1,0 +1,137 @@
+class CellDataPreference
+!!!622082.java!!!	CellDataPreference(inout context : Context, inout attrs : AttributeSet)
+        super(context, attrs, android.R.attr.switchPreferenceStyle);
+!!!622210.java!!!	onRestoreInstanceState(inout s : Parcelable) : void
+        CellDataState state = (CellDataState) s;
+        super.onRestoreInstanceState(state.getSuperState());
+        mTelephonyManager = TelephonyManager.from(getContext());
+        mChecked = state.mChecked;
+        mMultiSimDialog = state.mMultiSimDialog;
+        if (mSubId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            mSubId = state.mSubId;
+            setKey(getKey() + mSubId);
+        }
+        notifyChanged();
+!!!622338.java!!!	onSaveInstanceState() : Parcelable
+        CellDataState state = new CellDataState(super.onSaveInstanceState());
+        state.mChecked = mChecked;
+        state.mMultiSimDialog = mMultiSimDialog;
+        state.mSubId = mSubId;
+        return state;
+!!!622466.java!!!	onAttached() : void
+        super.onAttached();
+        mListener.setListener(true, mSubId, getContext());
+!!!622594.java!!!	onDetached() : void
+        mListener.setListener(false, mSubId, getContext());
+        super.onDetached();
+!!!622722.java!!!	setTemplate(inout template : NetworkTemplate, in subId : int, inout services : TemplatePreference::NetworkServices) : void
+        if (subId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            throw new IllegalArgumentException("CellDataPreference needs a SubscriptionInfo");
+        }
+        mSubscriptionManager = SubscriptionManager.from(getContext());
+        mTelephonyManager = TelephonyManager.from(getContext());
+        if (mSubId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            mSubId = subId;
+            setKey(getKey() + subId);
+        }
+        updateChecked();
+!!!622850.java!!!	updateChecked() : void
+        setChecked(mTelephonyManager.getDataEnabled(mSubId));
+!!!622978.java!!!	performClick(inout view : View) : void
+        MetricsLogger.action(getContext(), MetricsEvent.ACTION_CELL_DATA_TOGGLE, !mChecked);
+        final SubscriptionInfo currentSir = mSubscriptionManager.getActiveSubscriptionInfo(
+                mSubId);
+        final SubscriptionInfo nextSir = mSubscriptionManager.getDefaultDataSubscriptionInfo();
+        if (mChecked) {
+            // If the device is single SIM or is enabling data on the active data SIM then forgo
+            // the pop-up.
+            if (!Utils.showSimCardTile(getContext()) ||
+                    (nextSir != null && currentSir != null &&
+                            currentSir.getSubscriptionId() == nextSir.getSubscriptionId())) {
+                setMobileDataEnabled(false);
+                if (nextSir != null && currentSir != null &&
+                        currentSir.getSubscriptionId() == nextSir.getSubscriptionId()) {
+                    disableDataForOtherSubscriptions(mSubId);
+                }
+                return;
+            }
+            // disabling data; show confirmation dialog which eventually
+            // calls setMobileDataEnabled() once user confirms.
+            mMultiSimDialog = false;
+            super.performClick(view);
+        } else {
+            // If we are showing the Sim Card tile then we are a Multi-Sim device.
+            if (Utils.showSimCardTile(getContext())) {
+                mMultiSimDialog = true;
+                if (nextSir != null && currentSir != null &&
+                        currentSir.getSubscriptionId() == nextSir.getSubscriptionId()) {
+                    setMobileDataEnabled(true);
+                    disableDataForOtherSubscriptions(mSubId);
+                    return;
+                }
+                super.performClick(view);
+            } else {
+                setMobileDataEnabled(true);
+            }
+        }
+!!!623106.java!!!	setMobileDataEnabled(inout enabled : boolean) : void
+        if (DataUsageSummary.LOGD) Log.d(TAG, "setMobileDataEnabled(" + enabled + ","
+                + mSubId + ")");
+        mTelephonyManager.setDataEnabled(mSubId, enabled);
+        setChecked(enabled);
+!!!623234.java!!!	setChecked(inout checked : boolean) : void
+        if (mChecked == checked) return;
+        mChecked = checked;
+        notifyChanged();
+!!!623362.java!!!	onBindViewHolder(inout holder : PreferenceViewHolder) : void
+        super.onBindViewHolder(holder);
+        View switchView = holder.findViewById(android.R.id.switch_widget);
+        switchView.setClickable(false);
+        ((Checkable) switchView).setChecked(mChecked);
+!!!623490.java!!!	onPrepareDialogBuilder(inout builder : AlertDialog.Builder, inout listener : DialogInterface.OnClickListener) : void
+        if (mMultiSimDialog) {
+            showMultiSimDialog(builder, listener);
+        } else {
+            showDisableDialog(builder, listener);
+        }
+!!!623618.java!!!	showDisableDialog(inout builder : AlertDialog.Builder, inout listener : DialogInterface.OnClickListener) : void
+        builder.setTitle(null)
+                .setMessage(R.string.data_usage_disable_mobile)
+                .setPositiveButton(android.R.string.ok, listener)
+                .setNegativeButton(android.R.string.cancel, null);
+!!!623746.java!!!	showMultiSimDialog(inout builder : AlertDialog.Builder, inout listener : DialogInterface.OnClickListener) : void
+        final SubscriptionInfo currentSir = mSubscriptionManager.getActiveSubscriptionInfo(mSubId);
+        final SubscriptionInfo nextSir = mSubscriptionManager.getDefaultDataSubscriptionInfo();
+
+        final String previousName = (nextSir == null)
+            ? getContext().getResources().getString(R.string.sim_selection_required_pref)
+            : nextSir.getDisplayName().toString();
+
+        builder.setTitle(R.string.sim_change_data_title);
+        builder.setMessage(getContext().getString(R.string.sim_change_data_message,
+                String.valueOf(currentSir != null ? currentSir.getDisplayName() : null),
+                previousName));
+
+        builder.setPositiveButton(R.string.okay, listener);
+        builder.setNegativeButton(R.string.cancel, null);
+!!!623874.java!!!	disableDataForOtherSubscriptions(in subId : int) : void
+        List<SubscriptionInfo> subInfoList = mSubscriptionManager.getActiveSubscriptionInfoList();
+        if (subInfoList != null) {
+            for (SubscriptionInfo subInfo : subInfoList) {
+                if (subInfo.getSubscriptionId() != subId) {
+                    mTelephonyManager.setDataEnabled(subInfo.getSubscriptionId(), false);
+                }
+            }
+        }
+!!!624002.java!!!	onClick(inout dialog : DialogInterface, in which : int) : void
+        if (which != DialogInterface.BUTTON_POSITIVE) {
+            return;
+        }
+        if (mMultiSimDialog) {
+            mSubscriptionManager.setDefaultDataSubId(mSubId);
+            setMobileDataEnabled(true);
+            disableDataForOtherSubscriptions(mSubId);
+        } else {
+            // TODO: extend to modify policy enabled flag.
+            setMobileDataEnabled(false);
+        }

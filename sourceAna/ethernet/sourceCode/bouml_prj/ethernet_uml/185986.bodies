@@ -1,0 +1,3 @@
+class StrictModeDiskWriteViolation
+!!!567042.java!!!	StrictModeDiskWriteViolation(in policyMask : int)
+            super(policyMask, DETECT_DISK_WRITE, null);
