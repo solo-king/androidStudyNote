@@ -1,5 +1,7 @@
 rk官方开源网站：
 	http://opensource.rock-chips.com/wiki_Main_Page
+       //瑞芯微kernel官网
+       https://github.com/rockchip-linux
 硬件合成:
 		1.opengl
 			软件:
@@ -8,11 +10,8 @@ rk官方开源网站：
 			硬件合成多个应用窗口界面
 匿名共享驱动:
 drm和framebuffer:
-		//rk官方资料
-		https://markyzq.gitbooks.io/rockchip_drm_integration_helper/content/zh/
-
-AudioFlinger:
-重要数据结构：
+       //rk官方资料
+       https://markyzq.gitbooks.io/rockchip_drm_integration_helper/content/zh/
 
 drm( Direct Rendering Manager):
 	参考资料:
@@ -65,4 +64,23 @@ drm( Direct Rendering Manager):
            handle through the API which is used as backing storage. The framebuffer itself is
            only an abstract object with no data. It just refers to memory buffers that must be
            created with the drm-memory(7) API.
-	
+基本概念:
+       SurfaceControl:
+       SurfaceComposerClient:
+              应用与Surfaceflinger
+涉及指令:
+       logcat -s StrongPointMain&
+基础知识:
+       frameworks/rs/server/StrongPointer.h
+涉及源码:
+       frameworks/base/cmds/bootanimation/bootanimation_main.cpp
+       frameworks/base/cmds/bootanimation/BootAnimation.cpp
+       frameworks/native/libs/gui/SurfaceComposerClient.cpp
+       frameworks/base/cmds/APP_0010_SurfaceTest/SurfaceTest.cpp
+       /*
+              1.与surfaceflinger建立联系
+                    sp<SurfaceComposerClient>  mSession = new SurfaceComposerClient();
+              2.确认当前系统是否已经启动完成
+                     mSystemBoot = !property_get_bool(BOOT_COMPLETED_PROP_NAME, 0);
+       */
+       boot = new BootAnimation(false);

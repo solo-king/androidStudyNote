@@ -265,9 +265,13 @@ instll FoxyProxy with firefox browse
 	IP address, DNS name, server name
 		127.0.0.1
 多台pc使用不同的.ssh
-		cd /home/chenqiga/.ssh
-		cp id_rsa  id_rsa.pub ~/.ssh/
-		chmod 400 id_*
+	cd /home/chenqiga/.ssh
+	cp id_rsa  id_rsa.pub ~/.ssh/
+	chmod 400 id_*
+报h.264 decoder is required:
+	解决办法:
+		sudo apt install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg
+		sudo apt install ubuntu-restricted-extras
 
         
         
