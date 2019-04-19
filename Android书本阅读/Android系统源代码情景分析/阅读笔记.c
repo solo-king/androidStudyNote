@@ -2,9 +2,11 @@ IFregService:public IInterface
 BnFregService:public BnInterface<IFregService>
 BpFregService:BpInterface<IFregService>
 
-Binder本地对象：
-	BBinder,在用户空间创建且运行与Server进程
-Binder实体：
-	struct binder_node,运行于内核空间
-Binder引用对象:
-	struct binder_ref,指向binder_node
+Binder锟斤拷锟截讹拷锟斤拷
+	BBinder,锟斤拷锟矫伙拷锟秸间创锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷Server锟斤拷锟斤拷
+Binder实锟藉：
+	struct binder_node,锟斤拷锟斤拷锟斤拷锟节核空硷拷
+Binder锟斤拷锟矫讹拷锟斤拷:
+	struct binder_ref,指锟斤拷binder_node
+
+
