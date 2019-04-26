@@ -44,7 +44,6 @@ Using the Bluetooth APIs, an Android application can perform the following:
     服务模式:
         service discovery process
 涉及权限:
-
     <uses-permission android:name="android.permission.BLUETOOTH" />
     // 用于初始化及控制蓝牙设备(initiate device discovery or manipulate Bluetooth settings)
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -146,3 +145,4 @@ BLE GATT使用:
 概念:
     Services:
     Characteristics:
+监听
