@@ -1,6 +1,146 @@
+参考资料：
+    //对移动网络链接做的说明
+    https://source.android.com/devices/tech/config/carrier
+    //android rild 结构解释的比较好的
+    https://wladimir-tm4pda.github.io/porting/telephony.html
+
+涉及文件:
+    hardware/ril/rild/rild.c
+    ril/include/telephony/ril.h：
+        代表ril所需的接口
+RIL 交互方式:
+    1.Solicited commands(ril主动像bp发起的请求): 
+        Solicited commands originated by RIL lib, such as DIAL and HANGUP.
+    2.Unsolicited responses(ril被动的被bp调用): 
+        Unsolicited responses that originate from the baseband, such as CALL_STATE_CHANGED and NEW_SMS.
+
+RIL Solicited 类型的请求:
+    1.所有的solicited类型求情都以 RIL_REQUEST_ 为前缀，并位于ril/include/telephony/ril.h中
+RIL unSolicited 类型的请求:
+    1.所有的solicited类型求情都以 RIL_UNSOL_RESPONSE_ 为前缀，并位于ril/include/telephony/ril.h中
+
+    ################################################################################移植相关############################################
+rild 库必须实现的接口
+    1.RIL_RadioFunctions *RIL_Init (RIL_Env* env, int argc, char **argv);
+    2.rild通过返回的 RIL_RadioFunctions 结构体来像rild库发送请求
+        type structure {
+            int RIL_version;
+            RIL_RequestFunc onRequest;
+            RIL_RadioStateRequest onStateRequest;      
+            RIL_Supports supports;
+            RIL_Cancel onCancel;
+            RIL_GetVersion getVersion;
+        } 
+        RIL_RadioFunctions;
+    3.
+涉及指令:
+    echo -e "AT+CLIP?\r\n" > /dev/ttyUSB1
+    echo -e "AT+COPS?\r\n" > /dev/ttyUSB1
+    logcat -v brief -b radio RIL:V RILD:V RILJ:V RILC:V AT:V *:S&
+    //杀掉rild后台进程
+    kill -9 $(ps|grep rild|busybox awk '{print $2}')
+LOG对应模块：
+    RIL：原生动态库
+    RILD:rild.c
+    RILJ:
+    AT:原生与BP通讯的log
+
+############################################################源码分析#####################################################
+涉及源码:
+    hardware/ril/rild/rild.c
+/**
+ * 获取 ril的库中的 RIL_Init函数
+ * 函数定义:
+ *  rilInit =(const RIL_RadioFunctions *(*)(const struct RIL_Env *, int, char **))
+ * dlHandle:库在内存中的指针
+ * RIL_Init:要从库中获取的函数指针
+ */
+dlHandle = dlopen(rilLibPath, RTLD_NOW);
+/**猜测:
+ *  事件处理线程创建 */
+RIL_startEventLoop();
+dlsym(dlHandle, "RIL_Init");//rild.c
+/**调用动态库中RIL_Init函数
+ * const RIL_RadioFunctions *funcs
+ * 
+ */
+
+funcs = rilInit(&s_rilEnv, argc, rilArgv);
+/**
+ * 参数:
+ *  args=/system/bin/rild -d /dev/ttyUSB2 -c 0
+ * 进入rild库
+ * 确定参数:
+ *  s_device_path = /dev/ttyUSB2
+ * 创建线程
+ *  mainLoop
+ */
+ret = pthread_create(&s_tid_mainloop, &attr, mainLoop, NULL);   
+//返回一个 RIL_RadioFunctions s_callbacks 供rild.c 使用
+return s_callbacks
+
+mainLoop子线程处理
+/**
+ * 1.打开串口
+ *  fd = open (s_device_path, O_RDWR);
+ * 2.将其设置为终端
+ *  struct termios  ios;
+ *  tcgetattr( fd, &ios );
+ *  ios.c_lflag = 0;//disable ECHO, ICANON, etc...
+ *  tcsetattr( fd, TCSANOW, &ios );
+ *  */
+mainLoop
+    /**
+     * 1.设置solicited事件处理函数
+     *      s_unsolHandler = h =onUnsolicited;
+     * 2.创建一个read线程
+     *      ret = pthread_create(&s_tid_reader, &attr, readerLoop, &attr);
+     */
+    ret = at_open(fd, onUnsolicited);//hardware/ril/reference-ril/atchannel.c
+    /**挂载一个定时调用到rild中去
+     * rild将调用 initializeCallback 对 BP进行初始化操作
+     * 
+     */
+    RIL_requestTimedCallback(initializeCallback, NULL, &TIMEVAL_0);
+
+readerLoop子线程
+/**
+ * 循环子线程
+ */
+readerLoop
+    for:
+        //对于短消息处理
+        isSMSUnsolicited(line)
+        //非短消息分支
+        processLine(line);
+    /**
+     * 1.只有readerLoop所在子线程退出才会执行
+     * 2.
+     */
+    onReaderClosed();
+
+
+接口调用说明:
+    /* 完成rild 下发的 solicited 类型的请求后，使用该接口上报结果
+       RIL_Token t:
+        与请求对应，在refril中决定一个response的目标请求
+     */
+    #define RIL_onRequestComplete(t, e, response, responselen) s_rilenv->OnRequestComplete(t,e, response, responselen)
+    /*向rild deamo发送Unsolicited类型的信息*/
+    #define RIL_onUnsolicitedResponse(a,b,c) s_rilenv->OnUnsolicitedResponse(a,b,c)
+    /*向rild deamo请求执行定时任务*/
+    #define RIL_requestTimedCallback(a,b,c) s_rilenv->RequestTimedCallback(a,b,c)
+    /**是否为异步操作,目前看来应该是同步的 */
+    at_send_command()
+
+######################################################问题解析######################################################
+上报已注册网络:
+    
+
+
+老版本：   
 基础知识:
     HandlerThread()的使用
-
 Phone应用的初始化:
     //对于Android2.3版本
     makeDefaultPhones所做事项(PhoneFactory.java):

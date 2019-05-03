@@ -61,8 +61,15 @@ Android Interface Definition Language (AIDL)
             }
         };
     2.
-
-    
+参数的传输方向:
+    in - object is transferred from client to service only used for inputs
+        1.仅仅用于service的输入值
+    out - object is transferred from client to service only used for outputs.
+        1.不传递client的值
+        2.但service对client传递过来的参数修改对client可见
+    inout - object is transferred from client to service used for both inputs and outputs.
+        1.传递client的值
+        2.service对client传递过来的参数修改对client可见
 需解决的问题:
     传输基本数据类型
     传输自定义对象

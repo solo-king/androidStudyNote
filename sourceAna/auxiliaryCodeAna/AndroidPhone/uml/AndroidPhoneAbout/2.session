@@ -1,0 +1,14 @@
+window_sizes 1920 1025 450 1464 852 120
+cleanlooks_style
+diagrams
+  active  sequencediagram_ref 134628 // GsmCdmaPhoneInitQueue
+    1464 852 100 E 0 0
+  classdiagram_ref 134756 // GsmCdmaPhoneInitClasses
+    120 106 100 E 0 0
+end
+show_stereotypes
+selected sequencediagram_ref 134628 // GsmCdmaPhoneInitQueue
+open
+  classview_ref 134628 // GsmCdmaPhoneInit
+end
+end
