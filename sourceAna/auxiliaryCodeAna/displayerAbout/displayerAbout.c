@@ -84,3 +84,60 @@ drm( Direct Rendering Manager):
                      mSystemBoot = !property_get_bool(BOOT_COMPLETED_PROP_NAME, 0);
        */
        boot = new BootAnimation(false);
+
+***************************************************************谷歌官方资料**********************************************
+官方资料:
+       //开启多屏支持
+       https://source.android.com/devices/tech/display/multi-window
+       //官方显示框架,很重要
+       https://source.android.com/devices/graphics/architecture
+开启free mode:
+       开发者模式开启
+       勾上force activities to be resizable 选项
+       adb shell settings get global enable_freeform_support
+       reboot
+使用free mode 
+       1.先开启要多窗口的应用
+       2.点击右上角的多窗口选项
+Surface
+       java层的画布
+Canvas:
+       Canvas APIs provide a software implementation (with hardware-acceleration support) for drawing directly on a Surface (low-level alternative to OpenGL ES)
+       使用该 Canvas接口可以直接在Surface上作画
+SurfaceHolder
+       Anything having to do with a View involves a SurfaceHolder, whose APIs enable getting and setting Surface parameters such as size and format.
+       貌似作用就是配置Surface
+OpenGL ES：
+        1.OpenGL ES (GLES) defines a graphics-rendering API designed to be combined with EGL
+        2.a library that knows how to create and access windows through the operating system
+EGLSurface
+       This page also covers ANativeWindow, the C/C++ equivalent of the Java Surface class used to create an EGL window surface from native code.
+       c/c++层面的Surface,与java层的Surface等价，一般使用ANativeWindow封装 EGLSurface
+SurfaceView
+       SurfaceView combines a Surface and a View. SurfaceView s View components are composited by SurfaceFlinger (and not the app), 
+       enabling rendering from a separate thread/process and isolation from app UI rendering. 
+       GLSurfaceView provides helper classes to manage EGL contexts, inter-thread communication, 
+       and interaction with the Activity lifecycle (but is not required to use GLES).
+GLSurfaceView
+SurfaceTexture
+       SurfaceTexture combines a Surface and GLES texture to create a BufferQueue for which your app is the consumer.
+       When a producer queues a new buffer, it notifies your app, which in turn releases the previously-held buffer, 
+       acquires the new buffer from the queue, and makes EGL calls to make the buffer available to GLES as an external texture. 
+       Android 7.0 adds support for secure texture video playback enabling GPU post-processing of protected video content.
+TextureView
+       TextureView combines a View with a SurfaceTexture. 
+       TextureView wraps a SurfaceTexture and takes responsibility for responding to callbacks and acquiring new buffers. 
+       When drawing, TextureView uses the contents of the most recently received buffer as its data source, 
+       rendering wherever and however the View state indicates it should. View composition is always performed with GLES, 
+       meaning updates to contents may cause other View elements to redraw as well.
+SurfaceFlinger
+Vulkan
+       1.low-overhead
+       2.cross-platform API for high-performance 3D graphics. 
+       3.类似于OpenGL ES, Vulkan provides tools for creating high-quality, real-time graphics in applications. 
+       4.Vulkan advantages include reductions in CPU overhead and support for the SPIR-V Binary Intermediate language.
+BufferQueue：      
+       1.连接生产者和消费者的图型数据
+
+
+

@@ -19,7 +19,7 @@ RIL Solicited 类型的请求:
 RIL unSolicited 类型的请求:
     1.所有的solicited类型求情都以 RIL_UNSOL_RESPONSE_ 为前缀，并位于ril/include/telephony/ril.h中
 
-    ################################################################################移植相关############################################
+##########################################################################移植相关############################################
 rild 库必须实现的接口
     1.RIL_RadioFunctions *RIL_Init (RIL_Env* env, int argc, char **argv);
     2.rild通过返回的 RIL_RadioFunctions 结构体来像rild库发送请求
@@ -44,8 +44,20 @@ LOG对应模块：
     RILD:rild.c
     RILJ:
     AT:原生与BP通讯的log
-
-############################################################源码分析#####################################################
+############################################################ril相关#####################################################
+涉及基础:
+    1.定时器的使用:
+        struct timeval timeout
+    2.select检测多路io
+    3.pipe管道的使用
+        //初始化一个监控头
+        fd_set readFds
+        FD_ZERO(&readFds)
+        fcntl(s_fdWakeupRead, F_SETFL, O_NONBLOCK);
+        //将ev->fd加入到select 监控的fd中
+        FD_SET(ev->fd, &readFds);
+        n = select(nfds, &rfds, NULL, NULL, ptv);
+    4.链表的操作
 涉及源码:
     hardware/ril/rild/rild.c
 /**
@@ -56,8 +68,11 @@ LOG对应模块：
  * RIL_Init:要从库中获取的函数指针
  */
 dlHandle = dlopen(rilLibPath, RTLD_NOW);
-/**猜测:
- *  事件处理线程创建 */
+/**
+ * 
+ * 1.创建一个 eventLoop 子线程，代码位于libril/ril.cpp
+ * 
+ *  */
 RIL_startEventLoop();
 dlsym(dlHandle, "RIL_Init");//rild.c
 /**调用动态库中RIL_Init函数
@@ -78,6 +93,26 @@ funcs = rilInit(&s_rilEnv, argc, rilArgv);
 ret = pthread_create(&s_tid_mainloop, &attr, mainLoop, NULL);   
 //返回一个 RIL_RadioFunctions s_callbacks 供rild.c 使用
 return s_callbacks
+
+eventLoop子线程处理
+重要成员:
+    struct rild_event pending_list
+    struct rild_event timer_list
+eventLoop
+    /**
+     * 1.初始化一个select fd头
+     *      FD_ZERO(&readFds);
+     *  2.
+     */
+    ril_event_init()
+    /**
+     * 1.将s_wakeupfd_event挂到 select的监视队列中,只要对应fd发生变化则调用 s_wakeupfd_event所在的rild_event->func进行处理(processWakeupCallback)
+     *  ril_event_add(ev);
+     * 2.触发processWakeupCallback
+     *  triggerEvLoop();
+     */
+    rilEventAddWakeup (&s_wakeupfd_event);
+
 
 mainLoop子线程处理
 /**
@@ -135,8 +170,6 @@ readerLoop
 
 ######################################################问题解析######################################################
 上报已注册网络:
-    
-
 
 老版本：   
 基础知识:
@@ -173,7 +206,6 @@ apn选择问题:
         numeric="46011" AND NOT (type='ia' AND (apn="" OR apn IS NULL)) AND user_visible!=0
         content query --uri content://telephony/carriers --where "numeric="46011" AND NOT (type='ia' AND (apn="" OR apn IS NULL)) AND user_visible!=0"
         content query --uri content://telephony/carriers --where "numeric="46011" AND NOT ( (apn='' OR apn IS NULL)) AND user_visible!=0"
-
         content query --uri content://telephony/carriers --where "numeric="46011" AND NOT (false) AND user_visible!=0"
         content query --uri content://telephony/carriers --where "numeric='46011' AND name='myctnet'"
         content query --uri content://telephony/carriers --where "name='myctnet'"
@@ -293,18 +325,13 @@ notifyServiceStateForPhoneId调用:
     notifyServiceStateChanged   //GsmCdmaPhone中直接父类的notifyServiceStateChangedP方法
         notifyServiceStateChangedP//protected属性，只能在本包中或者继承调用
             notifyServiceState
-                mRegistry.notifyServiceStateForPhoneId
-                
+                mRegistry.notifyServiceStateForPhoneId   
 ActivityManagerNative.getDefault().updateConfiguration(config);
 
-手动拨号:
-    crw-rw---- 1 root plugdev 188, 0 3月  29 16:15 /dev/ttyUSB0
-    crw-rw---- 1 root plugdev 188, 1 3月  29 16:17 /dev/ttyUSB1
-    crw-rw---- 1 root plugdev 188, 0 3月  29 16:15 /dev/ttyUSB0
-    crw-rw---- 1 root plugdev 188, 1 3月  29 16:17 /dev/ttyUSB1
-    crw-rw---- 1 root plugdev 188, 2 3月  29 16:23 /dev/ttyUSB2
-    crw-rw---- 1 root plugdev 188, 3 3月  29 16:23 /dev/ttyUSB3
-    crw-rw---- 1 root plugdev 188, 4 3月  29 16:23 /dev/ttyUSB4
-    crw-rw---- 1 root plugdev 188, 5 3月  29 16:23 /dev/ttyUSB5
-    busybox wget http://119.188.244.32:80/soft/antutu-benchmark-v7-2-7.apk
-    echo -e "at\$QCRMCALL=1,1\r\n"> /dev/ttyUSB1
+*************************************************************Phone应用的初始化****************************************************
+参考资料:
+    //关于ril
+    https://source.android.com/devices/tech/connect/ril
+AndroidN对 (Radio Interface Layer)RIL的改进
+        1.标准化错误码
+        2.
