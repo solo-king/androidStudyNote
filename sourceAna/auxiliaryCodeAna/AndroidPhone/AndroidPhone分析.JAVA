@@ -45,6 +45,9 @@ LOG对应模块：
     RILJ:
     AT:原生与BP通讯的log
 ############################################################ril相关#####################################################
+总结:
+    1.所有通过写到rild socket节点的请求最终都使用ril.cpp中的 processCommandsCallback 进行处理
+
 涉及基础:
     1.定时器的使用:
         struct timeval timeout
@@ -58,6 +61,10 @@ LOG对应模块：
         FD_SET(ev->fd, &readFds);
         n = select(nfds, &rfds, NULL, NULL, ptv);
     4.链表的操作
+后续需要整理成笔记的:
+    1.rild库中超时任务的实现
+    2.rild socket是如何与rild.java进行通讯的
+    3.phone应用dail事件的触发
 涉及源码:
     hardware/ril/rild/rild.c
 /**
@@ -112,8 +119,6 @@ eventLoop
      *  triggerEvLoop();
      */
     rilEventAddWakeup (&s_wakeupfd_event);
-
-
 mainLoop子线程处理
 /**
  * 1.打开串口
@@ -167,6 +172,21 @@ readerLoop
     #define RIL_requestTimedCallback(a,b,c) s_rilenv->RequestTimedCallback(a,b,c)
     /**是否为异步操作,目前看来应该是同步的 */
     at_send_command()
+###########################################moden基带信息获取分析###############################################
+涉及指令:
+    logcat -b radio WH-AT:V WH-RIL:V RILD:V RILC:V *:S&
+    logcat -b radio -f /sdcard/baseVersion.log -d 
+
+05-06 16:28:54.703   221   245 D WH-RIL  : onRequest: BASEBAND_VERSION,3,51
+05-06 16:28:54.703   221   245 D WH-AT   : ============AT> AT+CGMR
+05-06 16:28:54.707   221  1322 D WH-AT   : ============AT< +CGMR: WH_G405tf_FLASH_V1.0.31B09P23_190227
+05-06 16:28:54.707   221  1322 D WH-AT   : ============AT< OK
+
+打印函数分析:
+    startResponse;                                      sprintf(printBuf, "%s {", printBuf)
+    appendPrintBuf("%s%s", printBuf, (char*)response);  snprintf(printBuf, PRINTBUF_SIZE, x)
+    closeResponse;                                      sprintf(printBuf, "%s}", printBuf)
+
 
 ######################################################问题解析######################################################
 上报已注册网络:

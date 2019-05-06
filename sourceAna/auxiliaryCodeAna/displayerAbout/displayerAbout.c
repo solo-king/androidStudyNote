@@ -91,7 +91,7 @@ drm( Direct Rendering Manager):
        https://source.android.com/devices/tech/display/multi-window
        //官方显示框架,很重要
        https://source.android.com/devices/graphics/architecture
-开启free mode:
+开启Freeform:
        开发者模式开启
        勾上force activities to be resizable 选项
        adb shell settings get global enable_freeform_support
