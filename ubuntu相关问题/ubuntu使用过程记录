@@ -273,8 +273,9 @@ instll FoxyProxy with firefox browse
 		sudo apt install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg
 		sudo apt install ubuntu-restricted-extras
 
-        
-        
-
+安装gimp，图片编辑工具
+	sudo add-apt-repository ppa:otto-kesselgulasch/gimp
+	sudo apt update
+	sudo apt install gimp 
 
 	

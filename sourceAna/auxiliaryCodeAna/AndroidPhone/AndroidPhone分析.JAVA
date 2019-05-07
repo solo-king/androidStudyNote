@@ -26,7 +26,7 @@ rild 库必须实现的接口
         type structure {
             int RIL_version;
             RIL_RequestFunc onRequest;
-            RIL_RadioStateRequest onStateRequest;      
+            RIL_RadioStateRequest onStateRequest;
             RIL_Supports supports;
             RIL_Cancel onCancel;
             RIL_GetVersion getVersion;
@@ -109,13 +109,13 @@ eventLoop
     /**
      * 1.初始化一个select fd头
      *      FD_ZERO(&readFds);
-     *  2.
+     * 2.
      */
     ril_event_init()
     /**
      * 1.将s_wakeupfd_event挂到 select的监视队列中,只要对应fd发生变化则调用 s_wakeupfd_event所在的rild_event->func进行处理(processWakeupCallback)
      *  ril_event_add(ev);
-     * 2.触发processWakeupCallback
+     * 2.触发 processWakeupCallback
      *  triggerEvLoop();
      */
     rilEventAddWakeup (&s_wakeupfd_event);
@@ -158,8 +158,36 @@ readerLoop
      * 2.
      */
     onReaderClosed();
-
-
+socket rild端口的监听
+RIL_register(funcs);//rild.c-->ril.cpp
+    
+    startListen(RIL_SOCKET_1, &s_ril_param_socket);
+        //根据RIL_SOCKET_1设置socket_name = rild, 最终返回 "rild"
+        strncpy(socket_name, RIL_getRilSocketName(), 9);
+        /**
+         * 
+         */
+        fdListen = android_get_control_socket(socket_name);
+        ret = listen(fdListen, 4);
+        //这里的 socket_listen_p == s_ril_param_socket
+        socket_listen_p->fdListen = fdListen;
+        /**
+         * 设置一个初始化一个ril_event事件
+         *  listen_event->fd = fdListen;
+            listen_event->index = -1;
+            listen_event->persist = false;
+            listen_event->func = listenCallback;
+            listen_event->param = socket_listen_p;
+            fcntl(listen_event->fd, F_SETFL, O_NONBLOCK);
+         */
+        ril_event_set (socket_listen_p->listen_event, fdListen, false,
+                listenCallback, socket_listen_p);
+        /**
+         * 1.把 rild socket句柄添加到readFds中，select监视列表中去
+         *  ril_event_add()
+         *      FD_SET(ev->fd, &readFds);
+         */
+        rilEventAddWakeup (socket_listen_p->listen_event);
 接口调用说明:
     /* 完成rild 下发的 solicited 类型的请求后，使用该接口上报结果
        RIL_Token t:
@@ -173,20 +201,104 @@ readerLoop
     /**是否为异步操作,目前看来应该是同步的 */
     at_send_command()
 ###########################################moden基带信息获取分析###############################################
+涉及源码:
+    hardware/ril/libril/ril_commands.h
+    hardware/ril/libril/ril_unsol_commands.h
+结论:
+    1.最终从rild sokcet接收的请求都调用ril.cpp@processCommandsCallback 来处理
 涉及指令:
     logcat -b radio WH-AT:V WH-RIL:V RILD:V RILC:V *:S&
     logcat -b radio -f /sdcard/baseVersion.log -d 
-
-05-06 16:28:54.703   221   245 D WH-RIL  : onRequest: BASEBAND_VERSION,3,51
-05-06 16:28:54.703   221   245 D WH-AT   : ============AT> AT+CGMR
-05-06 16:28:54.707   221  1322 D WH-AT   : ============AT< +CGMR: WH_G405tf_FLASH_V1.0.31B09P23_190227
-05-06 16:28:54.707   221  1322 D WH-AT   : ============AT< OK
+疑问:
+    1.RIL.java的数据是如何传到rild的，现在暂时没看到哪里能读到数据rild的数据
+    RIL_startEventLoop 
+        //创建一个子线程
+        1.eventLoop
+            A1.s_fdWakeupRead = filedes[0];
+            A2.s_fdWakeupWrite = filedes[1];
+            A/**建立一个初始化rild_event */
+            A3.ril_event_set (&s_wakeupfd_event, s_fdWakeupRead, true,processWakeupCallback, NULL);
+            A4.rilEventAddWakeup (&s_wakeupfd_event);
+                /**
+                 * 1.将该ev挂到watch_table全局的ril_event链表中
+                 *  watch_table[i] = ev;
+                 * 2.使用select机制监听 pip的读端点，只要 s_fdWakeupWrite写入数据就触发该事件
+                    FD_SET(ev->fd, &readFds);
+                */
+                B1.ril_event_add(&s_wakeupfd_event);
+                /**
+                 * 1.对于在同一线程中不进行触发processWakeupCallback调用,直接返回
+                 */
+                B2.triggerEvLoop();
+            /**直接进入循环等待 */
+            A5.ril_event_loop();//ril_event.cpp
+                /**监听挂到rfds的select监控表 */
+                B1.n = select(nfds, &rfds, NULL, NULL, ptv);
+                /**
+                 * 1.循环检查watch_table表中的fd是否有匹配的
+                 * 2.如果有就将 ril_event rev加到 pending_list 队列中去
+                 *  addToList(rev, &pending_list);
+                 */
+                B2.processReadReadies()
+                /**
+                 * 调用 pending_list 中所有的 rild_event->func
+                 */
+                B3.firePending();
+        /**主线程 */
+        2.RIL_register(funcs);
+            /**
+             * static SocketListenParam s_ril_param_socket;
+             * ril.cpp
+             */
+            A1.s_ril_param_socket = {
+                RIL_SOCKET_1,             /* socket_id */
+                -1,                       /* fdListen */
+                -1,                       /* fdCommand */
+                PHONE_PROCESS,            /* processName */
+                &s_commands_event,        /* commands_event */
+                &s_listen_event,          /* listen_event */
+                processCommandsCallback,  /* processCommandsCallback */
+                NULL,                     /* p_rs */
+                RIL_TELEPHONY_SOCKET      /* type */
+                };
+            A2.startListen(RIL_SOCKET_1, &s_ril_param_socket);
+                //根据RIL_SOCKET_1设置socket_name = rild, 最终返回 "rild"
+                strncpy(socket_name, RIL_getRilSocketName(), 9);
+                fdListen = android_get_control_socket(socket_name);
+                ret = listen(fdListen, 4);
+                //这里的 socket_listen_p == s_ril_param_socket
+                socket_listen_p->fdListen = fdListen;
+                /**
+                 * 1.设置一个初始化一个ril_event事件
+                 *  listen_event->fd = fdListen;
+                    listen_event->index = -1;
+                    listen_event->persist = false;
+                    listen_event->func = listenCallback;
+                    listen_event->param = socket_listen_p;
+                    fcntl(listen_event->fd, F_SETFL, O_NONBLOCK);
+                    2.当 rild socket 的fd有数据后则调用 listenCallback 进行处理
+                */
+                ril_event_set (socket_listen_p->listen_event, fdListen, false,
+                        listenCallback, socket_listen_p);
+                /**
+                 * 1.把 rild socket句柄添加到readFds中，select监视列表中去
+                 *  ril_event_add()
+                 *      FD_SET(ev->fd, &readFds);
+                 */
+                rilEventAddWakeup (socket_listen_p->listen_event);
+                
+WH-RIL  : onRequest: BASEBAND_VERSION,3,51
+WH-AT   : ============AT> AT+CGMR
+WH-AT   : ============AT< +CGMR: WH_G405tf_FLASH_V1.0.31B09P23_190227
+WH-AT   : ============AT< OK
 
 打印函数分析:
     startResponse;                                      sprintf(printBuf, "%s {", printBuf)
     appendPrintBuf("%s%s", printBuf, (char*)response);  snprintf(printBuf, PRINTBUF_SIZE, x)
-    closeResponse;                                      sprintf(printBuf, "%s}", printBuf)
-
+    closeResponse;                                      sprintf(printBuf, "%s}", printBuf)、
+//下发请求
+    RIL_REQUEST_BASEBAND_VERSION
+    
 
 ######################################################问题解析######################################################
 上报已注册网络:
