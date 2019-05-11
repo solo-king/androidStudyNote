@@ -5,6 +5,34 @@
     https://android.googlesource.com/kernel/common/
     //HIDL语法风格
     https://source.android.com/devices/architecture/hidl/code-style.html
+工具说明:
+    //用于更新 hardware/interfaces/下所有hal.l的Android.mk Android.bp
+    ./hardware/interfaces/update-makefiles.sh
+    创建hdl server
+        https://source.android.com/devices/architecture/hidl-cpp#creating-the-hal-server
+        关键命令(位于Android Root目录下):
+            1.先在hardwara/interfaces/1.0/xxx下创建xxx.hal
+            2.执行 ./hardware/interfaces/update-makefiles.sh
+            3.创建实现
+                PACKAGE=android.hardware.xxx@1.0
+                LOC=hardware/interfaces/xxx/1.0/default/
+                m -j8 hidl-gen
+                hidl-gen -o $LOC -Lc++-impl -randroid.hardware:hardware/interfaces \
+                    -randroid.hidl:system/libhidl/transport $PACKAGE
+                hidl-gen -o $LOC -Landroidbp-impl -randroid.hardware:hardware/interfaces \
+                    -randroid.hidl:system/libhidl/transport $PACKAGE
+            4.最终生成目录结构
+                .
+                ├── 1.0
+                │   ├── Android.bp
+                │   ├── Android.mk
+                │   ├── default
+                │   │   ├── Android.bp
+                │   │   ├── Mycookie.cpp
+                │   │   └── Mycookie.h
+                │   └── IMycookie.hal
+                └── Android.bp
+            
 
 HIDL简述:
     1.intended to be used for inter-process communication (IPC)
@@ -12,7 +40,7 @@ HIDL简述:
     3.The syntax of HIDL will look familiar to C++ and Java programmers, though with a different set of keywords
     4.HIDL也使用Java-style的注释
 HIDL设计意图:
-    1.单ASOP更新时不需要重新编译HALs
+    1.当ASOP更新时不需要重新编译HALs
     2.HALs will be built by vendors or SOC makers and put in a /vendor partition on the device,
     3.版本升级时只需要替换vendor中的HALs而不需要重新编译HALs
     4.主要优点
@@ -21,7 +49,6 @@ HIDL设计意图:
             b.HIDL一经发布则不允许更改
         Efficiency(高效的):
             a.支持两种模式调用
-            b.
         Intuitive(直观的):
             a.参数调用只允许类型为in
             b.values that cannot be efficiently returned from methods are returned via callback functions
@@ -160,7 +187,7 @@ Android O开始binder的变化:
         /dev/vndbinder 	IPC between vendor/vendor processes with AIDL Interfaces
     9.使用 /dev/vndbinder时需要在所有代码前调用如下代码
         ProcessState::initWithDriver("/dev/vndbinder");
-    10.现在第三方的service使用 vndservicemanager来管理，servicemanager则专用于framework和app之间的通讯使用
+    10.现在第三方的service使用 vndservicemanager 来管理，servicemanager则专用于framework和app之间的通讯使用
     11.
 老版本的HALs转化工具
     make c2hal -j8
@@ -168,6 +195,98 @@ Android O开始binder的变化:
         Assertion `cnt < (sizeof (_nl_value_type_LC_TIME) / sizeof (_nl_value_type_LC_TIME[0])) failed
         解决办法:
             export LC_ALL=C
+
+#########################################c++版本HIDL#############################
+参考资料：
+    https://source.android.com/devices/architecture/hidl-cpp
+概念说明:
+    hidl-gen
+    aidl-cpp
+需要解决的问题:
+    1.接口必须稳定
+        HIDL replaces these HAL interfaces with stable, versioned interfaces, which can be client- and server-side HIDL interfaces in C++ (described below) or Java
+    2.hidl-gen 编译器编译 .hal文件时
+        2.1 生成的详细中间文件
+        2.2 中间文件如何被打包
+        2.3 如何被集成到c++代码中，并被其使用的
+
+light目录结构:
+    /hardware/interfaces/light$ tree
+    .
+    ├── 2.0
+    │   ├── Android.bp
+    │   ├── Android.mk
+    │   ├── default
+    │   │   ├── android.hardware.light@2.0-service.rc
+    │   │   ├── Android.mk
+    │   │   ├── Light.cpp
+    │   │   ├── Light.h
+    │   │   └── service.cpp
+    │   ├── ILight.hal
+    │   ├── types.hal
+    │   └── vts
+    │       ├── Android.mk
+    │       └── functional
+    │           ├── Android.bp
+    │           └── VtsHalLightV2_0TargetTest.cpp
+    └── Android.bp
+hdil接口实现:
+    // From the IFoo.h header
+    using android::hardware::samples::V1_0::IFoo;
+
+    class FooImpl : public IFoo {
+        Return<void> someMethod(foo my_foo, someMethod_cb _cb) {
+            vec<uint32_t> return_data;
+            // Compute return_data
+            _cb(return_data);
+            return Void();
+        }
+        ...
+    };
+暴露hdil实现的service:
+    1.Register the interface implementation with the hwservicemanager (see details below)
+        1.1 使用 IFoo.h 中的 registerAsService()方法注册一个IFoo.h实现到 hwservicemanager
+        1.2 服务端使用名字将自己注册到 hwservicemanager中，client则通过
+            ::android::sp<IFoo> myFoo = new FooImpl();
+            ::android::sp<IFoo> mySecondFoo = new FooAnotherImpl();
+            status_t status = myFoo->registerAsService();
+            status_t anotherStatus = mySecondFoo->registerAsService("another_foo");
+    2.Pass the interface implementation as an argument of an interface method (for detals, see Asynchronous callbacks).
+
+包定义(package):
+    决定一个hidl的唯一性
+interface(接口定义):
+
+数据类型(data type):
+    hidl   <-> c++
+方法/函数(function):
+    返回值(含如下三种方式):
+        https://source.android.com/devices/architecture/hidl-cpp/functions#return-by
+        1.返回一个值与c++中类似.在 .hal中使用 generates
+            .hal:
+                someMethod(Foo foo) generates (int32_t ret);
+            c++:
+                Return<int32_t> someMethod(Foo foo) generates (int32_t ret){}
+        2.返回多个参数则使用回调的方式
+            .hal:
+                register_callback(IFooCallback callback);
+            c++:
+                Return<void> register_callback(IFooCallback callback){}
+        3.不写 generates则在c++中默认为Return<void>
+
+将hdil挂到系统中启动
+
+c++使用实现:
+
+Configstore HAL:
+    作用:
+        1.存储system/vendor之间的共享属性.
+        2.减少
+
     
+
+
+
+
 
     

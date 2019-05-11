@@ -1,3 +1,6 @@
+#################################################################################################################################
+###########################################Makefile 方式的形式(Android.mk)#########################################################
+#################################################################################################################################
 Makefile基础
     见<GUNMake.c>
 环境变量
@@ -53,6 +56,8 @@ Android.mk的调试
         https://blog.csdn.net/u010218230/article/details/79153986
     使用三方库或jar:
         https://blog.csdn.net/thl789/article/details/7918093
+    //NDK编译官方资料
+    https://developer.android.com/ndk/guides/prebuilts
 
 变量描述:
     LOCAL_PATH := $(call my-dir)
@@ -318,6 +323,57 @@ Android.mk 编译模板:
   # Build a static jar file.
   include $(BUILD_STATIC_JAVA_LIBRARY)
 
+将c++代码编译成so:
+    LOCAL_PATH:= $(call my-dir)
+    include $(CLEAR_VARS)
+    #加了该属性将加到vendor分区中
+    LOCAL_VENDOR_MODULE := true
+
+    LOCAL_SRC_FILES:= \
+        ril.cpp \
+        ril_event.cpp\
+        RilSapSocket.cpp \
+        ril_service.cpp \
+        sap_service.cpp
+    #使用的共享库
+    LOCAL_SHARED_LIBRARIES := \
+        liblog 
+    #依赖的静态库
+    LOCAL_STATIC_LIBRARIES := \
+        libprotobuf-c-nano-enable_malloc \
+
+    LOCAL_CFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror
+
+    ifeq ($(SIM_COUNT), 2)
+        LOCAL_CFLAGS += -DANDROID_MULTI_SIM -DDSDA_RILD1
+        LOCAL_CFLAGS += -DANDROID_SIM_COUNT_2
+    endif
+    #头文件寻找路径
+    LOCAL_C_INCLUDES += external/nanopb-c
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/../include
+    LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)/../include
+
+    LOCAL_MODULE:= libril
+    LOCAL_CLANG := true
+    LOCAL_SANITIZE := integer
+
+    include $(BUILD_SHARED_LIBRARY)
+#################################################################################################################################
+###########################################soong 方式的形式(Android.bp)############################################################
+#################################################################################################################################
+参考资料:
+    //官方soong资料
+    https://android.googlesource.com/platform/build/soong/
+    //android.bp的参考库
+    https://ci.android.com/builds/submitted/5551738/linux/latest/view/soong_build.html
+    //网友整理的soong变量说明
+    http://note.qidong.name/demo/soong_build/
+概念:
+    Blueprint(蓝图):
+        后缀bp的由来
+转换工具:
+    1.Android.mk to Android.bp
+        androidmk Android.mk > Android.bp
 
 
 
