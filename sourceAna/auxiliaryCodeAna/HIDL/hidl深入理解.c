@@ -32,8 +32,6 @@
                 │   │   └── Mycookie.h
                 │   └── IMycookie.hal
                 └── Android.bp
-            
-
 HIDL简述:
     1.intended to be used for inter-process communication (IPC)
     2. For libraries that must be linked to a process,passthrough mode is also available (not supported in Java).
@@ -273,20 +271,37 @@ interface(接口定义):
             c++:
                 Return<void> register_callback(IFooCallback callback){}
         3.不写 generates则在c++中默认为Return<void>
-
 将hdil挂到系统中启动
+    1.接口system -->hidl
+    2.rc-->init进程去启动
+    3.seAndroid 规则-->保证init能启动该服务
+    4.c++ client -->调用
+        USER           PID    PPID      VSZ     RSS         WCHAN                   ADDR    S   NAME
+        system         243     1        12136   4260    binder_thread_read      7278a49560  S   android.hardware.light@2.0-service
 
 c++使用实现:
+    vendor:
+        ./lib64/hw/lights.rk3399.so
+        ./lib64/hw/android.hardware.light@2.0-impl.so
+        ./bin/hw/android.hardware.light@2.0-service
+    system:
+        ./lib64/android.hardware.light@2.0.so
+        ./lib64/android.hardware.tests.extension.light@2.0.so
+    涉及指令:
+        logcat 'Lights Hal':V MyLight:V light:V  *:S&
+    问题探讨:
+        1.getSupportedTypes() generates (vec<Type> types);是如何转变为支持函数回调的
+            //hardware/interfaces/light/2.0/ILight.hal
+            getSupportedTypes() generates (vec<Type> types);
+            //out/soong/.intermediates/hardware/interfaces/light/2.0/android.hardware.light@2.0_genc++_headers/gen/android/hardware/light/2.0/ILight.h
+            using getSupportedTypes_cb = std::function<void(const ::android::hardware::hidl_vec<Type>& types)>;
+            virtual ::android::hardware::Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb) = 0;
+            
+            //hardware/interfaces/light/2.0/default/Light.h
+            Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb)  override;
+
 
 Configstore HAL:
     作用:
         1.存储system/vendor之间的共享属性.
         2.减少
-
-    
-
-
-
-
-
-    
