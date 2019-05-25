@@ -277,5 +277,10 @@ instll FoxyProxy with firefox browse
 	sudo add-apt-repository ppa:otto-kesselgulasch/gimp
 	sudo apt update
 	sudo apt install gimp 
-
-	
+更改硬盘卷名称
+	如下仅仅对ntfs文件系统的硬盘有效
+	sudo ntfslabel /dev/sdd2 ganye480ssd
+	注意:
+		1.更改硬盘分区的卷名称(label)需要先卸载硬盘
+                2.对于其他文件系统有如下命令可用
+			exfatlabel exfatlabel  fatlabel  dosfslabel等以此类推

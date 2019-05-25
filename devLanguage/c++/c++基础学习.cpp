@@ -1,3 +1,6 @@
+参考资料:
+	//api参考手册
+	http://www.cplusplus.com/reference/string/string/?kw=string
 c++类的初始化
     string name;    
     string name1(name); //直接初始化

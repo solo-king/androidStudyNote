@@ -56,6 +56,8 @@ SELinux 设计哲学:
         system/sepolicy/public
         system/sepolicy/vendor
         device/manufacturer/device-name/sepolicy
+    5.如何将策略编译进固件中
+        Build and flash the boot and system images.
     
 
 

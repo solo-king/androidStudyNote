@@ -16,7 +16,7 @@
             3.创建实现
                 PACKAGE=android.hardware.xxx@1.0
                 LOC=hardware/interfaces/xxx/1.0/default/
-                m -j8 hidl-gen
+                m -j hidl-gen
                 hidl-gen -o $LOC -Lc++-impl -randroid.hardware:hardware/interfaces \
                     -randroid.hidl:system/libhidl/transport $PACKAGE
                 hidl-gen -o $LOC -Landroidbp-impl -randroid.hardware:hardware/interfaces \
@@ -83,7 +83,9 @@ HAL的类型:
         4.实现原理:
             1.通过hwservicemanager给init进程发送指令
 使用passthrough mode包装传统的HALs
-
+使用binder化的HIDL
+    参考代码:
+        hardware/interfaces/usb/1.0
 HIDL语法
     
     /** */:
@@ -278,30 +280,65 @@ interface(接口定义):
     4.c++ client -->调用
         USER           PID    PPID      VSZ     RSS         WCHAN                   ADDR    S   NAME
         system         243     1        12136   4260    binder_thread_read      7278a49560  S   android.hardware.light@2.0-service
-
+HIDL基本数据类型:
+    1.enum 
+    2.bitfield types (which always derive from primitive types), map to standard C++ types such as std::uint32_t from cstdint.
+    3.
 c++使用实现:
-    vendor:
-        ./lib64/hw/lights.rk3399.so
-        ./lib64/hw/android.hardware.light@2.0-impl.so
-        ./bin/hw/android.hardware.light@2.0-service
-    system:
-        ./lib64/android.hardware.light@2.0.so
-        ./lib64/android.hardware.tests.extension.light@2.0.so
-    涉及指令:
-        logcat 'Lights Hal':V MyLight:V light:V  *:S&
-    问题探讨:
-        1.getSupportedTypes() generates (vec<Type> types);是如何转变为支持函数回调的
-            //hardware/interfaces/light/2.0/ILight.hal
-            getSupportedTypes() generates (vec<Type> types);
-            //out/soong/.intermediates/hardware/interfaces/light/2.0/android.hardware.light@2.0_genc++_headers/gen/android/hardware/light/2.0/ILight.h
-            using getSupportedTypes_cb = std::function<void(const ::android::hardware::hidl_vec<Type>& types)>;
-            virtual ::android::hardware::Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb) = 0;
-            
-            //hardware/interfaces/light/2.0/default/Light.h
-            Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb)  override;
 
+    Using passthrough mode：Binderizing passthrough HAL:
+        vendor:
+            ./lib64/hw/lights.rk3399.so
+            ./lib64/hw/android.hardware.light@2.0-impl.so
+            ./bin/hw/android.hardware.light@2.0-service
+        system:
+            ./lib64/android.hardware.light@2.0.so
+            ./lib64/android.hardware.tests.extension.light@2.0.so
+        涉及指令:
+            logcat 'Lights Hal':V MyLight:V light:V  *:S&
+        问题探讨:
+            1.getSupportedTypes() generates (vec<Type> types);是如何转变为支持函数回调的
+                //hardware/interfaces/light/2.0/ILight.hal
+                getSupportedTypes() generates (vec<Type> types);
+                //out/soong/.intermediates/hardware/interfaces/light/2.0/android.hardware.light@2.0_genc++_headers/gen/android/hardware/light/2.0/ILight.h
+                using getSupportedTypes_cb = std::function<void(const ::android::hardware::hidl_vec<Type>& types)>;
+                virtual ::android::hardware::Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb) = 0;
+                //hardware/interfaces/light/2.0/default/Light.h
+                Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb)  override;
+                暂定原因:
+                    https://source.android.com/devices/architecture/hidl/services
+                    If only one value is returned and it is a primitive type, a callback is not used and the value is returned from the method. 
+                    The server implements the HIDL methods and the client implements the callbacks.
+hardware/interfaces/mylight:
+    //编译生成的中间产物
+    ./soong/.intermediates/hardware/interfaces/mylight/1.0/android.hardware.mylight@1.0_genc++_headers/gen/android/hardware/mylight/1.0/IMylight.h
+    ./target/common/gen/JAVA_LIBRARIES/android.hardware.mylight-V1.0-java-static_intermediates/android/hardware/mylight/V1_0/IMylight.java
+    ./target/common/gen/JAVA_LIBRARIES/android.hardware.mylight-V1.0-java_intermediates/android/hardware/mylight/V1_0/IMylight.java
+
+    using getSupportedTypes_cb = std::function<void(const ::android::hardware::hidl_vec<LightType>& types)>;
+    virtual ::android::hardware::Return<void> getSupportedTypes(getSupportedTypes_cb _hidl_cb) = 0;
+seAndroid:
+    参考资料:
+        //对已定义的宏功能说明
+        https://android.googlesource.com/platform/system/sepolicy/+/master/public/te_macros
+    //参考文件:/system/vendor/hal_light_default.te
+    #集成自domain
+    type hal_light_default, domain;
+    //从 hal_light domain中集成所有的权限
+    hal_server_domain(hal_light_default, hal_light)
+    //定义一个type
+    type hal_light_default_exec, exec_type, vendor_file_type, file_type;
+    //允许init启动的一个进程
+    init_daemon_domain(hal_light_default)
 
 Configstore HAL:
     作用:
         1.存储system/vendor之间的共享属性.
         2.减少
+
+########################################################java HIDL################################################################
+目的:
+    1.detail how to create, register, and use services
+    2.explain how HALs and HAL clients written in Java interact with the HIDL RPC system
+与c++ 版本的hdil区别:
+    1.The Java HIDL backend does NOT support union types, native handles, shared memory, and fmq types.

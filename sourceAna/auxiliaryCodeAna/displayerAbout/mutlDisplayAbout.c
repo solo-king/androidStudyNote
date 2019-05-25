@@ -3,7 +3,7 @@
        https://source.android.com/devices/tech/display/multi-window
        //官方显示框架,很重要
        https://source.android.com/devices/graphics/architecture
-       //可以使系统默认开启 freeform 
+       //可以使系统默认开启 freeform
        https://github.com/farmerbb/Taskbar
        //导航栏加载
        https://juejin.im/post/5ad9a077f265da0b767d0669
