@@ -284,3 +284,5 @@ instll FoxyProxy with firefox browse
 		1.更改硬盘分区的卷名称(label)需要先卸载硬盘
                 2.对于其他文件系统有如下命令可用
 			exfatlabel exfatlabel  fatlabel  dosfslabel等以此类推
+samba服务器搭建:
+	
