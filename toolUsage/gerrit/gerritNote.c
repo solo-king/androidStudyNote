@@ -49,3 +49,14 @@
 六、code reviewer 如何审阅代码
 
 七、代码管理员如何合并代码
+
+The refs/for/[BRANCH_NAME] syntax描述:
+    refs/changes/[CD]/[ABCD]/[EF]
+    Where:
+        [CD] is the last two digits of the change number
+        [ABCD] is the change number
+        [EF] is the patch set number
+    For example:
+        refs/changes/20/884120/1
+You can use the change reference to fetch its corresponding commit:
+    git fetch https://[GERRIT_SERVER_URL]/[PROJECT] refs/changes/[XX]/[YYYY]/[ZZ] && git checkout FETCH_HEAD
