@@ -26,9 +26,7 @@
                 T(initState) = RESET_LSM6DSM
             5. 真正开始sensor的初始化, 在lsm6dsm_sensorInit中进行
             6. 软重启 sensor    ==>deal initState is RESET_LSM6DSM,且当前task->state == SENSOR_VERIFY_WAI
-            7.  
-                
+    2. sensortest -e 1 50000最终调用sensor的那个函数
 
-    2. 初始化过程做了哪些事情
-    3. sensortest -e 1 50000最终调用sensor的那个函数
-    4. acc 数据是如何上报的
+    3. acc 数据是如何上报的
+        
