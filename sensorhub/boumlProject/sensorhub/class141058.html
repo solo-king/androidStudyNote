@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class SensorService::SensorRecord</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class SensorService::SensorRecord</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_141058"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class SensorService::SensorRecord </li><li>Java : package class SensorService::SensorRecord </li></ul><p>Artifact : <a href="index.html#ref8_132354"><b>SensorRecord</b></a></p>
+<div class="sub">
+<a name="ref2_171650"></a>
+<table><tr><td><div class="element">Operation <b>addConnection</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addConnection(in connection : sp&lt;const SensorEventConnection&gt;) : bool</li><li>C++ : public: bool addConnection(const sp&lt;const SensorEventConnection&gt; &amp; connection)</li><li>Java : public boolean addConnection()</li></ul><a name="ref2_171778"></a>
+<table><tr><td><div class="element">Operation <b>removeConnection</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + removeConnection(in connection : wp&lt;const SensorEventConnection&gt;) : bool</li><li>C++ : public: bool removeConnection(const wp&lt;const SensorEventConnection&gt; &amp; connection)</li><li>Java : public boolean removeConnection()</li></ul><a name="ref2_171906"></a>
+<table><tr><td><div class="element">Operation <b>getNumConnections</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getNumConnections() : size_t</li><li>C++ : public: inline size_t getNumConnections() const</li><li>Java : public size_t getNumConnections()</li></ul><a name="ref2_172034"></a>
+<table><tr><td><div class="element">Operation <b>addPendingFlushConnection</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addPendingFlushConnection(in connection : sp&lt;const SensorEventConnection&gt;) : void</li><li>C++ : public: void addPendingFlushConnection(const sp&lt;const SensorEventConnection&gt; &amp; connection)</li><li>Java : public void addPendingFlushConnection()</li></ul><a name="ref2_172162"></a>
+<table><tr><td><div class="element">Operation <b>removeFirstPendingFlushConnection</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + removeFirstPendingFlushConnection() : void</li><li>C++ : public: void removeFirstPendingFlushConnection()</li><li>Java : public void removeFirstPendingFlushConnection()</li></ul><a name="ref2_172290"></a>
+<table><tr><td><div class="element">Operation <b>getFirstPendingFlushConnection</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getFirstPendingFlushConnection() : wp&lt;const SensorEventConnection&gt;</li><li>C++ : public: wp&lt;const SensorEventConnection&gt; getFirstPendingFlushConnection()</li><li>Java : public wp&lt;const SensorEventConnection&gt; getFirstPendingFlushConnection()</li></ul><a name="ref2_172418"></a>
+<table><tr><td><div class="element">Operation <b>clearAllPendingFlushConnections</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + clearAllPendingFlushConnections() : void</li><li>C++ : public: void clearAllPendingFlushConnections()</li><li>Java : public void clearAllPendingFlushConnections()</li></ul><a name="ref1_144898"></a>
+<table><tr><td><div class="element">Attribute <b>mConnections</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mConnections :  wp&lt;const SensorEventConnection&gt; </li><li>C++ : private: SortedVector&lt; wp&lt;const SensorEventConnection&gt; &gt; mConnections</li><li>Java : private  wp&lt;const SensorEventConnection&gt;  mConnections</li></ul><p>Stereotype: SortedVector</p>
+<a name="ref1_145026"></a>
+<table><tr><td><div class="element">Attribute <b>mPendingFlushConnections</b></div></td></tr></table>
+<p>A queue of all flush() calls made on this sensor. Flush complete events<br /> will be sent in this order.<br /><br /></p><p>Declaration :</p><ul><li>Uml : - mPendingFlushConnections :  wp&lt;const SensorEventConnection&gt; </li><li>C++ : private: Vector&lt; wp&lt;const SensorEventConnection&gt; &gt; mPendingFlushConnections</li><li>Java : private  wp&lt;const SensorEventConnection&gt;  mPendingFlushConnections</li></ul><p>Stereotype: Vector</p>
+</div>
+<p>All public operations : <a href="class141058.html#ref2_171650"><b>addConnection</b></a> , <a href="class141058.html#ref2_172034"><b>addPendingFlushConnection</b></a> , <a href="class141058.html#ref2_172418"><b>clearAllPendingFlushConnections</b></a> , <a href="class141058.html#ref2_172290"><b>getFirstPendingFlushConnection</b></a> , <a href="class141058.html#ref2_171906"><b>getNumConnections</b></a> , <a href="class141058.html#ref2_171778"><b>removeConnection</b></a> , <a href="class141058.html#ref2_172162"><b>removeFirstPendingFlushConnection</b></a> </p>
+</body>
+</html>

@@ -1,0 +1,36 @@
+format 221
+"1.0" // sensorservice::1.0
+  revision 1
+  modified_by 2 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  cpp_h_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/1.0/"
+  cpp_src_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/1.0/"
+  package_ref 128642 // vts
+end

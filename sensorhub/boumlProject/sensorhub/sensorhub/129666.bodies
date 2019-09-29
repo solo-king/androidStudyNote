@@ -1,0 +1,73 @@
+class ASensorEventQueue
+!!!138626.cpp!!!	onEvent(in event : ASensorEventQueue::Event) : android::hardware::Return<void>
+    LOG(VERBOSE) << "ASensorEventQueue::onEvent";
+
+    {
+        Mutex::Autolock autoLock(mLock);
+
+        mQueue.emplace_back();
+        sensors_event_t *sensorEvent = &mQueue[mQueue.size() - 1];
+        android::hardware::sensors::V1_0::implementation::convertToSensorEvent(
+                event, sensorEvent);
+    }
+
+    mLooper->signalSensorEvents(this);
+
+    return android::hardware::Void();
+!!!138882.cpp!!!	registerSensor(in sensor : ASensorRef, in samplingPeriodUs : int32_t, in maxBatchReportLatencyUs : int64_t) : int
+    Return<Result> ret = mQueueImpl->enableSensor(
+            reinterpret_cast<const SensorInfo *>(sensor)->sensorHandle,
+            samplingPeriodUs,
+            maxBatchReportLatencyUs);
+
+    if (!ret.isOk()) {
+        return BAD_VALUE;
+    }
+
+    return OK;
+!!!139010.cpp!!!	enableSensor(in sensor : ASensorRef) : int
+    static constexpr int32_t SENSOR_DELAY_NORMAL = 200000;
+
+    return registerSensor(
+            sensor, SENSOR_DELAY_NORMAL, 0 /* maxBatchReportLatencyUs */);
+!!!139138.cpp!!!	disableSensor(in sensor : ASensorRef) : int
+    Return<Result> ret = mQueueImpl->disableSensor(
+            reinterpret_cast<const SensorInfo *>(sensor)->sensorHandle);
+
+    return ret.isOk() ? OK : BAD_VALUE;
+!!!139266.cpp!!!	setEventRate(in sensor : ASensorRef, in samplingPeriodUs : int32_t) : int
+    // Technically this is not supposed to enable the sensor but using this
+    // API without enabling the sensor first is a no-op, so...
+    return registerSensor(
+            sensor, samplingPeriodUs, 0 /* maxBatchReportLatencyUs */);
+!!!139394.cpp!!!	getEvents(inout events : ASensorEvent, in count : size_t) : ssize_t
+    // XXX Should this block if there aren't any events in the queue?
+
+    Mutex::Autolock autoLock(mLock);
+
+    static_assert(
+            sizeof(ASensorEvent) == sizeof(sensors_event_t), "mismatched size");
+
+    size_t copy = std::min(count, mQueue.size());
+    for (size_t i = 0; i < copy; ++i) {
+        reinterpret_cast<sensors_event_t *>(events)[i] = mQueue[i];
+    }
+    mQueue.erase(mQueue.begin(), mQueue.begin() + copy);
+
+    LOG(VERBOSE) << "ASensorEventQueue::getEvents() returned " << copy << " events.";
+
+    return copy;
+!!!139522.cpp!!!	hasEvents() : int
+    return !mQueue.empty();
+!!!139650.cpp!!!	dispatchCallback() : void
+    if (mCallback != NULL) {
+        int res = (*mCallback)(-1 /* fd */, ALOOPER_EVENT_INPUT, mData);
+
+        if (res == 0) {
+            mCallback = NULL;
+            mData = NULL;
+        }
+    }
+!!!139778.cpp!!!	invalidate() : void
+    mLooper->invalidateSensorQueue(this);
+    setImpl(nullptr);

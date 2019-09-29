@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class SensorList</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class SensorList</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_140802"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class SensorList : public <a href="class136834.html#ref4_136834"><b>Dumpable</b></a> </li><li>Java : package class SensorList extends <a href="class136834.html#ref4_136834"><b>Dumpable</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_132226"><b>SensorList</b></a></p>
+<div class="sub">
+<a name="ref2_169474"></a>
+<table><tr><td><div class="element">Operation <b>add</b></div></td></tr></table><p>After SensorInterface * is added into SensorList, it can be assumed that SensorList own the<br /> object it pointed to and the object should not be released elsewhere.<br /></p><p>Declaration :</p><ul><li>Uml : + add(in handle : int, inout si : <a href="class140290.html#ref4_140290"><b>SensorInterface</b></a>, in isForDebug : bool = false, in isVirtual : bool = false) : bool</li><li>C++ : public: bool add(int handle, <a href="class140290.html#ref4_140290"><b>SensorInterface</b></a> * si, bool isForDebug = false, bool isVirtual = false)</li><li>Java : public boolean add()</li></ul><a name="ref2_169602"></a>
+<table><tr><td><div class="element">Operation <b>remove</b></div></td></tr></table><p>After a handle is removed, the object that SensorInterface * pointing to may get deleted if<br /> no more sp<> of the same object exist.<br /></p><p>Declaration :</p><ul><li>Uml : + remove(in handle : int) : bool</li><li>C++ : public: bool remove(int handle)</li><li>Java : public boolean remove()</li></ul><a name="ref2_169730"></a>
+<table><tr><td><div class="element">Operation <b>hasAnySensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + hasAnySensor() : bool</li><li>C++ : public: inline bool hasAnySensor() const</li><li>Java : public boolean hasAnySensor()</li></ul><a name="ref2_169858"></a>
+<table><tr><td><div class="element">Operation <b>getUserSensors</b></div></td></tr></table><p>helper functions<br /></p><p>Declaration :</p><ul><li>Uml : + getUserSensors() : Vector&lt;Sensor&gt;</li><li>C++ : public: const Vector&lt;Sensor&gt; getUserSensors() const</li><li>Java : public Vector&lt;Sensor&gt; getUserSensors()</li></ul><a name="ref2_169986"></a>
+<table><tr><td><div class="element">Operation <b>getUserDebugSensors</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getUserDebugSensors() : Vector&lt;Sensor&gt;</li><li>C++ : public: const Vector&lt;Sensor&gt; getUserDebugSensors() const</li><li>Java : public Vector&lt;Sensor&gt; getUserDebugSensors()</li></ul><a name="ref2_170114"></a>
+<table><tr><td><div class="element">Operation <b>getDynamicSensors</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getDynamicSensors() : Vector&lt;Sensor&gt;</li><li>C++ : public: const Vector&lt;Sensor&gt; getDynamicSensors() const</li><li>Java : public Vector&lt;Sensor&gt; getDynamicSensors()</li></ul><a name="ref2_170242"></a>
+<table><tr><td><div class="element">Operation <b>getVirtualSensors</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getVirtualSensors() : Vector&lt;Sensor&gt;</li><li>C++ : public: const Vector&lt;Sensor&gt; getVirtualSensors() const</li><li>Java : public Vector&lt;Sensor&gt; getVirtualSensors()</li></ul><a name="ref2_170370"></a>
+<table><tr><td><div class="element">Operation <b>getName</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getName(in handle : int) : String8</li><li>C++ : public: String8 getName(int handle) const</li><li>Java : public String8 getName()</li></ul><a name="ref2_170498"></a>
+<table><tr><td><div class="element">Operation <b>getInterface</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getInterface(in handle : int) : sp&lt;SensorInterface&gt;</li><li>C++ : public: sp&lt;SensorInterface&gt; getInterface(int handle) const</li><li>Java : public sp&lt;SensorInterface&gt; getInterface()</li></ul><a name="ref2_170626"></a>
+<table><tr><td><div class="element">Operation <b>isNewHandle</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isNewHandle(in handle : int) : bool</li><li>C++ : public: bool isNewHandle(int handle) const</li><li>Java : public boolean isNewHandle()</li></ul><a name="ref2_170754"></a>
+<table><tr><td><div class="element">Operation <b>forEachSensor</b></div></td></tr></table><p>Iterate through Sensor in sensor list and perform operation f on each Sensor object.<br /><br /> TF is a function with the signature:<br />    bool f(const Sensor &);<br /> A return value of 'false' stops the iteration immediately.<br /><br /> Note: in the function f, it is illegal to make calls to member functions of the same<br /> SensorList object on which forEachSensor is invoked.<br /></p><p>Declaration :</p><ul><li>Uml : + forEachSensor(in f : TF) : void</li><li>C++ : public: template&lt;typename TF&gt; inline void forEachSensor(const TF &amp; f) const</li><li>Java : public void forEachSensor()</li></ul><p>Stereotype: template</p>
+<a name="ref2_170882"></a>
+<table><tr><td><div class="element">Operation <b>getNonSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getNonSensor() : Sensor</li><li>C++ : public: inline const Sensor &amp; getNonSensor() const</li><li>Java : public Sensor getNonSensor()</li></ul><a name="ref2_171010"></a>
+<table><tr><td><div class="element">Operation <b>dump</b></div></td></tr></table><p>Dumpable interface<br /></p><p>Declaration :</p><ul><li>Uml : + dump() : std::string</li><li>C++ : public: virtual std::string dump() const override</li><li>Java : public std::string dump()</li></ul><a name="ref2_171138"></a>
+<table><tr><td><div class="element">Operation <b>~SensorList</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ~SensorList() : </li><li>C++ : public: virtual ~SensorList()</li></ul><table><tr><td><div class="element">Class <b><a href="class140930.html#ref4_140930"><b>Entry</b></a></b></div></td></tr></table>
+<a name="ref1_144514"></a>
+<table><tr><td><div class="element">Attribute <b>mNonSensor</b></div></td></tr></table>
+<p>.getName() == "unknown",<br /></p><p>Declaration :</p><ul><li>Uml : static, - mNonSensor : Sensor= Sensor("unknown"), read only</li><li>C++ : private: static const Sensor mNonSensor</li><li>Java : private static final Sensor mNonSensor</li></ul><a name="ref2_171394"></a>
+<table><tr><td><div class="element">Operation <b>forEachEntry</b></div></td></tr></table><p>Iterate through Entry in sensor list and perform operation f on each Entry.<br /><br /> TF is a function with the signature:<br />    bool f(const Entry &);<br /> A return value of 'false' stops the iteration over entries immediately.<br /><br /> Note: in the function being passed in, it is illegal to make calls to member functions of the<br /> same SensorList object on which forEachSensor is invoked.<br /></p><p>Declaration :</p><ul><li>Uml : - forEachEntry(in f : TF) : void</li><li>C++ : private: template&lt;typename TF&gt; inline void forEachEntry(const TF &amp; f) const</li><li>Java : private void forEachEntry()</li></ul><p>Stereotype: template</p>
+<a name="ref2_171522"></a>
+<table><tr><td><div class="element">Operation <b>getOne</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - getOne(in handle : int, in accessor : TF, in def : T = T()) : T</li><li>C++ : private: template&lt;typename T, typename TF&gt; inline T getOne(int handle, const TF &amp; accessor, T def = T()) const</li><li>Java : private T getOne()</li></ul><p>Stereotype: template</p>
+<a name="ref1_144642"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : std::mutex</li><li>C++ : private: mutable std::mutex mLock</li><li>Java : private std::mutex mLock</li></ul><a name="ref0_138370"></a>
+<table><tr><td><div class="element">Relation <b>mHandleMap (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mHandleMap : <a href="class140930.html#ref4_140930"><b>Entry</b></a></li><li>C++ : private: std::map&lt;int,<a href="class140930.html#ref4_140930"><b>Entry</b></a>&gt; mHandleMap</li><li>Java : private <a href="class140930.html#ref4_140930"><b>Entry</b></a> mHandleMap</li></ul><p>Stereotype: std::map</p>
+<a name="ref1_144770"></a>
+<table><tr><td><div class="element">Attribute <b>mUsedHandle</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mUsedHandle : int</li><li>C++ : private: std::unordered_set&lt;int&gt; mUsedHandle</li><li>Java : private int mUsedHandle</li></ul><p>Stereotype: std::unordered_set</p>
+</div>
+<p>All public operations : <a href="class140802.html#ref2_169474"><b>add</b></a> , <a href="class136834.html#ref2_181250"><b>dump</b></a> , <a href="class140802.html#ref2_171010"><b>dump</b></a> , <a href="class140802.html#ref2_170754"><b>forEachSensor</b></a> , <a href="class140802.html#ref2_170114"><b>getDynamicSensors</b></a> , <a href="class140802.html#ref2_170498"><b>getInterface</b></a> , <a href="class140802.html#ref2_170370"><b>getName</b></a> , <a href="class140802.html#ref2_170882"><b>getNonSensor</b></a> , <a href="class140802.html#ref2_169986"><b>getUserDebugSensors</b></a> , <a href="class140802.html#ref2_169858"><b>getUserSensors</b></a> , <a href="class140802.html#ref2_170242"><b>getVirtualSensors</b></a> , <a href="class140802.html#ref2_169730"><b>hasAnySensor</b></a> , <a href="class140802.html#ref2_170626"><b>isNewHandle</b></a> , <a href="class140802.html#ref2_169602"><b>remove</b></a> , <a href="class136834.html#ref2_181378"><b>setFormat</b></a> </p>
+</body>
+</html>

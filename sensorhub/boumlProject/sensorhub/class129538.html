@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class ALooper</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class ALooper</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_129538"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct ALooper </li><li>Java : package class ALooper </li></ul><p>Artifact : <a href="index.html#ref8_128770"><b>ALooper</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_137858"></a>
+<table><tr><td><div class="element">Operation <b>ALooper</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ALooper() : </li><li>C++ : public: ALooper()</li><li>Java : public ALooper() </li></ul><a name="ref2_137986"></a>
+<table><tr><td><div class="element">Operation <b>signalSensorEvents</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + signalSensorEvents(inout queue : <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a>) : void</li><li>C++ : public: void signalSensorEvents(<a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> * queue)</li><li>Java : public void signalSensorEvents()</li></ul><a name="ref2_138114"></a>
+<table><tr><td><div class="element">Operation <b>wake</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + wake() : void</li><li>C++ : public: void wake()</li><li>Java : public void wake()</li></ul><a name="ref2_138242"></a>
+<table><tr><td><div class="element">Operation <b>pollOnce</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + pollOnce(in timeoutMillis : int, inout outFd : int, inout outEvents : int, inout outData : void) : int</li><li>C++ : public: int pollOnce(int timeoutMillis, int * outFd, int * outEvents, void * * outData)</li><li>Java : public int pollOnce()</li></ul><a name="ref2_138370"></a>
+<table><tr><td><div class="element">Operation <b>invalidateSensorQueue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + invalidateSensorQueue(inout queue : <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a>) : void</li><li>C++ : public: void invalidateSensorQueue(<a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> * queue)</li><li>Java : public void invalidateSensorQueue()</li></ul><a name="ref1_131202"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : android::Mutex</li><li>C++ : private: android::Mutex mLock</li><li>Java : private android::Mutex mLock</li></ul><a name="ref1_131330"></a>
+<table><tr><td><div class="element">Attribute <b>mCondition</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mCondition : android::Condition</li><li>C++ : private: android::Condition mCondition</li><li>Java : private android::Condition mCondition</li></ul><a name="ref0_129026"></a>
+<table><tr><td><div class="element">Relation <b>mReadyQueues (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mReadyQueues : <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a></li><li>C++ : private: std::set&lt;<a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a>*&gt; mReadyQueues</li><li>Java : private <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> mReadyQueues</li></ul><p>Stereotype: std::set</p>
+<a name="ref1_131458"></a>
+<table><tr><td><div class="element">Attribute <b>mAwoken</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mAwoken : bool</li><li>C++ : private: bool mAwoken</li><li>Java : private boolean mAwoken</li></ul></div>
+<p>All public operations : <a href="class129538.html#ref2_138370"><b>invalidateSensorQueue</b></a> , <a href="class129538.html#ref2_138242"><b>pollOnce</b></a> , <a href="class129538.html#ref2_137986"><b>signalSensorEvents</b></a> , <a href="class129538.html#ref2_138114"><b>wake</b></a> </p>
+</body>
+</html>

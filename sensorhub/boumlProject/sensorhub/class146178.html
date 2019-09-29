@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class EventQueueLooperCallback</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class EventQueueLooperCallback</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_146178"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class EventQueueLooperCallback : public <a href="class146306.html#ref4_146306"><b>typedef24</b></a> </li><li>Java : package class EventQueueLooperCallback extends <a href="class146306.html#ref4_146306"><b>typedef24</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_133634"><b>EventQueueLooperCallback</b></a></p>
+<div class="sub">
+<a name="ref2_182530"></a>
+<table><tr><td><div class="element">Operation <b>EventQueueLooperCallback</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + EventQueueLooperCallback(in queue : sp&lt;::android::SensorEventQueue&gt;, in callback : sp&lt;IEventQueueCallback&gt;) : </li><li>C++ : public: inline EventQueueLooperCallback(sp&lt;::android::SensorEventQueue&gt; queue, sp&lt;IEventQueueCallback&gt; callback)</li><li>Java : public EventQueueLooperCallback() </li></ul><a name="ref2_182658"></a>
+<table><tr><td><div class="element">Operation <b>handleEvent</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + handleEvent(in fd : __unused int, in events : __unused int, inout data : void) : int</li><li>C++ : public: inline int handleEvent(__unused int fd, __unused int events, void * data)</li><li>Java : public int handleEvent()</li></ul><a name="ref1_152834"></a>
+<table><tr><td><div class="element">Attribute <b>mQueue</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mQueue : ::android::SensorEventQueue</li><li>C++ : private: wp&lt;::android::SensorEventQueue&gt; mQueue</li><li>Java : private ::android::SensorEventQueue mQueue</li></ul><p>Stereotype: wp</p>
+<a name="ref1_152962"></a>
+<table><tr><td><div class="element">Attribute <b>mCallback</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mCallback : IEventQueueCallback</li><li>C++ : private: sp&lt;IEventQueueCallback&gt; mCallback</li><li>Java : private IEventQueueCallback mCallback</li></ul><p>Stereotype: sp</p>
+</div>
+<p>All public operations : <a href="class146178.html#ref2_182658"><b>handleEvent</b></a> </p>
+</body>
+</html>

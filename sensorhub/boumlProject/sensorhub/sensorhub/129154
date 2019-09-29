@@ -1,0 +1,272 @@
+format 221
+"android TL" // sensorservice::android TL
+  revision 1
+  modified_by 2 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  cpp_h_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/"
+  cpp_src_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/"
+  cpp_namespace "android::TL"
+  classview 128898 "sensorservice"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    class 142466 "IndexOf<NullType,T>"
+      visibility package stereotype "struct"
+      nformals 1
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      class 142594 "anonymous4"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	attribute 149890 "value"
+	  public type class_ref 142594 // anonymous4
+	  init_value " -1 "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl "  ${@}${name}${value},${comment}"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+      end
+    end
+
+    class 142722 "IndexOf<TypeList<T,Tail>,T>"
+      visibility package stereotype "struct"
+      nformals 2
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      formal name "Tail" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      class 142850 "anonymous5"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	attribute 150018 "value"
+	  public type class_ref 142850 // anonymous5
+	  init_value " 0 "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl "  ${@}${name}${value},${comment}"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+      end
+    end
+
+    class 142978 "IndexOf<TypeList<Head,Tail>,T>"
+      visibility package stereotype "struct"
+      nformals 3
+      formal name "Head" type "typename" explicit_default_value ""
+        explicit_extends ""
+      formal name "Tail" type "typename" explicit_default_value ""
+        explicit_extends ""
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      class 143106 "anonymous6"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	attribute 150146 "temp"
+	  public type class_ref 143106 // anonymous6
+	  init_value " IndexOf<Tail"
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl "  ${@}${name}${value},${comment}"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+
+	attribute 150274 "T"
+	  public type class_ref 143106 // anonymous6
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl "  ${@}${name}${value},${comment}"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+      end
+
+      class 143234 "anonymous7"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	attribute 150402 "value"
+	  public type class_ref 143234 // anonymous7
+	  init_value " temp == -1 ? -1 : 1 + temp "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl "  ${@}${name}${value},${comment}"
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	  mysql_decl ""
+	  MysqlColumn
+	end
+      end
+    end
+  end
+
+  deploymentview 128898 "android TL"
+    //deployment diagram settings
+    deploymentdiagramsettings
+     end
+    artifact 132994 "traits"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 142466 // IndexOf<NullType,T>
+	class_ref 142722 // IndexOf<TypeList<T,Tail>,T>
+	class_ref 142978 // IndexOf<TypeList<Head,Tail>,T>
+      end
+    end
+  end
+end

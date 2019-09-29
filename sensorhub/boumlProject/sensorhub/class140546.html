@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class BaseSensor</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class BaseSensor</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_140546"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class BaseSensor : public <a href="class140290.html#ref4_140290"><b>SensorInterface</b></a> </li><li>Java : package class BaseSensor extends <a href="class140290.html#ref4_140290"><b>SensorInterface</b></a> </li></ul><p>Directly inherited by : <a href="class140674.html#ref4_140674"><b>HardwareSensor</b></a> <a href="class132610.html#ref4_132610"><b>VirtualSensor</b></a> </p>
+<p>Artifact : <a href="index.html#ref8_132098"><b>SensorInterface</b></a></p>
+<div class="sub">
+<a name="ref2_167170"></a>
+<table><tr><td><div class="element">Operation <b>BaseSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + BaseSensor(in sensor : sensor_t) : </li><li>C++ : public: explicit BaseSensor(const sensor_t &amp; sensor)</li><li>Java : public BaseSensor() </li></ul><a name="ref2_167298"></a>
+<table><tr><td><div class="element">Operation <b>BaseSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + BaseSensor(in sensor : sensor_t) : </li><li>C++ : public: BaseSensor()</li><li>Java : public BaseSensor() </li></ul><a name="ref2_167426"></a>
+<table><tr><td><div class="element">Operation <b>batch</b></div></td></tr></table><p>Not all sensors need to support batching.<br /></p><p>Declaration :</p><ul><li>Uml : + batch(inout ident : void, in handle : int, in  : int, in samplingPeriodNs : int64_t, in maxBatchReportLatencyNs : int64_t) : status_t</li><li>C++ : public: inline virtual status_t batch(void * ident, int handle, int , int64_t samplingPeriodNs, int64_t maxBatchReportLatencyNs) override</li><li>Java : public status_t batch()</li></ul><a name="ref2_167554"></a>
+<table><tr><td><div class="element">Operation <b>flush</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + flush(inout  : void, in  : int) : status_t</li><li>C++ : public: inline virtual status_t flush(void * , int ) override</li><li>Java : public status_t flush()</li></ul><a name="ref2_167682"></a>
+<table><tr><td><div class="element">Operation <b>getSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getSensor() : Sensor</li><li>C++ : public: inline virtual const Sensor &amp; getSensor() const override</li><li>Java : public Sensor getSensor()</li></ul><a name="ref2_167810"></a>
+<table><tr><td><div class="element">Operation <b>autoDisable</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + autoDisable(inout  : void, in  : int) : void</li><li>C++ : public: inline virtual void autoDisable(void * , int ) override</li><li>Java : public void autoDisable()</li></ul><a name="ref0_137602"></a>
+<table><tr><td><div class="element">Relation <b>mSensorDevice (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # mSensorDevice : <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a></li><li>C++ : protected: <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a> &amp; mSensorDevice</li><li>Java : protected <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a> mSensorDevice</li></ul><a name="ref1_144130"></a>
+<table><tr><td><div class="element">Attribute <b>mSensor</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : # mSensor : Sensor</li><li>C++ : protected: Sensor mSensor</li><li>Java : protected Sensor mSensor</li></ul></div>
+<p>All public operations : <a href="class140290.html#ref2_166274"><b>activate</b></a> , <a href="class140546.html#ref2_167810"><b>autoDisable</b></a> , <a href="class140290.html#ref2_167042"><b>autoDisable</b></a> , <a href="class140546.html#ref2_167426"><b>batch</b></a> , <a href="class140290.html#ref2_166530"><b>batch</b></a> , <a href="class140546.html#ref2_167554"><b>flush</b></a> , <a href="class140290.html#ref2_166658"><b>flush</b></a> , <a href="class140546.html#ref2_167682"><b>getSensor</b></a> , <a href="class140290.html#ref2_166786"><b>getSensor</b></a> , <a href="class140290.html#ref2_166914"><b>isVirtual</b></a> , <a href="class140290.html#ref2_166146"><b>process</b></a> , <a href="class140290.html#ref2_166402"><b>setDelay</b></a> </p>
+</body>
+</html>

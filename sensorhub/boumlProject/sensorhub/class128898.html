@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class JSONArray</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class JSONArray</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_128898"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct JSONArray : public <a href="class128642.html#ref4_128642"><b>JSONBase</b></a>&lt;size_t&gt; </li><li>Java : package class JSONArray extends <a href="class128642.html#ref4_128642"><b>JSONBase</b></a>&lt;size_t&gt; </li></ul><p>Artifact : <a href="index.html#ref8_128130"><b>JSONObject</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_135298"></a>
+<table><tr><td><div class="element">Operation <b>JSONArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + JSONArray() : </li><li>C++ : public: JSONArray()</li><li>Java : public JSONArray() </li></ul><a name="ref2_135426"></a>
+<table><tr><td><div class="element">Operation <b>isObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isObject() : bool</li><li>C++ : public: virtual bool isObject() const</li><li>Java : public boolean isObject()</li></ul><a name="ref2_135554"></a>
+<table><tr><td><div class="element">Operation <b>size</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + size() : size_t</li><li>C++ : public: size_t size() const</li><li>Java : public size_t size()</li></ul><a name="ref2_135682"></a>
+<table><tr><td><div class="element">Operation <b>addValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addValue(in value : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : void</li><li>C++ : public: void addValue(const <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> &amp; value)</li><li>Java : public void addValue()</li></ul><a name="ref2_135810"></a>
+<table><tr><td><div class="element">Operation <b>addInt32</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addInt32(in in : int32_t) : void</li><li>C++ : public: inline void addInt32(int32_t in)</li><li>Java : public void addInt32()</li></ul><a name="ref2_135938"></a>
+<table><tr><td><div class="element">Operation <b>addFloat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addFloat(in in : float) : void</li><li>C++ : public: inline void addFloat(float in)</li><li>Java : public void addFloat()</li></ul><a name="ref2_136066"></a>
+<table><tr><td><div class="element">Operation <b>addString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addString(in in : AString) : void</li><li>C++ : public: inline void addString(AString in)</li><li>Java : public void addString()</li></ul><a name="ref2_136194"></a>
+<table><tr><td><div class="element">Operation <b>addBoolean</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addBoolean(in in : bool) : void</li><li>C++ : public: inline void addBoolean(bool in)</li><li>Java : public void addBoolean()</li></ul><a name="ref2_136322"></a>
+<table><tr><td><div class="element">Operation <b>addObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addObject(in obj : sp&lt;JSONObject&gt;) : void</li><li>C++ : public: inline void addObject(const sp&lt;JSONObject&gt; &amp; obj)</li><li>Java : public void addObject()</li></ul><a name="ref2_136450"></a>
+<table><tr><td><div class="element">Operation <b>addArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addArray(in obj : sp&lt;JSONArray&gt;) : void</li><li>C++ : public: inline void addArray(const sp&lt;JSONArray&gt; &amp; obj)</li><li>Java : public void addArray()</li></ul><a name="ref2_136578"></a>
+<table><tr><td><div class="element">Operation <b>~JSONArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # ~JSONArray() : </li><li>C++ : protected: virtual ~JSONArray()</li></ul><a name="ref2_136706"></a>
+<table><tr><td><div class="element">Operation <b>getValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # getValue(in key : size_t, inout value : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : bool</li><li>C++ : protected: virtual bool getValue(size_t key, <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> * value) const</li><li>Java : protected boolean getValue()</li></ul><a name="ref2_136834"></a>
+<table><tr><td><div class="element">Operation <b>internalToString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # internalToString(in depth : size_t) : AString</li><li>C++ : protected: virtual AString internalToString(size_t depth) const</li><li>Java : protected AString internalToString()</li></ul><a name="ref0_128898"></a>
+<table><tr><td><div class="element">Relation <b>mValues (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mValues : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a></li><li>C++ : private: Vector&lt;<a href="class128130.html#ref4_128130"><b>JSONValue</b></a>&gt; mValues</li><li>Java : private <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> mValues</li></ul><p>Stereotype: Vector</p>
+</div>
+<p>All public operations : <a href="class128898.html#ref2_136450"><b>addArray</b></a> , <a href="class128898.html#ref2_136194"><b>addBoolean</b></a> , <a href="class128898.html#ref2_135938"><b>addFloat</b></a> , <a href="class128898.html#ref2_135810"><b>addInt32</b></a> , <a href="class128898.html#ref2_136322"><b>addObject</b></a> , <a href="class128898.html#ref2_136066"><b>addString</b></a> , <a href="class128898.html#ref2_135682"><b>addValue</b></a> , <a href="class128642.html#ref2_133378"><b>getArray</b></a> , <a href="class128642.html#ref2_133122"><b>getBoolean</b></a> , <a href="class128642.html#ref2_132610"><b>getFieldType</b></a> , <a href="class128642.html#ref2_132866"><b>getFloat</b></a> , <a href="class128642.html#ref2_132738"><b>getInt32</b></a> , <a href="class128642.html#ref2_133250"><b>getObject</b></a> , <a href="class128642.html#ref2_132994"><b>getString</b></a> , <a href="class128898.html#ref2_135426"><b>isObject</b></a> , <a href="class128386.html#ref2_131970"><b>isObject</b></a> , <a href="class128386.html#ref2_131714"><b>Parse</b></a> , <a href="class128898.html#ref2_135554"><b>size</b></a> , <a href="class128386.html#ref2_131842"><b>toString</b></a> </p>
+</body>
+</html>

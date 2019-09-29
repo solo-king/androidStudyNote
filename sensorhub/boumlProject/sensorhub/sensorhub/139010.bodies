@@ -1,0 +1,142 @@
+class SensorService::SensorDirectConnection
+!!!158850.cpp!!!	getHalChannelHandle() : int32_t
+    return mHalChannelHandle;
+!!!158978.cpp!!!	isEquivalent(in mem : sensors_direct_mem_t) : bool
+    bool ret = false;
+
+    if (mMem.type == mem->type) {
+        switch (mMem.type) {
+            case SENSOR_DIRECT_MEM_TYPE_ASHMEM: {
+                // there is no known method to test if two ashmem fds are equivalent besides
+                // trivially comparing the fd values (ino number from fstat() are always the
+                // same, pointing to "/dev/ashmem").
+                int fd1 = mMem.handle->data[0];
+                int fd2 = mem->handle->data[0];
+                ret = (fd1 == fd2);
+                break;
+            }
+            case SENSOR_DIRECT_MEM_TYPE_GRALLOC:
+                // there is no known method to test if two gralloc handle are equivalent
+                ret = false;
+                break;
+            default:
+                // should never happen
+                ALOGE("Unexpected mem type %d", mMem.type);
+                ret = true;
+                break;
+        }
+    }
+    return ret;
+!!!159106.cpp!!!	stopAll(in backupRecord : bool = false) : void
+
+    struct sensors_direct_cfg_t config = {
+        .rate_level = SENSOR_DIRECT_RATE_STOP
+    };
+
+    Mutex::Autolock _l(mConnectionLock);
+    SensorDevice& dev(SensorDevice::getInstance());
+    for (auto &i : mActivated) {
+        dev.configureDirectChannel(i.first, getHalChannelHandle(), &config);
+    }
+
+    if (backupRecord && mActivatedBackup.empty()) {
+        mActivatedBackup = mActivated;
+    }
+    mActivated.clear();
+!!!159234.cpp!!!	recoverAll() : void
+    stopAll(false);
+
+    Mutex::Autolock _l(mConnectionLock);
+    SensorDevice& dev(SensorDevice::getInstance());
+
+    // recover list of report from backup
+    mActivated = mActivatedBackup;
+    mActivatedBackup.clear();
+
+    // re-enable them
+    for (auto &i : mActivated) {
+        struct sensors_direct_cfg_t config = {
+            .rate_level = i.second
+        };
+        dev.configureDirectChannel(i.first, getHalChannelHandle(), &config);
+    }
+!!!159490.cpp!!!	getSensorChannel() : sp<BitTube>
+    return nullptr;
+!!!159618.cpp!!!	enableDisable(in handle : int, in enabled : bool, in samplingPeriodNs : nsecs_t, in maxBatchReportLatencyNs : nsecs_t, in reservedFlags : int) : status_t
+    // SensorDirectConnection does not support enableDisable, parameters not used
+    UNUSED(handle);
+    UNUSED(enabled);
+    UNUSED(samplingPeriodNs);
+    UNUSED(maxBatchReportLatencyNs);
+    UNUSED(reservedFlags);
+    return INVALID_OPERATION;
+!!!159746.cpp!!!	setEventRate(in handle : int, in samplingPeriodNs : nsecs_t) : status_t
+    // SensorDirectConnection does not support setEventRate, parameters not used
+    UNUSED(handle);
+    UNUSED(samplingPeriodNs);
+    return INVALID_OPERATION;
+!!!159874.cpp!!!	flush() : status_t
+    // SensorDirectConnection does not support flush
+    return INVALID_OPERATION;
+!!!160002.cpp!!!	configureChannel(in handle : int, in rateLevel : int) : int32_t
+
+    if (handle == -1 && rateLevel == SENSOR_DIRECT_RATE_STOP) {
+        stopAll();
+        return NO_ERROR;
+    }
+
+    if (mService->isOperationRestricted(mOpPackageName)) {
+        return PERMISSION_DENIED;
+    }
+
+    sp<SensorInterface> si = mService->getSensorInterfaceFromHandle(handle);
+    if (si == nullptr) {
+        return NAME_NOT_FOUND;
+    }
+
+    const Sensor& s = si->getSensor();
+    if (!SensorService::canAccessSensor(s, "config direct channel", mOpPackageName)) {
+        return PERMISSION_DENIED;
+    }
+
+    if (s.getHighestDirectReportRateLevel() == 0
+            || rateLevel > s.getHighestDirectReportRateLevel()
+            || !s.isDirectChannelTypeSupported(mMem.type)) {
+        return INVALID_OPERATION;
+    }
+
+    struct sensors_direct_cfg_t config = {
+        .rate_level = rateLevel
+    };
+
+    Mutex::Autolock _l(mConnectionLock);
+    SensorDevice& dev(SensorDevice::getInstance());
+    int ret = dev.configureDirectChannel(handle, getHalChannelHandle(), &config);
+
+    if (rateLevel == SENSOR_DIRECT_RATE_STOP) {
+        if (ret == NO_ERROR) {
+            mActivated.erase(handle);
+        } else if (ret > 0) {
+            ret = UNKNOWN_ERROR;
+        }
+    } else {
+        if (ret > 0) {
+            mActivated[handle] = rateLevel;
+        }
+    }
+
+    return ret;
+!!!160130.cpp!!!	destroy() : void
+    Mutex::Autolock _l(mDestroyLock);
+    // destroy once only
+    if (mDestroyed) {
+        return;
+    }
+
+    stopAll();
+    mService->cleanupConnection(this);
+    if (mMem.handle != nullptr) {
+        native_handle_close(mMem.handle);
+        native_handle_delete(const_cast<struct native_handle*>(mMem.handle));
+    }
+    mDestroyed = true;

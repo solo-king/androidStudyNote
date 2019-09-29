@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class SensorService::SensorDirectConnection</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class SensorService::SensorDirectConnection</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_139010"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class SensorService::SensorDirectConnection : public <a href="class139138.html#ref4_139138"><b>typedef16</b></a> </li><li>Java : package class SensorService::SensorDirectConnection extends <a href="class139138.html#ref4_139138"><b>typedef16</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_131586"><b>SensorDirectConnection</b></a></p>
+<div class="sub">
+<a name="ref2_158722"></a>
+<table><tr><td><div class="element">Operation <b>getUid</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getUid() : uid_t</li><li>C++ : public: inline uid_t getUid() const</li><li>Java : public uid_t getUid()</li></ul><a name="ref2_158850"></a>
+<table><tr><td><div class="element">Operation <b>getHalChannelHandle</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getHalChannelHandle() : int32_t</li><li>C++ : public: int32_t getHalChannelHandle() const</li><li>Java : public int32_t getHalChannelHandle()</li></ul><a name="ref2_158978"></a>
+<table><tr><td><div class="element">Operation <b>isEquivalent</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isEquivalent(in mem : sensors_direct_mem_t) : bool</li><li>C++ : public: bool isEquivalent(const sensors_direct_mem_t * mem) const</li><li>Java : public boolean isEquivalent()</li></ul><a name="ref2_159106"></a>
+<table><tr><td><div class="element">Operation <b>stopAll</b></div></td></tr></table><p>stop all active sensor report. if backupRecord is set to false,<br /> those report can be recovered by recoverAll<br /> called by SensorService when enter restricted mode<br /></p><p>Declaration :</p><ul><li>Uml : + stopAll(in backupRecord : bool = false) : void</li><li>C++ : public: void stopAll(bool backupRecord = false)</li><li>Java : public void stopAll()</li></ul><a name="ref2_159234"></a>
+<table><tr><td><div class="element">Operation <b>recoverAll</b></div></td></tr></table><p>recover sensor reports previously stopped by stopAll(true)<br /> called by SensorService when return to NORMAL mode.<br /></p><p>Declaration :</p><ul><li>Uml : + recoverAll() : void</li><li>C++ : public: void recoverAll()</li><li>Java : public void recoverAll()</li></ul><a name="ref2_159362"></a>
+<table><tr><td><div class="element">Operation <b>onFirstRef</b></div></td></tr></table><p>ISensorEventConnection functions<br /></p><p>Declaration :</p><ul><li>Uml : # onFirstRef() : void</li><li>C++ : protected: virtual void onFirstRef()</li><li>Java : protected void onFirstRef()</li></ul><a name="ref2_159490"></a>
+<table><tr><td><div class="element">Operation <b>getSensorChannel</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # getSensorChannel() : sp&lt;BitTube&gt;</li><li>C++ : protected: virtual sp&lt;BitTube&gt; getSensorChannel() const</li><li>Java : protected sp&lt;BitTube&gt; getSensorChannel()</li></ul><a name="ref2_159618"></a>
+<table><tr><td><div class="element">Operation <b>enableDisable</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # enableDisable(in handle : int, in enabled : bool, in samplingPeriodNs : nsecs_t, in maxBatchReportLatencyNs : nsecs_t, in reservedFlags : int) : status_t</li><li>C++ : protected: virtual status_t enableDisable(int handle, bool enabled, nsecs_t samplingPeriodNs, nsecs_t maxBatchReportLatencyNs, int reservedFlags)</li><li>Java : protected status_t enableDisable()</li></ul><a name="ref2_159746"></a>
+<table><tr><td><div class="element">Operation <b>setEventRate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # setEventRate(in handle : int, in samplingPeriodNs : nsecs_t) : status_t</li><li>C++ : protected: virtual status_t setEventRate(int handle, nsecs_t samplingPeriodNs)</li><li>Java : protected status_t setEventRate()</li></ul><a name="ref2_159874"></a>
+<table><tr><td><div class="element">Operation <b>flush</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # flush() : status_t</li><li>C++ : protected: virtual status_t flush()</li><li>Java : protected status_t flush()</li></ul><a name="ref2_160002"></a>
+<table><tr><td><div class="element">Operation <b>configureChannel</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # configureChannel(in handle : int, in rateLevel : int) : int32_t</li><li>C++ : protected: virtual int32_t configureChannel(int handle, int rateLevel)</li><li>Java : protected int32_t configureChannel()</li></ul><a name="ref2_160130"></a>
+<table><tr><td><div class="element">Operation <b>destroy</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # destroy() : void</li><li>C++ : protected: virtual void destroy()</li><li>Java : protected void destroy()</li></ul><a name="ref0_135682"></a>
+<table><tr><td><div class="element">Relation <b>mService (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mService : <a href="class139266.html#ref4_139266"><b>SensorService</b></a>, read only</li><li>C++ : private: const sp&lt;<a href="class139266.html#ref4_139266"><b>SensorService</b></a>&gt; mService</li><li>Java : private final <a href="class139266.html#ref4_139266"><b>SensorService</b></a> mService</li></ul><p>Stereotype: sp</p>
+<a name="ref1_139010"></a>
+<table><tr><td><div class="element">Attribute <b>mUid</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mUid : uid_t, read only</li><li>C++ : private: const uid_t mUid</li><li>Java : private final uid_t mUid</li></ul><a name="ref1_139138"></a>
+<table><tr><td><div class="element">Attribute <b>mMem</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mMem : sensors_direct_mem_t, read only</li><li>C++ : private: const sensors_direct_mem_t mMem</li><li>Java : private final sensors_direct_mem_t mMem</li></ul><a name="ref1_139266"></a>
+<table><tr><td><div class="element">Attribute <b>mHalChannelHandle</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mHalChannelHandle : int32_t, read only</li><li>C++ : private: const int32_t mHalChannelHandle</li><li>Java : private final int32_t mHalChannelHandle</li></ul><a name="ref1_139394"></a>
+<table><tr><td><div class="element">Attribute <b>mOpPackageName</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mOpPackageName : String16, read only</li><li>C++ : private: const String16 mOpPackageName</li><li>Java : private final String16 mOpPackageName</li></ul><a name="ref1_139522"></a>
+<table><tr><td><div class="element">Attribute <b>mConnectionLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mConnectionLock : Mutex</li><li>C++ : private: mutable Mutex mConnectionLock</li><li>Java : private Mutex mConnectionLock</li></ul><a name="ref1_139650"></a>
+<table><tr><td><div class="element">Attribute <b>mActivated</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mActivated : int, int</li><li>C++ : private: std::unordered_map&lt;int, int&gt; mActivated</li><li>Java : private int, int mActivated</li></ul><p>Stereotype: std::unordered_map</p>
+<a name="ref1_139778"></a>
+<table><tr><td><div class="element">Attribute <b>mActivatedBackup</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mActivatedBackup : int, int</li><li>C++ : private: std::unordered_map&lt;int, int&gt; mActivatedBackup</li><li>Java : private int, int mActivatedBackup</li></ul><p>Stereotype: std::unordered_map</p>
+<a name="ref1_139906"></a>
+<table><tr><td><div class="element">Attribute <b>mDestroyLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mDestroyLock : Mutex</li><li>C++ : private: mutable Mutex mDestroyLock</li><li>Java : private Mutex mDestroyLock</li></ul><a name="ref1_140034"></a>
+<table><tr><td><div class="element">Attribute <b>mDestroyed</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mDestroyed : bool</li><li>C++ : private: bool mDestroyed</li><li>Java : private boolean mDestroyed</li></ul></div>
+<p>All public operations : <a href="class139010.html#ref2_158850"><b>getHalChannelHandle</b></a> , <a href="class139010.html#ref2_158722"><b>getUid</b></a> , <a href="class139010.html#ref2_158978"><b>isEquivalent</b></a> , <a href="class139010.html#ref2_159234"><b>recoverAll</b></a> , <a href="class139010.html#ref2_159106"><b>stopAll</b></a> </p>
+</body>
+</html>

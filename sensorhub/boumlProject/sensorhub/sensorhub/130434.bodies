@@ -1,0 +1,120 @@
+class ASensorManager
+!!!139906.cpp!!!	getInstance() : ASensorManager
+    Mutex::Autolock autoLock(gLock);
+    if (sInstance == NULL) {
+        sInstance = new ASensorManager;
+        if (sInstance->initCheck() != OK) {
+            delete sInstance;
+            sInstance = NULL;
+        }
+    }
+    return sInstance;
+!!!140034.cpp!!!	ASensorManager()
+    mManager = ISensorManager::getService();
+    if (mManager != NULL) {
+        mDeathRecipient = new SensorDeathRecipient();
+        Return<bool> linked = mManager->linkToDeath(mDeathRecipient, /*cookie*/ 0);
+        if (!linked.isOk()) {
+            LOG(ERROR) << "Transaction error in linking to sensor service death: " <<
+                    linked.description().c_str();
+        } else if (!linked) {
+            LOG(WARNING) << "Unable to link to sensor service death notifications";
+        } else {
+            LOG(DEBUG) << "Link to sensor service death notification successful";
+            mInitCheck = OK;
+        }
+    }
+!!!140162.cpp!!!	initCheck() : android::status_t
+    return mInitCheck;
+!!!140290.cpp!!!	getSensorList(inout out : ASensorList) : int
+    LOG(VERBOSE) << "ASensorManager::getSensorList";
+
+    Mutex::Autolock autoLock(mLock);
+
+    if (mSensorList == NULL) {
+        Return<void> ret =
+            mManager->getSensorList([&](const auto &list, auto result) {
+                if (result != Result::OK) {
+                    return;
+                }
+
+                mSensors = list;
+        });
+
+        (void)ret.isOk();
+
+        mSensorList.reset(new ASensorRef[mSensors.size()]);
+        for (size_t i = 0; i < mSensors.size(); ++i) {
+            mSensorList.get()[i] =
+                reinterpret_cast<ASensorRef>(&mSensors[i]);
+        }
+    }
+
+    if (out) {
+        *out = reinterpret_cast<ASensorList>(mSensorList.get());
+    }
+
+    return mSensors.size();
+!!!140418.cpp!!!	getDefaultSensor(in type : int) : ASensorRef
+    (void)getSensorList(NULL /* list */);
+
+    ASensorRef defaultSensor = NULL;
+
+    Return<void> ret = mManager->getDefaultSensor(
+            static_cast<SensorType>(type),
+            [&](const auto &sensor, auto result) {
+                if (result != Result::OK) {
+                    return;
+                }
+
+                for (size_t i = 0; i < mSensors.size(); ++i) {
+                    if (sensor == mSensors[i]) {
+                        defaultSensor =
+                             reinterpret_cast<ASensorRef>(&mSensors[i]);
+
+                        break;
+                    }
+                }
+            });
+
+    (void)ret.isOk();
+
+    return defaultSensor;
+!!!140546.cpp!!!	getDefaultSensorEx(in type : int, in wakeup : bool) : ASensorRef
+    // XXX ISensorManager's getDefaultSensorEx() lacks a "wakeup" parameter.
+    return NULL;
+!!!140674.cpp!!!	createEventQueue(inout looper : ALooper, in ident : int, in callback : ALooper_callbackFunc, inout data : void) : ASensorEventQueue
+    LOG(VERBOSE) << "ASensorManager::createEventQueue";
+
+    sp<ASensorEventQueue> queue =
+        new ASensorEventQueue(looper, callback, data);
+
+    ::android::hardware::setMinSchedulerPolicy(queue, SCHED_FIFO, 98);
+    Result result;
+    Return<void> ret =
+        mManager->createEventQueue(
+                queue, [&](const sp<IEventQueue> &queueImpl, auto tmpResult) {
+                    result = tmpResult;
+                    if (result != Result::OK) {
+                        return;
+                    }
+
+                    queue->setImpl(queueImpl);
+                });
+
+    if (!ret.isOk() || result != Result::OK) {
+        LOG(ERROR) << "FAILED to create event queue";
+        return NULL;
+    }
+
+    queue->incStrong(NULL /* id */);
+
+    LOG(VERBOSE) << "Returning event queue " << queue.get();
+    return queue.get();
+!!!140802.cpp!!!	destroyEventQueue(inout queue : ASensorEventQueue) : void
+    LOG(VERBOSE) << "ASensorManager::destroyEventQueue(" << queue << ")";
+
+    queue->invalidate();
+
+    queue->decStrong(NULL /* id */);
+    queue = NULL;

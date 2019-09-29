@@ -1,0 +1,35 @@
+class SensorService::SensorRecord
+!!!171650.cpp!!!	addConnection(in connection : sp<const SensorEventConnection>) : bool
+    if (mConnections.indexOf(connection) < 0) {
+        mConnections.add(connection);
+        return true;
+    }
+    return false;
+!!!171778.cpp!!!	removeConnection(in connection : wp<const SensorEventConnection>) : bool
+    ssize_t index = mConnections.indexOf(connection);
+    if (index >= 0) {
+        mConnections.removeItemsAt(index, 1);
+    }
+    // Remove this connections from the queue of flush() calls made on this sensor.
+    for (Vector< wp<const SensorEventConnection> >::iterator it = mPendingFlushConnections.begin();
+            it != mPendingFlushConnections.end(); ) {
+        if (*it == connection) {
+            it = mPendingFlushConnections.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    return mConnections.size() ? false : true;
+!!!172034.cpp!!!	addPendingFlushConnection(in connection : sp<const SensorEventConnection>) : void
+    mPendingFlushConnections.add(connection);
+!!!172162.cpp!!!	removeFirstPendingFlushConnection() : void
+    if (mPendingFlushConnections.size() > 0) {
+        mPendingFlushConnections.removeAt(0);
+    }
+!!!172290.cpp!!!	getFirstPendingFlushConnection() : wp<const SensorEventConnection>
+    if (mPendingFlushConnections.size() > 0) {
+        return mPendingFlushConnections[0];
+    }
+    return NULL;
+!!!172418.cpp!!!	clearAllPendingFlushConnections() : void
+    mPendingFlushConnections.clear();

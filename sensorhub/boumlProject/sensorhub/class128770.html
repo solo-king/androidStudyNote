@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class JSONObject</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class JSONObject</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_128770"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct JSONObject : public <a href="class128642.html#ref4_128642"><b>JSONBase</b></a>&lt;const char *&gt; </li><li>Java : package class JSONObject extends <a href="class128642.html#ref4_128642"><b>JSONBase</b></a>&lt;const char *&gt; </li></ul><p>Artifact : <a href="index.html#ref8_128130"><b>JSONObject</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_133762"></a>
+<table><tr><td><div class="element">Operation <b>JSONObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + JSONObject() : </li><li>C++ : public: JSONObject()</li><li>Java : public JSONObject() </li></ul><a name="ref2_133890"></a>
+<table><tr><td><div class="element">Operation <b>isObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isObject() : bool</li><li>C++ : public: virtual bool isObject() const</li><li>Java : public boolean isObject()</li></ul><a name="ref2_134018"></a>
+<table><tr><td><div class="element">Operation <b>setValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setValue(in key : char, in value : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : void</li><li>C++ : public: void setValue(const char * key, const <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> &amp; value)</li><li>Java : public void setValue()</li></ul><a name="ref2_134146"></a>
+<table><tr><td><div class="element">Operation <b>setInt32</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setInt32(in key : char, in in : int32_t) : void</li><li>C++ : public: inline void setInt32(const char * key, int32_t in)</li><li>Java : public void setInt32()</li></ul><a name="ref2_134274"></a>
+<table><tr><td><div class="element">Operation <b>setFloat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setFloat(in key : char, in in : float) : void</li><li>C++ : public: inline void setFloat(const char * key, float in)</li><li>Java : public void setFloat()</li></ul><a name="ref2_134402"></a>
+<table><tr><td><div class="element">Operation <b>setString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setString(in key : char, in in : AString) : void</li><li>C++ : public: inline void setString(const char * key, AString in)</li><li>Java : public void setString()</li></ul><a name="ref2_134530"></a>
+<table><tr><td><div class="element">Operation <b>setBoolean</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setBoolean(in key : char, in in : bool) : void</li><li>C++ : public: inline void setBoolean(const char * key, bool in)</li><li>Java : public void setBoolean()</li></ul><a name="ref2_134658"></a>
+<table><tr><td><div class="element">Operation <b>setObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setObject(in key : char, in obj : sp&lt;JSONObject&gt;) : void</li><li>C++ : public: inline void setObject(const char * key, const sp&lt;JSONObject&gt; &amp; obj)</li><li>Java : public void setObject()</li></ul><a name="ref2_134786"></a>
+<table><tr><td><div class="element">Operation <b>setArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setArray(in key : char, in obj : sp&lt;JSONArray&gt;) : void</li><li>C++ : public: inline void setArray(const char * key, const sp&lt;JSONArray&gt; &amp; obj)</li><li>Java : public void setArray()</li></ul><a name="ref2_134914"></a>
+<table><tr><td><div class="element">Operation <b>~JSONObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # ~JSONObject() : </li><li>C++ : protected: virtual ~JSONObject()</li></ul><a name="ref2_135042"></a>
+<table><tr><td><div class="element">Operation <b>getValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # getValue(in key : char, inout value : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : bool</li><li>C++ : protected: virtual bool getValue(const char * key, <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> * value) const</li><li>Java : protected boolean getValue()</li></ul><a name="ref2_135170"></a>
+<table><tr><td><div class="element">Operation <b>internalToString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # internalToString(in depth : size_t) : AString</li><li>C++ : protected: virtual AString internalToString(size_t depth) const</li><li>Java : protected AString internalToString()</li></ul><a name="ref0_128642"></a>
+<table><tr><td><div class="element">Relation <b>mValues (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mValues : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a></li><li>C++ : private: KeyedVector&lt;AString,<a href="class128130.html#ref4_128130"><b>JSONValue</b></a>&gt; mValues</li><li>Java : private <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> mValues</li></ul><p>Stereotype: KeyedVector</p>
+</div>
+<p>All public operations : <a href="class128642.html#ref2_133378"><b>getArray</b></a> , <a href="class128642.html#ref2_133122"><b>getBoolean</b></a> , <a href="class128642.html#ref2_132610"><b>getFieldType</b></a> , <a href="class128642.html#ref2_132866"><b>getFloat</b></a> , <a href="class128642.html#ref2_132738"><b>getInt32</b></a> , <a href="class128642.html#ref2_133250"><b>getObject</b></a> , <a href="class128642.html#ref2_132994"><b>getString</b></a> , <a href="class128386.html#ref2_131970"><b>isObject</b></a> , <a href="class128770.html#ref2_133890"><b>isObject</b></a> , <a href="class128386.html#ref2_131714"><b>Parse</b></a> , <a href="class128770.html#ref2_134786"><b>setArray</b></a> , <a href="class128770.html#ref2_134530"><b>setBoolean</b></a> , <a href="class128770.html#ref2_134274"><b>setFloat</b></a> , <a href="class128770.html#ref2_134146"><b>setInt32</b></a> , <a href="class128770.html#ref2_134658"><b>setObject</b></a> , <a href="class128770.html#ref2_134402"><b>setString</b></a> , <a href="class128770.html#ref2_134018"><b>setValue</b></a> , <a href="class128386.html#ref2_131842"><b>toString</b></a> </p>
+</body>
+</html>

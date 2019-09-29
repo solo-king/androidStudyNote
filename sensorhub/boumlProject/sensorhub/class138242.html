@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class HidlServiceRegistrationWaiter</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class HidlServiceRegistrationWaiter</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_138242"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class HidlServiceRegistrationWaiter : public <a href="class138882.html#ref4_138882"><b>typedef15</b></a> </li><li>Java : package class HidlServiceRegistrationWaiter extends <a href="class138882.html#ref4_138882"><b>typedef15</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_131458"><b>SensorDeviceUtils</b></a></p>
+<div class="sub">
+<a name="ref2_158082"></a>
+<table><tr><td><div class="element">Operation <b>HidlServiceRegistrationWaiter</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + HidlServiceRegistrationWaiter() : </li><li>C++ : public: HidlServiceRegistrationWaiter()</li><li>Java : public HidlServiceRegistrationWaiter() </li></ul><a name="ref2_158210"></a>
+<table><tr><td><div class="element">Operation <b>onRegistration</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + onRegistration(in fqName : hidl_string, in name : hidl_string, in preexisting : bool) : Return&lt;void&gt;</li><li>C++ : public: Return&lt;void&gt; onRegistration(const hidl_string &amp; fqName, const hidl_string &amp; name, bool preexisting) override</li><li>Java : public Return&lt;void&gt; onRegistration()</li></ul><a name="ref2_158338"></a>
+<table><tr><td><div class="element">Operation <b>reset</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + reset() : void</li><li>C++ : public: void reset()</li><li>Java : public void reset()</li></ul><a name="ref2_158466"></a>
+<table><tr><td><div class="element">Operation <b>wait</b></div></td></tr></table><p>Wait for service restart<br /><br />@return true if service is restart since last reset(); false otherwise.<br /><br /></p><p>Declaration :</p><ul><li>Uml : + wait() : bool</li><li>C++ : public: bool wait()</li><li>Java : public boolean wait()</li></ul><a name="ref2_158594"></a>
+<table><tr><td><div class="element">Operation <b>onFirstRef</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # onFirstRef() : void</li><li>C++ : protected: void onFirstRef() override</li><li>Java : protected void onFirstRef()</li></ul><a name="ref1_138498"></a>
+<table><tr><td><div class="element">Attribute <b>mRegistered</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mRegistered : bool</li><li>C++ : private: bool mRegistered</li><li>Java : private boolean mRegistered</li></ul><a name="ref1_138626"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : std::mutex</li><li>C++ : private: std::mutex mLock</li><li>Java : private std::mutex mLock</li></ul><a name="ref1_138754"></a>
+<table><tr><td><div class="element">Attribute <b>mCondition</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mCondition : std::condition_variable</li><li>C++ : private: std::condition_variable mCondition</li><li>Java : private std::condition_variable mCondition</li></ul><a name="ref1_138882"></a>
+<table><tr><td><div class="element">Attribute <b>mRestartObserved</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mRestartObserved : bool</li><li>C++ : private: bool mRestartObserved</li><li>Java : private boolean mRestartObserved</li></ul></div>
+<p>All public operations : <a href="class138242.html#ref2_158210"><b>onRegistration</b></a> , <a href="class138242.html#ref2_158338"><b>reset</b></a> , <a href="class138242.html#ref2_158466"><b>wait</b></a> </p>
+</body>
+</html>

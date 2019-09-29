@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class RecentEventLogger</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class RecentEventLogger</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_136706"></a>
+<p>A circular buffer that record the last N events of a sensor type for debugging. The size of this<br /> buffer depends on sensor type and is controlled by logSizeBySensorType(). The last N events<br /> generated from the sensor are stored in this buffer.  The buffer is NOT cleared when the sensor<br /> unregisters and as a result very old data in the dumpsys output can be seen, which is an intended<br /> behavior.<br /></p>
+<p>Declaration :</p><ul>
+<li>C++ : class RecentEventLogger : public <a href="class136834.html#ref4_136834"><b>Dumpable</b></a> </li><li>Java : package class RecentEventLogger extends <a href="class136834.html#ref4_136834"><b>Dumpable</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_131074"><b>RecentEventLogger</b></a></p>
+<div class="sub">
+<a name="ref2_150274"></a>
+<table><tr><td><div class="element">Operation <b>RecentEventLogger</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + RecentEventLogger(in sensorType : int) : </li><li>C++ : public: explicit RecentEventLogger(int sensorType)</li><li>Java : public RecentEventLogger() </li></ul><a name="ref2_150402"></a>
+<table><tr><td><div class="element">Operation <b>addEvent</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addEvent(in event : sensors_event_t) : void</li><li>C++ : public: void addEvent(const sensors_event_t &amp; event)</li><li>Java : public void addEvent()</li></ul><a name="ref2_150530"></a>
+<table><tr><td><div class="element">Operation <b>populateLastEvent</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + populateLastEvent(inout event : sensors_event_t) : bool</li><li>C++ : public: bool populateLastEvent(sensors_event_t * event) const</li><li>Java : public boolean populateLastEvent()</li></ul><a name="ref2_150658"></a>
+<table><tr><td><div class="element">Operation <b>isEmpty</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isEmpty() : bool</li><li>C++ : public: bool isEmpty() const</li><li>Java : public boolean isEmpty()</li></ul><a name="ref2_150786"></a>
+<table><tr><td><div class="element">Operation <b>~RecentEventLogger</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ~RecentEventLogger() : </li><li>C++ : public: inline virtual ~RecentEventLogger()</li></ul><a name="ref2_150914"></a>
+<table><tr><td><div class="element">Operation <b>dump</b></div></td></tr></table><p>Dumpable interface<br /></p><p>Declaration :</p><ul><li>Uml : + dump() : std::string</li><li>C++ : public: virtual std::string dump() const override</li><li>Java : public std::string dump()</li></ul><a name="ref2_151042"></a>
+<table><tr><td><div class="element">Operation <b>setFormat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setFormat(in format : std::string) : void</li><li>C++ : public: virtual void setFormat(std::string format) override</li><li>Java : public void setFormat()</li></ul><table><tr><td><div class="element">Class <b><a href="class136962.html#ref4_136962"><b>SensorEventLog</b></a></b></div></td></tr></table>
+<a name="ref1_136322"></a>
+<table><tr><td><div class="element">Attribute <b>mSensorType</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : # mSensorType : int, read only</li><li>C++ : protected: const int mSensorType</li><li>Java : protected final int mSensorType</li></ul><a name="ref1_136450"></a>
+<table><tr><td><div class="element">Attribute <b>mEventSize</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : # mEventSize : size_t, read only</li><li>C++ : protected: const size_t mEventSize</li><li>Java : protected final size_t mEventSize</li></ul><a name="ref1_136578"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : # mLock : std::mutex</li><li>C++ : protected: mutable std::mutex mLock</li><li>Java : protected std::mutex mLock</li></ul><a name="ref0_133634"></a>
+<table><tr><td><div class="element">Relation <b>mRecentEvents (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # mRecentEvents : <a href="class136962.html#ref4_136962"><b>SensorEventLog</b></a></li><li>C++ : protected: RingBuffer&lt;<a href="class136962.html#ref4_136962"><b>SensorEventLog</b></a>&gt; mRecentEvents</li><li>Java : protected <a href="class136962.html#ref4_136962"><b>SensorEventLog</b></a> mRecentEvents</li></ul><p>Stereotype: RingBuffer</p>
+<a name="ref1_136706"></a>
+<table><tr><td><div class="element">Attribute <b>mMaskData</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : # mMaskData : bool</li><li>C++ : protected: bool mMaskData</li><li>Java : protected boolean mMaskData</li></ul><a name="ref2_151298"></a>
+<table><tr><td><div class="element">Operation <b>logSizeBySensorType</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, - logSizeBySensorType(in sensorType : int) : size_t</li><li>C++ : private: static size_t logSizeBySensorType(int sensorType)</li><li>Java : private static size_t logSizeBySensorType()</li></ul></div>
+<p>All public operations : <a href="class136706.html#ref2_150402"><b>addEvent</b></a> , <a href="class136834.html#ref2_181250"><b>dump</b></a> , <a href="class136706.html#ref2_150914"><b>dump</b></a> , <a href="class136706.html#ref2_150658"><b>isEmpty</b></a> , <a href="class136706.html#ref2_150530"><b>populateLastEvent</b></a> , <a href="class136834.html#ref2_181378"><b>setFormat</b></a> , <a href="class136706.html#ref2_151042"><b>setFormat</b></a> </p>
+</body>
+</html>

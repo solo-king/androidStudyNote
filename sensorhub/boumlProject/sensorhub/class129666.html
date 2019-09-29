@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class ASensorEventQueue</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class ASensorEventQueue</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_129666"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct ASensorEventQueue : public <a href="class129794.html#ref4_129794"><b>typedef2</b></a> </li><li>Java : package class ASensorEventQueue extends <a href="class129794.html#ref4_129794"><b>typedef2</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_128898"><b>ASensorEventQueue</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<table><tr><td><div class="element">Class <b><a href="class129922.html#ref4_129922"><b>Event</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130050.html#ref4_130050"><b>typedef3</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130178.html#ref4_130178"><b>IEventQueue</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130306.html#ref4_130306"><b>typedef4</b></a></b></div></td></tr></table>
+<a name="ref2_138498"></a>
+<table><tr><td><div class="element">Operation <b>ASensorEventQueue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ASensorEventQueue(inout looper : <a href="class129538.html#ref4_129538"><b>ALooper</b></a>, in callback : ALooper_callbackFunc, inout data : void) : </li><li>C++ : public: ASensorEventQueue(<a href="class129538.html#ref4_129538"><b>ALooper</b></a> * looper, ALooper_callbackFunc callback, void * data)</li><li>Java : public ASensorEventQueue() </li></ul><a name="ref2_138626"></a>
+<table><tr><td><div class="element">Operation <b>onEvent</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + onEvent(in event : <a href="class129922.html#ref4_129922"><b>Event</b></a>) : android::hardware::Return&lt;void&gt;</li><li>C++ : public: android::hardware::Return&lt;void&gt; onEvent(const <a href="class129922.html#ref4_129922"><b>Event</b></a> &amp; event) override</li><li>Java : public android::hardware::Return&lt;void&gt; onEvent()</li></ul><a name="ref2_138754"></a>
+<table><tr><td><div class="element">Operation <b>setImpl</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setImpl(in queueImpl : android::sp&lt;IEventQueue&gt;) : void</li><li>C++ : public: void setImpl(const android::sp&lt;IEventQueue&gt; &amp; queueImpl)</li><li>Java : public void setImpl()</li></ul><a name="ref2_138882"></a>
+<table><tr><td><div class="element">Operation <b>registerSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + registerSensor(in sensor : ASensorRef, in samplingPeriodUs : int32_t, in maxBatchReportLatencyUs : int64_t) : int</li><li>C++ : public: int registerSensor(ASensorRef sensor, int32_t samplingPeriodUs, int64_t maxBatchReportLatencyUs)</li><li>Java : public int registerSensor()</li></ul><a name="ref2_139010"></a>
+<table><tr><td><div class="element">Operation <b>enableSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + enableSensor(in sensor : ASensorRef) : int</li><li>C++ : public: int enableSensor(ASensorRef sensor)</li><li>Java : public int enableSensor()</li></ul><a name="ref2_139138"></a>
+<table><tr><td><div class="element">Operation <b>disableSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + disableSensor(in sensor : ASensorRef) : int</li><li>C++ : public: int disableSensor(ASensorRef sensor)</li><li>Java : public int disableSensor()</li></ul><a name="ref2_139266"></a>
+<table><tr><td><div class="element">Operation <b>setEventRate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setEventRate(in sensor : ASensorRef, in samplingPeriodUs : int32_t) : int</li><li>C++ : public: int setEventRate(ASensorRef sensor, int32_t samplingPeriodUs)</li><li>Java : public int setEventRate()</li></ul><a name="ref2_139394"></a>
+<table><tr><td><div class="element">Operation <b>getEvents</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getEvents(inout events : ASensorEvent, in count : size_t) : ssize_t</li><li>C++ : public: ssize_t getEvents(ASensorEvent * events, size_t count)</li><li>Java : public ssize_t getEvents()</li></ul><a name="ref2_139522"></a>
+<table><tr><td><div class="element">Operation <b>hasEvents</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + hasEvents() : int</li><li>C++ : public: int hasEvents() const</li><li>Java : public int hasEvents()</li></ul><a name="ref2_139650"></a>
+<table><tr><td><div class="element">Operation <b>dispatchCallback</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + dispatchCallback() : void</li><li>C++ : public: void dispatchCallback()</li><li>Java : public void dispatchCallback()</li></ul><a name="ref2_139778"></a>
+<table><tr><td><div class="element">Operation <b>invalidate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + invalidate() : void</li><li>C++ : public: void invalidate()</li><li>Java : public void invalidate()</li></ul><a name="ref0_129538"></a>
+<table><tr><td><div class="element">Relation <b>mLooper (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mLooper : <a href="class129538.html#ref4_129538"><b>ALooper</b></a></li><li>C++ : private: <a href="class129538.html#ref4_129538"><b>ALooper</b></a> * mLooper</li><li>Java : private <a href="class129538.html#ref4_129538"><b>ALooper</b></a> mLooper</li></ul><a name="ref1_131586"></a>
+<table><tr><td><div class="element">Attribute <b>mCallback</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mCallback : ALooper_callbackFunc</li><li>C++ : private: ALooper_callbackFunc mCallback</li><li>Java : private ALooper_callbackFunc mCallback</li></ul><a name="ref1_131714"></a>
+<table><tr><td><div class="element">Attribute <b>mData</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mData : void</li><li>C++ : private: void * mData</li><li>Java : private void mData</li></ul><a name="ref0_129666"></a>
+<table><tr><td><div class="element">Relation <b>mQueueImpl (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mQueueImpl : <a href="class130178.html#ref4_130178"><b>IEventQueue</b></a></li><li>C++ : private: android::sp&lt;<a href="class130178.html#ref4_130178"><b>IEventQueue</b></a>&gt; mQueueImpl</li><li>Java : private <a href="class130178.html#ref4_130178"><b>IEventQueue</b></a> mQueueImpl</li></ul><p>Stereotype: android::sp</p>
+<a name="ref1_131842"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : android::Mutex</li><li>C++ : private: android::Mutex mLock</li><li>Java : private android::Mutex mLock</li></ul><a name="ref1_131970"></a>
+<table><tr><td><div class="element">Attribute <b>mQueue</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mQueue : sensors_event_t</li><li>C++ : private: std::vector&lt;sensors_event_t&gt; mQueue</li><li>Java : private sensors_event_t mQueue</li></ul><p>Stereotype: std::vector</p>
+</div>
+<p>All public operations : <a href="class129666.html#ref2_139138"><b>disableSensor</b></a> , <a href="class129666.html#ref2_139650"><b>dispatchCallback</b></a> , <a href="class129666.html#ref2_139010"><b>enableSensor</b></a> , <a href="class129666.html#ref2_139394"><b>getEvents</b></a> , <a href="class129666.html#ref2_139522"><b>hasEvents</b></a> , <a href="class129666.html#ref2_139778"><b>invalidate</b></a> , <a href="class129666.html#ref2_138626"><b>onEvent</b></a> , <a href="class129666.html#ref2_138882"><b>registerSensor</b></a> , <a href="class129666.html#ref2_139266"><b>setEventRate</b></a> , <a href="class129666.html#ref2_138754"><b>setImpl</b></a> </p>
+</body>
+</html>

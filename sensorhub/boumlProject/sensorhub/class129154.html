@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class LockfreeBuffer</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class LockfreeBuffer</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_129154"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct LockfreeBuffer </li><li>Java : package class LockfreeBuffer </li></ul><p>Artifact : <a href="index.html#ref8_128258"><b>ring</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_137474"></a>
+<table><tr><td><div class="element">Operation <b>LockfreeBuffer</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + LockfreeBuffer(inout buf : void, in size : size_t) : </li><li>C++ : public: LockfreeBuffer(void * buf, size_t size)</li><li>Java : public LockfreeBuffer() </li></ul><a name="ref2_137602"></a>
+<table><tr><td><div class="element">Operation <b>~LockfreeBuffer</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ~LockfreeBuffer() : </li><li>C++ : public: ~LockfreeBuffer()</li></ul><a name="ref2_137730"></a>
+<table><tr><td><div class="element">Operation <b>write</b></div></td></tr></table><p>support single writer<br /></p><p>Declaration :</p><ul><li>Uml : + write(in ev : sensors_event_t, in size : size_t) : void</li><li>C++ : public: void write(const sensors_event_t * ev, size_t size)</li><li>Java : public void write()</li></ul><a name="ref1_130050"></a>
+<table><tr><td><div class="element">Attribute <b>mData</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mData : sensors_event_t</li><li>C++ : private: sensors_event_t * mData</li><li>Java : private sensors_event_t mData</li></ul><a name="ref1_130178"></a>
+<table><tr><td><div class="element">Attribute <b>mSize</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mSize : size_t</li><li>C++ : private: size_t mSize</li><li>Java : private size_t mSize</li></ul><a name="ref1_130306"></a>
+<table><tr><td><div class="element">Attribute <b>mWritePos</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mWritePos : size_t</li><li>C++ : private: size_t mWritePos</li><li>Java : private size_t mWritePos</li></ul><a name="ref1_130434"></a>
+<table><tr><td><div class="element">Attribute <b>mCounter</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mCounter : int32_t</li><li>C++ : private: int32_t mCounter</li><li>Java : private int32_t mCounter</li></ul></div>
+<p>All public operations : <a href="class129154.html#ref2_137730"><b>write</b></a> </p>
+</body>
+</html>

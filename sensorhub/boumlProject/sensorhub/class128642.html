@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class JSONBase</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class JSONBase</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_128642"></a>
+<p>Declaration :</p><ul>
+<li>C++ : template&lt;class KEY&gt; struct JSONBase : public <a href="class128386.html#ref4_128386"><b>JSONCompound</b></a> </li><li>Java : package abstract class JSONBase&lt;KEY&gt; extends <a href="class128386.html#ref4_128386"><b>JSONCompound</b></a> </li></ul><p>Directly inherited by : <a href="class128898.html#ref4_128898"><b>JSONArray</b></a> <a href="class128770.html#ref4_128770"><b>JSONObject</b></a> </p>
+<p>Artifact : <a href="index.html#ref8_128130"><b>JSONObject</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_132482"></a>
+<table><tr><td><div class="element">Operation <b>JSONBase</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + JSONBase() : </li><li>C++ : public: inline JSONBase()</li><li>Java : public JSONBase() </li></ul><a name="ref2_132610"></a>
+<table><tr><td><div class="element">Operation <b>getFieldType</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getFieldType(in key : KEY, inout type : <a href="class128258.html#ref4_128258"><b>FieldType</b></a>) : bool</li><li>C++ : public: inline bool getFieldType(KEY key, <a href="class128258.html#ref4_128258"><b>FieldType</b></a> * type) const</li><li>Java : public boolean getFieldType()</li></ul><a name="ref2_132738"></a>
+<table><tr><td><div class="element">Operation <b>getInt32</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getInt32(in key : KEY, inout out : int32_t) : bool</li><li>C++ : public: inline bool getInt32(KEY key, int32_t * out) const</li><li>Java : public boolean getInt32()</li></ul><a name="ref2_132866"></a>
+<table><tr><td><div class="element">Operation <b>getFloat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getFloat(in key : KEY, inout out : float) : bool</li><li>C++ : public: inline bool getFloat(KEY key, float * out) const</li><li>Java : public boolean getFloat()</li></ul><a name="ref2_132994"></a>
+<table><tr><td><div class="element">Operation <b>getString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getString(in key : KEY, inout out : AString) : bool</li><li>C++ : public: inline bool getString(KEY key, AString * out) const</li><li>Java : public boolean getString()</li></ul><a name="ref2_133122"></a>
+<table><tr><td><div class="element">Operation <b>getBoolean</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getBoolean(in key : KEY, inout out : bool) : bool</li><li>C++ : public: inline bool getBoolean(KEY key, bool * out) const</li><li>Java : public boolean getBoolean()</li></ul><a name="ref2_133250"></a>
+<table><tr><td><div class="element">Operation <b>getObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getObject(in key : KEY, inout obj : sp&lt;JSONObject&gt;) : bool</li><li>C++ : public: inline bool getObject(KEY key, sp&lt;JSONObject&gt; * obj) const</li><li>Java : public boolean getObject()</li></ul><a name="ref2_133378"></a>
+<table><tr><td><div class="element">Operation <b>getArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getArray(in key : KEY, inout obj : sp&lt;JSONArray&gt;) : bool</li><li>C++ : public: inline bool getArray(KEY key, sp&lt;JSONArray&gt; * obj) const</li><li>Java : public boolean getArray()</li></ul><a name="ref2_133506"></a>
+<table><tr><td><div class="element">Operation <b>~JSONBase</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : # ~JSONBase() : </li><li>C++ : protected: inline virtual ~JSONBase()</li></ul><a name="ref2_133634"></a>
+<table><tr><td><div class="element">Operation <b>getValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : abstract, # getValue(in key : KEY, inout value : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : bool</li><li>C++ : protected: inline virtual bool getValue(KEY key, <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> * value) const= 0 </li><li>Java : protected abstract boolean getValue()</li></ul></div>
+<p>All public operations : <a href="class128642.html#ref2_133378"><b>getArray</b></a> , <a href="class128642.html#ref2_133122"><b>getBoolean</b></a> , <a href="class128642.html#ref2_132610"><b>getFieldType</b></a> , <a href="class128642.html#ref2_132866"><b>getFloat</b></a> , <a href="class128642.html#ref2_132738"><b>getInt32</b></a> , <a href="class128642.html#ref2_133250"><b>getObject</b></a> , <a href="class128642.html#ref2_132994"><b>getString</b></a> , <a href="class128386.html#ref2_131970"><b>isObject</b></a> , <a href="class128386.html#ref2_131714"><b>Parse</b></a> , <a href="class128386.html#ref2_131842"><b>toString</b></a> </p>
+</body>
+</html>

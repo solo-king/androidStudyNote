@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class UidPolicy</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class UidPolicy</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_141570"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class UidPolicy : public <a href="class141698.html#ref4_141698"><b>typedef23</b></a> </li><li>Java : package class UidPolicy extends <a href="class141698.html#ref4_141698"><b>typedef23</b></a> </li></ul><p>nested in <a href="class139266.html#ref4_139266"><b>SensorService</b></a></p>
+<div class="sub">
+<a name="ref2_173698"></a>
+<table><tr><td><div class="element">Operation <b>UidPolicy</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + UidPolicy(in service : wp&lt;SensorService&gt;) : </li><li>C++ : public: inline explicit UidPolicy(wp&lt;SensorService&gt; service)</li><li>Java : public UidPolicy() </li></ul><a name="ref2_173826"></a>
+<table><tr><td><div class="element">Operation <b>registerSelf</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + registerSelf() : void</li><li>C++ : public: void registerSelf()</li><li>Java : public void registerSelf()</li></ul><a name="ref2_173954"></a>
+<table><tr><td><div class="element">Operation <b>unregisterSelf</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + unregisterSelf() : void</li><li>C++ : public: void unregisterSelf()</li><li>Java : public void unregisterSelf()</li></ul><a name="ref2_174082"></a>
+<table><tr><td><div class="element">Operation <b>isUidActive</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isUidActive(in uid : uid_t) : bool</li><li>C++ : public: bool isUidActive(uid_t uid)</li><li>Java : public boolean isUidActive()</li></ul><a name="ref2_174210"></a>
+<table><tr><td><div class="element">Operation <b>onUidGone</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + onUidGone(in uid : uid_t, in disabled : bool) : void</li><li>C++ : public: void onUidGone(uid_t uid, bool disabled)</li><li>Java : public void onUidGone()</li></ul><a name="ref2_174338"></a>
+<table><tr><td><div class="element">Operation <b>onUidActive</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + onUidActive(in uid : uid_t) : void</li><li>C++ : public: void onUidActive(uid_t uid)</li><li>Java : public void onUidActive()</li></ul><a name="ref2_174466"></a>
+<table><tr><td><div class="element">Operation <b>onUidIdle</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + onUidIdle(in uid : uid_t, in disabled : bool) : void</li><li>C++ : public: void onUidIdle(uid_t uid, bool disabled)</li><li>Java : public void onUidIdle()</li></ul><a name="ref2_174594"></a>
+<table><tr><td><div class="element">Operation <b>addOverrideUid</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + addOverrideUid(in uid : uid_t, in active : bool) : void</li><li>C++ : public: void addOverrideUid(uid_t uid, bool active)</li><li>Java : public void addOverrideUid()</li></ul><a name="ref2_174722"></a>
+<table><tr><td><div class="element">Operation <b>removeOverrideUid</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + removeOverrideUid(in uid : uid_t) : void</li><li>C++ : public: void removeOverrideUid(uid_t uid)</li><li>Java : public void removeOverrideUid()</li></ul><a name="ref2_174850"></a>
+<table><tr><td><div class="element">Operation <b>isUidActiveLocked</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - isUidActiveLocked(in uid : uid_t) : bool</li><li>C++ : private: bool isUidActiveLocked(uid_t uid)</li><li>Java : private boolean isUidActiveLocked()</li></ul><a name="ref2_174978"></a>
+<table><tr><td><div class="element">Operation <b>updateOverrideUid</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - updateOverrideUid(in uid : uid_t, in active : bool, in insert : bool) : void</li><li>C++ : private: void updateOverrideUid(uid_t uid, bool active, bool insert)</li><li>Java : private void updateOverrideUid()</li></ul><a name="ref1_146434"></a>
+<table><tr><td><div class="element">Attribute <b>mUidLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mUidLock : Mutex</li><li>C++ : private: Mutex mUidLock</li><li>Java : private Mutex mUidLock</li></ul><a name="ref0_139138"></a>
+<table><tr><td><div class="element">Relation <b>mService (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mService : <a href="class139266.html#ref4_139266"><b>SensorService</b></a></li><li>C++ : private: wp&lt;<a href="class139266.html#ref4_139266"><b>SensorService</b></a>&gt; mService</li><li>Java : private <a href="class139266.html#ref4_139266"><b>SensorService</b></a> mService</li></ul><p>Stereotype: wp</p>
+<a name="ref1_146562"></a>
+<table><tr><td><div class="element">Attribute <b>mActiveUids</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mActiveUids : uid_t</li><li>C++ : private: std::unordered_set&lt;uid_t&gt; mActiveUids</li><li>Java : private uid_t mActiveUids</li></ul><p>Stereotype: std::unordered_set</p>
+<a name="ref1_146690"></a>
+<table><tr><td><div class="element">Attribute <b>mOverrideUids</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mOverrideUids : uid_t, bool</li><li>C++ : private: std::unordered_map&lt;uid_t, bool&gt; mOverrideUids</li><li>Java : private uid_t, bool mOverrideUids</li></ul><p>Stereotype: std::unordered_map</p>
+</div>
+<p>All public operations : <a href="class141570.html#ref2_174594"><b>addOverrideUid</b></a> , <a href="class141570.html#ref2_174082"><b>isUidActive</b></a> , <a href="class141570.html#ref2_174338"><b>onUidActive</b></a> , <a href="class141570.html#ref2_174210"><b>onUidGone</b></a> , <a href="class141570.html#ref2_174466"><b>onUidIdle</b></a> , <a href="class141570.html#ref2_173826"><b>registerSelf</b></a> , <a href="class141570.html#ref2_174722"><b>removeOverrideUid</b></a> , <a href="class141570.html#ref2_173954"><b>unregisterSelf</b></a> </p>
+</body>
+</html>

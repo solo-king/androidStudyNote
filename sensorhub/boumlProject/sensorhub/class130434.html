@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class ASensorManager</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class ASensorManager</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_130434"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct ASensorManager </li><li>Java : package class ASensorManager </li></ul><p>Artifact : <a href="index.html#ref8_129026"><b>ASensorManager</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_139906"></a>
+<table><tr><td><div class="element">Operation <b>getInstance</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, + getInstance() : <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a></li><li>C++ : public: static <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a> * getInstance()</li><li>Java : public static <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a> getInstance()</li></ul><a name="ref2_140034"></a>
+<table><tr><td><div class="element">Operation <b>ASensorManager</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ASensorManager() : </li><li>C++ : public: ASensorManager()</li><li>Java : public ASensorManager() </li></ul><a name="ref2_140162"></a>
+<table><tr><td><div class="element">Operation <b>initCheck</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + initCheck() : android::status_t</li><li>C++ : public: android::status_t initCheck() const</li><li>Java : public android::status_t initCheck()</li></ul><a name="ref2_140290"></a>
+<table><tr><td><div class="element">Operation <b>getSensorList</b></div></td></tr></table><p>Returns error or number of sensors returned.<br /></p><p>Declaration :</p><ul><li>Uml : + getSensorList(inout out : ASensorList) : int</li><li>C++ : public: int getSensorList(ASensorList * out)</li><li>Java : public int getSensorList()</li></ul><a name="ref2_140418"></a>
+<table><tr><td><div class="element">Operation <b>getDefaultSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getDefaultSensor(in type : int) : ASensorRef</li><li>C++ : public: ASensorRef getDefaultSensor(int type)</li><li>Java : public ASensorRef getDefaultSensor()</li></ul><a name="ref2_140546"></a>
+<table><tr><td><div class="element">Operation <b>getDefaultSensorEx</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getDefaultSensorEx(in type : int, in wakeup : bool) : ASensorRef</li><li>C++ : public: ASensorRef getDefaultSensorEx(int type, bool wakeup)</li><li>Java : public ASensorRef getDefaultSensorEx()</li></ul><a name="ref2_140674"></a>
+<table><tr><td><div class="element">Operation <b>createEventQueue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + createEventQueue(inout looper : <a href="class129538.html#ref4_129538"><b>ALooper</b></a>, in ident : int, in callback : ALooper_callbackFunc, inout data : void) : <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a></li><li>C++ : public: <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> * createEventQueue(<a href="class129538.html#ref4_129538"><b>ALooper</b></a> * looper, int ident, ALooper_callbackFunc callback, void * data)</li><li>Java : public <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> createEventQueue()</li></ul><a name="ref2_140802"></a>
+<table><tr><td><div class="element">Operation <b>destroyEventQueue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + destroyEventQueue(inout queue : <a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a>) : void</li><li>C++ : public: void destroyEventQueue(<a href="class129666.html#ref4_129666"><b>ASensorEventQueue</b></a> * queue)</li><li>Java : public void destroyEventQueue()</li></ul><table><tr><td><div class="element">Class <b><a href="class130562.html#ref4_130562"><b>SensorDeathRecipient</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130690.html#ref4_130690"><b>typedef5</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130818.html#ref4_130818"><b>ISensorManager</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class130946.html#ref4_130946"><b>typedef6</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class131074.html#ref4_131074"><b>SensorInfo</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class131202.html#ref4_131202"><b>typedef7</b></a></b></div></td></tr></table>
+<a name="ref0_130178"></a>
+<table><tr><td><div class="element">Relation <b>sInstance (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, - sInstance : <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a>= NULL</li><li>C++ : private: static <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a> * sInstance</li><li>Java : private static <a href="class130434.html#ref4_130434"><b>ASensorManager</b></a> sInstance</li></ul><a name="ref0_130306"></a>
+<table><tr><td><div class="element">Relation <b>mDeathRecipient (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mDeathRecipient : <a href="class130562.html#ref4_130562"><b>SensorDeathRecipient</b></a>=  nullptr</li><li>C++ : private: android::sp&lt;<a href="class130562.html#ref4_130562"><b>SensorDeathRecipient</b></a>&gt; mDeathRecipient</li><li>Java : private <a href="class130562.html#ref4_130562"><b>SensorDeathRecipient</b></a> mDeathRecipient</li></ul><p>Stereotype: android::sp</p>
+<a name="ref1_132098"></a>
+<table><tr><td><div class="element">Attribute <b>mInitCheck</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mInitCheck : android::status_t</li><li>C++ : private: android::status_t mInitCheck</li><li>Java : private android::status_t mInitCheck</li></ul><a name="ref0_130434"></a>
+<table><tr><td><div class="element">Relation <b>mManager (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mManager : <a href="class130818.html#ref4_130818"><b>ISensorManager</b></a></li><li>C++ : private: android::sp&lt;<a href="class130818.html#ref4_130818"><b>ISensorManager</b></a>&gt; mManager</li><li>Java : private <a href="class130818.html#ref4_130818"><b>ISensorManager</b></a> mManager</li></ul><p>Stereotype: android::sp</p>
+<a name="ref1_132226"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : android::Mutex</li><li>C++ : private: mutable android::Mutex mLock</li><li>Java : private android::Mutex mLock</li></ul><a name="ref0_130562"></a>
+<table><tr><td><div class="element">Relation <b>mSensors (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mSensors : <a href="class131074.html#ref4_131074"><b>SensorInfo</b></a></li><li>C++ : private: android::hardware::hidl_vec&lt;<a href="class131074.html#ref4_131074"><b>SensorInfo</b></a>&gt; mSensors</li><li>Java : private <a href="class131074.html#ref4_131074"><b>SensorInfo</b></a> mSensors</li></ul><p>Stereotype: android::hardware::hidl_vec</p>
+<a name="ref1_132354"></a>
+<table><tr><td><div class="element">Attribute <b>mSensorList</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mSensorList : ASensorRef[]</li><li>C++ : private: std::unique_ptr&lt;ASensorRef[]&gt; mSensorList</li><li>Java : private ASensorRef[] mSensorList</li></ul><p>Stereotype: std::unique_ptr</p>
+</div>
+<p>All public operations : <a href="class130434.html#ref2_140674"><b>createEventQueue</b></a> , <a href="class130434.html#ref2_140802"><b>destroyEventQueue</b></a> , <a href="class130434.html#ref2_140418"><b>getDefaultSensor</b></a> , <a href="class130434.html#ref2_140546"><b>getDefaultSensorEx</b></a> , <a href="class130434.html#ref2_139906"><b>getInstance</b></a> , <a href="class130434.html#ref2_140290"><b>getSensorList</b></a> , <a href="class130434.html#ref2_140162"><b>initCheck</b></a> </p>
+</body>
+</html>

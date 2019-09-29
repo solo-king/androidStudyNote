@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class mat<TYPE,1,R></title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class mat&lt;TYPE,1,R&gt;</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_135426"></a>
+<p>Specialize column matrix so they're exactly equivalent to a vector<br /></p>
+<p>Declaration :</p><ul>
+<li>C++ : template&lt;typename TYPE,  size_t R&gt; class mat&lt;TYPE,1,R&gt; : public <a href="class134274.html#ref4_134274"><b>vec</b></a>&lt;TYPE, R&gt; </li><li>Java : package class mat&lt;TYPE,1,R&gt;&lt;TYPE, R&gt; extends <a href="class134274.html#ref4_134274"><b>vec</b></a>&lt;TYPE, R&gt; </li></ul><p>Artifact : <a href="index.html#ref8_130690"><b>mat</b></a></p>
+<div class="sub">
+<table><tr><td><div class="element">Class <b><a href="class135554.html#ref4_135554"><b>base</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class135682.html#ref4_135682"><b>value_type</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class135810.html#ref4_135810"><b>reference</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class135938.html#ref4_135938"><b>const_reference</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class136066.html#ref4_136066"><b>size_type</b></a></b></div></td></tr></table>
+<a name="ref2_148354"></a>
+<table><tr><td><div class="element">Operation <b>size</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + size() : <a href="class136066.html#ref4_136066"><b>size_type</b></a></li><li>C++ : public: inline <a href="class136066.html#ref4_136066"><b>size_type</b></a> size() const</li><li>Java : public <a href="class136066.html#ref4_136066"><b>size_type</b></a> size()</li></ul><table><tr><td><div class="element">Class <b><a href="class136194.html#ref4_136194"><b>anonymous3</b></a></b></div></td></tr></table>
+<a name="ref2_148482"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat() : </li><li>C++ : public: inline mat()</li><li>Java : public  mat()</li></ul><a name="ref2_148610"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat(in rhs : <a href="class135554.html#ref4_135554"><b>base</b></a>) : </li><li>C++ : public: inline explicit mat(const <a href="class135554.html#ref4_135554"><b>base</b></a> &amp; rhs)</li><li>Java : public  mat()</li></ul><a name="ref2_148738"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat(in rhs : <a href="class134146.html#ref4_134146"><b>mat</b></a>) : </li><li>C++ : public: inline mat(const <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; rhs)</li><li>Java : public  mat()</li></ul><a name="ref2_148866"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat(in rhs : TYPE) : </li><li>C++ : public: inline explicit mat(const TYPE &amp; rhs)</li><li>Java : public  mat()</li></ul><a name="ref2_148994"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : <a href="class134146.html#ref4_134146"><b>mat</b></a>) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(const <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; rhs)</li></ul><a name="ref2_149122"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : <a href="class135554.html#ref4_135554"><b>base</b></a>) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(const <a href="class135554.html#ref4_135554"><b>base</b></a> &amp; rhs)</li></ul><a name="ref2_149250"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : TYPE) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(const TYPE &amp; rhs)</li></ul><a name="ref2_149378"></a>
+<table><tr><td><div class="element">Operation <b>operator []</b></div></td></tr></table><p> we only have one column, so ignore the index<br /></p><p>Declaration :</p><ul><li>Uml : + operator [](in  : size_t) : <a href="class135554.html#ref4_135554"><b>base</b></a></li><li>C++ : public: inline const <a href="class135554.html#ref4_135554"><b>base</b></a> &amp; operator [](size_t ) const</li></ul><a name="ref2_149506"></a>
+<table><tr><td><div class="element">Operation <b>operator []</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator [](in  : size_t) : <a href="class135554.html#ref4_135554"><b>base</b></a></li><li>C++ : public: inline <a href="class135554.html#ref4_135554"><b>base</b></a> &amp; operator [](size_t )</li></ul><a name="ref2_149634"></a>
+<table><tr><td><div class="element">Operation <b>operator &lt;&lt;</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator &lt;&lt;(in rhs : vec&lt;TYPE, R&gt;) : void</li><li>C++ : public: inline void operator &lt;&lt;(const vec&lt;TYPE, R&gt; &amp; rhs)</li></ul></div>
+<p>All public operations : <a href="class135426.html#ref2_148482"><b>mat</b></a> , <a href="class135426.html#ref2_148610"><b>mat</b></a> , <a href="class135426.html#ref2_148738"><b>mat</b></a> , <a href="class135426.html#ref2_148866"><b>mat</b></a> , <a href="class135426.html#ref2_149634"><b>operator &lt;&lt;</b></a> , <a href="class135426.html#ref2_149122"><b>operator =</b></a> , <a href="class135426.html#ref2_149250"><b>operator =</b></a> , <a href="class135426.html#ref2_148994"><b>operator =</b></a> , <a href="class135426.html#ref2_149506"><b>operator []</b></a> , <a href="class135426.html#ref2_149378"><b>operator []</b></a> , <a href="class135426.html#ref2_148354"><b>size</b></a> </p>
+</body>
+</html>

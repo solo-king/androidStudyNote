@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class FlushInfo</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class FlushInfo</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_139906"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct FlushInfo </li><li>Java : package class FlushInfo </li></ul><p>nested in <a href="class139650.html#ref4_139650"><b>SensorService::SensorEventConnection</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref1_141058"></a>
+<table><tr><td><div class="element">Attribute <b>mPendingFlushEventsToSend</b></div></td></tr></table>
+<p>The number of flush complete events dropped for this sensor is stored here.  They are<br /> sent separately before the next batch of events.<br /><br /></p><p>Declaration :</p><ul><li>Uml : + mPendingFlushEventsToSend : int</li><li>C++ : public: int mPendingFlushEventsToSend</li><li>Java : public int mPendingFlushEventsToSend</li></ul><a name="ref1_141186"></a>
+<table><tr><td><div class="element">Attribute <b>mFirstFlushPending</b></div></td></tr></table>
+<p>Every activate is preceded by a flush. Only after the first flush complete is received,<br /> the events for the sensor are sent on that *connection*.<br /><br /></p><p>Declaration :</p><ul><li>Uml : + mFirstFlushPending : bool</li><li>C++ : public: bool mFirstFlushPending</li><li>Java : public boolean mFirstFlushPending</li></ul><a name="ref2_164226"></a>
+<table><tr><td><div class="element">Operation <b>FlushInfo</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + FlushInfo() : </li><li>C++ : public: inline FlushInfo()</li><li>Java : public FlushInfo() </li></ul></div>
+</body>
+</html>

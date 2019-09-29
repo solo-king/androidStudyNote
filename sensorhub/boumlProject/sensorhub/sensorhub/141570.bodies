@@ -1,0 +1,73 @@
+class UidPolicy
+!!!173826.cpp!!!	registerSelf() : void
+    ActivityManager am;
+    am.registerUidObserver(this, ActivityManager::UID_OBSERVER_GONE
+            | ActivityManager::UID_OBSERVER_IDLE
+            | ActivityManager::UID_OBSERVER_ACTIVE,
+            ActivityManager::PROCESS_STATE_UNKNOWN,
+            String16("android"));
+!!!173954.cpp!!!	unregisterSelf() : void
+    ActivityManager am;
+    am.unregisterUidObserver(this);
+!!!174082.cpp!!!	isUidActive(in uid : uid_t) : bool
+    // Non-app UIDs are considered always active
+    if (uid < FIRST_APPLICATION_UID) {
+        return true;
+    }
+    Mutex::Autolock _l(mUidLock);
+    return isUidActiveLocked(uid);
+!!!174338.cpp!!!	onUidActive(in uid : uid_t) : void
+    {
+        Mutex::Autolock _l(mUidLock);
+        mActiveUids.insert(uid);
+    }
+    sp<SensorService> service = mService.promote();
+    if (service != nullptr) {
+        service->setSensorAccess(uid, true);
+    }
+!!!174466.cpp!!!	onUidIdle(in uid : uid_t, in disabled : bool) : void
+    bool deleted = false;
+    {
+        Mutex::Autolock _l(mUidLock);
+        if (mActiveUids.erase(uid) > 0) {
+            deleted = true;
+        }
+    }
+    if (deleted) {
+        sp<SensorService> service = mService.promote();
+        if (service != nullptr) {
+            service->setSensorAccess(uid, false);
+        }
+    }
+!!!174594.cpp!!!	addOverrideUid(in uid : uid_t, in active : bool) : void
+    updateOverrideUid(uid, active, true);
+!!!174722.cpp!!!	removeOverrideUid(in uid : uid_t) : void
+    updateOverrideUid(uid, false, false);
+!!!174850.cpp!!!	isUidActiveLocked(in uid : uid_t) : bool
+    // Non-app UIDs are considered always active
+    if (uid < FIRST_APPLICATION_UID) {
+        return true;
+    }
+    auto it = mOverrideUids.find(uid);
+    if (it != mOverrideUids.end()) {
+        return it->second;
+    }
+    return mActiveUids.find(uid) != mActiveUids.end();
+!!!174978.cpp!!!	updateOverrideUid(in uid : uid_t, in active : bool, in insert : bool) : void
+    bool wasActive = false;
+    bool isActive = false;
+    {
+        Mutex::Autolock _l(mUidLock);
+        wasActive = isUidActiveLocked(uid);
+        mOverrideUids.erase(uid);
+        if (insert) {
+            mOverrideUids.insert(std::pair<uid_t, bool>(uid, active));
+        }
+        isActive = isUidActiveLocked(uid);
+    }
+    if (wasActive != isActive) {
+        sp<SensorService> service = mService.promote();
+        if (service != nullptr) {
+            service->setSensorAccess(uid, isActive);
+        }
+    }

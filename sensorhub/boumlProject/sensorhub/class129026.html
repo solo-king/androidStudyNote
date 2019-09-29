@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class RingBuffer</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class RingBuffer</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_129026"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct RingBuffer </li><li>Java : package class RingBuffer </li></ul><p>Artifact : <a href="index.html#ref8_128258"><b>ring</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref2_136962"></a>
+<table><tr><td><div class="element">Operation <b>RingBuffer</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + RingBuffer(in size : size_t) : </li><li>C++ : public: explicit RingBuffer(size_t size)</li><li>Java : public RingBuffer() </li></ul><a name="ref2_137090"></a>
+<table><tr><td><div class="element">Operation <b>~RingBuffer</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ~RingBuffer() : </li><li>C++ : public: ~RingBuffer()</li></ul><a name="ref2_137218"></a>
+<table><tr><td><div class="element">Operation <b>write</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + write(in ev : sensors_event_t, in size : size_t) : ssize_t</li><li>C++ : public: ssize_t write(const sensors_event_t * ev, size_t size)</li><li>Java : public ssize_t write()</li></ul><a name="ref2_137346"></a>
+<table><tr><td><div class="element">Operation <b>read</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + read(inout ev : sensors_event_t, in size : size_t) : ssize_t</li><li>C++ : public: ssize_t read(sensors_event_t * ev, size_t size)</li><li>Java : public ssize_t read()</li></ul><a name="ref1_129282"></a>
+<table><tr><td><div class="element">Attribute <b>mLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mLock : Mutex</li><li>C++ : private: Mutex mLock</li><li>Java : private Mutex mLock</li></ul><a name="ref1_129410"></a>
+<table><tr><td><div class="element">Attribute <b>mNotEmptyCondition</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mNotEmptyCondition : Condition</li><li>C++ : private: Condition mNotEmptyCondition</li><li>Java : private Condition mNotEmptyCondition</li></ul><a name="ref1_129538"></a>
+<table><tr><td><div class="element">Attribute <b>mSize</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mSize : size_t</li><li>C++ : private: size_t mSize</li><li>Java : private size_t mSize</li></ul><a name="ref1_129666"></a>
+<table><tr><td><div class="element">Attribute <b>mData</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mData : sensors_event_t</li><li>C++ : private: sensors_event_t * mData</li><li>Java : private sensors_event_t mData</li></ul><a name="ref1_129794"></a>
+<table><tr><td><div class="element">Attribute <b>mReadPos</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mReadPos : size_t</li><li>C++ : private: size_t mReadPos</li><li>Java : private size_t mReadPos</li></ul><a name="ref1_129922"></a>
+<table><tr><td><div class="element">Attribute <b>mWritePos</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mWritePos : size_t</li><li>C++ : private: size_t mWritePos</li><li>Java : private size_t mWritePos</li></ul></div>
+<p>All public operations : <a href="class129026.html#ref2_137346"><b>read</b></a> , <a href="class129026.html#ref2_137218"><b>write</b></a> </p>
+</body>
+</html>

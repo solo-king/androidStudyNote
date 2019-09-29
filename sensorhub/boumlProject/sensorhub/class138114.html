@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class Info</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class Info</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_138114"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct Info </li><li>Java : package class Info </li></ul><p>nested in <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref0_134530"></a>
+<table><tr><td><div class="element">Relation <b>bestBatchParams (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + bestBatchParams : <a href="class137986.html#ref4_137986"><b>BatchParams</b></a></li><li>C++ : public: <a href="class137986.html#ref4_137986"><b>BatchParams</b></a> bestBatchParams</li><li>Java : public <a href="class137986.html#ref4_137986"><b>BatchParams</b></a> bestBatchParams</li></ul><a name="ref0_134658"></a>
+<table><tr><td><div class="element">Relation <b>batchParams (&lt;directional composition&gt;)</b></div></td></tr></table><p>Key is the unique identifier(ident) for each client, value is the batch parameters<br /> requested by the client.<br /><br /></p><p>Declaration :</p><ul><li>Uml : + batchParams : <a href="class137986.html#ref4_137986"><b>BatchParams</b></a></li><li>C++ : public: KeyedVector&lt;void*,<a href="class137986.html#ref4_137986"><b>BatchParams</b></a>&gt; batchParams</li><li>Java : public <a href="class137986.html#ref4_137986"><b>BatchParams</b></a> batchParams</li></ul><p>Stereotype: KeyedVector</p>
+<a name="ref2_156546"></a>
+<table><tr><td><div class="element">Operation <b>setBatchParamsForIdent</b></div></td></tr></table><p>Sets batch parameters for this ident. Returns error if this ident is not already present<br /> in the KeyedVector above.<br /></p><p>Declaration :</p><ul><li>Uml : + setBatchParamsForIdent(inout ident : void, in flags : int, in samplingPeriodNs : int64_t, in maxBatchReportLatencyNs : int64_t) : status_t</li><li>C++ : public: status_t setBatchParamsForIdent(void * ident, int flags, int64_t samplingPeriodNs, int64_t maxBatchReportLatencyNs)</li><li>Java : public status_t setBatchParamsForIdent()</li></ul><a name="ref2_156674"></a>
+<table><tr><td><div class="element">Operation <b>selectBatchParams</b></div></td></tr></table><p>Finds the optimal parameters for batching and stores them in bestBatchParams variable.<br /></p><p>Declaration :</p><ul><li>Uml : + selectBatchParams() : void</li><li>C++ : public: void selectBatchParams()</li><li>Java : public void selectBatchParams()</li></ul><a name="ref2_156802"></a>
+<table><tr><td><div class="element">Operation <b>removeBatchParamsForIdent</b></div></td></tr></table><p>Removes batchParams for an ident and re-computes bestBatchParams. Returns the index of<br /> the removed ident. If index >=0, ident is present and successfully removed.<br /></p><p>Declaration :</p><ul><li>Uml : + removeBatchParamsForIdent(inout ident : void) : ssize_t</li><li>C++ : public: ssize_t removeBatchParamsForIdent(void * ident)</li><li>Java : public ssize_t removeBatchParamsForIdent()</li></ul><a name="ref2_156930"></a>
+<table><tr><td><div class="element">Operation <b>numActiveClients</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + numActiveClients() : int</li><li>C++ : public: int numActiveClients()</li><li>Java : public int numActiveClients()</li></ul></div>
+<p>All public operations : <a href="class138114.html#ref2_156930"><b>numActiveClients</b></a> , <a href="class138114.html#ref2_156802"><b>removeBatchParamsForIdent</b></a> , <a href="class138114.html#ref2_156674"><b>selectBatchParams</b></a> , <a href="class138114.html#ref2_156546"><b>setBatchParamsForIdent</b></a> </p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class BatteryService</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class BatteryService</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_132098"></a>
+<p>---------------------------------------------------------------------------<br /></p>
+<p>Declaration :</p><ul>
+<li>C++ : class BatteryService : public <a href="class132226.html#ref4_132226"><b>typedef11</b></a> </li><li>Java : package class BatteryService extends <a href="class132226.html#ref4_132226"><b>typedef11</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_130050"><b>BatteryService</b></a></p>
+<div class="sub">
+<a name="ref3_128002"></a>
+<table><tr><td><div class="element">Extra Artifact Definition <b>friend</b></div></td></tr></table><p>Definition :</p><ul><li>C++ (decl): <pre>
+<br /><br />    friend class Singleton&lt;BatteryService&gt;;</pre></li></ul><a name="ref1_132738"></a>
+<table><tr><td><div class="element">Attribute <b>mBatteryStatService</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mBatteryStatService : IBatteryStats</li><li>C++ : private: sp&lt;IBatteryStats&gt; mBatteryStatService</li><li>Java : private IBatteryStats mBatteryStatService</li></ul><p>Stereotype: sp</p>
+<a name="ref2_141570"></a>
+<table><tr><td><div class="element">Operation <b>BatteryService</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - BatteryService() : </li><li>C++ : private: BatteryService()</li><li>Java : private BatteryService() </li></ul><a name="ref2_141698"></a>
+<table><tr><td><div class="element">Operation <b>enableSensorImpl</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - enableSensorImpl(in uid : uid_t, in handle : int) : void</li><li>C++ : private: void enableSensorImpl(uid_t uid, int handle)</li><li>Java : private void enableSensorImpl()</li></ul><a name="ref2_141826"></a>
+<table><tr><td><div class="element">Operation <b>disableSensorImpl</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - disableSensorImpl(in uid : uid_t, in handle : int) : void</li><li>C++ : private: void disableSensorImpl(uid_t uid, int handle)</li><li>Java : private void disableSensorImpl()</li></ul><a name="ref2_141954"></a>
+<table><tr><td><div class="element">Operation <b>cleanupImpl</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - cleanupImpl(in uid : uid_t) : void</li><li>C++ : private: void cleanupImpl(uid_t uid)</li><li>Java : private void cleanupImpl()</li></ul><table><tr><td><div class="element">Class <b><a href="class132354.html#ref4_132354"><b>Info</b></a></b></div></td></tr></table>
+<a name="ref1_133250"></a>
+<table><tr><td><div class="element">Attribute <b>mActivationsLock</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mActivationsLock : Mutex</li><li>C++ : private: Mutex mActivationsLock</li><li>Java : private Mutex mActivationsLock</li></ul><a name="ref0_131202"></a>
+<table><tr><td><div class="element">Relation <b>mActivations (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mActivations : <a href="class132354.html#ref4_132354"><b>Info</b></a></li><li>C++ : private: SortedVector&lt;<a href="class132354.html#ref4_132354"><b>Info</b></a>&gt; mActivations</li><li>Java : private <a href="class132354.html#ref4_132354"><b>Info</b></a> mActivations</li></ul><p>Stereotype: SortedVector</p>
+<a name="ref2_142466"></a>
+<table><tr><td><div class="element">Operation <b>addSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - addSensor(in uid : uid_t, in handle : int) : bool</li><li>C++ : private: bool addSensor(uid_t uid, int handle)</li><li>Java : private boolean addSensor()</li></ul><a name="ref2_142594"></a>
+<table><tr><td><div class="element">Operation <b>removeSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - removeSensor(in uid : uid_t, in handle : int) : bool</li><li>C++ : private: bool removeSensor(uid_t uid, int handle)</li><li>Java : private boolean removeSensor()</li></ul><a name="ref2_142722"></a>
+<table><tr><td><div class="element">Operation <b>checkService</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - checkService() : bool</li><li>C++ : private: bool checkService()</li><li>Java : private boolean checkService()</li></ul><a name="ref2_142850"></a>
+<table><tr><td><div class="element">Operation <b>enableSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, + enableSensor(in uid : uid_t, in handle : int) : void</li><li>C++ : public: static inline void enableSensor(uid_t uid, int handle)</li><li>Java : public static void enableSensor()</li></ul><a name="ref2_142978"></a>
+<table><tr><td><div class="element">Operation <b>disableSensor</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, + disableSensor(in uid : uid_t, in handle : int) : void</li><li>C++ : public: static inline void disableSensor(uid_t uid, int handle)</li><li>Java : public static void disableSensor()</li></ul><a name="ref2_143106"></a>
+<table><tr><td><div class="element">Operation <b>cleanup</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : static, + cleanup(in uid : uid_t) : void</li><li>C++ : public: static inline void cleanup(uid_t uid)</li><li>Java : public static void cleanup()</li></ul></div>
+<p>All public operations : <a href="class132098.html#ref2_143106"><b>cleanup</b></a> , <a href="class132098.html#ref2_142978"><b>disableSensor</b></a> , <a href="class132098.html#ref2_142850"><b>enableSensor</b></a> </p>
+</body>
+</html>

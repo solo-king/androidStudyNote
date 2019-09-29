@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class mat</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class mat</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_134146"></a>
+<p>namespace helpers<br /> -----------------------------------------------------------------------<br /></p>
+<p>Declaration :</p><ul>
+<li>C++ : template&lt;typename TYPE,  size_t C,  size_t R&gt; class mat : public <a href="class134274.html#ref4_134274"><b>vec</b></a>&lt;vec&lt;TYPE, R&gt;, C&gt; </li><li>Java : package class mat&lt;TYPE, C, R&gt; extends <a href="class134274.html#ref4_134274"><b>vec</b></a>&lt;vec&lt;TYPE, R&gt;, C&gt; </li></ul><p>Artifact : <a href="index.html#ref8_130690"><b>mat</b></a></p>
+<div class="sub">
+<table><tr><td><div class="element">Class <b><a href="class134402.html#ref4_134402"><b>pTYPE</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class134530.html#ref4_134530"><b>base</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class134658.html#ref4_134658"><b>value_type</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class134786.html#ref4_134786"><b>reference</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class134914.html#ref4_134914"><b>const_reference</b></a></b></div></td></tr></table>
+<table><tr><td><div class="element">Class <b><a href="class135042.html#ref4_135042"><b>size_type</b></a></b></div></td></tr></table>
+<a name="ref2_146818"></a>
+<table><tr><td><div class="element">Operation <b>size</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + size() : <a href="class135042.html#ref4_135042"><b>size_type</b></a></li><li>C++ : public: inline <a href="class135042.html#ref4_135042"><b>size_type</b></a> size() const</li><li>Java : public <a href="class135042.html#ref4_135042"><b>size_type</b></a> size()</li></ul><table><tr><td><div class="element">Class <b><a href="class135170.html#ref4_135170"><b>anonymous2</b></a></b></div></td></tr></table>
+<a name="ref2_146946"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>-----------------------------------------------------------------------<br /> default constructors<br /></p><p>Declaration :</p><ul><li>Uml : + mat() : </li><li>C++ : public: inline mat()</li><li>Java : public mat() </li></ul><a name="ref2_147074"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat(in rhs : <a href="class134146.html#ref4_134146"><b>mat</b></a>) : </li><li>C++ : public: inline mat(const <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; rhs)</li><li>Java : public mat() </li></ul><a name="ref2_147202"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + mat(in rhs : <a href="class134530.html#ref4_134530"><b>base</b></a>) : </li><li>C++ : public: inline mat(const <a href="class134530.html#ref4_134530"><b>base</b></a> &amp; rhs)</li><li>Java : public mat() </li></ul><a name="ref2_147330"></a>
+<table><tr><td><div class="element">Operation <b>mat</b></div></td></tr></table><p>NOLINT(implicit)<br /> -----------------------------------------------------------------------<br /> conversion constructors<br /> sets the diagonal to the value, off-diagonal to zero<br /></p><p>Declaration :</p><ul><li>Uml : + mat(in rhs : <a href="class134402.html#ref4_134402"><b>pTYPE</b></a>) : </li><li>C++ : public: inline mat(<a href="class134402.html#ref4_134402"><b>pTYPE</b></a> rhs)</li><li>Java : public mat() </li></ul><a name="ref2_147458"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p> -----------------------------------------------------------------------<br /> Assignment<br /></p><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : <a href="class134146.html#ref4_134146"><b>mat</b></a>) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(const <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; rhs)</li></ul><a name="ref2_147586"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : <a href="class134530.html#ref4_134530"><b>base</b></a>) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(const <a href="class134530.html#ref4_134530"><b>base</b></a> &amp; rhs)</li></ul><a name="ref2_147714"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in rhs : <a href="class134402.html#ref4_134402"><b>pTYPE</b></a>) : <a href="class134146.html#ref4_134146"><b>mat</b></a></li><li>C++ : public: inline <a href="class134146.html#ref4_134146"><b>mat</b></a> &amp; operator =(<a href="class134402.html#ref4_134402"><b>pTYPE</b></a> rhs)</li></ul><table><tr><td><div class="element">Class <b><a href="class135298.html#ref4_135298"><b>column_builder</b></a></b></div></td></tr></table>
+<a name="ref2_147970"></a>
+<table><tr><td><div class="element">Operation <b>operator &lt;&lt;</b></div></td></tr></table><p> operator << is not a method of column_builder<> so we can<br /> overload it for unauthorized values (partial specialization<br /> not allowed in class-scope).<br /> we just set the column and return the next column_builder<><br /></p><p>Declaration :</p><ul><li>Uml : + operator &lt;&lt;(in lhs : column_builder&lt;PREV_COLUMN&gt;, in rhs : vec&lt;TYPE, R&gt;) : column_builder&lt;PREV_COLUMN+1&gt;</li><li>C++ : public: template&lt;size_t PREV_COLUMN&gt; friend inline column_builder&lt;PREV_COLUMN+1&gt; operator &lt;&lt;(const column_builder&lt;PREV_COLUMN&gt; &amp; lhs, const vec&lt;TYPE, R&gt; &amp; rhs)</li></ul><p>Stereotype: template</p>
+<a name="ref2_148098"></a>
+<table><tr><td><div class="element">Operation <b>operator &lt;&lt;</b></div></td></tr></table><p> we return void here so we get a compile-time error if the<br /> user tries to set too many columns<br /></p><p>Declaration :</p><ul><li>Uml : + operator &lt;&lt;(in lhs : column_builder&lt;C-2&gt;, in rhs : vec&lt;TYPE, R&gt;) : void</li><li>C++ : public: friend inline void operator &lt;&lt;(const column_builder&lt;C-2&gt; &amp; lhs, const vec&lt;TYPE, R&gt; &amp; rhs)</li></ul><a name="ref2_148226"></a>
+<table><tr><td><div class="element">Operation <b>operator &lt;&lt;</b></div></td></tr></table><p> this is where the process starts. we set the first columns and<br /> return the next column_builder<><br /></p><p>Declaration :</p><ul><li>Uml : + operator &lt;&lt;(in rhs : vec&lt;TYPE, R&gt;) : column_builder&lt;0&gt;</li><li>C++ : public: inline column_builder&lt;0&gt; operator &lt;&lt;(const vec&lt;TYPE, R&gt; &amp; rhs)</li></ul></div>
+<p>All public operations : <a href="class134146.html#ref2_148098"><b>operator &lt;&lt;</b></a> , <a href="class134146.html#ref2_147970"><b>operator &lt;&lt;</b></a> , <a href="class134146.html#ref2_148226"><b>operator &lt;&lt;</b></a> , <a href="class134146.html#ref2_147586"><b>operator =</b></a> , <a href="class134146.html#ref2_147458"><b>operator =</b></a> , <a href="class134146.html#ref2_147714"><b>operator =</b></a> , <a href="class134146.html#ref2_146818"><b>size</b></a> </p>
+</body>
+</html>

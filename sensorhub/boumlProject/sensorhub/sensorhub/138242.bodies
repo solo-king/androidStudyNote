@@ -1,0 +1,32 @@
+class HidlServiceRegistrationWaiter
+!!!158210.cpp!!!	onRegistration(in fqName : hidl_string, in name : hidl_string, in preexisting : bool) : Return<void>
+    ALOGV("onRegistration fqName %s, name %s, preexisting %d",
+          fqName.c_str(), name.c_str(), preexisting);
+
+    {
+        std::lock_guard<std::mutex> lk(mLock);
+        mRestartObserved = true;
+    }
+    mCondition.notify_all();
+    return Void();
+!!!158338.cpp!!!	reset() : void
+    std::lock_guard<std::mutex> lk(mLock);
+    mRestartObserved = false;
+!!!158466.cpp!!!	wait() : bool
+    constexpr int DEFAULT_WAIT_MS = 100;
+    constexpr int TIMEOUT_MS = 1000;
+
+    if (!mRegistered) {
+        ALOGW("Cannot register service notification, use default wait(%d ms)", DEFAULT_WAIT_MS);
+        std::this_thread::sleep_for(std::chrono::milliseconds(DEFAULT_WAIT_MS));
+        // not sure if service is actually restarted
+        return false;
+    }
+
+    std::unique_lock<std::mutex> lk(mLock);
+    return mCondition.wait_for(lk, std::chrono::milliseconds(TIMEOUT_MS),
+            [this]{return mRestartObserved;});
+!!!158594.cpp!!!	onFirstRef() : void
+    // Creating sp<...>(this) in the constructor should be avoided, hence
+    // registerForNotifications is called in onFirstRef callback.
+    mRegistered = ISensors::registerForNotifications("default", this);

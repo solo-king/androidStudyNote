@@ -1,0 +1,43 @@
+class Info
+!!!156546.cpp!!!	setBatchParamsForIdent(inout ident : void, in flags : int, in samplingPeriodNs : int64_t, in maxBatchReportLatencyNs : int64_t) : status_t
+    ssize_t index = batchParams.indexOfKey(ident);
+    if (index < 0) {
+        ALOGE("Info::setBatchParamsForIdent(ident=%p, period_ns=%" PRId64
+              " timeout=%" PRId64 ") failed (%s)",
+              ident, samplingPeriodNs, maxBatchReportLatencyNs, strerror(-index));
+        return BAD_INDEX;
+    }
+    BatchParams& params = batchParams.editValueAt(index);
+    params.mTSample = samplingPeriodNs;
+    params.mTBatch = maxBatchReportLatencyNs;
+    return NO_ERROR;
+!!!156674.cpp!!!	selectBatchParams() : void
+    BatchParams bestParams; // default to max Tsample and max Tbatch
+    SensorDevice& device(SensorDevice::getInstance());
+
+    for (size_t i = 0; i < batchParams.size(); ++i) {
+        if (device.isClientDisabledLocked(batchParams.keyAt(i))) {
+            continue;
+        }
+        bestParams.merge(batchParams[i]);
+    }
+    // if mTBatch <= mTSample, it is in streaming mode. set mTbatch to 0 to demand this explicitly.
+    if (bestParams.mTBatch <= bestParams.mTSample) {
+        bestParams.mTBatch = 0;
+    }
+    bestBatchParams = bestParams;
+!!!156802.cpp!!!	removeBatchParamsForIdent(inout ident : void) : ssize_t
+    ssize_t idx = batchParams.removeItem(ident);
+    if (idx >= 0) {
+        selectBatchParams();
+    }
+    return idx;
+!!!156930.cpp!!!	numActiveClients() : int
+    SensorDevice& device(SensorDevice::getInstance());
+    int num = 0;
+    for (size_t i = 0; i < batchParams.size(); ++i) {
+        if (!device.isClientDisabledLocked(batchParams.keyAt(i))) {
+            ++num;
+        }
+    }
+    return num;

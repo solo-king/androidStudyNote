@@ -1,0 +1,1066 @@
+format 221
+"libsensorndkbridge" // sensorservice::libsensorndkbridge
+  revision 1
+  modified_by 2 "chenqigan"
+  // class settings
+  
+  classdiagramsettings member_max_width 0 end
+  
+  classcompositediagramsettings end
+  
+  usecasediagramsettings end
+  
+  sequencediagramsettings end
+  
+  collaborationdiagramsettings end
+  
+  objectdiagramsettings end
+  
+  objectcompositediagramsettings end
+  
+  componentdiagramsettings
+   end
+  
+  deploymentdiagramsettings
+   end
+  
+  statediagramsettings
+   end
+  
+  activitydiagramsettings
+   end
+  
+  cpp_h_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/libsensorndkbridge/"
+  cpp_src_dir "/home/chenqigan/work/androidQFromGoogle/frameworks/hardware/interfaces/sensorservice/libsensorndkbridge/"
+  classview 128258 "libsensorndkbridge"
+    
+    classdiagramsettings member_max_width 0 end
+    
+    classcompositediagramsettings end
+    
+    collaborationdiagramsettings end
+    
+    objectdiagramsettings end
+    
+    objectcompositediagramsettings end
+    
+    sequencediagramsettings end
+    
+    statediagramsettings
+     end
+    
+    
+    activitydiagramsettings
+     end
+    class 129538 "ALooper"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      operation 137858 "ALooper"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}
+    : mAwoken(false) ${throw}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${synchronized}${name}${(}${)}${throws} {
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 137986 "signalSensorEvents"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "queue" type class_ref 129666 // ASensorEventQueue
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138114 "wake"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138242 "pollOnce"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 4
+	  param in name "timeoutMillis" explicit_type "int"
+	  param inout name "outFd" explicit_type "int"
+	  param inout name "outEvents" explicit_type "int"
+	  param inout name "outData" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} * ${p1}${v1}, ${t2} * ${p2}${v2}, ${t3} * * ${p3}${v3}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138370 "invalidateSensorQueue"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "queue" type class_ref 129666 // ASensorEventQueue
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      attribute 131202 "mLock"
+	private explicit_type "android::Mutex"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 131330 "mCondition"
+	private explicit_type "android::Condition"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 129026 // mReadyQueues (<unidirectional association>)
+	relation 129026 --->
+	  stereotype "std::set"
+	  a role_name "mReadyQueues" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}*> ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 129026 // mReadyQueues (<unidirectional association>)
+	  b parent class_ref 129666 // ASensorEventQueue
+      end
+
+      attribute 131458 "mAwoken"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+    end
+
+    class 129666 "ASensorEventQueue"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      classrelation 129154 // <generalisation>
+	relation 129154 ---|>
+	  a public
+	    cpp default "${type}"
+	    java "${type}"
+	    classrelation_ref 129154 // <generalisation>
+	  b parent class_ref 129794 // typedef2
+      end
+
+      class 129922 "Event"
+	visibility package stereotype "template_typedef"
+	cpp_decl "${comment}${template}using ${name} = ${inherit};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129282 // <generalisation>
+	  relation 129282 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 129282 // <generalisation>
+	    b parent class_ref 130050 // typedef3
+	end
+      end
+
+      class 130050 "typedef3"
+	visibility package stereotype "typedef" explicit_base_type "android::hardware::sensors::V1_0::Event"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+      end
+
+      class 130178 "IEventQueue"
+	visibility package stereotype "template_typedef"
+	cpp_decl "${comment}${template}using ${name} = ${inherit};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129410 // <generalisation>
+	  relation 129410 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 129410 // <generalisation>
+	    b parent class_ref 130306 // typedef4
+	end
+      end
+
+      class 130306 "typedef4"
+	visibility package stereotype "typedef" explicit_base_type "android::frameworks::sensorservice::V1_0::IEventQueue"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+      end
+
+      operation 138498 "ASensorEventQueue"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 3
+	  param inout name "looper" type class_ref 129538 // ALooper
+	  param in name "callback" explicit_type "ALooper_callbackFunc"
+	  param inout name "data" explicit_type "void"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} * ${p2}${v2}${)}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${t0} * ${p0}, ${t1} ${p1}, ${t2} * ${p2}${)}
+    : mLooper(looper),
+      mCallback(callback),
+      mData(data) ${throw}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${synchronized}${name}${(}${)}${throws} {
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138626 "onEvent"
+	preserve_cpp_body_indent cpp_override public explicit_return_type "android::hardware::Return<void>"
+	nparams 1
+	  param in name "event" type class_ref 129922 // Event
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138754 "setImpl"
+	public explicit_return_type "void"
+	nparams 1
+	  param in name "queueImpl" explicit_type "android::sp<IEventQueue>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 138882 "registerSensor"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 3
+	  param in name "sensor" explicit_type "ASensorRef"
+	  param in name "samplingPeriodUs" explicit_type "int32_t"
+	  param in name "maxBatchReportLatencyUs" explicit_type "int64_t"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139010 "enableSensor"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 1
+	  param in name "sensor" explicit_type "ASensorRef"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139138 "disableSensor"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 1
+	  param in name "sensor" explicit_type "ASensorRef"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139266 "setEventRate"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 2
+	  param in name "sensor" explicit_type "ASensorRef"
+	  param in name "samplingPeriodUs" explicit_type "int32_t"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139394 "getEvents"
+	preserve_cpp_body_indent public explicit_return_type "ssize_t"
+	nparams 2
+	  param inout name "events" explicit_type "ASensorEvent"
+	  param in name "count" explicit_type "size_t"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139522 "hasEvents"
+	preserve_cpp_body_indent const public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139650 "dispatchCallback"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 139778 "invalidate"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      classrelation 129538 // mLooper (<unidirectional association>)
+	relation 129538 --->
+	  a role_name "mLooper" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 129538 // mLooper (<unidirectional association>)
+	  b parent class_ref 129538 // ALooper
+      end
+
+      attribute 131586 "mCallback"
+	private explicit_type "ALooper_callbackFunc"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 131714 "mData"
+	private explicit_type "void"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 129666 // mQueueImpl (<directional composition>)
+	relation 129666 *-->
+	  stereotype "android::sp"
+	  a role_name "mQueueImpl" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 129666 // mQueueImpl (<directional composition>)
+	  b parent class_ref 130178 // IEventQueue
+      end
+
+      attribute 131842 "mLock"
+	private explicit_type "android::Mutex"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      attribute 131970 "mQueue"
+	private explicit_type "sensors_event_t"
+	stereotype "std::vector"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+    end
+
+    class 129794 "typedef2"
+      visibility package stereotype "typedef" explicit_base_type "android::frameworks::sensorservice::V1_0::IEventQueueCallback"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+    end
+
+    class 130434 "ASensorManager"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      mysql_decl ""
+      
+      operation 139906 "getInstance"
+	class_operation preserve_cpp_body_indent public return_type class_ref 130434 // ASensorManager
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "// static
+
+${inline}${type} * ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140034 "ASensorManager"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${class}::${name}${(}${)}
+    : mInitCheck(NO_INIT) ${throw}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${synchronized}${name}${(}${)}${throws} {
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140162 "initCheck"
+	preserve_cpp_body_indent const public explicit_return_type "android::status_t"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140290 "getSensorList"
+	preserve_cpp_body_indent public explicit_return_type "int"
+	nparams 1
+	  param inout name "out" explicit_type "ASensorList"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	comment " Returns error or number of sensors returned."
+      end
+
+      operation 140418 "getDefaultSensor"
+	preserve_cpp_body_indent public explicit_return_type "ASensorRef"
+	nparams 1
+	  param in name "type" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140546 "getDefaultSensorEx"
+	preserve_cpp_body_indent public explicit_return_type "ASensorRef"
+	nparams 2
+	  param in name "type" explicit_type "int"
+	  param in name "wakeup" explicit_type "bool"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140674 "createEventQueue"
+	preserve_cpp_body_indent public return_type class_ref 129666 // ASensorEventQueue
+	nparams 4
+	  param inout name "looper" type class_ref 129538 // ALooper
+	  param in name "ident" explicit_type "int"
+	  param in name "callback" explicit_type "ALooper_callbackFunc"
+	  param inout name "data" explicit_type "void"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} * ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}, ${t3} * ${p3}${v3}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      operation 140802 "destroyEventQueue"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "queue" type class_ref 129666 // ASensorEventQueue
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+      end
+
+      class 130562 "SensorDeathRecipient"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129794 // <generalisation>
+	  relation 129794 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 129794 // <generalisation>
+	    b parent class_ref 130690 // typedef5
+	end
+
+	operation 140930 "serviceDied"
+	  cpp_virtual cpp_override public explicit_return_type "void"
+	  nparams 2
+	    param in name "cookie" explicit_type "uint64_t"
+	    param in name "who" explicit_type "::android::wp<::android::hidl::base::V1_0::IBase>"
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	  java_def "  ${comment}${@}${visibility}${final}${static}${abstract}${synchronized}${type} ${name}${(}${)}${throws}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  comment " hidl_death_recipient interface"
+	end
+      end
+
+      class 130690 "typedef5"
+	visibility package stereotype "typedef" explicit_base_type "android::hardware::hidl_death_recipient"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+      end
+
+      class 130818 "ISensorManager"
+	visibility package stereotype "template_typedef"
+	cpp_decl "${comment}${template}using ${name} = ${inherit};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 129922 // <generalisation>
+	  relation 129922 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 129922 // <generalisation>
+	    b parent class_ref 130946 // typedef6
+	end
+      end
+
+      class 130946 "typedef6"
+	visibility package stereotype "typedef" explicit_base_type "android::frameworks::sensorservice::V1_0::ISensorManager"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+      end
+
+      class 131074 "SensorInfo"
+	visibility package stereotype "template_typedef"
+	cpp_decl "${comment}${template}using ${name} = ${inherit};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+	classrelation 130050 // <generalisation>
+	  relation 130050 ---|>
+	    a public
+	      cpp default "${type}"
+	      java "${type}"
+	      classrelation_ref 130050 // <generalisation>
+	    b parent class_ref 131202 // typedef7
+	end
+      end
+
+      class 131202 "typedef7"
+	visibility package stereotype "typedef" explicit_base_type "android::hardware::sensors::V1_0::SensorInfo"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
+${members}}
+"
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	mysql_decl ""
+	
+      end
+
+      classrelation 130178 // sInstance (<unidirectional association>)
+	relation 130178 --->
+	  a role_name "sInstance" init_value "= NULL" class_relation private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130178 // sInstance (<unidirectional association>)
+	  b parent class_ref 130434 // ASensorManager
+      end
+
+      classrelation 130306 // mDeathRecipient (<directional composition>)
+	relation 130306 *-->
+	  stereotype "android::sp"
+	  a role_name "mDeathRecipient" init_value "=  nullptr" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${h_value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130306 // mDeathRecipient (<directional composition>)
+	  b parent class_ref 130562 // SensorDeathRecipient
+      end
+
+      attribute 132098 "mInitCheck"
+	private explicit_type "android::status_t"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 130434 // mManager (<directional composition>)
+	relation 130434 *-->
+	  stereotype "android::sp"
+	  a role_name "mManager" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130434 // mManager (<directional composition>)
+	  b parent class_ref 130818 // ISensorManager
+      end
+
+      attribute 132226 "mLock"
+	private explicit_type "android::Mutex"
+	cpp_mutable cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+
+      classrelation 130562 // mSensors (<directional composition>)
+	relation 130562 *-->
+	  stereotype "android::hardware::hidl_vec"
+	  a role_name "mSensors" private
+	    cpp default "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    java "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	    classrelation_ref 130562 // mSensors (<directional composition>)
+	  b parent class_ref 131074 // SensorInfo
+      end
+
+      attribute 132354 "mSensorList"
+	private explicit_type "ASensorRef[]"
+	stereotype "std::unique_ptr"
+	cpp_decl "    ${comment}${static}${thread_local}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	java_decl "  ${comment}${@}${visibility}${static}${final}${transient}${volatile}${type} ${name}${value};
+"
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	mysql_decl ""
+	MysqlColumn
+      end
+    end
+  end
+
+  deploymentview 128258 "libsensorndkbridge"
+    //deployment diagram settings
+    deploymentdiagramsettings
+     end
+    artifact 128770 "ALooper"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 129538 // ALooper
+      end
+    end
+
+    artifact 128898 "ASensorEventQueue"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 129794 // typedef2
+	class_ref 129666 // ASensorEventQueue
+      end
+    end
+
+    artifact 129026 "ASensorManager"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      java_src "${comment}
+${package}
+${imports}
+${definition}"
+      associated_elems
+	class_ref 130434 // ASensorManager
+      end
+    end
+
+    artifact 133378 "main"
+      stereotype "source"
+      cpp_src "int main(int /*argc*/, char** /*argv*/) {
+    signal(SIGPIPE, SIG_IGN);
+    SensorService::publishAndJoinThreadPool();
+    return 0;
+}
+"
+      associated_elems
+      end
+    end
+  end
+end

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class BatchParams</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class BatchParams</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_137986"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct BatchParams </li><li>Java : package class BatchParams </li></ul><p>nested in <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<a name="ref1_137858"></a>
+<table><tr><td><div class="element">Attribute <b>mTSample</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : + mTSample : nsecs_t</li><li>C++ : public: nsecs_t mTSample</li><li>Java : public nsecs_t mTSample</li></ul><a name="ref1_137986"></a>
+<table><tr><td><div class="element">Attribute <b>mTBatch</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : + mTBatch : nsecs_t</li><li>C++ : public: nsecs_t mTBatch</li><li>Java : public nsecs_t mTBatch</li></ul><a name="ref2_156034"></a>
+<table><tr><td><div class="element">Operation <b>BatchParams</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + BatchParams() : </li><li>C++ : public: inline BatchParams()</li><li>Java : public BatchParams() </li></ul><a name="ref2_156162"></a>
+<table><tr><td><div class="element">Operation <b>BatchParams</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + BatchParams(in tSample : nsecs_t, in tBatch : nsecs_t) : </li><li>C++ : public: inline BatchParams(nsecs_t tSample, nsecs_t tBatch)</li><li>Java : public BatchParams() </li></ul><a name="ref2_156290"></a>
+<table><tr><td><div class="element">Operation <b>operator !=</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator !=(in other : <a href="class137986.html#ref4_137986"><b>BatchParams</b></a>) : bool</li><li>C++ : public: inline bool operator !=(const <a href="class137986.html#ref4_137986"><b>BatchParams</b></a> &amp; other)</li></ul><a name="ref2_156418"></a>
+<table><tr><td><div class="element">Operation <b>merge</b></div></td></tr></table><p>Merge another parameter with this one. The updated mTSample will be the min of the two.<br /> The update mTBatch will be the min of original mTBatch and the apparent batch period<br /> of the other. the apparent batch is the maximum of mTBatch and mTSample,<br /></p><p>Declaration :</p><ul><li>Uml : + merge(in other : <a href="class137986.html#ref4_137986"><b>BatchParams</b></a>) : void</li><li>C++ : public: inline void merge(const <a href="class137986.html#ref4_137986"><b>BatchParams</b></a> &amp; other)</li><li>Java : public void merge()</li></ul></div>
+<p>All public operations : <a href="class137986.html#ref2_156418"><b>merge</b></a> , <a href="class137986.html#ref2_156290"><b>operator !=</b></a> </p>
+</body>
+</html>

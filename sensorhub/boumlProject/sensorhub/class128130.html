@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class JSONValue</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class JSONValue</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_128130"></a>
+<p>Declaration :</p><ul>
+<li>C++ : struct JSONValue </li><li>Java : package class JSONValue </li></ul><p>Artifact : <a href="index.html#ref8_128130"><b>JSONObject</b></a></p>
+<p>Stereotype: struct</p>
+<div class="sub">
+<table><tr><td><div class="element">Class <b><a href="class128258.html#ref4_128258"><b>FieldType</b></a></b></div></td></tr></table>
+<a name="ref2_129154"></a>
+<table><tr><td><div class="element">Operation <b>Parse</b></div></td></tr></table><p>Returns the number of bytes consumed or an error.<br /></p><p>Declaration :</p><ul><li>Uml : static, + Parse(in data : char, in size : size_t, inout out : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : ssize_t</li><li>C++ : public: static ssize_t Parse(const char * data, size_t size, <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> * out)</li><li>Java : public static ssize_t Parse()</li></ul><a name="ref2_129282"></a>
+<table><tr><td><div class="element">Operation <b>JSONValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + JSONValue() : </li><li>C++ : public: JSONValue()</li><li>Java : public JSONValue() </li></ul><a name="ref2_129410"></a>
+<table><tr><td><div class="element">Operation <b>JSONValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + JSONValue(in other : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : </li><li>C++ : public: JSONValue(const <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> &amp; other)</li><li>Java : public JSONValue() </li></ul><a name="ref2_129538"></a>
+<table><tr><td><div class="element">Operation <b>operator =</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + operator =(in other : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a>) : <a href="class128130.html#ref4_128130"><b>JSONValue</b></a></li><li>C++ : public: <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> &amp; operator =(const <a href="class128130.html#ref4_128130"><b>JSONValue</b></a> &amp; other)</li></ul><a name="ref2_129666"></a>
+<table><tr><td><div class="element">Operation <b>~JSONValue</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + ~JSONValue() : </li><li>C++ : public: ~JSONValue()</li></ul><a name="ref2_129794"></a>
+<table><tr><td><div class="element">Operation <b>type</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + type() : <a href="class128258.html#ref4_128258"><b>FieldType</b></a></li><li>C++ : public: <a href="class128258.html#ref4_128258"><b>FieldType</b></a> type() const</li><li>Java : public <a href="class128258.html#ref4_128258"><b>FieldType</b></a> type()</li></ul><a name="ref2_129922"></a>
+<table><tr><td><div class="element">Operation <b>getInt32</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getInt32(inout value : int32_t) : bool</li><li>C++ : public: bool getInt32(int32_t * value) const</li><li>Java : public boolean getInt32()</li></ul><a name="ref2_130050"></a>
+<table><tr><td><div class="element">Operation <b>getFloat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getFloat(inout value : float) : bool</li><li>C++ : public: bool getFloat(float * value) const</li><li>Java : public boolean getFloat()</li></ul><a name="ref2_130178"></a>
+<table><tr><td><div class="element">Operation <b>getString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getString(inout value : AString) : bool</li><li>C++ : public: bool getString(AString * value) const</li><li>Java : public boolean getString()</li></ul><a name="ref2_130306"></a>
+<table><tr><td><div class="element">Operation <b>getBoolean</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getBoolean(inout value : bool) : bool</li><li>C++ : public: bool getBoolean(bool * value) const</li><li>Java : public boolean getBoolean()</li></ul><a name="ref2_130434"></a>
+<table><tr><td><div class="element">Operation <b>getObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getObject(inout value : sp&lt;JSONObject&gt;) : bool</li><li>C++ : public: bool getObject(sp&lt;JSONObject&gt; * value) const</li><li>Java : public boolean getObject()</li></ul><a name="ref2_130562"></a>
+<table><tr><td><div class="element">Operation <b>getArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getArray(inout value : sp&lt;JSONArray&gt;) : bool</li><li>C++ : public: bool getArray(sp&lt;JSONArray&gt; * value) const</li><li>Java : public boolean getArray()</li></ul><a name="ref2_130690"></a>
+<table><tr><td><div class="element">Operation <b>setInt32</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setInt32(in value : int32_t) : void</li><li>C++ : public: void setInt32(int32_t value)</li><li>Java : public void setInt32()</li></ul><a name="ref2_130818"></a>
+<table><tr><td><div class="element">Operation <b>setFloat</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setFloat(in value : float) : void</li><li>C++ : public: void setFloat(float value)</li><li>Java : public void setFloat()</li></ul><a name="ref2_130946"></a>
+<table><tr><td><div class="element">Operation <b>setString</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setString(in value : AString) : void</li><li>C++ : public: void setString(const AString &amp; value)</li><li>Java : public void setString()</li></ul><a name="ref2_131074"></a>
+<table><tr><td><div class="element">Operation <b>setBoolean</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setBoolean(in value : bool) : void</li><li>C++ : public: void setBoolean(bool value)</li><li>Java : public void setBoolean()</li></ul><a name="ref2_131202"></a>
+<table><tr><td><div class="element">Operation <b>setObject</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setObject(in obj : sp&lt;JSONObject&gt;) : void</li><li>C++ : public: void setObject(const sp&lt;JSONObject&gt; &amp; obj)</li><li>Java : public void setObject()</li></ul><a name="ref2_131330"></a>
+<table><tr><td><div class="element">Operation <b>setArray</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setArray(in array : sp&lt;JSONArray&gt;) : void</li><li>C++ : public: void setArray(const sp&lt;JSONArray&gt; &amp; array)</li><li>Java : public void setArray()</li></ul><a name="ref2_131458"></a>
+<table><tr><td><div class="element">Operation <b>unset</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + unset() : void</li><li>C++ : public: void unset()</li><li>Java : public void unset()</li></ul><a name="ref2_131586"></a>
+<table><tr><td><div class="element">Operation <b>toString</b></div></td></tr></table><p>i.e. setNull()<br /></p><p>Declaration :</p><ul><li>Uml : + toString(in depth : size_t = 0, in indentFirstLine : bool = true) : AString</li><li>C++ : public: AString toString(size_t depth = 0, bool indentFirstLine = true) const</li><li>Java : public AString toString()</li></ul><a name="ref0_128002"></a>
+<table><tr><td><div class="element">Relation <b>mType (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mType : <a href="class128258.html#ref4_128258"><b>FieldType</b></a></li><li>C++ : private: <a href="class128258.html#ref4_128258"><b>FieldType</b></a> mType</li><li>Java : private <a href="class128258.html#ref4_128258"><b>FieldType</b></a> mType</li></ul><a name="ref1_129154"></a>
+<table><tr><td><div class="element">Attribute <b>mValue</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mValue : &lt;complex type&gt;</li><li>C++ : private: union  { int32_t mInt32</li><li>Java : private &lt;complex type&gt; mValue</li></ul></div>
+<p>All public operations : <a href="class128130.html#ref2_130562"><b>getArray</b></a> , <a href="class128130.html#ref2_130306"><b>getBoolean</b></a> , <a href="class128130.html#ref2_130050"><b>getFloat</b></a> , <a href="class128130.html#ref2_129922"><b>getInt32</b></a> , <a href="class128130.html#ref2_130434"><b>getObject</b></a> , <a href="class128130.html#ref2_130178"><b>getString</b></a> , <a href="class128130.html#ref2_129538"><b>operator =</b></a> , <a href="class128130.html#ref2_129154"><b>Parse</b></a> , <a href="class128130.html#ref2_131330"><b>setArray</b></a> , <a href="class128130.html#ref2_131074"><b>setBoolean</b></a> , <a href="class128130.html#ref2_130818"><b>setFloat</b></a> , <a href="class128130.html#ref2_130690"><b>setInt32</b></a> , <a href="class128130.html#ref2_131202"><b>setObject</b></a> , <a href="class128130.html#ref2_130946"><b>setString</b></a> , <a href="class128130.html#ref2_131586"><b>toString</b></a> , <a href="class128130.html#ref2_129794"><b>type</b></a> , <a href="class128130.html#ref2_131458"><b>unset</b></a> </p>
+</body>
+</html>

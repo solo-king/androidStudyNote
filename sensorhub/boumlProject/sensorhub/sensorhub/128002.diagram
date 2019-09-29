@@ -1,0 +1,201 @@
+format 221
+
+classinstance 128002 class_ref 146434 // sensortest.cpp
+  name ""   xyz 142.18 4.32 2005 life_line_z 2000
+classinstance 128514 class_ref 130434 // ASensorManager
+  name ""   xyz 293.1 4.32 2005 life_line_z 2000
+classinstance 130178 class_ref 146562 // SensorManager.cpp
+  name ""   xyz 595.44 5.26 2000 life_line_z 2000
+note 130306 "frameworks/native/services
+/sensorservice/hidl/SensorManager.cpp"
+  color darkgreen  xyzwh 487.24 33.92 3005 281 55
+classinstance 130946 class_ref 146562 // SensorManager.cpp
+  name ""   xyz 768.26 291.9 3010 life_line_z 2000
+note 132098 "/frameworks/native/libs
+/sensor/SensorManager.cpp"
+  color darkgreen  xyzwh 730.84 327.84 2000 214 59
+note 133378 "The function of getInstanceForPackage called first only."
+  color midred  xyzwh 682.34 446.17 2030 159 71
+note 134530 "sensortest -e 1 100000
+argc = 4
+argv[currArgumentIndex+1]= 1"
+  xyzwh 209.31 447.42 2000 219 75
+fragment 134914 "alt"
+  form "existingSensorConfigIndex>0" xyzwh 103.72 593.09 2025 467 76
+end
+note 135810 "Enable the sensor of type 1 with sampling and report parameters"
+  xyzwh 240.27 762.44 2000 365 37
+durationcanvas 128130 classinstance_ref 128002 // :sensortest.cpp
+  xyzwh 193 81 2010 11 870
+  overlappingdurationcanvas 134274
+    xyzwh 199 536 2020 11 397
+    overlappingdurationcanvas 134658
+      xyzwh 205 575 2030 11 25
+    end
+    overlappingdurationcanvas 135042
+      xyzwh 205 640 2030 11 25
+    end
+    overlappingdurationcanvas 135298
+      xyzwh 205 706 2030 11 25
+    end
+    overlappingdurationcanvas 135554
+      xyzwh 205 764 2030 11 25
+    end
+    overlappingdurationcanvas 135938
+      xyzwh 205 822 2030 11 25
+    end
+    overlappingdurationcanvas 136194
+      xyzwh 205 870 2030 11 25
+    end
+  end
+end
+durationcanvas 128642 classinstance_ref 128514 // :ASensorManager
+  xyzwh 351 102 2010 11 188
+  overlappingdurationcanvas 128898
+    xyzwh 357 137 2020 11 125
+    overlappingdurationcanvas 129282
+      xyzwh 363 173 2030 11 71
+    end
+  end
+end
+durationcanvas 129666 classinstance_ref 128514 // :ASensorManager
+  xyzwh 351 356 2010 11 94
+  overlappingdurationcanvas 129922
+    xyzwh 357 385 2020 11 56
+  end
+end
+durationcanvas 130434 classinstance_ref 130178 // :SensorManager.cpp
+  xyzwh 662 199 2010 11 32
+end
+durationcanvas 130690 classinstance_ref 130178 // :SensorManager.cpp
+  xyzwh 662 405 2010 11 206
+  overlappingdurationcanvas 132866
+    xyzwh 668 432 2020 11 120
+  end
+end
+durationcanvas 133122 classinstance_ref 130946 // :SensorManager.cpp
+  xyzwh 835 539 2010 11 185
+  overlappingdurationcanvas 133506
+    xyzwh 841 568 2020 11 136
+    overlappingdurationcanvas 133762
+      xyzwh 847 600 2030 11 83
+      overlappingdurationcanvas 134018
+	xyzwh 853 631 2040 11 32
+      end
+    end
+  end
+end
+lostfoundmsgsupport 128258 xyz 100 83 2015
+msg 128386 found_synchronous
+  from lostfoundmsgsupport_ref 128258
+  to durationcanvas_ref 128130
+  yz 81 2015 explicitmsg "main()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 129 63
+msg 128770 synchronous
+  from durationcanvas_ref 128130
+  to durationcanvas_ref 128642
+  yz 112 2020 explicitmsg "2.mSensorManager = ASensorManager_getInstanceForPackage(\"\");"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 103 92
+reflexivemsg 129026 synchronous
+  to durationcanvas_ref 128898
+  yz 137 2025 explicitmsg "3.getInstance()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 329 120
+reflexivemsg 129410 synchronous
+  to durationcanvas_ref 129282
+  yz 173 2035 explicitmsg "4.sInstance = new ASensorManager"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 266 155
+msg 129538 return
+  from durationcanvas_ref 129282
+  to durationcanvas_ref 128130
+  yz 227 2035 explicitmsg "sInstance"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 249 209
+msg 129794 synchronous
+  from durationcanvas_ref 128130
+  to durationcanvas_ref 129666
+  yz 358 2015 explicitmsg "5.mNumSensors = ASensorManager_getSensorList(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 200 339
+reflexivemsg 130050 synchronous
+  to durationcanvas_ref 129922
+  yz 385 2025 explicitmsg "6.getSensorList(list)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 309 368
+msg 130562 synchronous
+  from durationcanvas_ref 129282
+  to durationcanvas_ref 130434
+  yz 199 2035 explicitmsg "4.1mManager = ISensorManager::getService();"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 366 185
+msg 130818 synchronous
+  from durationcanvas_ref 129922
+  to durationcanvas_ref 130690
+  yz 406 2025 explicitmsg "7. mManager->getSensorList(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 410 391
+reflexivemsg 132994 synchronous
+  to durationcanvas_ref 132866
+  yz 432 2025 explicitmsg "8.getInternalManager()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 613 416
+msg 133250 synchronous
+  from durationcanvas_ref 132866
+  to durationcanvas_ref 133122
+  yz 539 2025 explicitmsg "9.getInstanceForPackage(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 684 520
+reflexivemsg 133634 synchronous
+  to durationcanvas_ref 133506
+  yz 568 2025 explicitmsg "10.sensorManager = new SensorManager(opPackageName)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 622 549
+reflexivemsg 133890 synchronous
+  to durationcanvas_ref 133762
+  yz 600 2035 explicitmsg "11.assertStateLocked()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 789 583
+reflexivemsg 134146 synchronous
+  to durationcanvas_ref 134018
+  yz 631 2045 explicitmsg "12.waitForSensorService(..)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 780 614
+reflexivemsg 134402 synchronous
+  to durationcanvas_ref 134274
+  yz 536 2025 explicitmsg "A1.parseArguments(argc, argv)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 115 520
+reflexivemsg 134786 synchronous
+  to durationcanvas_ref 134658
+  yz 575 2035 explicitmsg "B2.findSensorTypeInSensorList(1)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 112 559
+reflexivemsg 135170 synchronous
+  to durationcanvas_ref 135042
+  yz 640 2035 explicitmsg "B3.mSensorConfigList[(mNumSensorConfigs)++] = (SensorConfig){...}"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 111 619
+reflexivemsg 135426 synchronous
+  to durationcanvas_ref 135298
+  yz 706 2035 explicitmsg "B4.ASensorEventQueue *sensorEventQueue = ASensorManager_createEventQueue(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 86 685
+reflexivemsg 135682 synchronous
+  to durationcanvas_ref 135554
+  yz 764 2035 explicitmsg "B5.ASensorEventQueue_registerSensor(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 95 742
+reflexivemsg 136066 synchronous
+  to durationcanvas_ref 135938
+  yz 822 2035 explicitmsg "B6.numSensorEvents = ASensorEventQueue_getEvents(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 92 803
+reflexivemsg 136322 synchronous
+  to durationcanvas_ref 136194
+  yz 870 2035 explicitmsg "printf(sensorEvents)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 158 855
+end

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Documentation produced by the Html generator of Bouml (http://www.bouml.fr) -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+
+<head>
+<title>Class SensorFusion</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body bgcolor="#ffffff">
+
+<div class = "title">Class SensorFusion</div>
+<p></p>
+
+<!-- ============================================================= -->
+
+<a name="ref4_140034"></a>
+<p>Declaration :</p><ul>
+<li>C++ : class SensorFusion : public <a href="class140162.html#ref4_140162"><b>typedef19</b></a> </li><li>Java : package class SensorFusion extends <a href="class140162.html#ref4_140162"><b>typedef19</b></a> </li></ul><p>Artifact : <a href="index.html#ref8_131970"><b>SensorFusion</b></a></p>
+<div class="sub">
+<a name="ref3_128258"></a>
+<table><tr><td><div class="element">Extra Artifact Definition <b>friend</b></div></td></tr></table><p>Definition :</p><ul><li>C++ (decl): <pre>
+<br />    friend class Singleton&lt;SensorFusion&gt;;</pre></li></ul><a name="ref0_136834"></a>
+<table><tr><td><div class="element">Relation <b>mSensorDevice (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mSensorDevice : <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a></li><li>C++ : private: <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a> &amp; mSensorDevice</li><li>Java : private <a href="class137602.html#ref4_137602"><b>SensorDevice</b></a> mSensorDevice</li></ul><a name="ref1_142978"></a>
+<table><tr><td><div class="element">Attribute <b>mAcc</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mAcc : Sensor</li><li>C++ : private: Sensor mAcc</li><li>Java : private Sensor mAcc</li></ul><a name="ref1_143106"></a>
+<table><tr><td><div class="element">Attribute <b>mMag</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mMag : Sensor</li><li>C++ : private: Sensor mMag</li><li>Java : private Sensor mMag</li></ul><a name="ref1_143234"></a>
+<table><tr><td><div class="element">Attribute <b>mGyro</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mGyro : Sensor</li><li>C++ : private: Sensor mGyro</li><li>Java : private Sensor mGyro</li></ul><a name="ref0_136962"></a>
+<table><tr><td><div class="element">Relation <b>mFusions (&lt;directional composition&gt;)</b></div></td></tr></table><p>normal, no_mag, no_gyro<br /></p><p>Declaration :</p><ul><li>Uml : - mFusions : <a href="class132994.html#ref4_132994"><b>Fusion</b></a>, multiplicity : [NUM_FUSION_MODE]</li><li>C++ : private: <a href="class132994.html#ref4_132994"><b>Fusion</b></a> mFusions[NUM_FUSION_MODE]</li><li>Java : private <a href="class132994.html#ref4_132994"><b>Fusion</b></a> mFusions</li></ul><a name="ref1_143362"></a>
+<table><tr><td><div class="element">Attribute <b>mEnabled</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mEnabled : bool, multiplicity : [NUM_FUSION_MODE]</li><li>C++ : private: bool mEnabled[NUM_FUSION_MODE]</li><li>Java : private boolean mEnabled</li></ul><a name="ref0_137090"></a>
+<table><tr><td><div class="element">Relation <b>mAttitude (&lt;unidirectional association&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mAttitude : <a href="class133506.html#ref4_133506"><b>vec4_t</b></a></li><li>C++ : private: <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> &amp; mAttitude</li><li>Java : private <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> mAttitude</li></ul><a name="ref0_137218"></a>
+<table><tr><td><div class="element">Relation <b>mAttitudes (&lt;directional composition&gt;)</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - mAttitudes : <a href="class133506.html#ref4_133506"><b>vec4_t</b></a>, multiplicity : [NUM_FUSION_MODE]</li><li>C++ : private: <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> mAttitudes[NUM_FUSION_MODE]</li><li>Java : private <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> mAttitudes</li></ul><a name="ref1_143490"></a>
+<table><tr><td><div class="element">Attribute <b>mClients</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mClients : void*, multiplicity : [3]</li><li>C++ : private: SortedVector&lt;void*&gt; mClients[3]</li><li>Java : private void* mClients</li></ul><p>Stereotype: SortedVector</p>
+<a name="ref1_143618"></a>
+<table><tr><td><div class="element">Attribute <b>mEstimatedGyroRate</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mEstimatedGyroRate : float</li><li>C++ : private: float mEstimatedGyroRate</li><li>Java : private float mEstimatedGyroRate</li></ul><a name="ref1_143746"></a>
+<table><tr><td><div class="element">Attribute <b>mTargetDelayNs</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mTargetDelayNs : nsecs_t</li><li>C++ : private: nsecs_t mTargetDelayNs</li><li>Java : private nsecs_t mTargetDelayNs</li></ul><a name="ref1_143874"></a>
+<table><tr><td><div class="element">Attribute <b>mGyroTime</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mGyroTime : nsecs_t</li><li>C++ : private: nsecs_t mGyroTime</li><li>Java : private nsecs_t mGyroTime</li></ul><a name="ref1_144002"></a>
+<table><tr><td><div class="element">Attribute <b>mAccTime</b></div></td></tr></table>
+<p>Declaration :</p><ul><li>Uml : - mAccTime : nsecs_t</li><li>C++ : private: nsecs_t mAccTime</li><li>Java : private nsecs_t mAccTime</li></ul><a name="ref2_164354"></a>
+<table><tr><td><div class="element">Operation <b>SensorFusion</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : - SensorFusion() : </li><li>C++ : private: SensorFusion()</li><li>Java : private SensorFusion() </li></ul><a name="ref2_164482"></a>
+<table><tr><td><div class="element">Operation <b>process</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + process(in event : sensors_event_t) : void</li><li>C++ : public: void process(const sensors_event_t &amp; event)</li><li>Java : public void process()</li></ul><a name="ref2_164610"></a>
+<table><tr><td><div class="element">Operation <b>isEnabled</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + isEnabled() : bool</li><li>C++ : public: inline bool isEnabled() const</li><li>Java : public boolean isEnabled()</li></ul><a name="ref2_164738"></a>
+<table><tr><td><div class="element">Operation <b>hasEstimate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + hasEstimate(in mode : int = FUSION_9AXIS) : bool</li><li>C++ : public: inline bool hasEstimate(int mode = FUSION_9AXIS) const</li><li>Java : public boolean hasEstimate()</li></ul><a name="ref2_164866"></a>
+<table><tr><td><div class="element">Operation <b>getRotationMatrix</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getRotationMatrix(in mode : int = FUSION_9AXIS) : <a href="class133378.html#ref4_133378"><b>mat33_t</b></a></li><li>C++ : public: inline <a href="class133378.html#ref4_133378"><b>mat33_t</b></a> getRotationMatrix(int mode = FUSION_9AXIS) const</li><li>Java : public <a href="class133378.html#ref4_133378"><b>mat33_t</b></a> getRotationMatrix()</li></ul><a name="ref2_164994"></a>
+<table><tr><td><div class="element">Operation <b>getAttitude</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getAttitude(in mode : int = FUSION_9AXIS) : <a href="class133506.html#ref4_133506"><b>vec4_t</b></a></li><li>C++ : public: inline <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> getAttitude(int mode = FUSION_9AXIS) const</li><li>Java : public <a href="class133506.html#ref4_133506"><b>vec4_t</b></a> getAttitude()</li></ul><a name="ref2_165122"></a>
+<table><tr><td><div class="element">Operation <b>getGyroBias</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getGyroBias() : <a href="class133250.html#ref4_133250"><b>vec3_t</b></a></li><li>C++ : public: inline <a href="class133250.html#ref4_133250"><b>vec3_t</b></a> getGyroBias() const</li><li>Java : public <a href="class133250.html#ref4_133250"><b>vec3_t</b></a> getGyroBias()</li></ul><a name="ref2_165250"></a>
+<table><tr><td><div class="element">Operation <b>getEstimatedRate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getEstimatedRate() : float</li><li>C++ : public: inline float getEstimatedRate() const</li><li>Java : public float getEstimatedRate()</li></ul><a name="ref2_165378"></a>
+<table><tr><td><div class="element">Operation <b>activate</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + activate(in mode : int, inout ident : void, in enabled : bool) : status_t</li><li>C++ : public: status_t activate(int mode, void * ident, bool enabled)</li><li>Java : public status_t activate()</li></ul><a name="ref2_165506"></a>
+<table><tr><td><div class="element">Operation <b>setDelay</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + setDelay(in mode : int, inout ident : void, in ns : int64_t) : status_t</li><li>C++ : public: status_t setDelay(int mode, void * ident, int64_t ns)</li><li>Java : public status_t setDelay()</li></ul><a name="ref2_165634"></a>
+<table><tr><td><div class="element">Operation <b>getPowerUsage</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getPowerUsage(in mode : int = FUSION_9AXIS) : float</li><li>C++ : public: float getPowerUsage(int mode = FUSION_9AXIS) const</li><li>Java : public float getPowerUsage()</li></ul><a name="ref2_165762"></a>
+<table><tr><td><div class="element">Operation <b>getMinDelay</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + getMinDelay() : int32_t</li><li>C++ : public: int32_t getMinDelay() const</li><li>Java : public int32_t getMinDelay()</li></ul><a name="ref2_165890"></a>
+<table><tr><td><div class="element">Operation <b>dump</b></div></td></tr></table><p>Declaration :</p><ul><li>Uml : + dump(inout result : String8) : void</li><li>C++ : public: void dump(String8 &amp; result)</li><li>Java : public void dump()</li></ul></div>
+<p>All public operations : <a href="class140034.html#ref2_165378"><b>activate</b></a> , <a href="class140034.html#ref2_165890"><b>dump</b></a> , <a href="class140034.html#ref2_164994"><b>getAttitude</b></a> , <a href="class140034.html#ref2_165250"><b>getEstimatedRate</b></a> , <a href="class140034.html#ref2_165122"><b>getGyroBias</b></a> , <a href="class140034.html#ref2_165762"><b>getMinDelay</b></a> , <a href="class140034.html#ref2_165634"><b>getPowerUsage</b></a> , <a href="class140034.html#ref2_164866"><b>getRotationMatrix</b></a> , <a href="class140034.html#ref2_164738"><b>hasEstimate</b></a> , <a href="class140034.html#ref2_164610"><b>isEnabled</b></a> , <a href="class140034.html#ref2_164482"><b>process</b></a> , <a href="class140034.html#ref2_165506"><b>setDelay</b></a> </p>
+</body>
+</html>
