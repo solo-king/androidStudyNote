@@ -94,10 +94,20 @@ git config --global color.interactive auto
 patch about:
     //gen patch 
     git format-patch master --stdout > xxx.patch
-    //check patch wether conflict
+    //根据第一个commit生成补丁
+    git format-patch -1
+    //根据第从第一个commit开始生成N个补丁
+    git format-patch -N
+    //check patch wether conflict, 使用前要检查喜爱
     git apply --check 1.patch
     //apply patch
-    git am --signoff < 1.patch
+    git am -s 1.patch
+    //对于添加补丁有冲突的情况
+        1.先强制添加补丁
+        git am -s --reject 1.patch
+        2.根据生成的*.rej文件手动修改冲突
+        3. 修改完成后使用 git add .
+        4. 最后 git am --continue 即可
 git log:
 --author=<pattern>, --committer=<pattern>
 --grep=<pattern>
