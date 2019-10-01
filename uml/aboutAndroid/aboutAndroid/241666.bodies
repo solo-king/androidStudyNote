@@ -1,8 +1,0 @@
-class ActivityEntry
-!!!673154.java!!!	ActivityEntry(inout info : ResolveInfo, in label : String)
-            this.info = info;
-            this.label = label;
-!!!673282.java!!!	compareTo(inout entry : AppGridView::ActivityEntry) : int
-            return label.compareToIgnoreCase(entry.label);
-!!!673410.java!!!	toString() : String
-            return label;

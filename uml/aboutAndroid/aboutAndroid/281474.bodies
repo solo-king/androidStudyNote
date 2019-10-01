@@ -1,3 +1,0 @@
-class RecognizerInfo
-!!!922242.java!!!	RecognizerInfo(inout pm : PackageManager, inout _service : ServiceInfo, in _settings : String)
-            super(pm, _service, _settings);

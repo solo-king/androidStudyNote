@@ -1,9 +1,0 @@
-class NoHomeDialogFragment
-!!!585474.java!!!	show(inout parent : Activity) : void
-        final NoHomeDialogFragment dialog = new NoHomeDialogFragment();
-        dialog.show(parent.getFragmentManager(), null);
-!!!585602.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
-        return new AlertDialog.Builder(getActivity())
-                .setMessage(R.string.only_one_home_message)
-                .setPositiveButton(android.R.string.ok, null)
-                .create();

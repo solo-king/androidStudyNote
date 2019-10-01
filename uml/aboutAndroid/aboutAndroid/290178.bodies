@@ -1,8 +1,0 @@
-class WpsFragment
-!!!995074.java!!!	WpsFragment()
-            super();
-!!!995202.java!!!	WpsFragment(in wpsSetup : int)
-            super();
-            mWpsSetup = wpsSetup;
-!!!995330.java!!!	onCreateDialog(inout savedInstanceState : Bundle) : Dialog
-            return new WpsDialog(getActivity(), mWpsSetup);

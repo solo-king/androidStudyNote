@@ -1,7 +1,0 @@
-class DisplayListener
-!!!281090.java!!!	onDisplayAdded(in displayId : int) : void
-            updateHDMIState();
-!!!281218.java!!!	onDisplayChanged(in displayId : int) : void
-            updateHDMIState();
-!!!281346.java!!!	onDisplayRemoved(in displayId : int) : void
-            updateHDMIState();

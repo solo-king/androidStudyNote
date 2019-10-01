@@ -1,3 +1,0 @@
-class AppProcessInfo
-!!!524546.java!!!	AppProcessInfo(inout _info : ActivityManager.RunningAppProcessInfo)
-            info = _info;

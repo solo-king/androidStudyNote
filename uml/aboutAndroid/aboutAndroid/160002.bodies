@@ -1,7 +1,0 @@
-class PinnedHeaderListFragment
-!!!293890.java!!!	PinnedHeaderListFragment()
-        super();
-!!!294018.java!!!	setPinnedHeaderView(inout pinnedHeaderView : View) : void
-        ((ViewGroup) getListView().getParent()).addView(pinnedHeaderView, 0);
-!!!294146.java!!!	clearPinnedHeaderView() : void
-        ((ViewGroup) getListView().getParent()).removeViewAt(0);

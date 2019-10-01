@@ -1,9 +1,0 @@
-class ProgressCategoryBase
-!!!300290.java!!!	ProgressCategoryBase(inout context : Context)
-        this(context, null);
-!!!300418.java!!!	ProgressCategoryBase(inout context : Context, inout attrs : AttributeSet)
-        this(context, attrs, 0);
-!!!300546.java!!!	ProgressCategoryBase(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int)
-        super(context, attrs, defStyleAttr, 0);
-!!!300674.java!!!	ProgressCategoryBase(inout context : Context, inout attrs : AttributeSet, in defStyleAttr : int, in defStyleRes : int)
-        super(context, attrs, defStyleAttr, defStyleRes);

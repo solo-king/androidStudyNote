@@ -1,6 +1,0 @@
-class Keyboards
-!!!768002.java!!!	Keyboards(in deviceInfo : PhysicalKeyboardFragment::HardKeyboardDeviceInfo, in keyboardInfoList : ArrayList<KeyboardInfo>)
-            mDeviceInfo = deviceInfo;
-            mKeyboardInfoList = keyboardInfoList;
-!!!768130.java!!!	compareTo(inout another : PhysicalKeyboardFragment::Keyboards) : int
-            return mCollator.compare(mDeviceInfo.mDeviceName, another.mDeviceInfo.mDeviceName);

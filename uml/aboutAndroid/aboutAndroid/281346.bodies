@@ -1,4 +1,0 @@
-class InteractionInfo
-!!!922114.java!!!	InteractionInfo(inout pm : PackageManager, inout _service : VoiceInteractionServiceInfo)
-            super(pm, _service.getServiceInfo(), _service.getSettingsActivity());
-            serviceInfo = _service;

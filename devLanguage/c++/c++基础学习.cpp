@@ -73,4 +73,5 @@ vector:
             vector<string> strings = {"123", "23", "34"};
     4.在遍历 vertor strings 的过程中，不应该向strings中添加新元素
     5.可以用下标访问内部的元素，但是不能添加
-    6.
+引用&:
+        

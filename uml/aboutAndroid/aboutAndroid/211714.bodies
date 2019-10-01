@@ -1,6 +1,0 @@
-class SectionInfo
-!!!503810.java!!!	SectionInfo(in label : String, in position : int)
-            this.label = label;
-            this.position = position;
-!!!503938.java!!!	toString() : String
-            return label;

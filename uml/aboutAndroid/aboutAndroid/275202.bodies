@@ -1,7 +1,0 @@
-class SearchIndexableResources
-!!!881154.java!!!	size() : int
-        return sResMap.size();
-!!!881282.java!!!	getResourceByName(in className : String) : SearchIndexableResource
-        return sResMap.get(className);
-!!!881410.java!!!	values() : Collection<SearchIndexableResource>
-        return sResMap.values();

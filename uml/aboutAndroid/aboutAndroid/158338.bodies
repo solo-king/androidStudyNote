@@ -1,7 +1,0 @@
-class InstrumentedActivity
-!!!287618.java!!!	onResume() : void
-        super.onResume();
-        MetricsLogger.visible(this, getMetricsCategory());
-!!!287746.java!!!	onPause() : void
-        super.onPause();
-        MetricsLogger.hidden(this, getMetricsCategory());

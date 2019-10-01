@@ -1,9 +1,0 @@
-class ProvisionReceiver
-!!!1049602.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
-            mLastTetherRequestType = intent.getIntExtra("TETHER_TYPE", TETHERING_INVALID);
-            sendResponse(mProvisionResponse, context);
-!!!1049730.java!!!	sendResponse(in response : int, inout context : Context) : void
-            Intent responseIntent = new Intent(TEST_RESPONSE_ACTION);
-            responseIntent.putExtra(TetherService.EXTRA_RESULT, response);
-            context.sendBroadcast(
-                    responseIntent, android.Manifest.permission.CONNECTIVITY_INTERNAL);

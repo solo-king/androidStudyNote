@@ -1,4 +1,0 @@
-class DataUsageState
-!!!617858.java!!!	DataUsageState(inout isDataSaverWhitelisted : boolean, inout isDataSaverBlacklisted : boolean)
-            this.isDataSaverWhitelisted = isDataSaverWhitelisted;
-            this.isDataSaverBlacklisted = isDataSaverBlacklisted;

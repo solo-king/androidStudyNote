@@ -1,3 +1,0 @@
-class ServiceItem
-!!!525698.java!!!	ServiceItem(in userId : int)
-            super(false, userId);

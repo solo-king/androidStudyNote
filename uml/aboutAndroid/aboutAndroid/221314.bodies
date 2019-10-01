@@ -1,5 +1,0 @@
-class ServiceHandler
-!!!566530.java!!!	ServiceHandler(inout looper : Looper)
-            super(looper);
-!!!566658.java!!!	handleMessage(inout msg : Message) : void
-            processMessage(msg);

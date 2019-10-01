@@ -1,0 +1,288 @@
+wps 字体公式问题:
+	1.将wps_symbol_fonts中的字体拷贝到~/.fonts中
+	2.若无~/.fonts则建立之 
+freetype
+	安装
+		sudo add-apt-repository ppa:no1wantdthisname/ppa
+		sudo apt-get update
+		http://download.savannah.gnu.org/releases/freetype/
+	移除
+		sudo apt install ppa-purge
+		sudo ppa-purge ppa:no1wantdthisname/ppa
+Wine
+	安装
+		sudo add-apt-repository ppa:wine/wine-builds
+		sudo apt-get update
+		sudo apt-get install --install-recommends wine-staging
+		sudo apt-get install winehq-staging
+	卸载
+		sudo apt-get install ppa-purge
+		sudo ppa-purge ppa:wine/wine-builds
+wechat:
+	1.select Assets and download it 
+	        linux-x64.tar.gz
+		https://github.com/geeeeeeeeek/electronic-wechat/releases
+	2.uncompress linux-x64.tar.gz
+		tar zxf linux-x64.tar.gz
+	3.open mode.selected one
+		3.1 ./electronic-wechat
+		3.2 make shortstrct
+			cd ~/Destop
+			ln -s <path of electronic-wechat> <electronic-wechat.lns>
+	question&&answer:
+		1../electronic-wechat: error while loading shared libraries: libgconf-2.so.4: cannot open shared object file: No such file or directory
+			sudo apt-get install libgconf-2-4
+		2.Gtk-Message: 16:44:36.042: Failed to load module "canberra-gtk-module"
+			sudo apt-get install libcanberra-gtk-module
+
+
+TIM
+	1.install freetype:
+		sudo apt install libgl1-mesa-glx:i386 libfreetype6:i386
+	2.install wine-development
+		 sudo apt-get install wine-development 
+	3.下载地址
+	    //github repo
+	    https://github.com/askme765cs/Wine-QQ-TIM
+	    Wine-QQ:http://yun.tzmm.com.cn/index.php/s/XRbfi6aOIjv5gwj
+	    Wine-TIM:http://yun.tzmm.com.cn/index.php/s/5hJNzt2VR9aIEF2
+	4.open mode
+	    4.1双击打开TIM-x86_64.AppImage
+	    4.2.make shortstruct
+	      cd ~/Destop
+	      ln -s <path of Tim/QQ>  <Tim/QQ.lns>
+设置title：
+	添加到~/.bashrc
+	# function to set terminal title ganye
+	function set-title(){
+	  if [[ -z "$ORIG" ]]; then
+	    ORIG=$PS1
+	  fi
+	  TITLE="\[\e]2;$*\a\]"
+	  PS1=${ORIG}${TITLE}
+	}
+	Usage:
+	source ~/.bashrc
+	set-title <terminal name>	
+wine 相关		
+    1. wineQQ 接收文档位置：
+        ~/.TIM.unionfs/drive_c/users/chenqigan/My Documents/Tencent Files/945654096/FileRecv
+    2. 卸载wine安装的软件
+        2.1 在如下目录删除对应软件的文件夹
+            /home/chenqigan/.local/share/applications/wine/Programs
+        2.2 在如下目录删除menu中的快捷键
+            /home/chenqigan/.config/menus/applications-merged
+        
+Vmware14密钥：
+	FF31K-AHZD1-H8ETZ-8WWEZ-WUUVA CV7T2-6WY5Q-48EWP-ZXY7X-QGUWD
+
+ultraedit无限30天使用：
+    rm -rfd ~/.idm/uex  
+    rm -rf ~/.idm/*.spl  
+    rm -rf /tmp/*.spl
+bouml 安装(ubuntu 16.04):
+
+    for Precise (12.04 LTS) : https://www.bouml.fr/apt/precise, mirror : http://bouml.free.fr/apt/precise
+    for Trusty (14.04 LTS) : https://www.bouml.fr/apt/trusty, mirror : http://bouml.free.fr/apt/trusty
+    for Xenial (16.04 LTS) : https://www.bouml.fr/apt/xenial, mirror : http://bouml.free.fr/apt/xenial
+    for Yakkety (16.10) : https://www.bouml.fr/apt/yakkety, mirror : http://bouml.free.fr/apt/yakkety
+    for Artful (17.10) : https://www.bouml.fr/apt/artful, mirror : http://bouml.free.fr/apt/artful
+    for Bionic (18.04) : https://www.bouml.fr/apt/bionic, mirror : http://bouml.free.fr/apt/bionic
+
+    1.import my public key, 
+			wget -q https://www.bouml.fr/bouml_key.asc -O- | sudo apt-key add -
+    2.在/etc/apt/sources.list中添加源
+			/etc/apt/sources.list to add the line:
+        对于16.04
+		    deb https://www.bouml.fr/apt/xenial xenial free
+        对于18.04
+            deb https://www.bouml.fr/apt/bionic bionic free
+		3.sudo apt-get update
+		4.sudo apt-get install bouml
+    
+网易云音乐：
+			sudo dpkg -i netease-cloud-music_1.1.0_amd64_ubuntu.deb
+			sudo apt-get install -f
+			netease-cloud-music&
+支持'exfat'格式存储：
+	sudo apt-get install exfat-fuse
+
+解决VIM中文乱码：
+	vim ~/.vimrc
+	set encoding=utf-8                                    "设置gvim内部编码
+	set fileencoding=utf-8                                "设置当前文件编码
+	set fileencodings=ucs-bom,utf-8,gbk,cp936,latin-1     "设置支持打开的文件的编码		
+
+有道词典:
+	#将 deb 包解压到 youdao 目录
+	dpkg -X ./youdao-dict_1.1.0-0-ubuntu_amd64.deb youdao  
+	#解压 deb 包中的 control 信息 
+	dpkg -e ./youdao-dict_1.1.0-0-ubuntu_amd64.deb youdao/DEBIAN 
+	#编辑 control 文件，去掉 Depends 里的
+	vi youdao/DEBIAN/control  
+	gstreamer0.10-plugins-ugly 
+	#创建 youdaobuild 目录
+	mkdir youdaobuild   
+	#重新打包
+	dpkg-deb -b youdao youdaobuild/ 
+	#然后dpkg -i安装这个新的 deb 包
+	sudo dpkg -i youdaobuild/youdao-dict_1.1.0-0~ubuntu_amd64.deb
+	sudo apt-get -f install
+搜狗拼音安装(sougou)
+	sudo dpkg -i sogoupinyin_2.2.0.0108_amd64.deb
+	sudo apt-get install -f 
+	参考文档：
+		https://xunyunliu.github.io/post/install_sogou/
+
+设置谷歌浏览器代理
+
+	google-chrome --proxy-server="https=127.0.0.1:1088;http=127.0.01:1088"
+	
+取消代理设置：
+	删除中的apn信息/etc/apt/apt.conf
+	unset  http_proxy
+	unset https_proxy
+	删除/etc/enviroment中的http_proxy，https_proxy等设置
+vim使用：
+	ctrl+v
+		 列模式,直接移动光标
+ubuntu 软件安装：
+	bundle类安装包A:
+		sudo chmod+x ****.bundle
+		sudo ./****.bundle
+gcc高版本安装：
+	sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+	sudo apt update 
+	sudo apt install gcc-8
+visual studio code使用:
+    版本更新或安装:
+        sudo dpkg -i xxxx.deb
+	拓展插件:
+		1.DeviceTree
+		 DeviceTree Language Support for Visual Studio Code
+        2.IntelliJ IDEA Key Bindings
+            Android Studio快捷键一致
+        3.Google Translate benshabatnoam版
+    自配置快捷键
+        跳至符号定义: ctrl+回车
+        返回上一级:ctrl+,
+        跳至下一级：ctrl+.
+        跳至指定文件:ctrl+shift+n
+	Alt+Shift   竖列选择
+    每开启一个文件即打开一个新窗口:
+        在Settings.json中设置如下属性为false
+            "workbench.editor.enablePreview": false,
+
+windows与ubuntu时间不一致问题：
+    sudo apt-get install ntpdate
+    sudo ntpdate time.windows.com
+    //刷本地时间至硬件rtc中
+    sudo hwclock --localtime --systohc
+filezilla ftp工具:
+    官网
+        https://filezilla-project.org
+    工具安装:
+        sudo apt install filezilla
+    工具使用(以下针对瑞芯微ftp):
+        Site Manager:
+            Host:ftp.rock-chips.com Port:990
+            Protocol:FTP-File Transfer Protocol
+            Encryption:Require implicit FTP over TLS
+            Logon Type:Normal
+            Usr:3288mid
+            Password:eZMF785bIH
+ftp使用:
+    服务端工具安装:
+        sudo apt-get install vsftpd
+    服务端的控制:
+        sudo service vsftpd restart
+    1.允许匿名方式登入
+        ubuntu ftp服务端配置(/etc/vsftpd.conf):
+            listen=NO
+            listen_ipv6=YES
+            #匿名用户登入配置
+            anonymous_enable=YESfo
+            anon_umask=022
+            #允许匿名用户上传
+            anon_upload_enable=Yfo
+            #允许匿名用户创建文fo
+            anon_mkdir_write_enafo
+            #允许匿名用户修改名fo
+            anon_other_write_enable=YES
+            #匿名用户根目录
+            anon_root=/home/chenqigan/work/test/ftpBox/service
+        client验证方式:
+            ftp 127.0.0.1
+            用户名:anonymous  Password:直接回车即可
+            过程中注意事项:
+                1.使用用户chenqigan登入,则在其家木下设置anon_root属性,否则会报各种权限错误例如550错误
+    2.本地用户模式
+        ftp服务端配置:
+            listen=NO
+            listen_ipv6=YES
+            #匿名用户登入配置
+            anonymous_enable=NO
+            #支持本地用户登入
+            local_enable=YES
+            write_enable=YES
+            local_umask=022
+            #支持禁止用户名单,文件明档位于/etc/ftpusers /etc/user_list
+            userlist_enable=YES
+            #开启用户作用名单文件功能
+            userlist_enable=YES
+            #设置本地用户的初始家目录
+            local_root=/home/chenqigan/work/test/ftpBox/service
+        client验证方式:
+            ftp 127.0.0.1
+            用户名:chenqigan  Password:<对应用户密码>
+foxitReader安装:
+    tar zxf FoxitReader.enu.setup.2.4.4.0911.x64.run.tar.gz
+    ./FoxitReader.enu.setup.2.4.4.0911\(r057d814\).x64.run
+install shadowsocks client
+	sudo apt-get install python-pip
+	sudo pip install shadowsocks
+	sudo apt-get install python3.7
+	sudo apt-get install shadowsocks-libev
+	cpan Net::Shadowsocks
+	Usage:
+		ss-local -c shawdowclient.json
+	chenqigan@chenqigan:~/tools$ cat shawdowclient.json 
+	{  
+	 "server":"23.105.213.14",
+	 "password":"bingke12345",  
+	 "server_port":54321, 
+	 "local_address": "127.0.0.1",
+	 "local_port":1080,
+	 "timeout":300,
+	 "method":"aes-256-cfb",
+	 "fast_open": false
+	}
+instll FoxyProxy with firefox browse
+	add-on:
+		FoxyProxy
+	title or Description (optional):
+		myvps
+	IP address, DNS name, server name
+		127.0.0.1
+多台pc使用不同的.ssh
+	cd /home/chenqiga/.ssh
+	cp id_rsa  id_rsa.pub ~/.ssh/
+	chmod 400 id_*
+报h.264 decoder is required:
+	解决办法:
+		sudo apt install libdvdnav4 libdvdread4 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly libdvd-pkg
+		sudo apt install ubuntu-restricted-extras
+
+安装gimp，图片编辑工具
+	sudo add-apt-repository ppa:otto-kesselgulasch/gimp
+	sudo apt update
+	sudo apt install gimp 
+更改硬盘卷名称
+	如下仅仅对ntfs文件系统的硬盘有效
+	sudo ntfslabel /dev/sdd2 ganye480ssd
+	注意:
+		1.更改硬盘分区的卷名称(label)需要先卸载硬盘
+                2.对于其他文件系统有如下命令可用
+			exfatlabel exfatlabel  fatlabel  dosfslabel等以此类推
+samba服务器搭建:
+	

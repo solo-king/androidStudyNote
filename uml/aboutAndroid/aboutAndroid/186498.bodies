@@ -1,8 +1,0 @@
-class TestingSettingsBroadcastReceiver
-!!!353922.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
-        if (intent.getAction().equals(SECRET_CODE_ACTION)) {
-            Intent i = new Intent(Intent.ACTION_MAIN);
-            i.setClass(context, TestingSettingsActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(i);
-        }

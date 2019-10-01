@@ -1,7 +1,0 @@
-class DateLabel
-!!!718850.java!!!	DateLabel(inout paint : TextPaint, in x : int, inout cal : Calendar, inout dayFirst : boolean)
-            this.x = x;
-            final String bestFormat = DateFormat.getBestDateTimePattern(
-                    Locale.getDefault(), dayFirst ? "dM" : "Md");
-            label = DateFormat.format(bestFormat, cal).toString();
-            width = (int)paint.measureText(label);

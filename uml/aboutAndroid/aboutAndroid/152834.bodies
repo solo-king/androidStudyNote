@@ -1,7 +1,0 @@
-class DeviceAdminListItem
-!!!259074.java!!!	compareTo(inout other : DeviceAdminSettings::DeviceAdminListItem) : int
-            // Sort active admins first, then by name.
-            if (this.active != other.active) {
-                return this.active ? -1 : 1;
-            }
-            return this.name.compareTo(other.name);

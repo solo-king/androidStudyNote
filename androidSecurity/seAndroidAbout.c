@@ -5,11 +5,11 @@
     https://source.android.com/security/selinux#supporting_documentation
     //官方对于一些类可用的控制权限
     https://source.android.com/security/selinux/customize#available_controls
+    //一片比较直白的调试记录
+    https://blog.csdn.net/makingadream/article/details/51861902
 SELinux 设计哲学:
     1.任何没有明确指明的权限都应该被拒绝
         Anything not explicitly allowed is denied
-    2.
-
 在Android 8.0上的变化:
     1.更新和Treble项目的合作-->貌似指代在vendor代码中可以定义domain
     2.allow device manufacturers and SOC vendors to update their parts of the policy
@@ -40,7 +40,7 @@ SELinux 设计哲学:
             any of the source_types attempts an action corresponding to any of the permissions 
             on an object with any of the class classes that has any of the target_types label. 
             The most common example of one of these rules is an allow rule,
-    不允许直接范文以下通用标签:
+    不允许直接访问以下通用标签:
         socket_device
         device
         block_device
@@ -49,7 +49,7 @@ SELinux 设计哲学:
         tmpfs
 应用 Selinux for Android
     1.不要直接修改 system/sepolicy下的策略
-    2.在android 8.0之前的版本，添加自定义的策略应该在/device/manufacturer/device-name/sepolicy中
+    2.在android 8.0之前的版本，添加自定义的策略应该在 /device/manufacturer/device-name/sepolicy中
     3.在 android 8 之后在the changes you make to these files should only affect policy in your vendor directory.
     4.Android O之后策略的目录
         system/sepolicy/private
@@ -58,6 +58,26 @@ SELinux 设计哲学:
         device/manufacturer/device-name/sepolicy
     5.如何将策略编译进固件中
         Build and flash the boot and system images.
-    
+file:hal_sensors_default.te
+    type hal_sensors_default, domain;
+    hal_server_domain(hal_sensors_default, hal_sensors)
 
+    type hal_sensors_default_exec, exec_type, vendor_file_type, file_type;
+    #the policy states hal_sensors_default is spawned from init and is allowed to communicate with it.
+    init_daemon_domain(hal_sensors_default)
 
+    allow hal_sensors_default fwk_scheduler_hwservice:hwservice_manager find;
+
+    allow hal_sensors_default input_device:dir r_dir_perms;
+    allow hal_sensors_default input_device:chr_file r_file_perms;
+
+    # Allow sensor hals to access and use gralloc memory allocated by
+    # android.hardware.graphics.allocator
+    allow hal_sensors_default hal_graphics_allocator_default:fd use;
+    allow hal_sensors_default ion_device:chr_file r_file_perms;
+
+    # allow sensor hal to use lock for keeping system awake for wake up
+    # events delivery.
+    wakelock_use(hal_sensors_default);
+
+1. 使用dmesg -w|grep avc 时没有找到任何与sensor有关的died

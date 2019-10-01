@@ -1,8 +1,0 @@
-class UserDictionaryContentObserver
-!!!870146.java!!!	UserDictionaryContentObserver(inout handler : Handler)
-            super(handler);
-!!!870274.java!!!	onChange(inout selfChange : boolean, inout uri : Uri) : void
-            if (UserDictionary.Words.CONTENT_URI.equals(uri)) {
-                Index.getInstance(mContext).updateFromClassNameResource(
-                        InputMethodAndLanguageSettings.class.getName(), true, true);
-            }

@@ -1,5 +1,0 @@
-class KeyboardInfo
-!!!768258.java!!!	KeyboardInfo(in imi : InputMethodInfo, in imSubtype : InputMethodSubtype, in layout : KeyboardLayout)
-                mImi = imi;
-                mImSubtype = imSubtype;
-                mLayout = layout;

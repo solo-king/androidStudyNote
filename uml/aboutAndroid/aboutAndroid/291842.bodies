@@ -1,6 +1,0 @@
-class WifiInfo
-!!!1012994.java!!!	onCreate(inout savedInstanceState : Bundle) : void
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.testing_wifi_settings);
-!!!1013122.java!!!	getMetricsCategory() : int
-        return MetricsEvent.TESTING;

@@ -1,3 +1,0 @@
-class TimeTicker
-!!!529666.java!!!	TimeTicker(inout context : Context, inout attrs : AttributeSet)
-            super(context, attrs);

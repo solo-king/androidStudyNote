@@ -1,9 +1,0 @@
-class WallpaperSuggestionActivity
-!!!394370.java!!!	onCreate(inout savedInstanceState : Bundle) : void
-        super.onCreate(savedInstanceState);
-        Intent intent = new Intent()
-                .setClassName(getString(R.string.config_wallpaper_picker_package),
-                        getString(R.string.config_wallpaper_picker_class))
-                .addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
-        startActivity(intent);
-        finish();

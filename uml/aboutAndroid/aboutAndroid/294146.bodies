@@ -1,9 +1,0 @@
-class WifiP2pPersistentGroup
-!!!1031298.java!!!	WifiP2pPersistentGroup(inout context : Context, inout group : WifiP2pGroup)
-        super(context);
-        mGroup = group;
-        setTitle(mGroup.getNetworkName());
-!!!1031426.java!!!	getNetworkId() : int
-        return mGroup.getNetworkId();
-!!!1031554.java!!!	getGroupName() : String
-        return mGroup.getNetworkName();

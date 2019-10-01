@@ -1,0 +1,49 @@
+diff a/ubuntu相关问题/ubuntu使用过程记录.c b/ubuntu相关问题/ubuntu使用过程记录.c	(rejected hunks)
+@@ -284,3 +284,47 @@ instll FoxyProxy with firefox browse
+ 		1.更改硬盘分区的卷名称(label)需要先卸载硬盘
+                 2.对于其他文件系统有如下命令可用
+ 			exfatlabel exfatlabel  fatlabel  dosfslabel等以此类推
++
++
++使用ubuntu自带ftp下载必要软件
++	1.windows安装ftp服务器
++		a.开启tftp服务器功能
++			控制面板\程序\启用或关闭Windows功能
++			选择上,并等待windows自动配置完成 
++				i.FTP服务和FTP扩展性
++				ii.Web管理工具->IIS管理控制台
++		b.设置windows侧ftp服务器
++				i.搜索 IIS
++				ii.右键网站-->创建FTP站点
++				iii.填写ftp服务器站点信息
++						站点名称随意
++						物理路径全英文
++						IP地址：本机地址 端口号默认21即可
++						SSL选择无SSL
++						身份验证:匿名+基本
++						授权:所有用户
++						权限:读取+写入
++		c.ubuntu侧下载
++			wget -r -nH  ftp://172.31.1.1:21/* --ftp-user=ftpuser --ftp-password=ftpuser
++			Note:
++				可以添加-P/dir  制定下载位置
++				支持匿名的话
++						--ftp-user= anonymous 
++						--ftp-password=ftpuser//该项不填写
++ubuntu离线包安装
++	a.下载离线包
++		http://archive.ubuntu.com/ubuntu/pool/main/o/openssh/
++		说明:
++				main/o这里的o代表你要下载的软件首字母，例如这里要下载openssh
++				openssh-service离线安装:
++					openssh-client_7.2p2-4_amd64.deb
++					openssh-sftp-server_7.2p2-4_amd64.deb
++					openssh-server_7.2p2-4_amd64.deb
++					ssh_7.2p2-4_all.deb
++	b.选择对应版本的安装包
++					https://packages.ubuntu.com/
++					keyword:软件名
++					Distribution:xenial
++git离线安装:
++	安装《D:\z-资料库\c-陈其敢\androidStudyNote\ubuntu相关\git离线安装》下的deb
++		sudo dpkg -i *

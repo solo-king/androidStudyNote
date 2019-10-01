@@ -1,3 +1,0 @@
-class UsageTimeComparator
-!!!379394.java!!!	compare(inout a : UsageStats, inout b : UsageStats) : int
-            return (int)(b.getTotalTimeInForeground() - a.getTotalTimeInForeground());

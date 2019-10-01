@@ -1,5 +1,0 @@
-class ClearCacheObserver
-!!!472834.java!!!	onRemoveCompleted(in packageName : String, in succeeded : boolean) : void
-            final Message msg = mHandler.obtainMessage(MSG_CLEAR_CACHE);
-            msg.arg1 = succeeded ? OP_SUCCESSFUL : OP_FAILED;
-            mHandler.sendMessage(msg);

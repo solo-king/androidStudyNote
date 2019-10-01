@@ -1,6 +1,0 @@
-class NoUnderlineUrlSpan
-!!!887682.java!!!	NoUnderlineUrlSpan(in url : String)
-            super(url);
-!!!887810.java!!!	updateDrawState(inout ds : TextPaint) : void
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);

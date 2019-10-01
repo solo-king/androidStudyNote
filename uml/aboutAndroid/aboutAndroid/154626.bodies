@@ -1,4 +1,0 @@
-class PackageReceiver
-!!!272258.java!!!	onReceive(inout context : Context, inout intent : Intent) : void
-            logd("PackageReceiver.onReceive");
-            refreshFromBackend();

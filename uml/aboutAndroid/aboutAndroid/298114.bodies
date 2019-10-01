@@ -1,9 +1,0 @@
-class Receiver
-!!!1049346.java!!!	Receiver(inout test : TetherServiceTest)
-            super(null);
-            mTest = new WeakReference<TetherServiceTest>(test);
-!!!1049474.java!!!	onReceiveResult(in resultCode : int, inout resultData : Bundle) : void
-            TetherServiceTest test = mTest.get();
-            if (test != null) {
-                test.mLastReceiverResultCode = resultCode;
-            }

@@ -1,7 +1,0 @@
-class TimeLabel
-!!!718722.java!!!	TimeLabel(inout paint : TextPaint, in x : int, inout cal : Calendar, inout use24hr : boolean)
-            this.x = x;
-            final String bestFormat = DateFormat.getBestDateTimePattern(
-                    Locale.getDefault(), use24hr ? "km" : "ha");
-            label = DateFormat.format(bestFormat, cal).toString();
-            width = (int)paint.measureText(label);

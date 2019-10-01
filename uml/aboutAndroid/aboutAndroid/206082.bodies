@@ -1,7 +1,0 @@
-class OverlayState
-!!!467330.java!!!	OverlayState(inout permissionState : AppStateAppOpsBridge::PermissionState)
-            super(permissionState.packageName, permissionState.userHandle);
-            this.packageInfo = permissionState.packageInfo;
-            this.appOpMode = permissionState.appOpMode;
-            this.permissionDeclared = permissionState.permissionDeclared;
-            this.staticPermissionGranted = permissionState.staticPermissionGranted;

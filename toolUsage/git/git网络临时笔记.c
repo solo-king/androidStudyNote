@@ -3,6 +3,10 @@
         指向你正在工作中的本地分支的指针
 参考资料:
     https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374831943254ee90db11b13d4ba9a73b9047f4fb968d000
+    //关于如何打补丁的
+    https://www.devroom.io/2009/10/26/how-to-create-and-apply-a-patch-with-git/
+    //关于zip包不含.git问题解决
+    https://blog.csdn.net/m0_38028800/article/details/82015077
 撤销修改:
     1.只修改了工作区(Working Directory)但未提交暂存区
     2.已提交到暂存区(unstage)
@@ -87,6 +91,16 @@ git config --global color.interactive auto
     git diff HEAD 可以查看工作区和版本库的差别
 添加远程仓库地址:
     git remote add origin https://github.com/solo-king/lt8912b.git
+patch about:
+    //gen patch 
+    git format-patch master --stdout > xxx.patch
+    //check patch wether conflict
+    git apply --check 1.patch
+    //apply patch
+    git am --signoff < 1.patch
+git log:
+--author=<pattern>, --committer=<pattern>
+--grep=<pattern>
 
 
             

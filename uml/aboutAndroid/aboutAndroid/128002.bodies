@@ -1,9 +1,0 @@
-class AccessiblePreferenceCategory
-!!!128002.java!!!	AccessiblePreferenceCategory(inout context : Context)
-        super(context);
-!!!128130.java!!!	setContentDescription(in contentDescription : String) : void
-        mContentDescription = contentDescription;
-!!!128258.java!!!	onBindViewHolder(inout view : PreferenceViewHolder) : void
-        super.onBindViewHolder(view);
-
-        view.itemView.setContentDescription(mContentDescription);

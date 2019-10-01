@@ -1,9 +1,0 @@
-class Callbacks
-!!!766594.java!!!	Callbacks(inout context : Context, inout physicalKeyboardFragment : PhysicalKeyboardFragment, inout hardKeyboards : List<HardKeyboardDeviceInfo>)
-            mContext = context;
-            mPhysicalKeyboardFragment = physicalKeyboardFragment;
-            mHardKeyboards = hardKeyboards;
-!!!766722.java!!!	onCreateLoader(in id : int, inout args : Bundle) : Loader<List<Keyboards>>
-            return new KeyboardLayoutLoader(mContext, mHardKeyboards);
-!!!766850.java!!!	onLoadFinished(inout loader : Loader<List<Keyboards>>, inout data : List<Keyboards>) : void
-            mPhysicalKeyboardFragment.onLoadFinishedInternal(loader.getId(), data);

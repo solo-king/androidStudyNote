@@ -1,5 +1,0 @@
-class PermissionsResultCallback
-!!!508290.java!!!	onAppWithPermissionsCountsResult(in standardGrantedPermissionAppCount : int, in standardUsedPermissionAppCount : int) : void
-            /* do nothing - stub */
-!!!508418.java!!!	onPermissionSummaryResult(in standardGrantedPermissionCount : int, in requestedPermissionCount : int, in additionalGrantedPermissionCount : int, inout grantedGroupLabels : List<CharSequence>) : void
-            /* do nothing - stub */

@@ -1,6 +1,0 @@
-class PrivateVolumeSettingsTest
-!!!1039746.java!!!	test_ManageStorageNotShown() : void
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        instrumentation.startActivitySync(
-                new Intent(android.provider.Settings.ACTION_INTERNAL_STORAGE_SETTINGS));
-        onView(withText(com.android.settings.R.string.storage_menu_manage)).check(doesNotExist());

@@ -1,7 +1,0 @@
-class SubSettings
-!!!327298.java!!!	onNavigateUp() : boolean
-        finish();
-        return true;
-!!!327426.java!!!	isValidFragment(in fragmentName : String) : boolean
-        Log.d("SubSettings", "Launching fragment " + fragmentName);
-        return true;

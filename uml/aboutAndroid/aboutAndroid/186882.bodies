@@ -1,6 +1,0 @@
-class UsageStatsManagerWrapper
-!!!356610.java!!!	UsageStatsManagerWrapper(inout context : Context)
-            mUsageStatsManager = (UsageStatsManager)
-                    context.getSystemService(Context.USAGE_STATS_SERVICE);
-!!!356738.java!!!	setAppInactive(in packageName : String, inout isInactive : boolean) : void
-            mUsageStatsManager.setAppInactive(packageName, isInactive);

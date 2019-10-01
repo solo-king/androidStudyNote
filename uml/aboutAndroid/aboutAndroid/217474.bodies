@@ -1,5 +1,0 @@
-class SpecialAccessSettings
-!!!537986.java!!!	onCreatePreferences(inout savedInstanceState : Bundle, in rootKey : String) : void
-        addPreferencesFromResource(R.xml.special_access);
-!!!538114.java!!!	getMetricsCategory() : int
-        return MetricsEvent.SPECIAL_ACCESS;

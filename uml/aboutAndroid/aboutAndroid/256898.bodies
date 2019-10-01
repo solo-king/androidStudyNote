@@ -1,4 +1,0 @@
-class UserDictionaryLocalePicker
-!!!776706.java!!!	UserDictionaryLocalePicker(in parent : UserDictionaryAddWordFragment)
-        super();
-        setLocaleSelectionListener(parent);

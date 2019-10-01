@@ -1,6 +1,0 @@
-class DashboardItemHolder
-!!!578434.java!!!	DashboardItemHolder(inout itemView : View)
-            super(itemView);
-            icon = (ImageView) itemView.findViewById(android.R.id.icon);
-            title = (TextView) itemView.findViewById(android.R.id.title);
-            summary = (TextView) itemView.findViewById(android.R.id.summary);

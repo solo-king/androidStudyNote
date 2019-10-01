@@ -1,3 +1,0 @@
-class SuggestionItem
-!!!589058.java!!!	SuggestionItem(in query : String)
-            this.query = query;

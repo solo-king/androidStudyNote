@@ -1,9 +1,0 @@
-class DevelopmentTiles
-!!!866306.java!!!	setTilesEnabled(inout context : Context, inout enable : boolean) : void
-        final PackageManager pm = context.getPackageManager();
-        for (Class cls : TILE_CLASSES) {
-            pm.setComponentEnabledSetting(new ComponentName(context, cls),
-                    enable ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                           : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
-                    PackageManager.DONT_KILL_APP);
-        }

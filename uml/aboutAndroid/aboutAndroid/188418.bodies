@@ -1,8 +1,0 @@
-class AgentInfo
-!!!363650.java!!!	equals(inout other : Object) : boolean
-            if (other instanceof AgentInfo) {
-                return component.equals(((AgentInfo)other).component);
-            }
-            return true;
-!!!363778.java!!!	compareTo(inout other : TrustAgentSettings::AgentInfo) : int
-            return component.compareTo(other.component);

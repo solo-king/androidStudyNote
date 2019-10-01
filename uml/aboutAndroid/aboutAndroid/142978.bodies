@@ -1,4 +1,0 @@
-class LeftButtonMode
-!!!193282.java!!!	LeftButtonMode(in text : int, inout enabled : boolean)
-                this.text = text;
-                this.enabled = enabled;
