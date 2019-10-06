@@ -1,6 +1,6 @@
 format 222
-"sensorhub"
-  revision 6
+"sensorhubDriver"
+  revision 1
   modified_by 2 "qigan"
 
 
@@ -44,91 +44,5 @@ format 222
 
   mark_for_import
   
-  ncouples 1
-  key "html dir" value "/home/chenqigan/Documents/bouml/sensorhub/"
-  usecaseview 128002 "halAbout"
-    
-    usecasediagramsettings end
-    
-    sequencediagramsettings end
-    
-    collaborationdiagramsettings end
-    
-    classdiagramsettings member_max_width 0 end
-    
-    classcompositediagramsettings end
-    
-    objectdiagramsettings end
-    
-    objectcompositediagramsettings end
-    
-    statediagramsettings
-     end
-    
-    activitydiagramsettings
-     end
-    sequencediagram 128002 "sensortest"
-      sequencediagramsettings end
-      overlapping_bars size E
-    end
-
-    class 146434 "sensortest.cpp"
-      visibility package 
-      cpp_decl "${comment}${template}class ${name}${inherit} {
-${members}};
-${inlines}
-"
-      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
-${members}}
-"
-      php_decl ""
-      python_2_2 python_decl ""
-      idl_decl ""
-      explicit_switch_type ""
-      mysql_decl ""
-      
-    end
-
-    class 146562 "SensorManager.cpp"
-      visibility package 
-      cpp_decl "${comment}${template}class ${name}${inherit} {
-${members}};
-${inlines}
-"
-      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
-${members}}
-"
-      php_decl ""
-      python_2_2 python_decl ""
-      idl_decl ""
-      explicit_switch_type ""
-      mysql_decl ""
-      
-    end
-
-    class 146690 "ISensorService.cpp"
-      visibility package 
-      cpp_decl "${comment}${template}class ${name}${inherit} {
-${members}};
-${inlines}
-"
-      java_decl "${comment}${@}${visibility}${static}${final}${abstract}class ${name}${extends}${implements} {
-${members}}
-"
-      php_decl ""
-      python_2_2 python_decl ""
-      idl_decl ""
-      explicit_switch_type ""
-      mysql_decl ""
-      
-    end
-  end
-
-  package_ref 128002 // common
-
-  package_ref 128130 // sensortest
-
-  package_ref 128258 // sensorservice
-
-  package_ref 135938 // nanohubDriver
+  package_ref 128130 // myUml
 end

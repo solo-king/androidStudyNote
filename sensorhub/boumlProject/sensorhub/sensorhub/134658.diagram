@@ -1,0 +1,129 @@
+format 222
+
+classinstance 128002 class_ref 153218 // st_lsm6dsm.c
+  name ""   xyz 169 10 2005 life_line_z 2000
+fragment 130306 "counter the number of fifo"
+  xyzwh 33 425 3005 681 86
+end
+fragment 131458 "counter the timestamp"
+  xyzwh 29 630 3005 433 127
+end
+durationcanvas 128130 classinstance_ref 128002 // :st_lsm6dsm.c
+  xyzwh 218 73 2010 11 282
+  overlappingdurationcanvas 128514
+    xyzwh 224 116 2020 11 214
+    overlappingdurationcanvas 128770
+      xyzwh 230 155 2030 11 25
+    end
+    overlappingdurationcanvas 129026
+      xyzwh 230 222 2030 11 25
+    end
+    overlappingdurationcanvas 129282
+      xyzwh 230 278 2030 11 25
+    end
+  end
+end
+durationcanvas 129538 classinstance_ref 128002 // :st_lsm6dsm.c
+  xyzwh 218 409 2010 11 431
+  overlappingdurationcanvas 129922
+    xyzwh 224 470 2020 11 25
+  end
+  overlappingdurationcanvas 130434
+    xyzwh 224 553 2020 11 25
+  end
+  overlappingdurationcanvas 130690
+    xyzwh 224 611 2020 11 25
+  end
+  overlappingdurationcanvas 130946
+    xyzwh 224 676 2020 11 25
+  end
+  overlappingdurationcanvas 131202
+    xyzwh 224 730 2020 11 25
+  end
+  overlappingdurationcanvas 131586
+    xyzwh 224 792 2020 11 25
+  end
+end
+durationcanvas 131842 classinstance_ref 128002 // :st_lsm6dsm.c
+  xyzwh 218 875 2010 11 196
+  overlappingdurationcanvas 132226
+    xyzwh 224 911 2020 11 25
+  end
+end
+lostfoundmsgsupport 128258 xyz 99 75 2015
+lostfoundmsgsupport 129666 xyz 62 411 2015
+lostfoundmsgsupport 131970 xyz 63 876.688 2015
+msg 128386 found_synchronous
+  from lostfoundmsgsupport_ref 128258
+  to durationcanvas_ref 128130
+  yz 73 2015 explicitmsg "1.lsm6dsm_isr1()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 106 56
+reflexivemsg 128642 synchronous
+  to durationcanvas_ref 128514
+  yz 116 2025 explicitmsg "2.lsm6dsm_readStatusReg_(task, true)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 116 99
+reflexivemsg 128898 synchronous
+  to durationcanvas_ref 128770
+  yz 155 2035 explicitmsg "3.trySwitchState(SENSOR_INT1_STATUS_REG_HANDLING)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 50 135
+reflexivemsg 129154 synchronous
+  to durationcanvas_ref 129026
+  yz 222 2035 explicitmsg "4.SPI_READ(LSM6DSM_FIFO_STATUS1_ADDR/*0x3a*/, 2, &fifoStatusRegBuffer)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 34 200
+reflexivemsg 129410 synchronous
+  to durationcanvas_ref 129282
+  yz 278 2035 explicitmsg "5.lsm6dsm_spiBatchTxRx(...,lsm6dsm_spiCallback,...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 35 254
+msg 129794 found_synchronous
+  from lostfoundmsgsupport_ref 129666
+  to durationcanvas_ref 129538
+  yz 409 2015 explicitmsg "6.lsm6dsm_spiCallback(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 55 392
+reflexivemsg 130050 synchronous
+  to durationcanvas_ref 129922
+  yz 470 2025 explicitmsg "7.T(fifoDataToRead) -= T(fifoDataToRead) % (T(fifoCntl).totalSip * LSM6DSM_ONE_SAMPLE_BYTE)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 45 453
+reflexivemsg 130562 synchronous
+  to durationcanvas_ref 130434
+  yz 553 2025 explicitmsg "8.SPI_READ(LSM6DSM_FIFO_DATA_OUT_L_ADDR/*3e*/, T(fifoDataToRead), &T_SLAVE_INTERFACE(fifoDataBuffer))"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 23 529
+reflexivemsg 130818 synchronous
+  to durationcanvas_ref 130690
+  yz 611 2025 explicitmsg "9.SET_STATE(SENSOR_INT1_OUTPUT_DATA_HANDLING)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 46 594
+reflexivemsg 131074 synchronous
+  to durationcanvas_ref 130946
+  yz 676 2025 explicitmsg "10.T(lastFifoReadTimestamp) = sensorGetTime()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 83 659
+reflexivemsg 131330 synchronous
+  to durationcanvas_ref 131202
+  yz 730 2025 explicitmsg "11.T(time).timeSyncRtcTime = T(lastFifoReadTimestamp)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 67 708
+reflexivemsg 131714 synchronous
+  to durationcanvas_ref 131586
+  yz 792 2025 explicitmsg "12.lsm6dsm_spiBatchTxRx(lsm6dsm_spiCallback)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 77 775
+msg 132098 found_synchronous
+  from lostfoundmsgsupport_ref 131970
+  to durationcanvas_ref 131842
+  yz 875 2015 explicitmsg "13.lsm6dsm_spiCallback()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 58 858
+reflexivemsg 132354 synchronous
+  to durationcanvas_ref 132226
+  yz 911 2025 explicitmsg "14.lsm6dsm_parseFifoData(...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 143 894
+end

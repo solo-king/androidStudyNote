@@ -1,0 +1,12 @@
+window_sizes 1920 1017 294 1621 873 96
+
+diagrams
+  active  classdiagram_ref 128130 // LSM6DSMTask
+    1621 873 100 E 0 0
+end
+show_stereotypes
+selected 
+  package_ref 128130 // myUml
+open
+end
+end

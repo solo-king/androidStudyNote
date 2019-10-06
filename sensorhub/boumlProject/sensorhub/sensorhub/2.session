@@ -1,16 +1,8 @@
 window_sizes 1920 1017 294 1621 873 96
 
-diagrams
-  active  sequencediagram_ref 128002 // sensortest
-    1621 873 100 E 0 0
-end
 show_stereotypes
-selected sequencediagram_ref 128002 // sensortest
+selected 
+  package_ref 129 // sensorhub
 open
-  usecaseview_ref 128002 // halAbout
-  
-package_ref 128002 // common
-  
-package_ref 128130 // sensortest
 end
 end

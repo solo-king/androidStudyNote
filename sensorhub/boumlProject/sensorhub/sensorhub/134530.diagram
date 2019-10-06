@@ -1,0 +1,92 @@
+format 222
+
+classinstance 128002 class_ref 153218 // st_lsm6dsm.c
+  name ""   xyz 183 8 2005 life_line_z 2000
+note 129026 "The function of lsm6dsm_timerCallback will be call after 100ms."
+  color darkgreen  xyzwh 50 229 2000 383 53
+fragment 131458 "read chip id"
+  xyzwh 24 340 2000 582 125
+end
+fragment 132610 "software rest"
+  xyzwh 24 522 3005 569 88
+end
+fragment 132994 "more init"
+  xyzwh 17 620 3005 683 127
+end
+durationcanvas 128130 classinstance_ref 128002 // :st_lsm6dsm.c
+  xyzwh 232 75 2010 11 152
+  overlappingdurationcanvas 128514
+    xyzwh 238 120 2020 11 25
+  end
+  overlappingdurationcanvas 128770
+    xyzwh 238 175 2020 11 31
+  end
+end
+durationcanvas 129154 classinstance_ref 128002 // :st_lsm6dsm.c
+  xyzwh 232 326 2010 11 473
+  overlappingdurationcanvas 130818
+    xyzwh 238 367 2020 11 25
+  end
+  overlappingdurationcanvas 131074
+    xyzwh 238 417 2020 11 25
+  end
+  overlappingdurationcanvas 132098
+    xyzwh 238 511 2020 11 221
+    overlappingdurationcanvas 132354
+      xyzwh 244 568 2030 11 25
+    end
+    overlappingdurationcanvas 132738
+      xyzwh 244 674 2030 11 34
+    end
+  end
+end
+lostfoundmsgsupport 128258 xyz 116 77 2015
+lostfoundmsgsupport 129282 xyz 109 328 2015
+msg 128386 found_synchronous
+  from lostfoundmsgsupport_ref 128258
+  to durationcanvas_ref 128130
+  yz 75 2015 explicitmsg "1.lsm6dsm_handleEvent()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 93 58
+reflexivemsg 128642 synchronous
+  to durationcanvas_ref 128514
+  yz 120 2025 explicitmsg "2.SET_STATE(SENSOR_BOOT)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 149 103
+reflexivemsg 128898 synchronous
+  to durationcanvas_ref 128770
+  yz 175 2025 explicitmsg "3.timTimerSet(...,lsm6dsm_timerCallback,...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 112 158
+msg 129410 found_synchronous
+  from lostfoundmsgsupport_ref 129282
+  to durationcanvas_ref 129154
+  yz 326 2015 explicitmsg "4.lsm6dsm_timerCallback()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 85 309
+reflexivemsg 130946 synchronous
+  to durationcanvas_ref 130818
+  yz 367 2025 explicitmsg "5.SET_STATE(SENSOR_VERIFY_WAI)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 128 350
+reflexivemsg 131202 synchronous
+  to durationcanvas_ref 131074
+  yz 417 2025 explicitmsg "6.SPI_READ(LSM6DSM_WAI_ADDR, 1, &T_SLAVE_INTERFACE(tmpDataBuffer))"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 45 399
+reflexivemsg 132226 synchronous
+  to durationcanvas_ref 132098
+  yz 511 2025 explicitmsg "10.lsm6dsm_sensorInit()"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 181 494
+reflexivemsg 132482 synchronous
+  to durationcanvas_ref 132354
+  yz 568 2035 explicitmsg "11.SPI_WRITE(LSM6DSM_CTRL3_C_ADDR, LSM6DSM_SW_RESET,...)"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 66 547
+reflexivemsg 132866 synchronous
+  to durationcanvas_ref 132738
+  yz 674 2035 explicitmsg "SPI_WRITE(LSM6DSM_FUNC_CFG_ACCESS_ADDR, LSM6DSM_FUNC_CFG_ACCESS_BASE,..);"
+  show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
+  label_xy 33 652
+end
