@@ -2,10 +2,10 @@ format 222
 
 classinstance 128002 class_ref 153218 // st_lsm6dsm.c
   name ""   xyz 169 10 2005 life_line_z 2000
-fragment 130306 "counter the number of fifo"
+fragment 130306 "count the number of fifo"
   xyzwh 33 425 3005 681 86
 end
-fragment 131458 "counter the timestamp"
+fragment 131458 "count the timestamp"
   xyzwh 29 630 3005 433 127
 end
 durationcanvas 128130 classinstance_ref 128002 // :st_lsm6dsm.c
@@ -45,14 +45,14 @@ durationcanvas 129538 classinstance_ref 128002 // :st_lsm6dsm.c
   end
 end
 durationcanvas 131842 classinstance_ref 128002 // :st_lsm6dsm.c
-  xyzwh 218 875 2010 11 196
+  xyzwh 218 874 2010 11 139
   overlappingdurationcanvas 132226
     xyzwh 224 911 2020 11 25
   end
 end
 lostfoundmsgsupport 128258 xyz 99 75 2015
 lostfoundmsgsupport 129666 xyz 62 411 2015
-lostfoundmsgsupport 131970 xyz 63 876.688 2015
+lostfoundmsgsupport 131970 xyz 63 876 2015
 msg 128386 found_synchronous
   from lostfoundmsgsupport_ref 128258
   to durationcanvas_ref 128130
@@ -118,9 +118,9 @@ reflexivemsg 131714 synchronous
 msg 132098 found_synchronous
   from lostfoundmsgsupport_ref 131970
   to durationcanvas_ref 131842
-  yz 875 2015 explicitmsg "13.lsm6dsm_spiCallback()"
+  yz 874 2015 explicitmsg "13.lsm6dsm_spiCallback()"
   show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
-  label_xy 58 858
+  label_xy 58 857
 reflexivemsg 132354 synchronous
   to durationcanvas_ref 132226
   yz 911 2025 explicitmsg "14.lsm6dsm_parseFifoData(...)"
