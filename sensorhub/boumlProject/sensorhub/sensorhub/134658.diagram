@@ -45,7 +45,7 @@ durationcanvas 129538 classinstance_ref 128002 // :st_lsm6dsm.c
   end
 end
 durationcanvas 131842 classinstance_ref 128002 // :st_lsm6dsm.c
-  xyzwh 218 874 2010 11 139
+  xyzwh 218 874 2010 11 102
   overlappingdurationcanvas 132226
     xyzwh 224 911 2020 11 25
   end
@@ -123,7 +123,7 @@ msg 132098 found_synchronous
   label_xy 58 857
 reflexivemsg 132354 synchronous
   to durationcanvas_ref 132226
-  yz 911 2025 explicitmsg "14.lsm6dsm_parseFifoData(...)"
+  yz 911 2025 explicitmsg "14.lsm6dsm_parseFifoData(fifoDataBuffer[1], fifoDataToRead/6/totalSip)"
   show_full_operations_definition default show_class_of_operation default drawing_language default show_context_mode default
   label_xy 143 894
 end

@@ -1,3 +1,6 @@
+需验证的点:
+    1. 时间戳开关需要改动代码
+        LSM6DSM_ENABLE_FIFO_TIMESTAMP 
 基础知识:
     1. spi的读写方式
         SPI_WRITE(LSM6DSM_FUNC_CFG_ACCESS_ADDR, LSM6DSM_FUNC_CFG_ACCESS_ADDR, 50);
@@ -235,7 +238,7 @@
                         buffer[4] = LSM6DSM_CTRL5_C_BASE;                            /* LSM6DSM_CTRL4_C */
                         SPI_MULTIWRITE(LSM6DSM_CTRL1_XL_ADDR, buffer, 5);
                         /**
-                         * LSM6DSM_INT1_CTRL_ADDR(0x19)
+                         * CTRL10_C(0x19)
                          *     ((0 << 7)   (WRIST_TILT_EN)   wrist tilt algorithm disabled
                          *     (0 << 6)   (0) 
                          *     (1 << 5)   TIMER_EN  开启时间搓功能:Enable timestamp count
@@ -277,4 +280,33 @@
     2. sensortest -e 1 50000最终调用sensor的那个函数
 
     3. acc 数据是如何上报的
-        
+    4. lsm6dsm_parseFifoData()作用
+        1. 
+    5. 时间戳相关
+        5.0 时间同步间隔        LSM6DSM_SYNC_DELTA_INTERVAL     100000000//100ms
+        5.1 时间同步初始化:
+            lsm6dsm_startTask
+                T(time).status = TIME_SYNC_DISABLED;
+                /**
+                 * sync->n = 0;
+                 *  sync->i = 0;
+                 *  sync->estimate_valid = false;
+                 *  sync->hold_count = 0;
+                */
+                time_sync_init(&T(time).sensorTimeToRtcData);
+        5.2 时间同步启动:
+            /**
+             * 此处只针对加速度传感器，如果是其他的则为 lsm6dsm_setGyroPower, lsm6dsm_setGyroPower,lsm6dsm_setMagnPower等
+             * lsm6dsm_setAccelPower 则被上层调用
+             * { DEC_OPS_CAL_CFG_SELFTEST(lsm6dsm_setAccelPower, lsm6dsm_accelFirmwareUpload, lsm6dsm_setAccelRate,
+             *                  lsm6dsm_accelFlush, lsm6dsm_runAccelCalibration, lsm6dsm_accelCfgData, lsm6dsm_runAccelSelfTest) },
+             * */
+            lsm6dsm_setAccelPower
+                lsm6dsm_updateOdrs
+                    //只有 state ==TIME_SYNC_TIMER 时才能进入时间同步
+                    lsm6dsm_updateSyncTaskMode
+                        T(time).status = TIME_SYNC_TIMER;
+                        //时钟同步时间注册地
+                        lsm6dsm_handleSpiDoneEvt--> SENSOR_TIME_SYNC
+                            T(time).timeId = timTimerSet(LSM6DSM_SYNC_DELTA_INTERVAL, 100, 100, lsm6dsm_timerSyncCallback, NULL, true)
+                                osEnqueuePrivateEvt(EVT_TIME_SYNC, data, NULL, mTask.tid);
